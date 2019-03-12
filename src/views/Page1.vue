@@ -1,5 +1,5 @@
 <template>
-    <div>This is Page1</div>
+    <div style="background-color:#000">This is Page1</div>
 </template>
 
 <script>

@@ -1,8 +1,6 @@
 <template>
     <div>
-        Home
         <Navigation/>
-        <button class="btn">btn</button>
     </div>
 </template>
 
@@ -10,7 +8,14 @@
     import Navigation from "../components/Navigation";
     export default {
         name: "Home",
-        components: {Navigation}
+        components: {Navigation},
+        methods:{
+            logout(){
+                sessionStorage.removeItem('isLogin')
+                sessionStorage.removeItem('permissions')
+                this.$router.push({name: "login"})
+            }
+        }
     }
 </script>
 
