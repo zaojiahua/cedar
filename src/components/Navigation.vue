@@ -4,7 +4,6 @@
             <Header class="header" style="padding-left:0px;">
                 <Menu mode="horizontal" theme="dark" active-name="1" style="background-color: transparent">
                     <div class="layout-logo">
-                        <!--<img src="../assets/logo.png" alt="logo" height="64px">-->
                         <b>ANGELREEF</b>
                         <span>®</span>
                     </div>
@@ -27,7 +26,7 @@
                             设置
                             <Icon type="ios-settings-outline" size="24"/>
                         </MenuItem>
-                        <MenuItem name="4">
+                        <MenuItem name="4" @click.native="logout">
                             登出
                             <Icon type="ios-exit-outline" size="24">
                             </Icon>
@@ -70,7 +69,6 @@
                     </Menu>
                 </Sider>
                 <Content style="padding:8px;">
-                    {{isCollapsed}}
                 </Content>
             </Layout>
         </Layout>
@@ -89,6 +87,13 @@
                     'menu-item',
                     this.isCollapsed ? 'collapsed-menu' : ''
                 ]
+            }
+        },
+        methods: {
+            logout(){
+                sessionStorage.removeItem('isLogin')
+                sessionStorage.removeItem('permissions')
+                this.$router.push({name: "login"})
             }
         }
     }
