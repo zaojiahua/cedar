@@ -10,8 +10,7 @@ import config from "./lib/config"
 import AuthenticationMiddleware from "./middleware/AuthenticationMiddleware";
 
 // Axios settings
-axios.defaults.withCredentials = true
-axios.defaults.baseURL = "http://127.0.0.1:8000/"
+axios.defaults.baseURL = "http://"+config.REEF_HOST+":"+config.REEF_PORT
 
 // Axios middleware settings
 let service = new Service(axios)
