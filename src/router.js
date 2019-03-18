@@ -5,7 +5,7 @@ import Home from "./views/Home"
 import Page1 from "./views/Page1"
 import Page2 from "./views/Page2"
 import Page3 from "./views/Page3"
-import $ from "./lib/utils"
+import axios from "axios"
 
 Vue.use(Router)
 
@@ -48,21 +48,19 @@ router.beforeEach((to, from, next) => {
         next()
         return
     }
-    if(!sessionStorage.loginStatus || sessionStorage.permissions == null){
-        // cannot get login status, check with server
-        $.ajax
-            .get('http://127.0.0.1:8000/api/v1/permissions/')
-            .then((response) => {
-                sessionStorage.loginStatus = "login"
+    if('token' in sessionStorage && 'permissions' in sessionStorage){
+        next()
+    }
+    else {
+        axios
+            .get("api/v1/permissions/")
+            .then(response=>{
                 sessionStorage.permissions = response.data
+                next()
             })
-            .catch((reason)=>{
-                if(reason.response.status === 401){
-                    next({name: "login"})
-                }
+            .catch(reason=>{
+                next({name: "login"})
             })
     }
-
-    next()
 })
 export default router

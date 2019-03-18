@@ -10,11 +10,7 @@
         name: "Home",
         components: {Navigation},
         methods:{
-            logout(){
-                sessionStorage.removeItem('isLogin')
-                sessionStorage.removeItem('permissions')
-                this.$router.push({name: "login"})
-            }
+
         }
     }
 </script>

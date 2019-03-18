@@ -1,7 +1,7 @@
-import axios from 'axios'
-
-axios.defaults.withCredentials = true
+import config from './config'
 
 export default {
-    ajax: axios
+    getUrl(path){
+        return "http://" + config.REEF_HOST + ":" + config.REEF_PORT + "/" + path
+    }
 }

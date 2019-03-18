@@ -91,9 +91,12 @@
         },
         methods: {
             logout(){
-                sessionStorage.removeItem('isLogin')
-                sessionStorage.removeItem('permissions')
+                this.$Loading.start()
+                sessionStorage.removeItem("permissions")
+                sessionStorage.removeItem("token")
                 this.$router.push({name: "login"})
+                this.$Message.success("登出成功!")
+                this.$Loading.finish()
             }
         }
     }
