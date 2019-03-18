@@ -7,6 +7,7 @@ import Page2 from "./views/Page2"
 import Page3 from "./views/Page3"
 import axios from "axios"
 
+
 Vue.use(Router)
 
 let router = new Router({
@@ -43,15 +44,27 @@ let router = new Router({
     ]
 })
 
+// 免验证页面
+let whiteList = [
+    'login'
+]
+
 router.beforeEach((to, from, next) => {
-    if(to.name === 'login'){
+    // 免验证页面，不检查
+    if(whiteList.includes(to.name)){
+
         next()
         return
     }
-    if('token' in sessionStorage && 'permissions' in sessionStorage){
-        next()
+
+    // Not logged in, redirect to login page
+    if(sessionStorage.token === undefined){
+        next({name: "login"})
+        return
     }
-    else {
+
+    // Has logged in, but don't update permissions list yet.
+    if(sessionStorage.permissions === undefined){
         axios
             .get("api/v1/permissions/")
             .then(response=>{
@@ -62,5 +75,9 @@ router.beforeEach((to, from, next) => {
                 next({name: "login"})
             })
     }
+
+    // Has logged in, and has permissions list.
+    next()
 })
+
 export default router
