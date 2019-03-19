@@ -6,6 +6,7 @@ import Page1 from "./views/Page1"
 import Page2 from "./views/Page2"
 import Page3 from "./views/Page3"
 import axios from "axios"
+import DeviceManagement from "./views/DeviceManagement";
 
 
 Vue.use(Router)
@@ -15,7 +16,7 @@ let router = new Router({
     base: process.env.BASE_URL,
     routes: [
         {
-            path: '/',
+            path: '/home',
             name: 'home',
             component: Home,
             children: [
@@ -33,6 +34,11 @@ let router = new Router({
                     path: '/page3',
                     name: 'page3',
                     component: Page3
+                },
+                {
+                    path: "device-management",
+                    name: 'device-management',
+                    component: DeviceManagement
                 }
             ]
         },

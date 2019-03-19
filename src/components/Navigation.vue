@@ -14,7 +14,7 @@
                         </MenuItem>
                         <MenuItem name="1">
                             提醒
-                            <Badge :count="3" :offset="[12,-4]">
+                            <Badge :count="notification" :offset="[12,-4]">
                                 <Icon type="ios-notifications-outline" size="24"/>
                             </Badge>
                         </MenuItem>
@@ -37,38 +37,39 @@
             <Layout style="position: absolute; top: 64px; left: 0px; right: 0px; bottom: 0px;">
                 <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;">
                     <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass">
-                        <MenuItem name='systemStatus'>
+                        <MenuItem name='systemStatus' :to="{name: 'home'}">
                             <Icon type="md-speedometer" size="24"/>
                             <span>系统状态</span>
                         </MenuItem>
-                        <MenuItem name="jobMng">
+                        <MenuItem name="jobMng" :to="{name: 'home'}">
                             <Icon type="ios-briefcase-outline" size="24"/>
                             <span>用例管理</span>
                         </MenuItem>
-                        <MenuItem name="newTboard">
+                        <MenuItem name="newTboard" :to="{name: 'home'}">
                             <Icon type="ios-add-circle-outline" size="24"/>
                             <span>新建任务</span>
                         </MenuItem>
-                        <MenuItem name="tboardMng">
+                        <MenuItem name="tboardMng" :to="{name: 'home'}">
                             <Icon type="ios-folder-open-outline" size="24"/>
                             <span>我的任务</span>
                         </MenuItem>
-                        <MenuItem name="rds">
+                        <MenuItem name="rds" :to="{name: 'home'}">
                             <Icon type="ios-pie-outline" size="24"/>
                             <span>测试数据</span>
                         </MenuItem>
-                        <MenuItem name="issue">
+                        <MenuItem name="issue" :to="{name: 'home'}">
                             <Icon type="ios-bug-outline" size="24"/>
                             <span>缺陷管理</span>
                         </MenuItem>
-                        <MenuItem name="deviceMng">
+                        <MenuItem name="deviceMng" :to="{name: 'device-management'}">
                             <Icon type="ios-phone-portrait" size="24"/>
                             <span>设备管理</span>
                         </MenuItem>
 
                     </Menu>
                 </Sider>
-                <Content style="padding:8px;">
+                <Content style="padding:16px;">
+                    <router-view></router-view>
                 </Content>
             </Layout>
         </Layout>
@@ -78,7 +79,8 @@
     export default {
         data () {
             return {
-                isCollapsed: true
+                isCollapsed: true,
+                notification: 0,
             };
         },
         computed:{
