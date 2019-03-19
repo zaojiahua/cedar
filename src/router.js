@@ -46,6 +46,10 @@ let router = new Router({
             path: '/login',
             name: 'login',
             component: Login
+        },
+        {
+            path: '*',
+            redirect: {name: 'home'}
         }
     ]
 })
@@ -58,7 +62,6 @@ let whiteList = [
 router.beforeEach((to, from, next) => {
     // 免验证页面，不检查
     if(whiteList.includes(to.name)){
-
         next()
         return
     }
