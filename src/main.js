@@ -53,4 +53,11 @@ if(config.DEBUG){
     window.main = main
 }
 
+// Load default config
+if(localStorage.firstUse === undefined){
+    localStorage.setItem("firstUse", "no")
+    localStorage.setItem("device-management:DEFAULT_DEVICE_COLUMN",
+        "device_label,device_name,phone_model,status")
+}
+
 export default main
