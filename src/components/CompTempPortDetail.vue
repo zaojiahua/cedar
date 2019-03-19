@@ -22,8 +22,10 @@
                 </Select>
             </FormItem>
             <FormItem>
-                <Button type="primary">保存</Button>
-                <Button style="margin-left: 8px" @click="showTempPortDetail = false">取消</Button>
+                <Row type="flex" justify="end">
+                    <Button type="primary">保存</Button>
+                    <Button style="margin-left: 8px" @click="showTempPortDetail = false">取消</Button>
+                </Row>
             </FormItem>
         </Form>
     </Card>

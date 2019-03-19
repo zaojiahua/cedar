@@ -1,5 +1,5 @@
 <template>
-    <Card title="详细讯息">
+    <Card title="设备信息">
         <Form :model="device" :label-width="80">
             <FormItem>
                 <b slot="label">ID</b>
@@ -28,9 +28,6 @@
             <FormItem>
                 <b slot="label">IP</b>
                 <Input v-model="device.ip_address" :disabled="true" class="disabled-input"></Input>
-            </FormItem>
-            <FormItem>
-                待补
             </FormItem>
             <FormItem>
                 <b slot="label">手机模组</b>
@@ -72,9 +69,8 @@
                 <Button type="error" @click="deleteDevice">移除设备</Button>
             </Col>
             <Col>
+                <Button type="primary" style="margin-right: 16px;">保存</Button>
                 <Button>取消</Button>
-                <Button type="primary" style="margin-left: 16px;">保存</Button>
-
             </Col>
         </Row>
     </Card>
@@ -205,9 +201,11 @@
 <style scoped>
     .disabled-input >>> input {
         /*border: none;*/
-        /*background-color: #0000;*/
-        /*color: #515a6e;*/
+        background-color: #0000;
+        color: #515a6e;
         /*color: #69748e;*/
+        border: #eee dotted 1px;
 
     }
+
 </style>
