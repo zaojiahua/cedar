@@ -7,6 +7,7 @@ import Page2 from "./views/Page2"
 import Page3 from "./views/Page3"
 import axios from "axios"
 import DeviceManagement from "./views/DeviceManagement";
+import CreateTboard from "./views/CreateTboard";
 
 
 Vue.use(Router)
@@ -39,6 +40,11 @@ let router = new Router({
                     path: "device-management",
                     name: 'device-management',
                     component: DeviceManagement
+                },
+                {
+                    path: "create-tboard",
+                    name: 'create-tboard',
+                    component: CreateTboard
                 }
             ]
         },
