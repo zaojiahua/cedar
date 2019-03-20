@@ -88,6 +88,7 @@
     </div>
 </template>
 <script>
+    import main from "../main"
     export default {
         data () {
             return {
@@ -106,12 +107,21 @@
         },
         methods: {
             logout(){
-                this.$Loading.start()
-                sessionStorage.removeItem("permissions")
-                sessionStorage.removeItem("token")
-                this.$router.push({name: "login"})
-                this.$Message.success("登出成功!")
-                this.$Loading.finish()
+                this.$Modal.confirm({
+                    title: "您确定要登出?",
+                    onOk(){
+                        this.$Loading.start()
+                        sessionStorage.removeItem("permissions")
+                        sessionStorage.removeItem("token")
+                        main.$router.push({name: "login"})
+                        this.$Message.success("登出成功!")
+                        this.$Loading.finish()
+                    },
+                    onCancel(){
+                        this.$Modal.remove()
+                    }
+                })
+
             }
         },
         created(){
