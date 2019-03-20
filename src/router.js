@@ -2,9 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from "./views/Login"
 import Home from "./views/Home"
-import Page1 from "./views/Page1"
-import Page2 from "./views/Page2"
-import Page3 from "./views/Page3"
+import Page404 from "./errorpage/404"
 import axios from "axios"
 import DeviceManagement from "./views/DeviceManagement";
 
@@ -16,25 +14,10 @@ let router = new Router({
     base: process.env.BASE_URL,
     routes: [
         {
-            path: '/home',
+            path: '/',
             name: 'home',
             component: Home,
             children: [
-                {
-                    path: '/page1',
-                    name: 'page1',
-                    component: Page1
-                },
-                {
-                    path: '/page2',
-                    name: 'page2',
-                    component: Page2
-                },
-                {
-                    path: '/page3',
-                    name: 'page3',
-                    component: Page3
-                },
                 {
                     path: "device-management",
                     name: 'device-management',
@@ -49,7 +32,8 @@ let router = new Router({
         },
         {
             path: '*',
-            redirect: {name: 'home'}
+            name: '404',
+            component: Page404
         }
     ]
 })
@@ -72,20 +56,7 @@ router.beforeEach((to, from, next) => {
         return
     }
 
-    // Has logged in, but don't update permissions list yet.
-    if(sessionStorage.permissions === undefined){
-        axios
-            .get("api/v1/permissions/")
-            .then(response=>{
-                sessionStorage.permissions = response.data
-                next()
-            })
-            .catch(reason=>{
-                next({name: "login"})
-            })
-    }
-
-    // Has logged in, and has permissions list.
+    // Has logged in.
     next()
 })
 
