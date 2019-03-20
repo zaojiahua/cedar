@@ -1,5 +1,5 @@
 <template>
-    <Card title="设备信息">
+    <Card :title="device.device_name + ' (' + device.device_label + ')'">
         <Form :model="device" :label-width="80">
             <FormItem>
                 <b slot="label">ID</b>
@@ -8,10 +8,6 @@
             <FormItem>
                 <b slot="label">编号</b>
                 <Input v-model="device.device_label" :disabled="true" class="disabled-input"></Input>
-            </FormItem>
-            <FormItem>
-                <b slot="label">自定义名称</b>
-                <Input v-model="device.device_name"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">安卓版本</b>
@@ -45,8 +41,12 @@
                 <b slot="label">状态</b>
                 <Input v-model="device.status" :disabled="true" class="disabled-input"></Input>
             </FormItem>
+            <Divider></Divider>
+            <FormItem>
+                <b slot="label">自定义名称</b>
+                <Input v-model="device.device_name"></Input>
+            </FormItem>
         </Form>
-        <Divider orientation="left">配置</Divider>
         <Collapse :value="[0,1,2]">
             <Panel>温度感应片配对
                 <CheckboxGroup slot="content">
@@ -193,19 +193,17 @@
 
                     }
                 });
-            }
-        }
+            },
+
+        },
     }
 </script>
 
 <style scoped>
     .disabled-input >>> input {
-        /*border: none;*/
         background-color: #0000;
         color: #515a6e;
-        /*color: #69748e;*/
         border: #eee dotted 1px;
-
     }
 
 </style>

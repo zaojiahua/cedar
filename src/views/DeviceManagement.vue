@@ -13,8 +13,8 @@
 </template>
 
 <script>
-    import CompDeviceManagement from "../components/CompDeviceList";
-    import CompTempPortManagement from "../components/CompTempPortList";
+    import CompDeviceManagement from "../components/CompDeviceManagement";
+    import CompTempPortManagement from "../components/CompTempPortManagement";
 
     export default {
         components: {

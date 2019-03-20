@@ -37,6 +37,18 @@
             <Layout style="position: absolute; top: 64px; left: 0px; right: 0px; bottom: 0px;">
                 <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;">
                     <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass">
+                        <MenuItem v-if="permissions.includes('apiv1.view_reefuser')" name="userMng" :to="{name: 'home'}">
+                            <Icon type="md-person" size="24"/>
+                            <span>用户管理</span>
+                        </MenuItem>
+                        <MenuItem v-if="permissions.includes('apiv1.upgrade_system')" name="sysUpgrade" :to="{name: 'home'}">
+                            <Icon type="md-sync" size="24"/>
+                            <span>系统升级</span>
+                        </MenuItem>
+                        <MenuItem v-if="permissions.includes('apiv1.view_system_log')" name="log" :to="{name: 'home'}">
+                            <Icon type="md-filing" size="24"/>
+                            <span>日志文件</span>
+                        </MenuItem>
                         <MenuItem name='systemStatus' :to="{name: 'home'}">
                             <Icon type="md-speedometer" size="24"/>
                             <span>系统状态</span>
@@ -81,6 +93,7 @@
             return {
                 isCollapsed: true,
                 notification: 0,
+                permissions: sessionStorage.permissions === undefined ? [] : sessionStorage.permissions
             };
         },
         computed:{
@@ -89,7 +102,7 @@
                     'menu-item',
                     this.isCollapsed ? 'collapsed-menu' : ''
                 ]
-            }
+            },
         },
         methods: {
             logout(){
@@ -99,6 +112,28 @@
                 this.$router.push({name: "login"})
                 this.$Message.success("登出成功!")
                 this.$Loading.finish()
+            }
+        },
+        created(){
+            if(sessionStorage.permissions === undefined){
+                this.$ajax
+                    .get("api/v1/permissions/")
+                    .then(response=>{
+                        sessionStorage.permissions = response.data
+                        this.permissions = response.data
+                    })
+                    .catch(reason=>{
+                        sessionStorage.permissions = []
+                        let msg = ""
+                        if(reason.response === undefined){
+                            msg = "请确认您的网路"
+                        } else {
+                            msg = reason.response.status
+                        }
+                        this.$Notice.error({
+                            title: "取得用户权限失败: "+msg
+                        })
+                    })
             }
         }
     }
