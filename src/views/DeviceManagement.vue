@@ -7,19 +7,23 @@
             <TabPane label="温度感应片列表" name="tempPortList">
                 <comp-temp-port-management></comp-temp-port-management>
             </TabPane>
-            <TabPane label="智能充电口列表" name="powerPortList"></TabPane>
+            <TabPane label="智能充电口列表" name="powerPortList">
+                <comp-power-port-list></comp-power-port-list>
+            </TabPane>
         </Tabs>
     </Card>
 </template>
 
 <script>
-    import CompDeviceManagement from "../components/CompDeviceManagement";
-    import CompTempPortManagement from "../components/CompTempPortManagement";
+    import CompDeviceManagement from "../components/CompDeviceList";
+    import CompTempPortManagement from "../components/CompTempPortList";
+    import CompPowerPortList from "../components/CompPowerPortList";
 
     export default {
         components: {
             CompDeviceManagement,
-            CompTempPortManagement
+            CompTempPortManagement,
+            CompPowerPortList
         },
         data(){
             return {
