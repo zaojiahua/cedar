@@ -12,7 +12,7 @@
 
 <script>
     export default {
-        name: 'errorContent',
+        name: 'ErrorContent',
         props: {
             code: String,
             desc: String,
