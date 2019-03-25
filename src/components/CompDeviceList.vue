@@ -1,7 +1,7 @@
 <template>
     <div>
         <Drawer v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
-            <comp-device-detail></comp-device-detail>
+            <comp-device-detail :device_id="deviceDetailId" ref="detail"></comp-device-detail>
         </Drawer>
         <Modal v-model="showAddDevice" :closable="false" :footer-hide="true">
             <transition>
@@ -149,6 +149,7 @@
                 devices: [],
                 // Device detail
                 showDeviceDetail: false,
+                deviceDetailId: null,
                 // Add device
                 showAddDevice: false,
                 addDeviceStep: 1,
@@ -156,6 +157,7 @@
             }
         },
         methods: {
+            // Table control
             getDeviceColumn() {
                 let data = []
                 this.deviceColumnChecked.forEach(
@@ -170,7 +172,15 @@
                 )
             },
             onDeviceRowClick(data, index) {
-                this.showDeviceDetail = true
+                if(this.$refs.detail && this.$refs.detail.refreshData){
+                    this.showDeviceDetail = true
+                    this.deviceDetailId = data.id
+                    this.$refs.detail.refreshData(data.id)
+                } else {
+                    this.$Notice.error({
+                        title: "有些什么出错了!"
+                    })
+                }
             },
             // Add device
             addDeviceError(title, desc) {
