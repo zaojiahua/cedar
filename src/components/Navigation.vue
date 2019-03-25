@@ -37,7 +37,7 @@
             <Layout style="position: absolute; top: 64px; left: 0px; right: 0px; bottom: 0px;">
                 <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;">
                     <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass">
-                        <MenuItem v-if="permissions.includes('apiv1.view_reefuser')" name="userMng" :to="{name: 'home'}">
+                        <MenuItem v-if="permissions.includes('apiv1.view_reefuser')" name="userMng" :to="{name: 'user-management'}">
                             <Icon type="md-person" size="24"/>
                             <span>用户管理</span>
                         </MenuItem>

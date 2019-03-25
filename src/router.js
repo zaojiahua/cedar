@@ -6,6 +6,7 @@ import Page404 from "./errorpage/404"
 import axios from "axios"
 import DeviceManagement from "./views/DeviceManagement";
 import CreateTboard from "./views/CreateTboard";
+import UserManagement from "./views/UserManagement";
 
 
 Vue.use(Router)
@@ -28,6 +29,11 @@ let router = new Router({
                     path: "create-tboard",
                     name: 'create-tboard',
                     component: CreateTboard
+                },
+                {
+                    path: "user-management",
+                    name: 'user-management',
+                    component: UserManagement
                 }
             ]
         },
