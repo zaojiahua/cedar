@@ -23,7 +23,7 @@ export default class ConsoleLogMiddleware {
 
     onResponseError(error) {
         console.log("onResponseError from:" + error.config.url)
-        console.log(error)
+        console.log(error.response)
         throw error
     }
 }

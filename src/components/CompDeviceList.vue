@@ -1,7 +1,7 @@
 <template>
     <div>
         <Drawer v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
-            <comp-device-detail></comp-device-detail>
+            <comp-device-detail :device_id="deviceDetailId" ref="detail"></comp-device-detail>
         </Drawer>
         <Modal v-model="showAddDevice" :closable="false" :footer-hide="true">
             <transition>
@@ -80,13 +80,13 @@
         components: {CompDeviceDetail},
         data() {
             return {
+                // Device table
                 deviceColumn: {
-                    "device_label":
-                        {
-                            title: "设备编号",
-                            key: "device_label",
-                            sortable: true
-                        },
+                    "device_label": {
+                        title: "设备编号",
+                        key: "device_label",
+                        sortable: true
+                    },
                     "device_name": {
                         title: "自定义名称",
                         key: "device_name",
@@ -145,19 +145,11 @@
                 },
                 deviceColumnChecked: [],
                 tableDeviceColumn: [],
-                devices: [
-                    {
-                        device_label: "device_label",
-                        device_name: "device_name",
-                        phone_model: "phone_model"
-                    },
-                    {
-                        device_label: "device_label2",
-                        device_name: "device_name",
-                        phone_model: "phone_model"
-                    }
-                ],
+                // Devices data
+                devices: [],
+                // Device detail
                 showDeviceDetail: false,
+                deviceDetailId: null,
                 // Add device
                 showAddDevice: false,
                 addDeviceStep: 1,
@@ -165,6 +157,7 @@
             }
         },
         methods: {
+            // Table control
             getDeviceColumn() {
                 let data = []
                 this.deviceColumnChecked.forEach(
@@ -179,17 +172,60 @@
                 )
             },
             onDeviceRowClick(data, index) {
-                this.deviceDetailTitle = data.device_name
-                this.showDeviceDetail = true
+                if(this.$refs.detail && this.$refs.detail.refreshData){
+                    this.showDeviceDetail = true
+                    this.deviceDetailId = data.id
+                    this.$refs.detail.refreshData(data.id)
+                } else {
+                    this.$Notice.error({
+                        title: "有些什么出错了!"
+                    })
+                }
             },
             // Add device
-            addDeviceError(title, desc){
+            addDeviceError(title, desc) {
                 this.$Notice.error({
                     title: title,
                     desc: desc,
                     duration: 0
                 });
             }
+        },
+        created() {
+            this.$ajax
+                .get('api/v1/cedar/device/?fields=' +
+                    'id,' +
+                    'device_label,' +
+                    'phone_model,' +
+                    'phone_model.phone_model_name,' +
+                    'rom_version,' +
+                    'rom_version.version,' +
+                    'device_name,' +
+                    'android_version,' +
+                    'android_version.version,' +
+                    'phone_model.cpu_name,' +
+                    'ip_address,' +
+                    'status,' +
+                    'powerport,' +
+                    'powerport.port,' +
+                    'tempport,' +
+                    'tempport.port,' +
+                    'monitor_index,' +
+                    'monitor_index.port')
+                .then(response => {
+                    this.devices = response.data['devices']
+                    // parse
+                    this.devices.forEach(
+                        device => {
+                            device.phone_model = device.phone_model ? device.phone_model.phone_model_name : null
+                            device.rom_version = device.rom_version ? device.rom_version.version : null
+                            device.android_version = device.android_version ? device.android_version.version : null
+                            device.cpu_name = device.phone_model ? device.phone_model.cpu_name : null
+                            device.powerport = device.powerport ? device.powerport.port : null
+                            device.monitor_index = device.monitor_index ? device.monitor_index.port : null
+                        }
+                    )
+                })
         },
         mounted() {
             this.deviceColumnChecked = localStorage.getItem("device-management:DEFAULT_DEVICE_COLUMN").split(",")
