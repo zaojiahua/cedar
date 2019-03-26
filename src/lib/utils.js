@@ -3,12 +3,11 @@ export default {
         return device.device_name + " (" + device.device_label + ")"
     },
     validate(serializer, data){
-        console.log(serializer)
         // 广度优先遍历
-        if(serializer instanceof Object){
+        if(Object.prototype.toString.call(serializer) === "[object Object]"){
             return this._process_obj(serializer, data)
-        } else if(serializer instanceof Array){
-            return this._check_array(serializer, data)
+        } else if(Object.prototype.toString.call(serializer) === "[object Array]"){
+            return this._check_array(serializer[0], data)
         } else {
             throw TypeError("serializer must be object or array!")
         }

@@ -1,60 +1,10 @@
 <template>
     <div>
         <Drawer v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
-            <comp-device-detail :device_id="deviceDetailId" ref="detail"></comp-device-detail>
+            <comp-device-detail :device_id="deviceDetailId" ref="detail" @afterDeviceDelete="afterDeviceDelete" @afterDeviceUpdate="afterDeviceUpdate"></comp-device-detail>
         </Drawer>
         <Modal v-model="showAddDevice" :closable="false" :footer-hide="true">
-            <transition>
-                <Card dis-hover title="第一步: 请对待添加设备执行" v-if="addDeviceStep === 1">
-                    <Steps direction="vertical" :current="-1">
-                        <Step title="将设备添加到专用USB接口"></Step>
-                        <Step title="将添加设备连接到TMach系统WLAN"></Step>
-                        <Step title='开启"USB调试功能"与"通过USB安装APP"'></Step>
-                        <Step title='关闭"自动亮度调节"，并调整到适当亮度，同时设置屏幕为常亮'></Step>
-                    </Steps>
-                    <Row type="flex" justify="center" style="margin-top: 16px">
-                        <Button type="primary" @click="addDeviceStep=2 ">下一步</Button>
-                    </Row>
-                </Card>
-                <Card dis-hover title="第二步: 设置权限" v-if="addDeviceStep === 2" style="text-align:center;">
-                    <p>请在待添加设备弹出窗口中勾选</p>
-                    <p><b>始终允许这台计算机进行调试</b></p>
-                    <p>并点击确定</p>
-                    <br><br><br><br><br><br>
-                    <small>(如果已设置，可直接点击"下一步")</small>
-                    <Row type="flex" justify="center" style="margin-top: 16px">
-                        <Button type="primary" @click="addDeviceStep=3 ">下一步</Button>
-                        <Button type="error" @click="addDeviceError('ip侦测失败', '侦测不到xxx装置的IP位置')">错误DEMO</Button>
-                    </Row>
-                </Card>
-                <Card dis-hover title="第三步: 添加设备" v-if="addDeviceStep === 3">
-                    <Form :label-width="80">
-                        <FormItem>
-                            <b slot="label">设备编号</b>
-                            <p>Device</p>
-                        </FormItem>
-                        <FormItem>
-                            <b slot="label">ROM版本</b>
-                            <p>6.3.24</p>
-                        </FormItem>
-                        <FormItem>
-                            <b slot="label">安卓版本</b>
-                            <p>5.0.2</p>
-                        </FormItem>
-                        <FormItem>
-                            <b slot="label">IP位置</b>
-                            <p>10.80.3.101</p>
-                        </FormItem>
-                        <FormItem>
-                            <b slot="label">自定义名称</b>
-                            <Input v-model="addedDeviceName"></Input>
-                        </FormItem>
-                    </Form>
-                    <Row type="flex" justify="center">
-                        <Button type="primary">添加</Button>
-                    </Row>
-                </Card>
-            </transition>
+            <comp-add-device ref="addDevice" @afterDeviceAddSuccess="afterDeviceAddSuccess" @afterDeviceAddFailed="afterDeviceAddFailed"></comp-add-device>
         </Modal>
         <Row type="flex" justify="space-between">
             <Col span="20">
@@ -64,22 +14,63 @@
                 </CheckboxGroup>
             </Col>
             <Col>
-                <Button icon="md-add" type="primary" @click="showAddDevice=true; addDeviceStep=1">添加装置</Button>
+                <Button icon="md-add" type="primary" @click="onAddDeviceClick">添加装置</Button>
             </Col>
         </Row>
 
-        <Table border :columns="tableDeviceColumn" :data="devices" @on-row-click="onDeviceRowClick"></Table>
+        <Table border :columns="tableDeviceColumn" :data="devices" @on-row-click="onDeviceRowClick" :loading="loading"></Table>
     </div>
 </template>
 
 <script>
     import CompDeviceDetail from "./CompDeviceDetail";
+    import CompAddDevice from "./CompAddDevice"
+    import utils from "../lib/utils"
+
+
+    const getDeviceListSerializer = [
+        {
+            id: "number",
+            device_label: "string",
+            device_name: "string",
+            phone_model: {
+                phone_model_name: "string",
+                cpu_name: "string"
+            },
+            rom_version: {
+                version: "string"
+            },
+
+            android_version: {
+                version: "string"
+            },
+            ip_address: "string",
+            status: "string",
+            powerport: {
+                port: "string"
+            },
+            tempport: [
+                {
+                    port: "string",
+                    description: "string"
+                }
+            ],
+            monitor_index: [
+                {
+                    port: "string"
+                }
+            ]
+
+        }
+    ]
 
     export default {
         name: "CompDeviceManagement",
-        components: {CompDeviceDetail},
+        components: {CompDeviceDetail, CompAddDevice},
         data() {
             return {
+                // Data loading
+                loading: false,
                 // Device table
                 deviceColumn: {
                     "device_label": {
@@ -127,19 +118,19 @@
                         key: "power",
                         sortable: true
                     },
-                    "power_port": {
+                    "powerport": {
                         title: "充电口",
-                        key: "power_port",
+                        key: "powerport",
                         sortable: true
                     },
-                    "temp_port": {
+                    "tempport": {
                         title: "温感片",
-                        key: "temp_port",
+                        key: "tempport",
                         sortable: true
                     },
-                    "monitor_port": {
+                    "monitorport": {
                         title: "相机",
-                        key: "monitor_port",
+                        key: "monitorport",
                         sortable: true
                     }
                 },
@@ -152,11 +143,61 @@
                 deviceDetailId: null,
                 // Add device
                 showAddDevice: false,
-                addDeviceStep: 1,
-                addedDeviceName: "",
             }
         },
         methods: {
+            // Data loading
+            loadDeviceData(){
+                this.loading = true
+                this.$ajax
+                    .get('api/v1/cedar/device/?fields=' +
+                        'id,' +
+                        'device_label,' +
+                        'phone_model,' +
+                        'phone_model.phone_model_name,' +
+                        'rom_version,' +
+                        'rom_version.version,' +
+                        'device_name,' +
+                        'android_version,' +
+                        'android_version.version,' +
+                        'phone_model.cpu_name,' +
+                        'ip_address,' +
+                        'status,' +
+                        'powerport,' +
+                        'powerport.port,' +
+                        'tempport,' +
+                        'tempport.port,' +
+                        'tempport.description,' +
+                        'monitor_index,' +
+                        'monitor_index.port')
+                    .then(response => {
+                        this.devices = utils.validate(getDeviceListSerializer, response.data['devices'])
+                        this.devices.forEach(device=>{
+                            device.cpu_name = device.phone_model.cpu_name
+                            device.phone_model = device.phone_model.phone_model_name
+                            device.rom_version = device.rom_version.version
+                            device.android_version = device.android_version.version
+                            device.powerport = device.powerport.port
+                            let tempPortStr = ""
+                            device.tempport.forEach(temp=>{
+                                if(temp.description)
+                                    tempPortStr = tempPortStr+temp.port+"("+temp.description+"), "
+                                else
+                                    tempPortStr = tempPortStr+temp.port+ ", "
+                            })
+                            device.tempport = tempPortStr.substring(0,tempPortStr.length-2)
+                            let monitorPortStr = ""
+                            device.monitor_index.forEach(monitor=>{
+                                monitorPortStr = monitorPortStr+monitor.port+", "
+                            })
+                            device.monitorport = monitorPortStr.substring(0, monitorPortStr.length-2)
+                        })
+                        this.loading = false
+                    })
+                    .catch(reason => {
+                        this.$Message.error('载入失败')
+                    })
+            },
             // Table control
             getDeviceColumn() {
                 let data = []
@@ -182,50 +223,30 @@
                     })
                 }
             },
-            // Add device
-            addDeviceError(title, desc) {
-                this.$Notice.error({
-                    title: title,
-                    desc: desc,
-                    duration: 0
-                });
+            // Add Device
+            onAddDeviceClick(){
+                this.$refs.addDevice.reset()
+                this.showAddDevice=true
+            },
+            afterDeviceAddSuccess(device){
+                this.showAddDevice = false
+                this.loadDeviceData()
+            },
+            afterDeviceAddFailed(reason){
+
+            },
+            // Delete Device
+            afterDeviceDelete(response){
+                this.loadDeviceData()
+                this.showDeviceDetail = false
+            },
+            // Update Device
+            afterDeviceUpdate(){
+                this.showDeviceDetail = false
             }
         },
         created() {
-            this.$ajax
-                .get('api/v1/cedar/device/?fields=' +
-                    'id,' +
-                    'device_label,' +
-                    'phone_model,' +
-                    'phone_model.phone_model_name,' +
-                    'rom_version,' +
-                    'rom_version.version,' +
-                    'device_name,' +
-                    'android_version,' +
-                    'android_version.version,' +
-                    'phone_model.cpu_name,' +
-                    'ip_address,' +
-                    'status,' +
-                    'powerport,' +
-                    'powerport.port,' +
-                    'tempport,' +
-                    'tempport.port,' +
-                    'monitor_index,' +
-                    'monitor_index.port')
-                .then(response => {
-                    this.devices = response.data['devices']
-                    // parse
-                    this.devices.forEach(
-                        device => {
-                            device.phone_model = device.phone_model ? device.phone_model.phone_model_name : null
-                            device.rom_version = device.rom_version ? device.rom_version.version : null
-                            device.android_version = device.android_version ? device.android_version.version : null
-                            device.cpu_name = device.phone_model ? device.phone_model.cpu_name : null
-                            device.powerport = device.powerport ? device.powerport.port : null
-                            device.monitor_index = device.monitor_index ? device.monitor_index.port : null
-                        }
-                    )
-                })
+            this.loadDeviceData()
         },
         mounted() {
             this.deviceColumnChecked = localStorage.getItem("device-management:DEFAULT_DEVICE_COLUMN").split(",")
