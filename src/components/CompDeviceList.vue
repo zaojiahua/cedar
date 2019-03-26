@@ -6,7 +6,7 @@
         <Modal v-model="showAddDevice" :closable="false" :footer-hide="true">
             <comp-add-device ref="addDevice" @afterDeviceAddSuccess="afterDeviceAddSuccess" @afterDeviceAddFailed="afterDeviceAddFailed"></comp-add-device>
         </Modal>
-        <Row type="flex" justify="space-between">
+        <Row type="flex" justify="space-between" style="margin-bottom: 8px;">
             <Col span="20">
                 <CheckboxGroup v-model="deviceColumnChecked" style="padding-bottom: 16px;"
                                @on-change="onTableColumnChange">
