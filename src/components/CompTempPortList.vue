@@ -1,9 +1,9 @@
 <template>
     <div>
         <Drawer v-model="showTempPortDetail" :draggable="true" :closable="false" width="50">
-            <comp-temp-port-detail></comp-temp-port-detail>
+            <comp-temp-port-detail ref="detail" @afterUpdateTempPortSuccess="afterUpdateTempPortSuccess"></comp-temp-port-detail>
         </Drawer>
-        <Table border :columns="tempPortColumn" :data="tempPorts" @on-row-click="showTempPortDetail = true"></Table>
+        <Table border :columns="tempPortColumn" :data="tempPorts" @on-row-click="onRowClick"></Table>
     </div>
 </template>
 
@@ -32,6 +32,7 @@
         components: {CompTempPortDetail},
         data(){
             return {
+                // Table control
                 tempPortColumn:[
                     {
                         title: "温度感应片编号",
@@ -50,10 +51,13 @@
                     }
                 ],
                 tempPorts: [],
-                showTempPortDetail: false
+                // Detail
+                showTempPortDetail: false,
+                tempPortId: null
             }
         },
         methods:{
+            // Data
             refresh(){
                 this.$ajax.get(
                     "api/v1/cedar/temp_port/?fields=" +
@@ -70,7 +74,19 @@
                         port.device_display_name = port.device.device_name + "(" + port.device.device_label + ")"
                     })
                     this.tempPorts = tempports
+                }).catch(reason => {
+                    this.$Message.error("载入失败")
                 })
+            },
+            // Table control
+            onRowClick(data, index){
+                this.showTempPortDetail = true
+                this.$refs.detail.refresh(data.id)
+            },
+            // Detail
+            afterUpdateTempPortSuccess(){
+                this.showTempPortDetail = false
+                this.refresh()
             }
         },
         created() {
