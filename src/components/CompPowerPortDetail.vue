@@ -53,9 +53,11 @@
                     "id," +
                     "port," +
                     "device," +
+                    "device.id," +
                     "device.device_name," +
                     "device.device_label"
                 ).then(response=>{
+                    console.log(response)
                     this.powerPort = utils.validate(getPowerPortSerializer, response.data)
                     if(this.powerPort.device.id !== null)
                         this.powerPort.device_display_name = this.powerPort.device.device_name + "(" + this.powerPort.device.device_label + ")"
