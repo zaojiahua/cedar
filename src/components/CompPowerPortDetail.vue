@@ -11,7 +11,7 @@
             </FormItem>
             <FormItem>
                 <b slot="label">关联设备</b>
-                <Input :value="powerPort.device.device_name+' ('+powerPort.device.device_label+')'"
+                <Input :value="powerPort.device_display_name"
                        :disabled="true" class="disabled-input"></Input>
             </FormItem>
         </Form>
@@ -19,6 +19,18 @@
 </template>
 
 <script>
+    import utils from "../lib/utils";
+    import config from "../lib/config";
+
+    const getPowerPortSerializer = {
+        id: "number",
+        port: "string",
+        device: {
+            id: "number",
+            device_name: "string",
+            device_label: "string"
+        }
+    }
     export default {
         name: "CompPowerDetail",
         data(){
@@ -26,11 +38,31 @@
                 powerPort: {
                     id: 1,
                     port: "PA-01",
+                    device_display_name: "",
                     device: {
                         device_name: "DeviceName1",
                         device_label: "DeviceLabel1"
                     }
                 }
+            }
+        },
+        methods:{
+            refresh(powerPortId){
+                this.$ajax.get(
+                    "api/v1/cedar/power_port/"+powerPortId+"/?fields=" +
+                    "id," +
+                    "port," +
+                    "device," +
+                    "device.device_name," +
+                    "device.device_label"
+                ).then(response=>{
+                    this.powerPort = utils.validate(getPowerPortSerializer, response.data)
+                    if(this.powerPort.device.id !== null)
+                        this.powerPort.device_display_name = this.powerPort.device.device_name + "(" + this.powerPort.device.device_label + ")"
+                }).catch(reason=>{
+                    if(config.DEBUG) console.log(reason)
+                    this.$Message.error("载入失败")
+                })
             }
         }
     }

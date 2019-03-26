@@ -71,7 +71,10 @@
                 ).then(response=>{
                     let tempports = utils.validate(getTempPortListSerializer, response.data).tempports
                     tempports.forEach(port=>{
-                        port.device_display_name = port.device.device_name + "(" + port.device.device_label + ")"
+                        if(port.device.id !== null)
+                            port.device_display_name = port.device.device_name + "(" + port.device.device_label + ")"
+                        else
+                            port.device_display_name = ""
                     })
                     this.tempPorts = tempports
                 }).catch(reason => {

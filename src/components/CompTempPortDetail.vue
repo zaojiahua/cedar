@@ -11,7 +11,7 @@
             </FormItem>
             <FormItem>
                 <b slot="label">关联设备</b>
-                <Input :value="tempPort.device.device_name + ' (' + tempPort.device.device_label + ')'"
+                <Input :value="tempPort.device_display_name"
                        :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <Divider></Divider>
@@ -66,6 +66,8 @@
                     "device.device_label"
                 ).then(response=>{
                     this.tempPort = utils.validate(getTempPortSerializer, response.data)
+                    if(this.tempPort.device.id !== null)
+                        this.tempPort.device_display_name = this.tempPort.device.device_name + ' (' + this.tempPort.device.device_label + ')'
                 }).catch(reason => {
                     this.$Message.error("载入失败")
                 })
