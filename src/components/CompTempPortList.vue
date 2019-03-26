@@ -9,6 +9,23 @@
 
 <script>
     import CompTempPortDetail from "./CompTempPortDetail";
+    import utils from "../lib/utils";
+
+
+    const getTempPortListSerializer = {
+        tempports: [
+            {
+                id: "string",
+                port: "string",
+                description: "string",
+                device: {
+                    id: "number",
+                    device_label: "string",
+                    device_name: "string"
+                }
+            }
+        ]
+    }
 
     export default {
         name: "CompTempPortManagement",
@@ -28,34 +45,36 @@
                     },
                     {
                         title: "配对的测试设备",
-                        key: "device",
+                        key: "device_display_name",
                         width: 400
                     }
                 ],
-                tempPorts:[
-                    {
-                        id: 1,
-                        port: "TP-01",
-                        description: "wow",
-                        device: "Device1"
-                    },
-                    {
-                        id: 2,
-                        port: "TP-02",
-                        description: "wow",
-                        device: "Device2"
-                    },
-                    {
-                        id: 3,
-                        port: "TP-03",
-                        description: "wow",
-                    },
-                ],
+                tempPorts: [],
                 showTempPortDetail: false
             }
         },
         methods:{
-
+            refresh(){
+                this.$ajax.get(
+                    "api/v1/cedar/temp_port/?fields=" +
+                    "id," +
+                    "port," +
+                    "description," +
+                    "device," +
+                    "device.id," +
+                    "device.device_name," +
+                    "device.device_label"
+                ).then(response=>{
+                    let tempports = utils.validate(getTempPortListSerializer, response.data).tempports
+                    tempports.forEach(port=>{
+                        port.device_display_name = port.device.device_name + "(" + port.device.device_label + ")"
+                    })
+                    this.tempPorts = tempports
+                })
+            }
+        },
+        created() {
+            this.refresh()
         }
     }
 </script>
