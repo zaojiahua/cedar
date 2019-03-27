@@ -11,5 +11,8 @@
 </script>
 
 <style>
+    .ivu-input-disabled{
+        cursor: default!important;
+    }
 </style>
 
