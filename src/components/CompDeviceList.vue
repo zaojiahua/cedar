@@ -147,7 +147,7 @@
         },
         methods: {
             // Data loading
-            loadDeviceData(){
+            refresh(){
                 this.loading = true
                 this.$ajax
                     .get('api/v1/cedar/device/?fields=' +
@@ -230,23 +230,24 @@
             },
             afterDeviceAddSuccess(device){
                 this.showAddDevice = false
-                this.loadDeviceData()
+                this.refresh()
             },
             afterDeviceAddFailed(reason){
 
             },
             // Delete Device
             afterDeviceDelete(response){
-                this.loadDeviceData()
+                this.refresh()
                 this.showDeviceDetail = false
             },
             // Update Device
             afterDeviceUpdate(){
                 this.showDeviceDetail = false
+                this.refresh()
             }
         },
         created() {
-            this.loadDeviceData()
+            this.refresh()
         },
         mounted() {
             this.deviceColumnChecked = localStorage.getItem("device-management:DEFAULT_DEVICE_COLUMN").split(",")
