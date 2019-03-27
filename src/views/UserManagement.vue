@@ -2,39 +2,47 @@
     <div>
         <Card>
             <p solt="title" class="user-head">
-                <Button icon="md-add" style="margin-right: 20px" type="primary" @click="adduser">添加用户</Button>
+                <Button icon="md-add" style="margin-right: 20px" type="primary" @click="addUser">添加用户</Button>
                 <Button icon="ios-trash-outline" type="error">批量删除</Button>
             </p>
-            <Table stripe height="700px" :columns="UserColumns" :data="UserData"></Table>
+            <Table stripe height="700px" :columns="userColumns" :data="userData"></Table>
         </Card>
         <Drawer v-model="showUserDetail" :draggable="true" width="50" title="用户信息">
             <Card>
-                <Form  v-model="UserInfo" :label-width="80">
+                <Form  v-model="userInfo" :label-width="80">
                     <FormItem label="登录名：">
-                        <Input v-model="UserInfo.username" placeholder="Enter username..."></Input>
+                        <Input v-model="userInfo.username" placeholder="Enter username..."></Input>
                     </FormItem>
                     <FormItem label="真实姓名：">
-                        <Input v-model="UserInfo.firstname" placeholder="Enter your name..."></Input>
+                        <Input v-model="userInfo.firstname" placeholder="Enter your name..."></Input>
                     </FormItem>
                     <FormItem label="密码：" v-if="addShow">
-                        <Input v-model="UserInfo.password" type="password" placeholder="Enter password..."></Input>
+                        <Input v-model="userInfo.password" type="password" placeholder="Enter password..."></Input>
                     </FormItem>
                     <FormItem label="角色：">
-                        <CheckboxGroup v-model="UserInfo.role">
-                            <Checkbox label="Admin"></Checkbox><br/>
-                            <Checkbox label="TestOperator"></Checkbox><br/>
-                            <Checkbox label="DataViewer"></Checkbox><br/>
-                            <Checkbox label="Manager"></Checkbox>
+                        <CheckboxGroup v-model="userInfo.role">
+                            <Checkbox v-for="item in groupList" :label="item"></Checkbox><br/>
                         </CheckboxGroup>
                     </FormItem>
                 </Form>
                 <div  class="drawer-footer">
                     <Button v-if="updatePwd" style="float: left" @click="addShow=true">修改密码</Button>
-                    <Button style="margin-right: 20px" @click="showUserDetail = false">取消</Button>
-                    <Button type="primary" @click="update">确认</Button>
+                    <Button type="primary" style="margin-right: 20px" @click="update">确认</Button>
+                    <Button  @click="showUserDetail = false">取消</Button>
                 </div>
             </Card>
         </Drawer>
+        <Modal v-model="showModal" :closable="false" :mask-closable="false"  width="360">
+            <p slot="header" style="color:#f60;text-align:center">
+                <Icon type="ios-information-circle"></Icon>
+                <span>删除确认</span>
+            </p>
+            <p style="text-align: center;font-size: 16px;">你确定要删除该用户吗？</p>
+            <p slot="footer" style="text-align: center">
+                <Button type="primary" style="margin-right: 100px;" @click="remove(delObj)">确定</Button>
+                <Button @click="showModal = false">取消</Button>
+            </p>
+        </Modal>
     </div>
 </template>
 
@@ -43,7 +51,7 @@
         name: "UserManagement",
         data(){
             return {
-                UserColumns:[
+                userColumns:[
                     {
                         type: 'selection',
                         width: 60,
@@ -89,7 +97,8 @@
                                     },
                                     on: {
                                         click: () => {
-                                            this.remove(params.index)
+                                            this.showModal = true;
+                                            this.delObj = params.index;
                                         }
                                     }
                                 }, '删除')
@@ -97,11 +106,14 @@
                         }
                     }
                 ],
-                UserData:[],
+                userData:[],
                 showUserDetail:false,
                 addShow:false,
                 updatePwd:false,
-                UserInfo:{
+                showModal:false,
+                delObj:'',
+                groupList:[],
+                userInfo:{
                     id:"",
                     username:"",
                     firstname:"",
@@ -115,16 +127,19 @@
                 this.showUserDetail = true;
                 this.addShow=false;
                 this.updatePwd=true;
-                this.UserInfo.username  = this.UserData[index].username;
-                this.UserInfo.firstname  = this.UserData[index].firstname;
-                this.UserInfo.id  = this.UserData[index].id;
-                this.UserInfo.role  = this.UserData[index].role.split(",");
+                this.userInfo.username  = this.userData[index].username;
+                this.userInfo.firstname  = this.userData[index].firstname;
+                this.userInfo.id  = this.userData[index].id;
+                this.userInfo.role  = this.userData[index].role.split(",");
             },
             remove (index) {
                 this.$Loading.start();
                 this.$ajax
-                    .delete("api/v1/cedar/reefuser/"+ this.UserData[index].id +"/")
+                    .delete("api/v1/cedar/reefuser/"+ this.userData[index].id +"/")
                     .then(response => {
+                        this.showModal = false;
+                        this.userData.splice(index, 1);
+                        this.$Message.success('删除成功');
                         this.$Loading.finish()
                     })
                     .catch(error => {
@@ -138,31 +153,30 @@
                         this.$Message.error(errorMsg)
                         this.$Loading.error()
                     })
-
-                this.UserData.splice(index, 1);
             },
             update (){
                 this.showUserDetail = false;
                 let AjaxParamObj={};
                 if(this.addShow===true){
                     AjaxParamObj = {
-                        username:this.UserInfo.username,
-                        last_name:this.UserInfo.firstname,
-                        groups:this.UserInfo.role,
-                        password:this.UserInfo.password
+                        username:this.userInfo.username,
+                        last_name:this.userInfo.firstname,
+                        groups:this.userInfo.role,
+                        password:this.userInfo.password
                     }
                 }else {
                     AjaxParamObj = {
-                        username:this.UserInfo.username,
-                        last_name:this.UserInfo.firstname,
-                        groups:this.UserInfo.role
+                        username:this.userInfo.username,
+                        last_name:this.userInfo.firstname,
+                        groups:this.userInfo.role
                     }
                 }
                 this.$Loading.start();
                 if(this.updatePwd===true){
                     this.$ajax
-                        .patch("api/v1/cedar/reefuser/"+ this.UserInfo.id +"/",AjaxParamObj)
+                        .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",AjaxParamObj)
                         .then(response => {
+                            this.$Message.success('修改成功');
                             this.getUserData();
                             this.$Loading.finish()
                         })
@@ -180,6 +194,7 @@
                     this.$ajax
                         .post("api/v1/cedar/reefuser/",AjaxParamObj)
                         .then(response => {
+                            this.$Message.success('添加成功');
                             this.getUserData();
                             this.$Loading.finish()
                         })
@@ -195,14 +210,14 @@
                         })
                 }
             },
-            adduser(){
+            addUser(){
                 this.updatePwd=false;
                 this.addShow=true;
                 this.showUserDetail = true;
-                this.UserInfo.username  = "";
-                this.UserInfo.firstname  = "";
-                this.UserInfo.password  = "";
-                this.UserInfo.role  = [];
+                this.userInfo.username  = "";
+                this.userInfo.firstname  = "";
+                this.userInfo.password  = "";
+                this.userInfo.role  = [];
             },
             getUserData(){
                 this.$Loading.start();
@@ -223,7 +238,7 @@
                                 role:group
                             })
                         }
-                        this.UserData = userList;
+                        this.userData = userList;
                         this.$Loading.finish()
                     })
                     .catch(error => {
@@ -236,10 +251,37 @@
                         this.$Message.error(errorMsg)
                         this.$Loading.error()
                     })
+            },
+            getGroup(){
+                this.$Loading.start()
+                this.$ajax
+                    .get("api/v1/cedar/group/?fields=name")
+                    .then(response=>{
+                        console.log(response.data)
+                        let groupObj = [];
+                        for (let i=0;i<response.data.groups.length;i++){
+                            groupObj.push(response.data.groups[i].name)
+                        }
+                        this.groupList = groupObj;
+                        this.$Loading.finish();
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                        let errorMsg = "";
+                        if (error.response.status >= 500) {
+                            errorMsg = "服务器错误！"
+                        } else {
+                            errorMsg = error.toString()
+                        }
+                        this.$Message.error(errorMsg)
+                        this.$Loading.error();
+                    })
+
             }
         },
         created(){
             this.getUserData();
+            this.getGroup();
         }
     }
 </script>
