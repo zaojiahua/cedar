@@ -186,7 +186,7 @@
                             'api/v1/cedar/device/'+device_id+'/'
                         ).then(response=>{
                             this.$Message.success('删除成功')
-                            detailComp.$emit('afterDeviceDelete', response)
+                            detailComp.$emit('after-device-delete', response)
                         }).catch(reason => {
                             this.$Message.success('删除失败')
                         })
@@ -194,7 +194,7 @@
                 });
             },
             // Load data
-            refreshData(device_id){
+            refresh(device_id){
                 let ajax = this.$ajax
                 this.selectedTempPorts = []
                 this.selectedPowerPorts = []
@@ -275,7 +275,7 @@
                     }
                 ).then(response => {
                     this.$Message.success("更新成功")
-                    this.$emit('afterDeviceUpdate')
+                    this.$emit('after-device-update', response)
                 }).catch(reason => {
                     if(config.debug) console.log(reason)
                     this.$Message.error("更新失败")

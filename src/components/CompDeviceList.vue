@@ -1,8 +1,6 @@
 <template>
     <div>
-        <Drawer v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
-            <comp-device-detail :device_id="deviceDetailId" ref="detail" @afterDeviceDelete="afterDeviceDelete" @afterDeviceUpdate="afterDeviceUpdate"></comp-device-detail>
-        </Drawer>
+        <slot name="detail"></slot>
         <Modal v-model="showAddDevice" :closable="false" :footer-hide="true">
             <comp-add-device ref="addDevice" @afterDeviceAddSuccess="afterDeviceAddSuccess" @afterDeviceAddFailed="afterDeviceAddFailed"></comp-add-device>
         </Modal>
@@ -18,7 +16,7 @@
             </Col>
         </Row>
 
-        <Table border :columns="tableDeviceColumn" :data="devices" @on-row-click="onDeviceRowClick" :loading="loading"></Table>
+        <Table border :columns="tableDeviceColumn" :data="devices" @on-row-click="onRowClick" :loading="loading"></Table>
     </div>
 </template>
 
@@ -138,9 +136,6 @@
                 tableDeviceColumn: [],
                 // Devices data
                 devices: [],
-                // Device detail
-                showDeviceDetail: false,
-                deviceDetailId: null,
                 // Add device
                 showAddDevice: false,
             }
@@ -212,16 +207,9 @@
                     this.deviceColumnChecked.join(",")
                 )
             },
-            onDeviceRowClick(data, index) {
-                if(this.$refs.detail && this.$refs.detail.refreshData){
-                    this.showDeviceDetail = true
-                    this.deviceDetailId = data.id
-                    this.$refs.detail.refreshData(data.id)
-                } else {
-                    this.$Notice.error({
-                        title: "有些什么出错了!"
-                    })
-                }
+            // Table event
+            onRowClick(row, index){
+                this.$emit("on-row-click", row, index)
             },
             // Add Device
             onAddDeviceClick(){
@@ -235,16 +223,6 @@
             afterDeviceAddFailed(reason){
 
             },
-            // Delete Device
-            afterDeviceDelete(response){
-                this.refresh()
-                this.showDeviceDetail = false
-            },
-            // Update Device
-            afterDeviceUpdate(){
-                this.showDeviceDetail = false
-                this.refresh()
-            }
         },
         created() {
             this.refresh()
