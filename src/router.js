@@ -7,6 +7,7 @@ import axios from "axios"
 import DeviceManagement from "./views/DeviceManagement";
 import CreateTboard from "./views/CreateTboard";
 import UserManagement from "./views/UserManagement";
+import PersonalData from "./views/PersonalData";
 
 
 Vue.use(Router)
@@ -34,6 +35,11 @@ let router = new Router({
                     path: "user-management",
                     name: 'user-management',
                     component: UserManagement
+                },
+                {
+                    path: "personal-data",
+                    name: 'personal-data',
+                    component: PersonalData
                 }
             ]
         },
