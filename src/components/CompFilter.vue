@@ -1,28 +1,32 @@
 <template>
     <div>
         <Tabs type="card">
-            <TabPane v-for="column in filterColumn" :label="column.title">
+            <TabPane v-for="column in filterColumn" :label="column.title" :key="column.key">
                 <CheckboxGroup v-model="checked" @on-change="onChange">
                     <Row type="flex">
-                        <Col span="4" v-for="(item, index) in filterData[column.key]">
+                        <Col span="4" v-for="(item, index) in filterData[column.key]" :key="index">
                             <Checkbox :label="column.key+'_:_'+index+'_:_'+item[column.item_key]">{{item[column.item_key]}}</Checkbox>
                         </Col>
                     </Row>
                 </CheckboxGroup>
             </TabPane>
         </Tabs>
-        <Divider></Divider>
+        <Row style="margin-top: 16px; border-bottom: 1px solid #dcdee2;">
+            <Tag v-for="column in filterColumn" :key="column.key" :color="getTagColor(column.key)">{{column.title}}</Tag>
+        </Row>
         <Row type="flex" style="margin-top: 16px;">
-            <Tag closable @on-close="closeTag" v-for="item in checked" :color="getTagColor(item.split('_:_')[0])" :name="item">{{item.split('_:_')[2]}}</Tag>
+            <Tag closable @on-close="closeTag" v-for="item in checked" :color="getTagColor(item.split('_:_')[0])" :name="item" :key="item">{{item.split('_:_')[2]}}</Tag>
         </Row>
         <Row style="margin-top: 16px;">
             <Button @click="checked=[]; onChange()">清空</Button>
         </Row>
+        <Divider></Divider>
     </div>
 </template>
 
 <script>
     import utils from "../lib/utils";
+    import config from "../lib/config";
 
     const getPhoneModelSerializer = {
         phonemodels: [
@@ -40,7 +44,7 @@
             }
         ]
     }
-    const getAndroidversionserializer = {
+    const getAndroidVersionSerializer = {
         androidversions: [
             {
                 id: "number",
@@ -144,13 +148,13 @@
                         }
                     ]
                 },
-                checked: ['android_version_:_0_:_4.4'],
+                checked: [],
             }
 
         },
         methods: {
             getTagColor(type){
-                if(type==="phone_model") return "magenta"
+                if(type==="phone_model") return "default"
                 if(type==="job_test_area") return "red"
                 if(type==="android_version") return "orange"
                 if(type==="rom_version") return "cyan"
@@ -171,7 +175,6 @@
                     selectedData[type].push(this.filterData[type][index])
                 })
                 this.$emit('on-change', selectedData)
-                console.log(selectedData)
             }
         },
         created() {
@@ -216,12 +219,15 @@
                     this.filterData = {
                         phone_model: utils.validate(getPhoneModelSerializer, phone_model_resp.data).phonemodels,
                         job_test_area: utils.validate(getJobTestAreaSerializer, job_test_area_resp.data).jobtestareas,
-                        android_version: utils.validate(getAndroidversionserializer, android_version_resp.data).androidversions,
+                        android_version: utils.validate(getAndroidVersionSerializer, android_version_resp.data).androidversions,
                         rom_version: utils.validate(getRomVersionserializer, rom_version_resp.data).romversions,
                         reefuser: utils.validate(getReefUserSerializer, reefuser_resp.data).reefusers,
                         custom_tag: utils.validate(getCustomTagSerializer, custom_tag_resp.data).customtags
                     }
-            }))
+            })).catch(reason => {
+                if(config.DEBUG) console.log(reason)
+                this.$Message.error("载入失败")
+            })
         }
     }
 </script>
