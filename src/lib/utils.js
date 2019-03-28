@@ -1,6 +1,13 @@
+import config from "./config"
 export default {
     getDeviceDisplayName(device){
         return device.device_name + " (" + device.device_label + ")"
+    },
+    getCoralUrl(port){
+        return "http://"+config.CORAL_HOST+":"+port;
+    },
+    getInDoorUrl(port){
+        return "http://"+config.INDOOR_HOST+":"+port;
     },
     validate(serializer, data){
         // 广度优先遍历

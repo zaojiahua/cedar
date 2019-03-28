@@ -8,7 +8,7 @@
                         <span>®</span>
                     </div>
                     <div class="layout-nav">
-                        <MenuItem name="0">
+                        <MenuItem name="0" :to="{name: 'personal-data'}">
                             <Avatar>R</Avatar>
                             Raymond
                         </MenuItem>
@@ -18,7 +18,7 @@
                                 <Icon type="ios-notifications-outline" size="24"/>
                             </Badge>
                         </MenuItem>
-                        <MenuItem name="2">
+                        <MenuItem name="2" @click.native="getSysVersion">
                             关于TMach
                             <Icon type="ios-help-circle-outline" size="24"/>
                         </MenuItem>
@@ -84,16 +84,51 @@
                     <router-view></router-view>
                 </Content>
             </Layout>
+            <Modal v-model="showModal" :closable="false" :mask-closable="false"  width="360">
+                <p slot="header" style="text-align:center">
+                    <span style="font-size: 28px;color: #1bbc9c">TMach</span>
+                </p>
+                <Form :label-width="120">
+                    <FormItem>
+                        <b slot="label">Reef版本：</b>
+                        <p></p>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">Coral版本：</b>
+                        <p></p>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">Cedar版本：</b>
+                        <p></p>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">Pacific版本：</b>
+                        <p></p>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">TMach版本：</b>
+                        <p>TMachPro_2019_02_27_14_37</p>
+                    </FormItem>
+                </Form>
+                <p slot="footer" style="text-align: center">
+                    <Button type="primary"  @click="showModal = false">关闭</Button>
+                </p>
+            </Modal>
         </Layout>
     </div>
 </template>
 <script>
     import main from "../main"
+    import utils from "../lib/utils"
+    import config from "../lib/config"
     export default {
         data () {
             return {
                 isCollapsed: true,
                 notification: 0,
+                showModal:false,
+                versionInfo:{
+                },
                 permissions: sessionStorage.permissions === undefined ? [] : sessionStorage.permissions
             };
         },
@@ -118,6 +153,19 @@
                     onCancel(){
                         this.$Modal.remove()
                     }
+                })
+
+            },
+            getSysVersion(){
+                this.showModal = true;
+                this.$Loading.start();
+                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)
+                this.$ajax.post(coralUrl,{
+                    requestName:'getTMachVersionInfo'
+                }).then(response=>{
+                    console.log(response);
+                }).catch(error=>{
+                    console.log(error);
                 })
 
             }
