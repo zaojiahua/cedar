@@ -21,7 +21,7 @@
                 </Row>
             </div>
             <div v-if="current===1">
-
+                <comp-filter></comp-filter>
             </div>
             <div v-if="current===2">
 
@@ -32,12 +32,14 @@
 
 <script>
     import CompDeviceList from "../components/CompDeviceList";
+    import CompFilter from "../components/CompFilter";
+
 
     export default {
-        components: {CompDeviceList},
+        components: {CompDeviceList, CompFilter},
         data() {
             return {
-                current: 0,
+                current: 1,
                 // Page "Choose device"
                 showSelectDeviceModal: false,
                 selectedDevice:[]
