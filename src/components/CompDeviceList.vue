@@ -1,7 +1,7 @@
 <template>
     <div>
         <slot name="detail"></slot>
-        <Modal v-model="showAddDevice" :closable="false" :footer-hide="true">
+        <Modal v-if="propAddMode" v-model="showAddDevice" :closable="false" :footer-hide="true">
             <comp-add-device ref="addDevice" @afterDeviceAddSuccess="afterDeviceAddSuccess" @afterDeviceAddFailed="afterDeviceAddFailed"></comp-add-device>
         </Modal>
         <Row type="flex" justify="space-between" style="margin-bottom: 8px;">
@@ -11,12 +11,12 @@
                     <Checkbox v-for="item in deviceColumn" :label="item.key" :key="item.key">{{item.title}}</Checkbox>
                 </CheckboxGroup>
             </Col>
-            <Col>
+            <Col v-if="propAddMode">
                 <Button icon="md-add" type="primary" @click="onAddDeviceClick">添加装置</Button>
             </Col>
         </Row>
 
-        <Table border :columns="tableDeviceColumn" :data="devices" @on-row-click="onRowClick" :loading="loading"></Table>
+        <Table ref="table" border :columns="tableDeviceColumn" :data="devices" @on-row-click="onRowClick" :loading="loading"></Table>
     </div>
 </template>
 
@@ -65,6 +65,20 @@
     export default {
         name: "CompDeviceManagement",
         components: {CompDeviceDetail, CompAddDevice},
+        props:{
+            propAddMode:{ // Show adding button
+                type: Boolean,
+                default: true
+            },
+            propAutoLoad:{ // Auto load devices data from reef
+                type: Boolean,
+                default: true
+            },
+            propMultiSelect:{ // Multi selection feature
+                type: Boolean,
+                default: false
+            }
+        },
         data() {
             return {
                 // Data loading
@@ -138,11 +152,17 @@
                 devices: [],
                 // Add device
                 showAddDevice: false,
+                // Multi Selection
+                selectedDevice: []
             }
         },
         methods: {
             // Data loading
-            refresh(){
+            refresh(data){
+                if(data!==undefined){
+                    this.devices = data
+                    return
+                }
                 this.loading = true
                 this.$ajax
                     .get('api/v1/cedar/device/?fields=' +
@@ -196,6 +216,13 @@
             // Table control
             getDeviceColumn() {
                 let data = []
+                if(this.propMultiSelect) {
+                    data.push({
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+                    })
+                }
                 this.deviceColumnChecked.forEach(
                     col => data.push(this.deviceColumn[col])
                 )
@@ -206,6 +233,12 @@
                 localStorage.setItem("device-management:DEFAULT_DEVICE_COLUMN",
                     this.deviceColumnChecked.join(",")
                 )
+            },
+            toggleSelect(index){
+                this.$refs.table.toggleSelect(index)
+            },
+            getSelection(){
+                return this.$refs.table.getSelection()
             },
             // Table event
             onRowClick(row, index){
@@ -225,7 +258,8 @@
             },
         },
         created() {
-            this.refresh()
+            if(this.propAutoLoad)
+                this.refresh()
         },
         mounted() {
             this.deviceColumnChecked = localStorage.getItem("device-management:DEFAULT_DEVICE_COLUMN").split(",")
