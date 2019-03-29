@@ -79,6 +79,12 @@
 
 
             }
+        },
+        mounted() {
+            console.log("mounted")
+            localStorage.removeItem("token")
+            sessionStorage.removeItem("permissions")
+            sessionStorage.removeItem("token")
         }
     }
 </script>

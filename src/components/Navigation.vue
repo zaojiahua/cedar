@@ -146,8 +146,6 @@
                     title: "您确定要登出?",
                     onOk(){
                         this.$Loading.start()
-                        sessionStorage.removeItem("permissions")
-                        sessionStorage.removeItem("token")
                         main.$router.push({name: "login"})
                         this.$Message.success("登出成功!")
                         this.$Loading.finish()
