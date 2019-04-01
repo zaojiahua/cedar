@@ -18,7 +18,7 @@
             <br><br><br><br><br><br>
             <small>(如果已设置，可直接点击"下一步")</small>
             <Row type="flex" justify="center" style="margin-top: 16px">
-                <Button type="primary" @click="addDeviceStep=3 ">下一步</Button>
+                <Button type="primary" @click="getDeviceInDoor">下一步</Button>
                 <Button type="error" @click="addDeviceError('ip侦测失败', '侦测不到xxx装置的IP位置')">错误DEMO</Button>
             </Row>
         </Card>
@@ -53,6 +53,8 @@
 </template>
 
 <script>
+    import utils from "../lib/utils"
+    import config from "../lib/config"
     export default {
         name: "CompAddDevice",
         data(){
@@ -92,6 +94,22 @@
                     this.$Loading.error()
                     this.$emit('afterDeviceAddFailed', reason)
                 })
+            },
+            getDeviceInDoor(){
+                let coralUrl = utils.getInDoorUrl(config.DEVINDOOR_PORT);
+                // console.log(coralUrl);
+                this.$Loading.start();
+                this.$ajax
+                    .post(coralUrl,{
+                        requestName:'getDeviceInDoor'
+                    })
+                    .then(response=>{
+                        console.log(response)
+                        // this.addDeviceStep=3;
+                    })
+                    .catch(error=>{
+                        console.log(error)
+                    })
             },
         }
     }
