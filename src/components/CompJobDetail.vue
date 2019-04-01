@@ -3,43 +3,43 @@
         <Form :label-width="80">
             <FormItem v-model="jobInfo">
                 <b slot="label">ID:</b>
-                <Input v-model="jobInfo.id" disabled="true" class="disabled-input">
+                <Input v-model="jobInfo.id" disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">用例名称:</b>
-                <Input v-model="jobInfo.job_name" disabled="true" class="disabled-input">
+                <Input v-model="jobInfo.job_name" disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">用例说明:</b>
-                <Input v-model="jobInfo.description" disabled="true" class="disabled-input">
+                <Input v-model="jobInfo.description" disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">测试用途:</b>
-                <Input v-model="testArea" disabled="true" class="disabled-input">
+                <Input v-model="testArea" disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">适配机型:</b>
-                <Input v-model="phoneModels" disabled="true" class="disabled-input">
+                <Input v-model="phoneModels" disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">安卓版本:</b>
-                <Input v-model="androidVersion" disabled="true" class="disabled-input">
+                <Input v-model="androidVersion" disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">ROM版本:</b>
-                <Input v-model="romVersion" disabled="true" class="disabled-input">
+                <Input v-model="romVersion" disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">自定义标签:</b>
-                <Input v-model="customTag" disabled="true" class="disabled-input">
+                <Input v-model="customTag" disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">编写人员:</b>
-                <Input v-model="jobInfo.author.username" disabled="true" class="disabled-input">
+                <Input v-model="jobInfo.author.username" disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">更新时间:</b>
-                <Input v-model="jobInfo.updated_time" disabled="true" class="disabled-input">
+                <Input v-model="jobInfo.updated_time" disabled="true" class="disabled-input"></Input>
             </FormItem>
         </Form>
     </Card>
@@ -93,7 +93,7 @@
             }
         },
         methods:{
-            jobRefresh(jobId){
+            refresh(jobId){
                 this.$ajax
                     .get(
                         "api/v1/cedar/job/"+jobId+"/?fields="+
