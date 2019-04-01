@@ -16,7 +16,7 @@
             </Col>
         </Row>
 
-        <Table ref="table" border :columns="tableDeviceColumn" :data="devices" @on-row-click="onRowClick" :loading="loading"></Table>
+        <Table ref="table" border :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading"></Table>
     </div>
 </template>
 
@@ -70,7 +70,7 @@
                 type: Boolean,
                 default: true
             },
-            propAutoLoad:{ // Auto load devices data from reef
+            propAutoLoad:{ // Auto load data from reef
                 type: Boolean,
                 default: true
             },
@@ -149,7 +149,7 @@
                 deviceColumnChecked: [],
                 tableDeviceColumn: [],
                 // Devices data
-                devices: [],
+                data: [],
                 // Add device
                 showAddDevice: false,
                 // Multi Selection
@@ -160,7 +160,7 @@
             // Data loading
             refresh(data){
                 if(data!==undefined){
-                    this.devices = data
+                    this.data = data
                     return
                 }
                 this.loading = true
@@ -186,8 +186,8 @@
                         'monitor_index,' +
                         'monitor_index.port')
                     .then(response => {
-                        this.devices = utils.validate(getDeviceListSerializer, response.data['devices'])
-                        this.devices.forEach(device=>{
+                        this.data = utils.validate(getDeviceListSerializer, response.data['devices'])
+                        this.data.forEach(device=>{
                             device.cpu_name = device.phone_model.cpu_name
                             device.phone_model = device.phone_model.phone_model_name
                             device.rom_version = device.rom_version.version
@@ -239,6 +239,9 @@
             },
             getSelection(){
                 return this.$refs.table.getSelection()
+            },
+            getData(){
+                return this.data
             },
             // Table event
             onRowClick(row, index){
