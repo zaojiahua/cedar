@@ -3,11 +3,11 @@ import Router from 'vue-router'
 import Login from "./views/Login"
 import Home from "./views/Home"
 import Page404 from "./errorpage/404"
-import axios from "axios"
 import DeviceManagement from "./views/DeviceManagement";
 import CreateTboard from "./views/CreateTboard";
 import UserManagement from "./views/UserManagement";
 import PersonalData from "./views/PersonalData";
+import TboardManagement from "./views/TboardManagement";
 
 
 Vue.use(Router)
@@ -40,6 +40,11 @@ let router = new Router({
                     path: "personal-data",
                     name: 'personal-data',
                     component: PersonalData
+                },
+                {
+                    path: "tboard-management",
+                    name: "tboard-management",
+                    component: TboardManagement
                 }
             ]
         },
