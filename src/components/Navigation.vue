@@ -61,7 +61,7 @@
                             <Icon type="ios-add-circle-outline" size="24"/>
                             <span>新建任务</span>
                         </MenuItem>
-                        <MenuItem name="tboardMng" :to="{name: 'home'}">
+                        <MenuItem name="tboardMng" :to="{name: 'tboard-management'}">
                             <Icon type="ios-folder-open-outline" size="24"/>
                             <span>我的任务</span>
                         </MenuItem>

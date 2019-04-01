@@ -136,7 +136,7 @@
             getSelection() {
                 return this.$refs.table.getSelection()
             },
-            deleteRow(index){
+            pauseOrDeleteTboard(index){
                 this.data.splice(index, 1)
             },
             onRowClick(row, index){
