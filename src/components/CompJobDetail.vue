@@ -3,45 +3,49 @@
         <Form :label-width="80">
             <FormItem v-model="jobInfo">
                 <b slot="label">ID:</b>
-                <Input v-model="jobInfo.id" disabled="true" class="disabled-input"></Input>
+                <Input v-model="jobInfo.id" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">用例名称:</b>
-                <Input v-model="jobInfo.job_name" disabled="true" class="disabled-input"></Input>
+                <Input v-model="jobInfo.job_name" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">用例说明:</b>
-                <Input v-model="jobInfo.description" disabled="true" class="disabled-input"></Input>
+                <Input v-model="jobInfo.description" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">测试用途:</b>
-                <Input v-model="testArea" disabled="true" class="disabled-input"></Input>
+                <Input v-model="testArea" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">适配机型:</b>
-                <Input v-model="phoneModels" disabled="true" class="disabled-input"></Input>
+                <Input v-model="phoneModels" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">安卓版本:</b>
-                <Input v-model="androidVersion" disabled="true" class="disabled-input"></Input>
+                <Input v-model="androidVersion" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">ROM版本:</b>
-                <Input v-model="romVersion" disabled="true" class="disabled-input"></Input>
+                <Input v-model="romVersion" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">自定义标签:</b>
-                <Input v-model="customTag" disabled="true" class="disabled-input"></Input>
+                <Input v-model="customTag" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">编写人员:</b>
-                <Input v-model="jobInfo.author.username" disabled="true" class="disabled-input"></Input>
+                <Input v-model="jobInfo.author.username" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">更新时间:</b>
-                <Input v-model="jobInfo.updated_time" disabled="true" class="disabled-input"></Input>
+                <Input v-model="jobInfo.updated_time" disabled class="disabled-input"></Input>
             </FormItem>
         </Form>
+        <p style="text-align: right">
+            <Button type="primary" @click="closeDrawerDetail">关闭</Button>
+        </p>
+
     </Card>
 </template>
 
@@ -125,19 +129,19 @@
 
                         let tags = [];
                         this.jobInfo.custom_tag.forEach(tag=>{
-                            tags.push(tag.version)
+                            tags.push(tag.custom_tag_name)
                         })
                         this.customTag = tags.join(",");
 
                         let models=[];
                         this.jobInfo.phone_models.forEach(model=>{
-                            models.push(model.version)
+                            models.push(model.phone_model_name)
                         })
                         this.phoneModels = models.join(",");
 
                         let areas=[];
                         this.jobInfo.test_area.forEach(area=>{
-                            areas.push(area.version)
+                            areas.push(area.description)
                         })
                         this.testArea = areas.join(",");
 
@@ -145,6 +149,9 @@
                     .catch(error=>{
                         this.$Message.error("数据加载失败");
                     })
+            },
+            closeDrawerDetail(){
+                this.$emit("closeDrawer",false);
             }
         }
     }

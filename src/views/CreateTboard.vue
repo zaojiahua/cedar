@@ -27,10 +27,10 @@
             </Row>
             <Row type="flex" style="margin-top: 16px;">
                 <Col span="11">
-                    <comp-job-list ref="jobList" :prop-multi-select="true"></comp-job-list>
+                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
                 </Col>
                 <Col span="2">
-                    <Row type="flex" justify="center"style="margin: auto;">
+                    <Row type="flex" justify="center" style="margin: auto;">
                         <Button @click="selectJob">
                             添加
                             <Icon type="ios-arrow-forward" />
@@ -67,6 +67,12 @@
                 <Button type="primary" style="width: 80px; margin-left:32px;" @click="complete">启动任务</Button>
             </Row>
         </div>
+
+
+        <Drawer v-model="showJobDetail" :draggable="true" :closable="false" width="50">
+            <comp-job-detail ref="jobDetail" @closeDrawer="closeDrawer"></comp-job-detail>
+        </Drawer>
+
     </Card>
 </template>
 
@@ -74,12 +80,13 @@
     import CompDeviceList from "../components/CompDeviceList";
     import CompFilter from "../components/CompFilter";
     import CompJobList from "../components/CompJobList";
+    import CompJobDetail from  "../components/CompJobDetail"
     import config from "../lib/config";
     import utils from "../lib/utils";
 
 
     export default {
-        components: {CompJobList, CompDeviceList, CompFilter},
+        components: {CompJobList, CompDeviceList, CompFilter,CompJobDetail},
         data() {
             return {
                 current: 0,
@@ -92,7 +99,8 @@
                 selectedJob: [],
                 // Page "Fill info"
                 tboardName: "",
-                tboardRepeatTime: 1
+                tboardRepeatTime: 1,
+                showJobDetail:false,
             }
         },
         methods: {
@@ -160,9 +168,45 @@
                 console.log(this.selectedJob)
                 console.log(this.tboardName)
                 console.log(this.tboardRepeatTime)
+                let deviceList = [];
+                this.selectedDevice.forEach(device=>{
+                    deviceList.push(device.device_label);
+                })
+                let jobList = [];
+                this.selectedJob.forEach(job=>{
+                    jobList.push(job.job_label);
+                })
+                utils._initDate();
+                let boardStamp = new Date().format("yyyy_MM_dd_hh_mm_ss");
+                let coralUrl = utils.getCoralUrl(config.CREATETBOARD_PORT);
+                this.$ajax
+                    .post(coralUrl,{
+                        requestName:"insertTBoard",
+                        boardDict:{
+                            boardName:this.tboardName,
+                            deviceIDList:deviceList,
+                            jobIDList:jobList,
+                            jobListNum:this.tboardRepeatTime,
+                            boardStamp:boardStamp,
+                            ownerID:3       //动态获取当前用户的id=>TO DO
+                        }
+                    })
+                    .then(response=>{
+                        this.$Message.success("任务启动成功！")
+                    })
+                    .catch(error=>{
+                        this.$Message.error("任务启动失败")
+                    })
             },
             backToPageChooseJob(){
                 this.current = 1
+            },
+            JobOnRowClick(row){
+                this.showJobDetail = true;
+                this.$refs.jobDetail.refresh(row.id)
+            },
+            closeDrawer(msg){
+                this.showJobDetail = msg;
             }
         }
     }

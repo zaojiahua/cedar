@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Table ref="table" :columns="columns" :data="data">
+        <Table ref="table" :columns="columns" :data="data" @on-row-click="onRowClick">
             <template slot-scope="{row, index}" slot="counter">
                 <InputNumber :min="1" v-model="data[index].counter"></InputNumber>
             </template>
@@ -20,6 +20,7 @@
         jobs: [
             {
                 id: "number",
+                job_label:"string",
                 job_name: "string",
                 test_area: [
                     {
@@ -114,6 +115,7 @@
                 }
                 this.$ajax.get("api/v1/cedar/job/?fields=" +
                     "id," +
+                    "job_label," +
                     "job_name," +
                     "test_area," +
                     "test_area.id," +
@@ -136,7 +138,10 @@
             },
             deleteRow(index){
                 this.data.splice(index, 1)
-            }
+            },
+            onRowClick(row, index){
+                this.$emit("on-row-click", row, index)
+            },
         },
         created() {
             if (this.propAutoLoad) this.refresh()
