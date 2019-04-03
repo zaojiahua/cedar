@@ -59,10 +59,10 @@ export default {
             };
             if (/(y+)/.test(format))
                 format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-            for (var i in args) {
-                var n = args[i];
+            for (let i in args) {
+                let n = args[i];
                 if (new RegExp("(" + i + ")").test(format))
-                    format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? n : ("00" + n).substr(("" + n).length));
+                    format = format.replace(RegExp.$1, RegExp.$1.length === 1 ? n : ("00" + n).substr(("" + n).length));
             }
             return format;
         };

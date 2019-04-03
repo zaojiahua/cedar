@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <Card dis-hover>
         <Row>
             <RadioGroup v-model="filterCondition" type="button" @on-change="onConditionChange">
                 <Radio label="all">全部任务</Radio>
@@ -11,13 +11,13 @@
             <DatePicker v-model="filterDateRange" type="daterange" placeholder="选择创建日期范围" :transfer="true"
                         @on-change="onConditionChange"></DatePicker>
         </Row>
-        <Table :columns="columns" :data="data" border style="margin-top: 16px;">
+        <Table :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick">
             <template slot-scope="{row, index}" slot="pauseOrDelete">
                 <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-pause'" @click="pauseOrDeleteTboard(index)">
                 </Button>
             </template>
         </Table>
-    </div>
+    </Card>
 </template>
 
 <script>
@@ -164,6 +164,9 @@
             },
             _pauseTboard(index){
 
+            },
+            onRowClick(row, index){
+                this.$emit("on-row-click", row, index)
             }
 
         },
