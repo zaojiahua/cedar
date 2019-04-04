@@ -42,7 +42,10 @@
                 <Input v-model="jobInfo.updated_time" disabled class="disabled-input"></Input>
             </FormItem>
         </Form>
-
+        <p style="text-align: right">
+            <Button v-if="propDelJob" type="error" style="float:left;" @click="delJob">删除用例</Button>
+            <Button type="primary" @click="closeDrawerDetail">关闭</Button>
+        </p>
     </Card>
 </template>
 
@@ -83,6 +86,12 @@
     };
 
     export default {
+        props:{
+            propDelJob:{ // Show delete button
+                type: Boolean,
+                default: false
+            }
+        },
         data(){
             return{
                 jobInfo:utils.validate(serializer, {}),
@@ -146,6 +155,12 @@
                     .catch(error=>{
                         this.$Message.error("数据加载失败");
                     })
+            },
+            closeDrawerDetail(){
+                this.$emit("closeDrawer",false);
+            },
+            delJob(){
+                this.$emit("delJobOne",this.jobInfo.id)
             }
         }
     }
