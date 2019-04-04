@@ -49,6 +49,7 @@
                             this.logData.push({filename:file});
                         })
                     }).catch(error=>{
+                        if (config.DEBUG) console.log(error)
                         this.$Message.error("数据加载失败！");
                     })
             },
@@ -61,7 +62,7 @@
                         this.fileContent = response.data;
                     })
                     .catch(error=>{
-                        console.log(error);
+                        if (config.DEBUG) console.log(error)
                         this.$Message.error("读取数据失败！")
                     })
             },
@@ -74,7 +75,7 @@
                         this.fileContent = response.data;
                     })
                     .catch(error=>{
-                        console.log(error);
+                        if (config.DEBUG) console.log(error)
                         this.$Message.error("读取数据失败！")
                     })
             }
