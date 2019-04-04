@@ -38,7 +38,7 @@
             return{
                 showDetail:false,
                 selectedJob:[],
-                rowObj:'',
+                rowIndex:null,
                 uploadData:{
                     requestName:"importJob"
                 },
@@ -112,12 +112,11 @@
                             this.$ajax.all(delUrlList)
                                 .then(response=>{
                                     // 上面两个请求都完成后，才执行这个回调方法
-                                    console.log(response)
                                     this.$Message.success("用例删除成功！")
                                     that.onJobFilterChange(that.$refs.jobFilter._jobRender())
                                 })
                                 .catch(error=>{
-                                    console.log(error)
+                                    if (config.DEBUG) console.log(error)
                                     this.$Message.error("用例删除失败！")
                                 })
 
@@ -127,42 +126,18 @@
             },
             JobOnRowClick(row,index){
                 this.showDetail = true;
-                this.$refs.jobDetail.refresh(row.id)
-                this.rowObj = index;
+                this.$refs.jobDetail.refresh(row.id);
+                this.rowIndex = index;
             },
             closeDrawer(msg){
                 this.showDetail = msg;
             },
-            delJobOne(jobId){
-                let root = this;
-                this.$Modal.confirm({
-                    title: "警告！",
-                    content: "您确定要删除该用例吗？",
-                    onOk(){
-                        this.$ajax
-                            .patch("api/v1/cedar/job/"+jobId+"/",{
-                                job_deleted:true
-                            })
-                            .then(response=>{
-                                root.$refs.jobList.pauseOrDeleteTboard(this.rowObj);
-                                root.showDetail = false;
-                                this.$Message.success("用例删除成功！");
-                            })
-                            .catch(error=>{
-                                console.log(error)
-                                let errorMsg = "";
-                                if (error.response.status >= 500) {
-                                    errorMsg = "服务器错误！"
-                                } else {
-                                    errorMsg = "用例删除失败！"
-                                }
-                                this.$Message.error(errorMsg)
-                            })
-                    }
-                });
+            delJobOne(flag){
+                this.$refs.jobList.pauseOrDeleteTboard(this.rowIndex);
+                this.showDetail = flag;
             },
             handleUploadError(error){
-                console.log(error);
+                if (config.DEBUG) console.log(error);
                 this.$Message.error("文件上传失败！")
             },
             handleUploadSuccess(response){
@@ -191,6 +166,7 @@
                                     window.location.href=response.data.file;
                                 })
                                 .catch(error=>{
+                                    if (config.DEBUG) console.log(error)
                                     this.$Message.error("导出用例失败!")
                                 })
                         }
