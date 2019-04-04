@@ -9,6 +9,7 @@ import UserManagement from "./views/UserManagement";
 import PersonalData from "./views/PersonalData";
 import TboardManagement from "./views/TboardManagement";
 import JobManagement from "./views/JobManagement";
+import LogFiles from "./views/LogFiles";
 
 
 Vue.use(Router)
@@ -51,6 +52,11 @@ let router = new Router({
                     path: "job-management",
                     name: "job-management",
                     component: JobManagement
+                },
+                {
+                    path: "log-files",
+                    name: "log-files",
+                    component: LogFiles
                 }
             ]
         },

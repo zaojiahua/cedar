@@ -2,14 +2,14 @@
     <div class="container">
         <Split v-model="split1" min="200px" max="300px">
             <div slot="left" class="split-pane">
-                <Table highlight-row :columns="logColumns" :data="logData" height="890px">
+                <Table highlight-row :columns="logColumns" :data="logData"  height="890px" @on-row-click="showLogContent">
 
                 </Table>
             </div>
             <div slot="right" class="split-pane">
                 <Card style="height: 890px;margin-left: 5px;">
                     <p slot="title">{{ flieName }}</p>
-                    <Input :rows="38" class="view-log" type="textarea" disabled v-model="fileContent">
+                    <Input :rows="38" class="view-log" type="textarea" disabled v-model="fileContent"></Input>
                 </Card>
             </div>
         </Split>
@@ -30,32 +30,10 @@
                         key:"filename",
                     }
                 ],
-                logData:[
-                    {
-                        filename:"asdasda.log",
-                    },
-                    {
-                        filename:"bfgb.log",
-                    },
-                    {
-                        filename:"fgbfbdfb.log",
-                    },
-                    {
-                        filename:"fdbfdbf.log",
-                    },
-                    {
-                        filename:"fbdgbdf.log",
-                    },
-                    {
-                        filename:"hre.log",
-                    },
-                    {
-                        filename:"hdht.log",
-                    }
-                ],
+                logData:[],
                 split1:0.3,
-                fileContent:"dwdttgrdgse4",
-                flieName:"asdada.log",
+                fileContent:"",
+                flieName:"",
             }
 
         },
@@ -67,13 +45,43 @@
                         requestName:"getCoralLogList"
                     }).then(response=>{
                         let logList = utils.validate(serializer, response.data);
-                        logList.forEach(filename=>{
-
+                        logList.forEach(file=>{
+                            this.logData.push({filename:file});
                         })
-
-                        // this.logData.push
-                })
+                    }).catch(error=>{
+                        this.$Message.error("数据加载失败！");
+                    })
+            },
+            showLogContent(row){
+                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+row.name;
+                this.$ajax
+                    .get(coralUrl)
+                    .then(response=>{
+                        this.flieName = row.filename;
+                        this.fileContent = response.data;
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                        this.$Message.error("读取数据失败！")
+                    })
+            },
+            showFirstContent(){
+                this.flieName = this.logData[1].filename;
+                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+this.flieName;
+                this.$ajax
+                    .get(coralUrl)
+                    .then(response=>{
+                        this.fileContent = response.data;
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                        this.$Message.error("读取数据失败！")
+                    })
             }
+        },
+        created(){
+            this.getFileList();
+            this.showFirstContent();
         }
     }
 </script>

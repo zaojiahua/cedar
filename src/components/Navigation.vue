@@ -45,7 +45,7 @@
                             <Icon type="md-sync" size="24"/>
                             <span>系统升级</span>
                         </MenuItem>
-                        <MenuItem v-if="permissions.includes('apiv1.view_system_log')" name="log" :to="{name: 'home'}">
+                        <MenuItem v-if="permissions.includes('apiv1.view_system_log')" name="log" :to="{name: 'log-files'}">
                             <Icon type="md-filing" size="24"/>
                             <span>日志文件</span>
                         </MenuItem>
