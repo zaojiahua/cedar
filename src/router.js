@@ -8,6 +8,7 @@ import CreateTboard from "./views/CreateTboard";
 import UserManagement from "./views/UserManagement";
 import PersonalData from "./views/PersonalData";
 import TboardManagement from "./views/TboardManagement";
+import JobManagement from "./views/JobManagement";
 
 
 Vue.use(Router)
@@ -45,6 +46,11 @@ let router = new Router({
                     path: "tboard-management",
                     name: "tboard-management",
                     component: TboardManagement
+                },
+                {
+                    path: "job-management",
+                    name: "job-management",
+                    component: JobManagement
                 }
             ]
         },

@@ -150,7 +150,7 @@
             closeTag(event, name) {
                 this.checked.splice(this.checked.indexOf(name), 1)
             },
-            onChange() {
+            _jobRender(){
                 let selectedData = {}
                 this.checked.forEach(item => {
                     let info = item.split('_:_')
@@ -159,6 +159,10 @@
                     if (selectedData[type] === undefined) selectedData[type] = []
                     selectedData[type].push(this.filterData[type][index])
                 })
+                return selectedData;
+            },
+            onChange() {
+                let selectedData = this._jobRender()
                 this.$emit('on-change', selectedData)
             }
         },

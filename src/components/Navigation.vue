@@ -53,7 +53,7 @@
                             <Icon type="md-speedometer" size="24"/>
                             <span>系统状态</span>
                         </MenuItem>
-                        <MenuItem name="jobMng" :to="{name: 'home'}">
+                        <MenuItem name="jobMng" :to="{name: 'job-management'}">
                             <Icon type="ios-briefcase-outline" size="24"/>
                             <span>用例管理</span>
                         </MenuItem>
