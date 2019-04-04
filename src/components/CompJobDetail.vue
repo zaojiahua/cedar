@@ -1,5 +1,5 @@
 <template>
-    <Card title="用例详细信息">
+    <Card title="用例详细信息" dis-hover>
         <Form :label-width="80">
             <FormItem v-model="jobInfo">
                 <b slot="label">ID:</b>
@@ -42,9 +42,6 @@
                 <Input v-model="jobInfo.updated_time" disabled class="disabled-input"></Input>
             </FormItem>
         </Form>
-        <p style="text-align: right">
-            <Button type="primary" @click="closeDrawerDetail">关闭</Button>
-        </p>
 
     </Card>
 </template>
@@ -149,9 +146,6 @@
                     .catch(error=>{
                         this.$Message.error("数据加载失败");
                     })
-            },
-            closeDrawerDetail(){
-                this.$emit("closeDrawer",false);
             }
         }
     }

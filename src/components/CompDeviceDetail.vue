@@ -1,5 +1,5 @@
 <template>
-    <Card :title="device.device_name + ' (' + device.device_label + ')'" style="position: relative;">
+    <Card :title="device.device_name + ' (' + device.device_label + ')'" style="position: relative;" dis-hover>
         <Form :model="device" :label-width="80">
             <FormItem>
                 <b slot="label">ID</b>
@@ -44,27 +44,27 @@
             <Divider></Divider>
             <FormItem>
                 <b slot="label">自定义名称</b>
-                <Input v-model="device.device_name"></Input>
+                <Input v-model="device.device_name" :disabled="!editable"></Input>
             </FormItem>
         </Form>
         <Collapse :value="[0,1,2]">
             <Panel>温度感应片配对
                 <CheckboxGroup slot="content" v-model="selectedTempPorts">
-                    <Checkbox v-for="item in tempPorts" :label="item.id" :key="item.id">{{item.port}}</Checkbox>
+                    <Checkbox v-for="item in tempPorts" :label="item.id" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
                 </CheckboxGroup>
             </Panel>
             <Panel>智能充电口配对
                 <CheckboxGroup slot="content" v-model="selectedPowerPorts">
-                    <Checkbox v-for="item in powerPorts" :label="item.id" :key="item.id">{{item.port}}</Checkbox>
+                    <Checkbox v-for="item in powerPorts" :label="item.id" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
                 </CheckboxGroup>
             </Panel>
             <Panel>工业相机配对
                 <CheckboxGroup slot="content" v-model="selectedMonitorPorts">
-                    <Checkbox v-for="item in monitorPorts" :label="item.id" :key="item.id">{{item.port}}</Checkbox>
+                    <Checkbox v-for="item in monitorPorts" :label="item.id" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
                 </CheckboxGroup>
             </Panel>
         </Collapse>
-        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;">
+        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable">
             <Col>
                 <Button type="error" @click="deleteDevice">移除设备</Button>
             </Col>
@@ -161,6 +161,12 @@
         }
     export default {
         name: "CompDeviceDetail",
+        props:{
+            editable:{
+                type: Boolean,
+                default: false
+            }
+        },
         data(){
             return {
                 // Device data

@@ -1,6 +1,9 @@
 <template>
     <Card dis-hover>
         <Row>
+            <slot name="header-top"></slot>
+        </Row>
+        <Row>
             <RadioGroup v-model="filterCondition" type="button" @on-change="onConditionChange">
                 <Radio label="all">全部任务</Radio>
                 <Radio label="running">在测任务</Radio>
@@ -10,6 +13,9 @@
         <Row style="margin-top: 16px;">
             <DatePicker v-model="filterDateRange" type="daterange" placeholder="选择创建日期范围" :transfer="true"
                         @on-change="onConditionChange"></DatePicker>
+        </Row>
+        <Row>
+            <slot name="header-bottom"></slot>
         </Row>
         <Table :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick">
             <template slot-scope="{row, index}" slot="pauseOrDelete">
