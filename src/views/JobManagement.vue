@@ -144,7 +144,7 @@
                                 job_deleted:true
                             })
                             .then(response=>{
-                                root.$refs.jobList.pauseOrDeleteTboard(this.rowObj);
+                                root.$refs.jobList.pauseOrDeleteTboard(root.rowObj);
                                 root.showDetail = false;
                                 this.$Message.success("用例删除成功！");
                             })
@@ -171,7 +171,6 @@
             exportCase(){
                 let jobList = this.getJobList();
                 let that = this;
-                console.log(jobList)
                 if(jobList.length===0){
                     this.$Modal.confirm({
                         title: "提示",

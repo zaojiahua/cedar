@@ -8,7 +8,7 @@
             <FormItem>
                 <b slot="label">测试用例:</b>
                 <ButtonGroup>
-                    <Tooltip v-for="job in data.job" :content="job.job_label" placement="top" transfer>
+                    <Tooltip v-for="job in data.job" :content="job.job_label" :key="job.id" placement="top" transfer>
                         <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">{{job.job_name}}</Button>
                     </Tooltip>
                 </ButtonGroup>
@@ -16,7 +16,7 @@
             <FormItem>
                 <b slot="label">测试设备:</b>
                 <ButtonGroup>
-                    <Tooltip v-for="device in data.device" :content="device.device_label" placement="bottom" transfer>
+                    <Tooltip v-for="device in data.device" :content="device.device_label" :key="device.id" placement="bottom" transfer>
                         <Button @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
                             {{device.device_name}}
                         </Button>
@@ -48,7 +48,7 @@
             </Row>
             <Divider orientation="left">设备运行结果</Divider>
             <CellGroup>
-                <Cell v-for="statistic in deviceStatisticData" @click.native="onCellClick(statistic)">
+                <Cell v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click.native="onCellClick(statistic)">
                     <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px">
                         <Col>
                             <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
@@ -67,10 +67,10 @@
                 </Cell>
             </CellGroup>
         </Form>
-        <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide>
+        <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
             <comp-device-detail ref="deviceDetail"></comp-device-detail>
         </Modal>
-        <Modal v-model="showJobDetail" transfer :closable="false" footer-hide>
+        <Modal v-model="showJobDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
             <comp-job-detail ref="jobDetail"></comp-job-detail>
         </Modal>
     </Card>

@@ -36,44 +36,44 @@
             </Header>
             <Layout style="position: absolute; top: 64px; left: 0px; right: 0px; bottom: 0px;">
                 <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;">
-                    <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass">
-                        <MenuItem v-if="permissions.includes('apiv1.user_management')" name="userMng" :to="{name: 'user-management'}">
+                    <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass" :active-name="currentRouter.name">
+                        <MenuItem v-if="permissions.includes('apiv1.user_management')" name="user-management" :to="{name: 'user-management'}">
                             <Icon type="md-person" size="24"/>
                             <span>用户管理</span>
                         </MenuItem>
-                        <MenuItem v-if="permissions.includes('apiv1.upgrade_system')" name="sysUpgrade" :to="{name: 'home'}">
+                        <MenuItem v-if="permissions.includes('apiv1.upgrade_system')" name="sys-upgrade" :to="{name: 'home'}">
                             <Icon type="md-sync" size="24"/>
                             <span>系统升级</span>
                         </MenuItem>
-                        <MenuItem v-if="permissions.includes('apiv1.view_system_log')" name="log" :to="{name: 'log-files'}">
+                        <MenuItem v-if="permissions.includes('apiv1.view_system_log')" name="log-files" :to="{name: 'log-files'}">
                             <Icon type="md-filing" size="24"/>
                             <span>日志文件</span>
                         </MenuItem>
-                        <MenuItem name='systemStatus' :to="{name: 'home'}">
+                        <MenuItem name='system-status' :to="{name: 'home'}">
                             <Icon type="md-speedometer" size="24"/>
                             <span>系统状态</span>
                         </MenuItem>
-                        <MenuItem name="jobMng" :to="{name: 'job-management'}">
+                        <MenuItem name="job-management" :to="{name: 'job-management'}">
                             <Icon type="ios-briefcase-outline" size="24"/>
                             <span>用例管理</span>
                         </MenuItem>
-                        <MenuItem name="createTboard" :to="{name: 'create-tboard'}">
+                        <MenuItem name="create-tboard" :to="{name: 'create-tboard'}">
                             <Icon type="ios-add-circle-outline" size="24"/>
                             <span>新建任务</span>
                         </MenuItem>
-                        <MenuItem name="tboardMng" :to="{name: 'tboard-management'}">
+                        <MenuItem name="tboard-management" :to="{name: 'tboard-management'}">
                             <Icon type="ios-folder-open-outline" size="24"/>
                             <span>我的任务</span>
                         </MenuItem>
-                        <MenuItem name="rds" :to="{name: 'home'}">
+                        <MenuItem name="rds-management" :to="{name: 'home'}">
                             <Icon type="ios-pie-outline" size="24"/>
                             <span>测试数据</span>
                         </MenuItem>
-                        <MenuItem name="issue" :to="{name: 'home'}">
+                        <MenuItem name="issue-management" :to="{name: 'home'}">
                             <Icon type="ios-bug-outline" size="24"/>
                             <span>缺陷管理</span>
                         </MenuItem>
-                        <MenuItem name="deviceMng" :to="{name: 'device-management'}">
+                        <MenuItem name="device-management" :to="{name: 'device-management'}">
                             <Icon type="ios-phone-portrait" size="24"/>
                             <span>设备管理</span>
                         </MenuItem>
@@ -121,6 +121,8 @@
     import main from "../main"
     import utils from "../lib/utils"
     import config from "../lib/config"
+    import router from "../router"
+
     export default {
         data () {
             return {
@@ -129,7 +131,8 @@
                 showModal:false,
                 versionInfo:{
                 },
-                permissions: sessionStorage.permissions === undefined ? [] : sessionStorage.permissions
+                permissions: sessionStorage.permissions === undefined ? [] : sessionStorage.permissions,
+                currentRouter: router.currentRoute
             };
         },
         computed:{
