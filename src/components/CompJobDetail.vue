@@ -51,6 +51,7 @@
 
 <script>
     import utils from "../lib/utils"
+    import config from "../lib/config"
 
     const serializer = {
         android_version:[{
@@ -153,6 +154,7 @@
 
                     })
                     .catch(error=>{
+                        if (config.DEBUG) console.log(error)
                         this.$Message.error("数据加载失败");
                     })
             },
@@ -160,7 +162,31 @@
                 this.$emit("closeDrawer",false);
             },
             delJob(){
-                this.$emit("delJobOne",this.jobInfo.id)
+                let root = this;
+                this.$Modal.confirm({
+                    title: "警告！",
+                    content: "您确定要删除该用例吗？",
+                    onOk(){
+                        this.$ajax
+                            .patch("api/v1/cedar/job/"+root.jobInfo.id+"/",{
+                                job_deleted:true
+                            })
+                            .then(response=>{
+                                this.$Message.success("用例删除成功！");
+                                root.$emit("delJobOne",false);
+                            })
+                            .catch(error=>{
+                                if (config.DEBUG) console.log(error)
+                                let errorMsg = "";
+                                if (error.response.status >= 500) {
+                                    errorMsg = "服务器错误！"
+                                } else {
+                                    errorMsg = "用例删除失败！"
+                                }
+                                this.$Message.error(errorMsg)
+                            })
+                    }
+                });
             }
         }
     }

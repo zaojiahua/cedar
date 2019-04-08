@@ -17,7 +17,7 @@
         </Row>
         <Divider></Divider>
         <Row>
-            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
+            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" @pageData="pageData"></comp-job-list>
         </Row>
         <Drawer v-model="showDetail" :draggable="true" :closable="false" width="50">
             <comp-job-detail ref="jobDetail" :prop-del-job="true" @closeDrawer="closeDrawer" @delJobOne="delJobOne"></comp-job-detail>
@@ -38,7 +38,7 @@
             return{
                 showDetail:false,
                 selectedJob:[],
-                rowObj:'',
+                rowIndex:null,
                 uploadData:{
                     requestName:"importJob"
                 },
@@ -46,8 +46,7 @@
             }
         },
         methods:{
-            onJobFilterChange(selected){
-                // this.jobRequestSource.cancel()
+            selectedDetail(selected){
                 let conditions = []
                 Object.keys(selected).forEach(key=>{
                     let condition = []  // store id data like [1,2,3]
@@ -69,6 +68,10 @@
                 })
 
                 let param = conditions.join("&")
+                return param
+            },
+            onJobFilterChange(selected){
+                let param = this.selectedDetail(selected)
                 this.$refs.jobList.refreshViaUrl(
                     "api/v1/cedar/job/?fields=" +
                     "id," +
@@ -112,12 +115,11 @@
                             this.$ajax.all(delUrlList)
                                 .then(response=>{
                                     // 上面两个请求都完成后，才执行这个回调方法
-                                    console.log(response)
                                     this.$Message.success("用例删除成功！")
                                     that.onJobFilterChange(that.$refs.jobFilter._jobRender())
                                 })
                                 .catch(error=>{
-                                    console.log(error)
+                                    if (config.DEBUG) console.log(error)
                                     this.$Message.error("用例删除失败！")
                                 })
 
@@ -127,42 +129,18 @@
             },
             JobOnRowClick(row,index){
                 this.showDetail = true;
-                this.$refs.jobDetail.refresh(row.id)
-                this.rowObj = index;
+                this.$refs.jobDetail.refresh(row.id);
+                this.rowIndex = index;
             },
             closeDrawer(msg){
                 this.showDetail = msg;
             },
-            delJobOne(jobId){
-                let root = this;
-                this.$Modal.confirm({
-                    title: "警告！",
-                    content: "您确定要删除该用例吗？",
-                    onOk(){
-                        this.$ajax
-                            .patch("api/v1/cedar/job/"+jobId+"/",{
-                                job_deleted:true
-                            })
-                            .then(response=>{
-                                root.$refs.jobList.pauseOrDeleteTboard(root.rowObj);
-                                root.showDetail = false;
-                                this.$Message.success("用例删除成功！");
-                            })
-                            .catch(error=>{
-                                console.log(error)
-                                let errorMsg = "";
-                                if (error.response.status >= 500) {
-                                    errorMsg = "服务器错误！"
-                                } else {
-                                    errorMsg = "用例删除失败！"
-                                }
-                                this.$Message.error(errorMsg)
-                            })
-                    }
-                });
+            delJobOne(flag){
+                this.$refs.jobList.pauseOrDeleteTboard(this.rowIndex);
+                this.showDetail = flag;
             },
             handleUploadError(error){
-                console.log(error);
+                if (config.DEBUG) console.log(error);
                 this.$Message.error("文件上传失败！")
             },
             handleUploadSuccess(response){
@@ -171,6 +149,7 @@
             exportCase(){
                 let jobList = this.getJobList();
                 let that = this;
+                console.log(jobList)
                 if(jobList.length===0){
                     this.$Modal.confirm({
                         title: "提示",
@@ -190,12 +169,26 @@
                                     window.location.href=response.data.file;
                                 })
                                 .catch(error=>{
+                                    if (config.DEBUG) console.log(error)
                                     this.$Message.error("导出用例失败!")
                                 })
                         }
                     });
                 }
-            }
+            },
+            pageData(pageIndex){
+                let param = this.selectedDetail(this.$refs.jobFilter._jobRender())
+                let url = "api/v1/cedar/job/?fields=" +
+                    "id," +
+                    "job_name," +
+                    "custom_tag," +
+                    "custom_tag.id," +
+                    "custom_tag.custom_tag_name," +
+                    "test_area," +
+                    "test_area.id," +
+                    "test_area.description&"+param
+                this.$refs.jobList.getPageData(url,pageIndex);
+            },
         },
         created(){
             this.uploadUrl = utils.getCoralUrl(config.JOBSVC_PORT);

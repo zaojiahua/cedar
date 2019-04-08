@@ -23,11 +23,11 @@
 
         <div v-if="current===1">
             <Row>
-                <comp-filter @on-change="onJobFilterChange"></comp-filter>
+                <comp-filter ref="jobFilter" @on-change="onJobFilterChange"></comp-filter>
             </Row>
             <Row type="flex" style="margin-top: 16px;">
                 <Col span="11">
-                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
+                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" @pageData="pageData"></comp-job-list>
                 </Col>
                 <Col span="2">
                     <Row type="flex" justify="center" style="margin: auto;">
@@ -39,7 +39,7 @@
                 </Col>
                 <Col span="11">
                     <comp-job-list ref="jobSelectedList" :prop-auto-load="false"
-                                   :prop-show-counter="true" :prop-deletable="true"></comp-job-list>
+                                   :prop-show-counter="true" :prop-deletable="true" :prop-show-page="false"></comp-job-list>
                 </Col>
             </Row>
             <Row type="flex" justify="center" style="margin-top: 32px;">
@@ -117,8 +117,7 @@
                 this.current = 1
             },
             // Page "Choose job"
-            onJobFilterChange(selected){
-                // this.jobRequestSource.cancel()
+            selectedDetail(selected){
                 let conditions = []
                 Object.keys(selected).forEach(key=>{
                     let condition = []  // store id data like [1,2,3]
@@ -140,6 +139,11 @@
                 })
 
                 let param = conditions.join("&")
+                return param
+            },
+            onJobFilterChange(selected){
+                // this.jobRequestSource.cancel()
+                let param = this.selectedDetail(selected);
                 this.$refs.jobList.refreshViaUrl(
                     "api/v1/cedar/job/?fields=" +
                     "id," +
@@ -161,6 +165,19 @@
             },
             backToPageChooseDevice(){
                 this.current = 0
+            },
+            pageData(pageIndex){
+                let param = this.selectedDetail(this.$refs.jobFilter._jobRender())
+                let url = "api/v1/cedar/job/?fields=" +
+                    "id," +
+                    "job_name," +
+                    "custom_tag," +
+                    "custom_tag.id," +
+                    "custom_tag.custom_tag_name," +
+                    "test_area," +
+                    "test_area.id," +
+                    "test_area.description&"+param
+                this.$refs.jobList.getPageData(url,pageIndex);
             },
             // Page "Fill info"
             complete(){
