@@ -17,6 +17,7 @@
         </Row>
 
         <Table ref="table" border :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading"></Table>
+        <Page :current="1" :total="1000" simple @on-change="pageOnChange" style="margin-top:20px;text-align: center "/>
     </div>
 </template>
 
@@ -24,6 +25,7 @@
     import CompDeviceDetail from "./CompDeviceDetail";
     import CompAddDevice from "./CompAddDevice"
     import utils from "../lib/utils"
+    import config from "../lib/config"
 
 
     const getDeviceListSerializer = [
@@ -186,32 +188,39 @@
                         'monitor_index,' +
                         'monitor_index.port')
                     .then(response => {
-                        this.data = utils.validate(getDeviceListSerializer, response.data['devices'])
-                        this.data.forEach(device=>{
-                            device.cpu_name = device.phone_model.cpu_name
-                            device.phone_model = device.phone_model.phone_model_name
-                            device.rom_version = device.rom_version.version
-                            device.android_version = device.android_version.version
-                            device.powerport = device.powerport.port
-                            let tempPortStr = ""
-                            device.tempport.forEach(temp=>{
-                                if(temp.description)
-                                    tempPortStr = tempPortStr+temp.port+"("+temp.description+"), "
-                                else
-                                    tempPortStr = tempPortStr+temp.port+ ", "
-                            })
-                            device.tempport = tempPortStr.substring(0,tempPortStr.length-2)
-                            let monitorPortStr = ""
-                            device.monitor_index.forEach(monitor=>{
-                                monitorPortStr = monitorPortStr+monitor.port+", "
-                            })
-                            device.monitorport = monitorPortStr.substring(0, monitorPortStr.length-2)
-                        })
-                        this.loading = false
+                        this._responseHandle(response);
                     })
                     .catch(reason => {
-                        this.$Message.error('载入失败')
+                        this._requestErrorHandle(reason);
                     })
+            },
+            _responseHandle(response){
+                this.data = utils.validate(getDeviceListSerializer, response.data['devices'])
+                this.data.forEach(device=>{
+                    device.cpu_name = device.phone_model.cpu_name
+                    device.phone_model = device.phone_model.phone_model_name
+                    device.rom_version = device.rom_version.version
+                    device.android_version = device.android_version.version
+                    device.powerport = device.powerport.port
+                    let tempPortStr = ""
+                    device.tempport.forEach(temp=>{
+                        if(temp.description)
+                            tempPortStr = tempPortStr+temp.port+"("+temp.description+"), "
+                        else
+                            tempPortStr = tempPortStr+temp.port+ ", "
+                    })
+                    device.tempport = tempPortStr.substring(0,tempPortStr.length-2)
+                    let monitorPortStr = ""
+                    device.monitor_index.forEach(monitor=>{
+                        monitorPortStr = monitorPortStr+monitor.port+", "
+                    })
+                    device.monitorport = monitorPortStr.substring(0, monitorPortStr.length-2)
+                })
+                this.loading = false
+            },
+            _requestErrorHandle(reason){
+                if (config.DEBUG) console.log(reason)
+                this.$Message.error("载入失败")
             },
             // Table control
             getDeviceColumn() {
@@ -259,6 +268,38 @@
             afterDeviceAddFailed(reason){
 
             },
+            pageOnChange(page){
+                let resIndex = 10*(page-1);
+                this.$ajax
+                    .get('api/v1/cedar/device/?fields=' +
+                        'id,' +
+                        'device_label,' +
+                        'phone_model,' +
+                        'phone_model.phone_model_name,' +
+                        'rom_version,' +
+                        'rom_version.version,' +
+                        'device_name,' +
+                        'android_version,' +
+                        'android_version.version,' +
+                        'phone_model.cpu_name,' +
+                        'ip_address,' +
+                        'status,' +
+                        'powerport,' +
+                        'powerport.port,' +
+                        'tempport,' +
+                        'tempport.port,' +
+                        'tempport.description,' +
+                        'monitor_index,' +
+                        'monitor_index.port' +
+                        '&offset=' + resIndex +
+                        '&limit=10')
+                    .then(response => {
+                        this._responseHandle(response);
+                    })
+                    .catch(reason => {
+                        this._requestErrorHandle(reason);
+                    })
+            }
         },
         created() {
             if(this.propAutoLoad)
