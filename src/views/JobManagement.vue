@@ -17,7 +17,7 @@
         </Row>
         <Divider></Divider>
         <Row>
-            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
+            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" @pageData="pageData"></comp-job-list>
         </Row>
         <Drawer v-model="showDetail" :draggable="true" :closable="false" width="50">
             <comp-job-detail ref="jobDetail" :prop-del-job="true" @closeDrawer="closeDrawer" @delJobOne="delJobOne"></comp-job-detail>
@@ -46,8 +46,7 @@
             }
         },
         methods:{
-            onJobFilterChange(selected){
-                // this.jobRequestSource.cancel()
+            selectedDetail(selected){
                 let conditions = []
                 Object.keys(selected).forEach(key=>{
                     let condition = []  // store id data like [1,2,3]
@@ -69,6 +68,10 @@
                 })
 
                 let param = conditions.join("&")
+                return param
+            },
+            onJobFilterChange(selected){
+                let param = this.selectedDetail(selected)
                 this.$refs.jobList.refreshViaUrl(
                     "api/v1/cedar/job/?fields=" +
                     "id," +
@@ -172,7 +175,20 @@
                         }
                     });
                 }
-            }
+            },
+            pageData(pageIndex){
+                let param = this.selectedDetail(this.$refs.jobFilter._jobRender())
+                let url = "api/v1/cedar/job/?fields=" +
+                    "id," +
+                    "job_name," +
+                    "custom_tag," +
+                    "custom_tag.id," +
+                    "custom_tag.custom_tag_name," +
+                    "test_area," +
+                    "test_area.id," +
+                    "test_area.description&"+param
+                this.$refs.jobList.getPageData(url,pageIndex);
+            },
         },
         created(){
             this.uploadUrl = utils.getCoralUrl(config.JOBSVC_PORT);

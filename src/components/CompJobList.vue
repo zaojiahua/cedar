@@ -9,6 +9,7 @@
                 </Button>
             </template>
         </Table>
+        <Page v-if="propShowPage" :current="1" :total="1000" simple @on-change="pageOnChange" style="margin-top:20px;text-align: center "/>
     </div>
 </template>
 
@@ -57,6 +58,10 @@
             propDeletable: {
                 type: Boolean,
                 default: false
+            },
+            propShowPage: {
+                type: Boolean,
+                default: true
             }
         },
         data() {
@@ -142,6 +147,15 @@
             onRowClick(row, index){
                 this.$emit("on-row-click", row, index)
             },
+            pageOnChange(page){
+                this.$emit("pageData",page);
+            },
+            getPageData(url,page){
+                let pageIndex = 10*(page-1);
+                let pageUrl = url + '&offset=' + pageIndex +  '&limit=10';
+                this.refreshViaUrl(pageUrl);
+            }
+
         },
         created() {
             if (this.propAutoLoad) this.refresh()
