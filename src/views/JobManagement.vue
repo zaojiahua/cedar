@@ -136,7 +136,7 @@
                 this.showDetail = msg;
             },
             delJobOne(flag){
-                this.$refs.jobList.pauseOrDeleteTboard(this.rowIndex);
+                this.$refs.jobList.deleteRow(this.rowIndex);
                 this.showDetail = flag;
             },
             handleUploadError(error){
@@ -162,8 +162,8 @@
                         onOk(){
                             this.$ajax
                                 .post(that.uploadUrl,{
-                                    "requestName":"exportJob",
-                                    "jobIdList":jobList
+                                    requestName: "exportJob",
+                                    jobIdList: jobList
                                 })
                                 .then(response=>{
                                     window.location.href=response.data.file;
