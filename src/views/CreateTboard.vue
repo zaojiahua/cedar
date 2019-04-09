@@ -70,7 +70,7 @@
 
 
         <Drawer v-model="showJobDetail" :draggable="true" :closable="false" width="50">
-            <comp-job-detail ref="jobDetail" @closeDrawer="closeDrawer"></comp-job-detail>
+            <comp-job-detail ref="jobDetail"></comp-job-detail>
         </Drawer>
 
     </Card>
@@ -222,9 +222,6 @@
             JobOnRowClick(row){
                 this.showJobDetail = true;
                 this.$refs.jobDetail.refresh(row.id)
-            },
-            closeDrawer(msg){
-                this.showJobDetail = msg;
             }
         }
     }

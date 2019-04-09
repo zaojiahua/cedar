@@ -1,5 +1,5 @@
 <template>
-    <Card title="用例详细信息">
+    <Card title="用例详细信息" dis-hover>
         <Form :label-width="80">
             <FormItem v-model="jobInfo">
                 <b slot="label">ID:</b>
@@ -46,7 +46,6 @@
             <Button v-if="propDelJob" type="error" style="float:left;" @click="delJob">删除用例</Button>
             <Button type="primary" @click="closeDrawerDetail">关闭</Button>
         </p>
-
     </Card>
 </template>
 
