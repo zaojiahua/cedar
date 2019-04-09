@@ -55,6 +55,7 @@
                     })
                     .then(response => {
                         sessionStorage.setItem("token", response.data["token"])
+                        localStorage.setItem("id", response.data["id"])
                         if(this.keepLogin){
                             localStorage.setItem("token", response.data["token"])
                         }
@@ -83,6 +84,7 @@
         mounted() {
             console.log("mounted")
             localStorage.removeItem("token")
+            localStorage.removeItem("id")
             sessionStorage.removeItem("permissions")
             sessionStorage.removeItem("token")
         }

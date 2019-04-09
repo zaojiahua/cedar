@@ -5,7 +5,7 @@
                 <Button icon="md-add" style="margin-right: 20px" type="primary" @click="addUser">添加用户</Button>
                 <Button icon="ios-trash-outline" type="error">批量删除</Button>
             </p>
-            <Table stripe height="700px" :columns="userColumns" :data="userData"></Table>
+            <Table stripe :columns="userColumns" :data="userData"></Table>
         </Card>
         <Drawer v-model="showUserDetail" :draggable="true" width="50" title="用户信息">
             <Card>
@@ -114,11 +114,11 @@
                 delObj:'',
                 groupList:[],
                 userInfo:{
-                    id:"",
+                    id:null,
                     username:"",
                     firstname:"",
-                    role:["Manager"],
-                    password:""
+                    role:[],
+                    password:null
                 }
             }
         },
@@ -216,7 +216,7 @@
                 this.showUserDetail = true;
                 this.userInfo.username  = "";
                 this.userInfo.firstname  = "";
-                this.userInfo.password  = "";
+                this.userInfo.password  = null;
                 this.userInfo.role  = [];
             },
             getUserData(){

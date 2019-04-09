@@ -196,6 +196,7 @@
                 utils._initDate();
                 let boardStamp = new Date().format("yyyy_MM_dd_hh_mm_ss");
                 let coralUrl = utils.getCoralUrl(config.CREATETBOARD_PORT);
+                let userId = localStorage.getItem('id');
                 this.$ajax
                     .post(coralUrl,{
                         requestName:"insertTBoard",
@@ -205,7 +206,7 @@
                             jobIDList:jobList,
                             jobListNum:this.tboardRepeatTime,
                             boardStamp:boardStamp,
-                            ownerID:3       //动态获取当前用户的id=>TO DO
+                            ownerID:userId
                         }
                     })
                     .then(response=>{

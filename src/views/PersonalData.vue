@@ -32,10 +32,10 @@
             return{
                 userInfo:{
                     name:"",
-                    password:"",
+                    password:null,
                     role:"",
                     lastname:"",
-                    id:5,
+                    id:null,
 
                 },
                 showPwd:false,
@@ -54,6 +54,7 @@
                 if(this.userInfo.password===""){
                     this.$Message.warning("请输入密码!");
                 }else {
+                    console.log(localStorage.getItem('id'));
                     this.$Loading.start();
                     this.$ajax
                         .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",{
@@ -82,8 +83,10 @@
             }
         },
         created(){
+            let userId = localStorage.getItem('id');
+            this.userInfo.id = userId;
             this.$ajax
-                .get("api/v1/cedar/reefuser/?id=5")
+                .get("api/v1/cedar/reefuser/?id="+userId)
                 .then(response=>{
                     let groups = [];
                     for(let i=0;i<response.data.reefusers[0].groups.length;i++){
