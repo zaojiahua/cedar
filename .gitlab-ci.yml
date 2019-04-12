@@ -6,7 +6,7 @@ deploy:
     - npm install
     - npm run build
     - ls
-    - docker cp dist/* cedar:/app/cedar
+    - docker cp dist/ cedar:/app/cedar
   only:
     - master
   tags:
