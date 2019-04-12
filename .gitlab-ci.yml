@@ -9,7 +9,8 @@ deploy:
     - rm -rf tmp || true
     - mkdir tmp
     - cp -rf dist tmp/cedar
-    - docker cp tmp/cedar cedar:/app/cedar
+    - docker exec cedar rm -rf /app/cedar || true
+    - docker cp tmp/cedar cedar:/app
     - rm -rf tmp
     - ls
   only:
