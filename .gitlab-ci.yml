@@ -13,6 +13,7 @@ deploy:
     - docker cp tmp/cedar cedar:/app
     - rm -rf tmp
     - ls
+    - docker restart cedar
   only:
     - master
   tags:
