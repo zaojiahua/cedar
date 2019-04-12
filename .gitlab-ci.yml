@@ -6,6 +6,8 @@ deploy:
     - npm install
     - npm run build
     - ls
+    - rm -rf tmp || true
+    - mkdir tmp
     - cp -rf dist tmp/cedar
     - docker cp tmp/cedar cedar:/app/cedar
     - rm -rf tmp
