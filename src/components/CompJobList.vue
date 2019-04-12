@@ -127,7 +127,8 @@
                     "test_area.description," +
                     "custom_tag," +
                     "custom_tag.id," +
-                    "custom_tag.custom_tag_name")
+                    "custom_tag.custom_tag_name&" +
+                    "job_deleted=False")
                     .then(response => {
                         this._responseHandle(response)
                     })
