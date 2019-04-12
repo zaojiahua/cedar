@@ -1,7 +1,7 @@
 <template>
     <div>
         <Card>
-            <p solt="title" class="user-head">
+            <p class="user-head">
                 <Button icon="md-add" style="margin-right: 20px" type="primary" @click="addUser">添加用户</Button>
                 <Button icon="ios-trash-outline" type="error">批量删除</Button>
             </p>
@@ -21,7 +21,7 @@
                     </FormItem>
                     <FormItem label="角色：">
                         <CheckboxGroup v-model="userInfo.role">
-                            <Checkbox v-for="item in groupList" :label="item"></Checkbox><br/>
+                            <Checkbox v-for="item in groupList" :label="item" :key="item"></Checkbox><br/>
                         </CheckboxGroup>
                     </FormItem>
                 </Form>
