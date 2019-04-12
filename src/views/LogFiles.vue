@@ -2,7 +2,7 @@
     <div class="container">
         <Split v-model="split1" min="200px" max="300px">
             <div slot="left" class="split-pane">
-                <Table highlight-row :columns="logColumns" :data="logData"  height="890px" @on-row-click="showLogContent">
+                <Table highlight-row :columns="logColumns" :data="logData"  :height="890" @on-row-click="showLogContent">
 
                 </Table>
             </div>
@@ -20,7 +20,6 @@
     import utils from "../lib/utils"
     import config from "../lib/config"
 
-    const serializer = ["string"];
     export default {
         data(){
             return{
@@ -44,17 +43,19 @@
                     .post(coralUrl,{
                         requestName:"getCoralLogList"
                     }).then(response=>{
-                        let logList = utils.validate(serializer, response.data);
+                        let logList = response.data;
                         logList.forEach(file=>{
                             this.logData.push({filename:file});
                         })
+                        this.showFirstContent();
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
                         this.$Message.error("数据加载失败！");
                     })
             },
             showLogContent(row){
-                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+row.name;
+                console.log(row)
+                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+row.filename;
                 this.$ajax
                     .get(coralUrl)
                     .then(response=>{
@@ -67,7 +68,7 @@
                     })
             },
             showFirstContent(){
-                this.flieName = this.logData[1].filename;
+                this.flieName = this.logData[0].filename;
                 let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+this.flieName;
                 this.$ajax
                     .get(coralUrl)
@@ -82,7 +83,6 @@
         },
         created(){
             this.getFileList();
-            this.showFirstContent();
         }
     }
 </script>
@@ -98,6 +98,6 @@
     .ivu-input[disabled] {
         background-color: #fff;
         cursor: default;
-        color: #515a6e;
+        color: #515a6e!important;
     }
 </style>
