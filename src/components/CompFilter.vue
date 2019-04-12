@@ -83,6 +83,22 @@
             }
         ]
     }
+    const getJobAssessmentValue = {
+        job_assessment_value:[
+            {
+                id:1,
+                job_assessment:"通过"
+            },
+            {
+                id:2,
+                job_assessment:"未通过"
+            },
+            {
+                id:3,
+                job_assessment:"无效"
+            }
+        ]
+    }
 
     export default {
         name: "CompFilter",
@@ -96,7 +112,11 @@
                 default: () => {
                     return ["phone_model", "job_test_area", "android_version", "rom_version", "reefuser", "custom_tag"]
                 }
-            }
+            },
+            propRdsFilter: {
+                type: Boolean,
+                default: false
+            },
         },
         data() {
             return {
@@ -211,12 +231,24 @@
                         android_version: utils.validate(getAndroidVersionSerializer, android_version_resp.data).androidversions,
                         rom_version: utils.validate(getRomVersionSerializer, rom_version_resp.data).romversions,
                         reefuser: utils.validate(getReefUserSerializer, reefuser_resp.data).reefusers,
-                        custom_tag: utils.validate(getCustomTagSerializer, custom_tag_resp.data).customtags
+                        custom_tag: utils.validate(getCustomTagSerializer, custom_tag_resp.data).customtags,
+                        job_assessment_value:getJobAssessmentValue.job_assessment_value
                     }
                 })).catch(reason => {
                 if (config.DEBUG) console.log(reason)
                 this.$Message.error("载入失败")
             })
+            if (this.propRdsFilter) {
+                this.filterColumn.splice(3, 2);
+                this.filterColumn.splice(1, 1);
+                this.filterColumn[0].title = "设备型号";
+                this.filterColumn.push({
+                    title: "测试结果",
+                    key: "job_assessment_value",
+                    item_key: "job_assessment"
+                })
+            }
+
         }
     }
 </script>

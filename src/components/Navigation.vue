@@ -65,7 +65,7 @@
                             <Icon type="ios-folder-open-outline" size="24"/>
                             <span>我的任务</span>
                         </MenuItem>
-                        <MenuItem name="rds-management" :to="{name: 'home'}">
+                        <MenuItem name="rds-management" :to="{name: 'rds-management'}">
                             <Icon type="ios-pie-outline" size="24"/>
                             <span>测试数据</span>
                         </MenuItem>

@@ -10,6 +10,7 @@ import PersonalData from "./views/PersonalData";
 import TboardManagement from "./views/TboardManagement";
 import JobManagement from "./views/JobManagement";
 import LogFiles from "./views/LogFiles";
+import RdsManagement from "./views/RdsManagement"
 
 
 Vue.use(Router)
@@ -57,6 +58,11 @@ let router = new Router({
                     path: "log-files",
                     name: "log-files",
                     component: LogFiles
+                },
+                {
+                    path: "rds-management",
+                    name: "rds-management",
+                    component: RdsManagement
                 }
             ]
         },
