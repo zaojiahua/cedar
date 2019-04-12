@@ -5,6 +5,7 @@ deploy:
   script:
     - npm install
     - npm run build
+    - ls
     - docker cp dist/* cedar:/app/cedar
   only:
     - master
