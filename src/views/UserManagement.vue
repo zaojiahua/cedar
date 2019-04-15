@@ -130,7 +130,11 @@
                 this.userInfo.username  = this.userData[index].username;
                 this.userInfo.firstname  = this.userData[index].firstname;
                 this.userInfo.id  = this.userData[index].id;
-                this.userInfo.role  = this.userData[index].role.split(",");
+                if(this.userData[index].role){
+                    this.userInfo.role  = this.userData[index].role.split(",");
+                }else {
+                    this.userInfo.role  = [];
+                }
             },
             remove (index) {
                 this.$Loading.start();
