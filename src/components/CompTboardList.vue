@@ -19,7 +19,7 @@
         </Row>
         <Table :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick">
             <template slot-scope="{row, index}" slot="pauseOrDelete">
-                <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-pause'" @click="pauseOrDeleteTboard(index)">
+                <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-square'" @click="pauseOrDeleteTboard(index)">
                 </Button>
             </template>
         </Table>
@@ -68,7 +68,7 @@
                     {
                         width: 100,
                         align: "center",
-                        title: "暂停 / 删除",
+                        title: "停止 / 删除",
                         slot: "pauseOrDelete"
                     }
                 ],
@@ -112,6 +112,7 @@
                         "-" +
                         this.filterDateRange[1].getDate()
                 }
+                let userId = localStorage.getItem('id');
 
                 this.$ajax.get(
                     "api/v1/cedar/tboard/?fields=" +
@@ -119,6 +120,7 @@
                     "board_stamp," +
                     "board_name," +
                     "finished_flag" +
+                    "&author__id=" + userId +
                     finishedCondition +
                     dateRageCondition
                 ).then(response => {
@@ -151,6 +153,7 @@
                 }
             },
             _deleteTboard(index){
+                event.stopPropagation();
                 let row = this.data[index]
                 let root = this
                 this.$Modal.confirm({
@@ -169,7 +172,35 @@
                 })
             },
             _pauseTboard(index){
-
+                event.stopPropagation();
+                let row = this.data[index]
+                let root = this
+                let coralUrl = utils.getCoralUrl(config.CREATETBOARD_PORT)
+                let userId = localStorage.getItem('id');
+                let boardStamp = row.board_stamp.replace(/\-/g,'_').replace(/\:/g,'_').replace(/\ /g,'_')
+                this.$Modal.confirm({
+                    title: "您确认要停止任务 " + row.board_name + " 吗?",
+                    onOk(){
+                        root.$ajax.post(coralUrl,{
+                            requestName:"removeTBoard",
+                            boardName:boardStamp,
+                            ownerID:userId
+                         }).then(response=>{
+                            if(response.data.state==="OK"){
+                                root.$Message.success("停止任务成功!")
+                                root.onConditionChange();
+                            }else{
+                                root.$Message.error("停止任务失败!")
+                                if(response.data.state){
+                                    root.$Message.error(response.data.state);
+                                }
+                            }
+                        }).catch(reason => {
+                            if(config.DEBUG) console.log(reason)
+                            root.$Message.error("停止任务失败!")
+                        })
+                    }
+                })
             },
             onRowClick(row, index){
                 this.$emit("on-row-click", row, index)

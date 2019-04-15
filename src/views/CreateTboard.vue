@@ -83,6 +83,7 @@
     import CompJobDetail from  "../components/CompJobDetail"
     import config from "../lib/config";
     import utils from "../lib/utils";
+    import main from "../main";
 
 
     export default {
@@ -181,10 +182,12 @@
             },
             // Page "Fill info"
             complete(){
-                console.log(this.selectedDevice)
-                console.log(this.selectedJob)
-                console.log(this.tboardName)
-                console.log(this.tboardRepeatTime)
+                if(config.DEBUG){
+                    console.log(this.selectedDevice)
+                    console.log(this.selectedJob)
+                    console.log(this.tboardName)
+                    console.log(this.tboardRepeatTime)
+                }
                 let deviceList = [];
                 this.selectedDevice.forEach(device=>{
                     deviceList.push(device.device_label);
@@ -210,9 +213,15 @@
                         }
                     })
                     .then(response=>{
-                        this.$Message.success("任务启动成功！")
+                        if(response.data.state){
+                            this.$Message.success("任务启动成功！")
+                            main.$router.push({name: "tboard-management"})
+                        }else {
+                            this.$Message.error("任务启动失败！")
+                        }
                     })
                     .catch(error=>{
+                        if(config.DEBUG) console.log(error)
                         this.$Message.error("任务启动失败")
                     })
             },
