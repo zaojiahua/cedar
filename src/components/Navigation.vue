@@ -91,23 +91,23 @@
                 <Form :label-width="120">
                     <FormItem>
                         <b slot="label">Reef版本：</b>
-                        <p></p>
+                        <p>{{ versionInfo.reef_version }}</p>
                     </FormItem>
                     <FormItem>
                         <b slot="label">Coral版本：</b>
-                        <p></p>
+                        <p>{{ versionInfo.coral_version }}</p>
                     </FormItem>
                     <FormItem>
                         <b slot="label">Cedar版本：</b>
-                        <p></p>
+                        <p>{{ versionInfo.cedar_version }}</p>
                     </FormItem>
                     <FormItem>
                         <b slot="label">Pacific版本：</b>
-                        <p></p>
+                        <p>{{ versionInfo.pacific_version }}</p>
                     </FormItem>
                     <FormItem>
                         <b slot="label">TMach版本：</b>
-                        <p>TMachPro_2019_02_27_14_37</p>
+                        <p>{{ versionInfo.TMach_version }}</p>
                     </FormItem>
                 </Form>
                 <p slot="footer" style="text-align: center">
@@ -123,14 +123,21 @@
     import config from "../lib/config"
     import router from "../router"
 
+    const versionSerializer = {
+        TMach_version:"string",
+        cedar_version:"number",
+        coral_version:"number",
+        pacific_version:"string",
+        reef_version:"string",
+    }
+
     export default {
         data () {
             return {
                 isCollapsed: true,
                 notification: 0,
                 showModal:false,
-                versionInfo:{
-                },
+                versionInfo:utils.validate(versionSerializer,{}),
                 permissions: sessionStorage.permissions === undefined ? [] : sessionStorage.permissions,
                 currentRouter: router.currentRoute
             };
@@ -166,11 +173,12 @@
                 this.$ajax.post(coralUrl,{
                     requestName:'getTMachVersionInfo'
                 }).then(response=>{
-                    console.log(response);
+                    this.versionInfo = utils.validate(versionSerializer,response.data);
+                    this.$Loading.finish();
                 }).catch(error=>{
-                    console.log(error);
+                    this.$Loading.error();
+                    if(config.DEBUG) console.log(error);
                 })
-
             }
         },
         created(){
