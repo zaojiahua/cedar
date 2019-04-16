@@ -4,7 +4,7 @@
             <TabPane label="测试设备列表" name="deviceList" :strip="true">
                 <comp-device-list ref="deviceList" @on-row-click="onDeviceRowClick">
                     <Drawer slot="detail" v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
-                        <comp-device-detail ref="deviceDetail" @after-device-delete="afterDeviceDelete"
+                        <comp-device-detail ref="deviceDetail" :editable="true" @after-device-delete="afterDeviceDelete"
                                             @after-device-update="afterDeviceUpdate"></comp-device-detail>
                     </Drawer>
                 </comp-device-list>

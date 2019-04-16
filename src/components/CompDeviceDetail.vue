@@ -182,22 +182,49 @@
         methods: {
             // Delete Device
             deleteDevice(){
-                let device_id = this.device.id
+                let device_id = this.device.device_label
+                let device_status = this.device.status
                 let detailComp = this
-                this.$Modal.confirm({
-                    title: "警告！",
-                    content: "您确定要删除该装置吗？",
-                    onOk(){
-                        this.$ajax.delete(
-                            'api/v1/cedar/device/'+device_id+'/'
-                        ).then(response=>{
-                            this.$Message.success('删除成功')
-                            detailComp.$emit('after-device-delete', response)
-                        }).catch(reason => {
-                            this.$Message.success('删除失败')
-                        })
+                if(device_status==="busy"){
+                    this.$Modal.confirm({
+                        title: "警告！",
+                        content: "当前设备正在执行任务，确定要停止任务并将该设备从系统中移除？",
+                        onOk() {
+                            detailComp.deleteAjax(device_id,device_status)
+                        }
+                    })
+                }else {
+                    this.$Modal.confirm({
+                        title: "警告！",
+                        content: "您确定要从系统中移除该装置吗？",
+                        onOk(){
+                            detailComp.deleteAjax(device_id,device_status)
+                        }
+                    });
+                }
+            },
+            deleteAjax(device_id,device_status){
+                this.$Spin.show();
+                let coralUrl = utils.getCoralUrl(config.CONFIG_PORT)
+                this.$ajax.post(coralUrl,{
+                    requestName:"releaseDevice",
+                    deviceID:device_id,
+                    deviceStatus:device_status
+                }).then(response=>{
+                    this.$Spin.hide();
+                    if(response.data.status==="ok"){
+                        this.$Message.success("该设备已从系统中移除");
+                        this.$emit('after-device-delete')
+                    }else if(response.data.wrong){
+                        this.$Message.error(response.data.wrong)
+                    }else{
+                        this.$Message.error("设备移除失败！");
                     }
-                });
+                }).catch(error=>{
+                    this.$Spin.hide();
+                    if(config.DEBUG) console.log(error)
+                    this.$Message.error("设备移除失败！");
+                })
             },
             // Load data
             refresh(device_id){
