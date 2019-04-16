@@ -19,26 +19,26 @@
             <small>(如果已设置，可直接点击"下一步")</small>
             <Row type="flex" justify="center" style="margin-top: 16px">
                 <Button type="primary" @click="getDeviceInDoor">下一步</Button>
-                <Button type="error" @click="addDeviceError('ip侦测失败', '侦测不到xxx装置的IP位置')">错误DEMO</Button>
+                <!--<Button type="error" @click="addDeviceError('ip侦测失败', '侦测不到该装置的IP位置，请确认待添加设备已连接到系统TMach系统WLAN！')">错误DEMO</Button>-->
             </Row>
         </Card>
         <Card dis-hover title="第三步: 添加设备" v-if="addDeviceStep === 3">
             <Form :label-width="80">
                 <FormItem>
                     <b slot="label">设备编号</b>
-                    <p>Device</p>
+                    <p>{{ deviceInfo.deviceID }}</p>
                 </FormItem>
                 <FormItem>
                     <b slot="label">ROM版本</b>
-                    <p>6.3.24</p>
+                    <p>{{ deviceInfo.buildInc }}</p>
                 </FormItem>
                 <FormItem>
                     <b slot="label">安卓版本</b>
-                    <p>5.0.2</p>
+                    <p>{{ deviceInfo.buildVer }}</p>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">IP位置</b>
-                    <p>10.80.3.101</p>
+                    <b slot="label">IP地址</b>
+                    <p>{{ deviceInfo.ipAddress }}</p>
                 </FormItem>
                 <FormItem>
                     <b slot="label">自定义名称</b>
@@ -46,8 +46,11 @@
                 </FormItem>
             </Form>
             <Row type="flex" justify="center">
-                <Button type="primary" @click="addDevice()">添加</Button>
+                <Button type="primary" v-if="addBtn" @click="addDevice()">添加</Button>
+                <Button type="primary" v-if="rescan" @click="getDeviceInDoor()">重新扫描</Button>
+                <Button type="primary" v-if="backStepOne" @click="addDeviceStep=1 ">返回第一步</Button>
             </Row>
+            <Spin size="large" fix v-if="spinShow"></Spin>
         </Card>
     </transition>
 </template>
@@ -55,12 +58,24 @@
 <script>
     import utils from "../lib/utils"
     import config from "../lib/config"
+    const addDeviceSerializer = {
+        buildInc: "string",
+        buildVer: "string",
+        deviceID: "string",
+        ipAddress: "string"
+    }
+
     export default {
         name: "CompAddDevice",
         data(){
             return {
                 addDeviceStep: 1,
                 addedDeviceName: "",
+                deviceInfo:utils.validate(addDeviceSerializer,{}),
+                addBtn:true,
+                spinShow:false,
+                rescan:false,
+                backStepOne:false,
             }
         },
         methods:{
@@ -76,20 +91,26 @@
             },
             addDevice(){
                 this.$Loading.start()
-                this.$ajax.post(
-                    "api/v1/cedar/device/",
+                this.spinShow = true;
+                let coralUrl = utils.getInDoorUrl(config.DEVINDOOR_PORT);
+                this.$ajax.post(coralUrl,
                     {
-                        device_label: "Device"+ (new Date()).toJSON(),
-                        device_name: this.addedDeviceName,
-                        cpu_id: "CPU_ID",
-                        rom_version: 1,
-                        monitor_index: [1]
+                        requestName:"setDeviceInDoor",
+                        deviceID: this.deviceInfo.deviceID,
+                        deviceName: this.addedDeviceName
                     }
                 ).then(response=>{
-                    this.$Message.success("添加成功")
+                    if(response.data.state==="DONE"){
+                        this.$Message.success("添加成功")
+                        this.$emit('afterDeviceAddSuccess', response.data)
+                    }else{
+                        this.$Message.error("添加失败！")
+                    }
+                    this.spinShow = false;
                     this.$Loading.finish()
-                    this.$emit('afterDeviceAddSuccess', response.data)
+
                 }).catch(reason=>{
+                    this.spinShow = false;
                     this.$Message.error("添加失败")
                     this.$Loading.error()
                     this.$emit('afterDeviceAddFailed', reason)
@@ -97,18 +118,37 @@
             },
             getDeviceInDoor(){
                 let coralUrl = utils.getInDoorUrl(config.DEVINDOOR_PORT);
-                // console.log(coralUrl);
+                this.addDeviceStep=3;
+                this.addBtn = true;
+                this.rescan = false;
+                this.backStepOne = false;
+                this.spinShow = true;
                 this.$Loading.start();
                 this.$ajax
                     .post(coralUrl,{
                         requestName:'getDeviceInDoor'
                     })
                     .then(response=>{
-                        console.log(response)
-                        // this.addDeviceStep=3;
+                        if(!response.data){
+                            this.addDeviceError('未找到可添加设备', '请将设备从USB上拔除,并返回第一步确认操作无遗漏')
+                            this.addBtn = false;
+                            this.backStepOne = true;
+                        }else if(utils.validate(addDeviceSerializer,response.data).ipAddress.length===0){
+                            this.addBtn = false;
+                            this.rescan = true;
+                            this.deviceInfo = utils.validate(addDeviceSerializer,response.data);
+                            this.addDeviceError('ip侦测失败', '侦测不到该设备的IP地址，请确认待添加设备已连接到TMach系统WLAN！')
+                        }else{
+                            this.deviceInfo = utils.validate(addDeviceSerializer,response.data);
+                        }
+                        this.$Loading.finish();
+                        this.spinShow=false;
                     })
                     .catch(error=>{
-                        console.log(error)
+                        if(config.DEBUG) console.log(error)
+                        this.spinShow=false;
+                        this.$Loading.error();
+                        this.$Message.error("获取设备信息失败！")
                     })
             },
         }
