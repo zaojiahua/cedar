@@ -41,7 +41,7 @@
                             <Icon type="md-person" size="24"/>
                             <span>用户管理</span>
                         </MenuItem>
-                        <MenuItem v-if="permissions.includes('apiv1.upgrade_system')" name="sys-upgrade" :to="{name: 'home'}">
+                        <MenuItem v-if="permissions.includes('apiv1.upgrade_system')" name="sys-upgrade" :to="{name: 'system-upgrade'}">
                             <Icon type="md-sync" size="24"/>
                             <span>系统升级</span>
                         </MenuItem>

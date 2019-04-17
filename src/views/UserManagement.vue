@@ -3,9 +3,9 @@
         <Card>
             <p class="user-head">
                 <Button icon="md-add" style="margin-right: 20px" type="primary" @click="addUser">添加用户</Button>
-                <Button icon="ios-trash-outline" type="error">批量删除</Button>
+                <Button icon="ios-trash-outline" type="error" @click="delUserList">批量删除</Button>
             </p>
-            <Table stripe :columns="userColumns" :data="userData"></Table>
+            <Table ref="table" stripe :columns="userColumns" :data="userData"></Table>
         </Card>
         <Drawer v-model="showUserDetail" :draggable="true" width="50" title="用户信息">
             <Card>
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+    import config from "../lib/config"
     export default {
         name: "UserManagement",
         data(){
@@ -261,7 +262,6 @@
                 this.$ajax
                     .get("api/v1/cedar/group/?fields=name")
                     .then(response=>{
-                        console.log(response.data)
                         let groupObj = [];
                         for (let i=0;i<response.data.groups.length;i++){
                             groupObj.push(response.data.groups[i].name)
@@ -270,7 +270,7 @@
                         this.$Loading.finish();
                     })
                     .catch(error=>{
-                        console.log(error);
+                        if (config.DEBUG) console.log(error);
                         let errorMsg = "";
                         if (error.response.status >= 500) {
                             errorMsg = "服务器错误！"
@@ -280,6 +280,41 @@
                         this.$Message.error(errorMsg)
                         this.$Loading.error();
                     })
+
+            },
+            delUserList(){
+                let userList = this.$refs.table.getSelection();
+                if(userList.length>0){
+                    let root = this;
+                    this.$Modal.confirm({
+                        title: "警告！",
+                        content: "您确定要删除这些数据吗?",
+                        onOk(){
+                            let userIds = [];
+                            userList.forEach(info=>{
+                                userIds.push(info.id)
+                            })
+                            let ajaxObj = [];
+                            for (let i=0;i<userIds.length;i++){
+                                ajaxObj.push(root.$ajax.delete("api/v1/cedar/reefuser/"+ userIds[i] +"/"));
+                            }
+                            root.$ajax.all(ajaxObj)
+                                .then(response=>{
+                                    this.$Message.success("数据删除成功！")
+                                    root.getUserData();
+                                })
+                                .catch(error=>{
+                                    if (config.DEBUG) console.log(error)
+                                    this.$Message.error("数据删除失败！")
+                                })
+                        }
+                    });
+                }else{
+                    this.$Modal.confirm({
+                        title: "提示",
+                        content: "请选择要删除的数据！"
+                    });
+                }
 
             }
         },

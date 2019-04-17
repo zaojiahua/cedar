@@ -11,6 +11,7 @@ import TboardManagement from "./views/TboardManagement";
 import JobManagement from "./views/JobManagement";
 import LogFiles from "./views/LogFiles";
 import RdsManagement from "./views/RdsManagement"
+import SystemUpgrade from "./views/SystemUpgrade"
 
 
 Vue.use(Router)
@@ -63,6 +64,11 @@ let router = new Router({
                     path: "rds-management",
                     name: "rds-management",
                     component: RdsManagement
+                },
+                {
+                    path: "system-upgrade",
+                    name: "system-upgrade",
+                    component: SystemUpgrade
                 }
             ]
         },
