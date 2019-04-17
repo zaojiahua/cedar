@@ -44,7 +44,7 @@
         </Form>
         <p style="text-align: right">
             <Button v-if="propDelJob" type="error" style="float:left;" @click="delJob">删除用例</Button>
-            <Button type="primary" @click="closeDrawerDetail">关闭</Button>
+            <Button v-if="propCloseBtn" type="primary" @click="closeDrawerDetail">关闭</Button>
         </p>
     </Card>
 </template>
@@ -91,6 +91,10 @@
             propDelJob:{ // Show delete button
                 type: Boolean,
                 default: false
+            },
+            propCloseBtn:{
+                type: Boolean,
+                default: true
             }
         },
         data(){

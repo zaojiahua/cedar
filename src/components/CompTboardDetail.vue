@@ -71,7 +71,7 @@
             <comp-device-detail ref="deviceDetail"></comp-device-detail>
         </Modal>
         <Modal v-model="showJobDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
-            <comp-job-detail ref="jobDetail"></comp-job-detail>
+            <comp-job-detail ref="jobDetail" :prop-close-btn="false"></comp-job-detail>
         </Modal>
     </Card>
 </template>
