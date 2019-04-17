@@ -50,18 +50,18 @@
         <Collapse :value="[0,1,2]">
             <Panel>温度感应片配对
                 <CheckboxGroup slot="content" v-model="selectedTempPorts">
-                    <Checkbox v-for="item in tempPorts" :label="item.id" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
+                    <Checkbox v-for="item in tempPorts" :label="item.port" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
                 </CheckboxGroup>
             </Panel>
             <Panel>智能充电口配对
-                <CheckboxGroup slot="content" v-model="selectedPowerPorts">
-                    <Checkbox v-for="item in powerPorts" :label="item.id" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
-                </CheckboxGroup>
+                <RadioGroup  slot="content" v-model="selectedPowerPorts">
+                    <Radio  v-for="item in powerPorts" :label="item.port" :key="item.id" :disabled="!editable">{{item.port}}</Radio >
+                </RadioGroup >
             </Panel>
             <Panel>工业相机配对
-                <CheckboxGroup slot="content" v-model="selectedMonitorPorts">
-                    <Checkbox v-for="item in monitorPorts" :label="item.id" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
-                </CheckboxGroup>
+                <RadioGroup slot="content" v-model="selectedMonitorPorts">
+                    <Radio v-for="item in monitorPorts" :label="item.port" :key="item.id" :disabled="!editable">{{item.port}}</Radio>
+                </RadioGroup>
             </Panel>
         </Collapse>
         <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable">
@@ -70,9 +70,10 @@
             </Col>
             <Col>
                 <Button type="primary" style="margin-right: 16px;" @click="updateDevice">保存</Button>
-                <Button>取消</Button>
+                <Button @click="cancelConfig">取消</Button>
             </Col>
         </Row>
+        <Spin size="large" fix v-if="spinShow"></Spin>
     </Card>
 </template>
 
@@ -175,8 +176,9 @@
                 powerPorts: utils.validate(serializer.powerPortSerializer, {}).powerports,
                 monitorPorts: utils.validate(serializer.monitorPortSerializer, {}).monitorports,
                 selectedTempPorts:[],
-                selectedPowerPorts: [],
-                selectedMonitorPorts: [],
+                selectedPowerPorts: "",
+                selectedMonitorPorts: "",
+                spinShow:false,
             }
         },
         methods: {
@@ -204,14 +206,14 @@
                 }
             },
             deleteAjax(device_id,device_status){
-                this.$Spin.show();
+                this.spinShow = true;
                 let coralUrl = utils.getCoralUrl(config.CONFIG_PORT)
                 this.$ajax.post(coralUrl,{
                     requestName:"releaseDevice",
                     deviceID:device_id,
                     deviceStatus:device_status
                 }).then(response=>{
-                    this.$Spin.hide();
+                    this.spinShow = false;
                     if(response.data.status==="ok"){
                         this.$Message.success("该设备已从系统中移除");
                         this.$emit('after-device-delete')
@@ -221,7 +223,7 @@
                         this.$Message.error("设备移除失败！");
                     }
                 }).catch(error=>{
-                    this.$Spin.hide();
+                    this.spinShow = false;
                     if(config.DEBUG) console.log(error)
                     this.$Message.error("设备移除失败！");
                 })
@@ -230,8 +232,8 @@
             refresh(device_id){
                 let ajax = this.$ajax
                 this.selectedTempPorts = []
-                this.selectedPowerPorts = []
-                this.selectedMonitorPorts = []
+                this.selectedPowerPorts = ""
+                this.selectedMonitorPorts = ""
                 ajax.all(
                     [
                         ajax.get(
@@ -276,17 +278,15 @@
 
                     let ports = []
                     this.device.tempport.forEach(port=>{
-                        ports.push(port.id)
+                        ports.push(port.port)
                     })
                     this.selectedTempPorts = ports
 
-                    this.selectedPowerPorts = this.device.powerport.id!==null?[this.device.powerport.id]:[]
+                    this.selectedPowerPorts = this.device.powerport.port
 
-                    ports = []
                     this.device.monitor_index.forEach(port=>{
-                        ports.push(port.id)
+                        this.selectedMonitorPorts = port.port
                     })
-                    this.selectedMonitorPorts = ports
 
                 })).catch(reason => {
                     if(config.DEBUG)
@@ -298,23 +298,46 @@
             },
             // Update device
             updateDevice(){
-                this.$ajax.patch(
-                    "api/v1/cedar/device/"+this.device.id+"/",
+                let coralUrl = utils.getCoralUrl(config.CONFIG_PORT)
+                let temperDict = {}
+                if(this.selectedTempPorts.length>0){
+                    this.selectedTempPorts.forEach(port=>{
+                        temperDict[port] = "desc";     //给温感片加默认备注
+                    })
+                }
+                this.spinShow = true;
+                this.$ajax.post(coralUrl,
                     {
-                        device_name: this.device.device_name,
-                        monitor_index: this.selectedMonitorPorts,
-                        powerport: this.selectedPowerPorts.length > 0 ? this.selectedPowerPorts[0] : null,
-                        tempport: this.selectedTempPorts
+                        requestName:"setDeviceConfig",
+                        devConfDict:{
+                            deviceID:this.device.device_label,
+                            deviceName:this.device.device_name,
+                            tempPortDict:temperDict,
+                            monitorIndex:this.selectedMonitorPorts,
+                            powrCtrlPort:this.selectedPowerPorts
+                        }
                     }
                 ).then(response => {
-                    this.$Message.success("更新成功")
-                    this.$emit('after-device-update', response)
+                    this.spinShow = false;
+                    if(config.DEBUG) console.log(response.data)
+                    if(response.data.success){
+                        this.$Message.success("配置成功")
+                        this.$emit('after-device-update', response)
+                    }else if(response.data.wrong){
+                        this.$Message.error("配置失败")
+                        this.$Message.error(response.data.wrong)
+                    }else{
+                        this.$Message.error("配置失败")
+                    }
                 }).catch(reason => {
+                    this.spinShow = false;
                     if(config.debug) console.log(reason)
-                    this.$Message.error("更新失败")
+                    this.$Message.error("配置失败")
                 })
-
             },
+            cancelConfig(){
+                this.$emit('afterDeviceCancel')
+            }
 
         },
     }

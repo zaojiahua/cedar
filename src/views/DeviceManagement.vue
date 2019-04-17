@@ -5,7 +5,7 @@
                 <comp-device-list ref="deviceList" @on-row-click="onDeviceRowClick">
                     <Drawer slot="detail" v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
                         <comp-device-detail ref="deviceDetail" :editable="true" @after-device-delete="afterDeviceDelete"
-                                            @after-device-update="afterDeviceUpdate"></comp-device-detail>
+                                            @after-device-update="afterDeviceUpdate" @afterDeviceCancel="afterDeviceCancel"></comp-device-detail>
                     </Drawer>
                 </comp-device-list>
             </TabPane>
@@ -52,6 +52,9 @@
             afterDeviceDelete(){
                 this.showDeviceDetail = false
                 this.$refs.deviceList.refresh()
+            },
+            afterDeviceCancel(){
+                this.showDeviceDetail = false
             }
         }
     }
