@@ -81,7 +81,8 @@
                     "custom_tag.custom_tag_name," +
                     "test_area," +
                     "test_area.id," +
-                    "test_area.description&"+param
+                    "test_area.description&"+
+                    "job_deleted=False&"+param
                 )
             },
             getJobList(){
@@ -186,7 +187,8 @@
                     "custom_tag.custom_tag_name," +
                     "test_area," +
                     "test_area.id," +
-                    "test_area.description&"+param
+                    "test_area.description&"+
+                    "job_deleted=False&"+param
                 this.$refs.jobList.getPageData(url,pageIndex);
             },
         },

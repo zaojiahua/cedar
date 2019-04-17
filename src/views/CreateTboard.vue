@@ -154,7 +154,8 @@
                     "custom_tag.custom_tag_name," +
                     "test_area," +
                     "test_area.id," +
-                    "test_area.description&"+param
+                    "test_area.description&"+
+                    "job_deleted=False&"+param
                 )
             },
             selectJob(){
@@ -177,7 +178,8 @@
                     "custom_tag.custom_tag_name," +
                     "test_area," +
                     "test_area.id," +
-                    "test_area.description&"+param
+                    "test_area.description&"+
+                    "job_deleted=False&"+param
                 this.$refs.jobList.getPageData(url,pageIndex);
             },
             // Page "Fill info"
