@@ -1,104 +1,91 @@
 <template>
-    <Card>
-        <comp-filter :prop-rds-filter="true" ref="jobFilter" @on-change="onJobFilterChange"></comp-filter>
-        <Row style="margin-bottom: 20px">
-            <Col span="16">
-                <Button class="filter-btn">选取设备</Button>
-                <Button class="filter-btn">选取用例</Button>
-                <DatePicker type="daterange" placeholder="选择创建日期范围" :transfer="true"></DatePicker>
-            </Col>
-            <Col span="8" style="text-align: center">
-                <Tag class="tip" type="dot" color="#1bbc9c">通过</Tag>
-                <Tag class="tip" type="dot" color="#ffae25">未通过</Tag>
-                <Tag class="tip" type="dot" color="#bdc3c7">无效</Tag>
-            </Col>
-
-        </Row>
-        <comp-rds-list ref="rdsList" @showRdsInfo="showRdsInfo"></comp-rds-list>
-
-        <Drawer v-model="showRdsDetail" :draggable="true" :closable="false" width="50">
-            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne"></comp-rds-detail>
-        </Drawer>
-    </Card>
+    <div>
+        <Modal v-model="showSelectDeviceModal" :fullscreen="true" :transfer="false" :closable="false" @on-ok="getDeviceSelection">
+            <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true"
+                              @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
+        </Modal>
+        <Tabs style="margin-right: 192px;">
+            <TabPane label="设备测试数据">
+                <Row type="flex" style="margin-bottom: 16px;" align="bottom">
+                    <Button type="primary" style="margin-right: 16px;" @click="showSelectDeviceModal=true">选取设备</Button>
+                    <Tag closable type="border">Device1</Tag>
+                    <Tag closable type="border">Device1</Tag>
+                    <Tag closable type="border">Device1</Tag>
+                    <Tag closable type="border">Device1</Tag>
+                    <Tag closable type="border">Device1</Tag>
+                    <Tag closable type="border">Device1</Tag>
+                    <Tag closable type="border">Device1</Tag>
+                    <Tag closable type="border">Device1</Tag>
+                    <Tag closable type="border">Device1</Tag>
+                    <Tag closable type="border">Device1</Tag>
+                    <Tag closable type="border">Device1</Tag>
+                </Row>
+                <Row style="margin-bottom: 16px;">
+                    <DatePicker placeholder="测试开始时间"></DatePicker>
+                </Row>
+                <Row type="flex">
+                    <Col span="24">
+                        <comp-rds-list ref="rdsList" v-for="item in deviceLabelList" :key="item.id" :prop-device-label="item.device_label" :prop-device-id="item.id"></comp-rds-list>
+                    </Col>
+                </Row>
+                <Spin size="large" fix v-if="spinShow"></Spin>
+            </TabPane>
+            <TabPane label="型号测试数据">123</TabPane>
+            <TabPane label="搜索">123</TabPane>
+        </Tabs>
+        <div style="position: fixed; bottom: 2px; right: 2px; background-color: #434343;border-radius: 5px;opacity: 0.9">
+            <Form :label-width="100" class="rds-info">
+                <FormItem style="margin-bottom: 0px;">
+                    <b slot="label">测试结果ID：</b>
+                    <p>1</p>
+                </FormItem>
+                <FormItem style="margin-bottom: 0px;">
+                    <b slot="label">设备名称：</b>
+                    <p>1</p>
+                </FormItem>
+                <FormItem style="margin-bottom: 0px;">
+                    <b slot="label">用例名称：</b>
+                    <p>JobName</p>
+                </FormItem>
+                <FormItem style="margin-bottom: 0px;">
+                    <b slot="label">任务名称：</b>
+                    <p></p>
+                </FormItem>
+            </Form>
+        </div>
+    </div>
 </template>
 
 <script>
+    import CompTooltip from "../components/CompTooltip";
     import CompDeviceList from "../components/CompDeviceList";
-    import CompFilter from "../components/CompFilter";
-    import CompJobList from "../components/CompJobList";
-    import CompJobDetail from  "../components/CompJobDetail";
-    import CompRdsList from  "../components/CompRdsList";
-    import CompRdsDetail from  "../components/CompRdsDetail";
+    import CompRdsList from "../components/CompRdsList";
+    import config from "../lib/config";
 
     export default {
-        components:{CompDeviceList,CompFilter,CompJobList,CompJobDetail,CompRdsList,CompRdsDetail },
-        data(){
-            return{
-                showRdsDetail:false,
+        components: {CompTooltip,CompDeviceList,CompRdsList},
+        data() {
+            return {
+                collapse: [1],
+                showSelectDeviceModal:false,
+                deviceLabelList:[],
+                spinShow:false,
             }
         },
         methods:{
-            selectedDetail(selected){
-                let conditions = []
-                Object.keys(selected).forEach(key=>{
-                    let condition = []
-                    if(key==="phone_model"){
-                        selected[key].forEach(item=>{
-                            condition.push(item.phone_model_name)
-                        })
-                        conditions.push("device__"+key+"__phone_model_name__in="+"ReefList["+condition.join("{%,%}")+"]");
-                    }else if(key==="android_version"){
-                        selected[key].forEach(item=>{
-                            condition.push(item.version)
-                        })
-                        conditions.push("device__android_version__version__in="+"ReefList["+condition.join("{%,%}")+"]");
-                    }else if(key==="custom_tag"){
-                        selected[key].forEach(item=>{
-                            condition.push(item.custom_tag_name)
-                        })
-                        conditions.push("job__custom_tag__custom_tag_name__in=ReefList["+condition.join("{%,%}")+"]");
-                    } else if(key==="job_assessment_value"){
-                        selected[key].forEach(item=>{
-                            if(item.job_assessment==="通过"){
-                                item.job_assessment_value = "0"
-                            }else if(item.job_assessment==="未通过"){
-                                item.job_assessment_value = "1"
-                            }else if(item.job_assessment==="无效"){
-                                item.job_assessment_value="-1"
-                            }
-                            condition.push(item.job_assessment_value)
-                        })
-                        conditions.push("job_assessment_value__in=ReefList["+condition.join("{%,%}")+"]");
-                    }
-                })
-                let param = conditions.join("&")
-                return param
+            getDeviceSelection(){
+                this.deviceLabelList = this.$refs.selectDevice.getSelection()
             },
-            onJobFilterChange(selected){
-                let param = this.selectedDetail(selected)
-                this.$refs.rdsList.collapseDataChange();
-                this.$refs.rdsList.refresh(
-                    "api/v1/cedar/get_rds_group_by_device_label/?"+param
-                )
+            onSelectDeviceModalRowClick(data, index){
+                this.$refs.selectDevice.toggleSelect(index)
             },
-            showRdsInfo(rdsId){
-                this.showRdsDetail = true;
-                this.$refs.rdsDetail.refresh(rdsId);
-            },
-            delRdsOne(flag){
-                this.showRdsDetail = flag;
-                this.$refs.rdsList.delRdsDataOne();
-            }
         }
     }
+
 </script>
 
 <style scoped>
-    .filter-btn{
-        margin-right: 16px;
-    }
-    .tip{
-        border: none!important;
-        cursor: default;
+    .rds-info b,.rds-info p{
+        color: #f2f2f2;
     }
 </style>
