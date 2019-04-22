@@ -43,6 +43,7 @@
         },
         methods:{
             getRdsByDevice(){
+                let Obj = {};
                 this.$ajax
                     .get("api/v1/cedar/rds/?fields="+
                         "id,"+
@@ -55,11 +56,9 @@
                         "&offset=0&limit=100"+
                         "&device__id="+this.propDeviceId)
                     .then(response=>{
-                        this.rdsData.device_id = this.propDeviceId;
-                        this.rdsData.device_label = this.propDeviceLabel;
-                        this.rdsData.rds = response.data.rdss;
-                        console.log(response.data)
-                        console.log(this.rdsData)
+                        Obj.device_id = this.propDeviceId;
+                        Obj.device_label = this.propDeviceLabel;
+                        Obj.rds = response.data.rdss;
                         this.$ajax
                             .get("api/v1/cedar/rds/?fields="+
                                 "id,"+
@@ -72,8 +71,8 @@
                                 "&offset=99&limit=1"+
                                 "&device__id="+this.propDeviceId)
                             .then(response=>{
-                                this.rdsData.showMoreData = response.data.rdss.length > 0;
-                                console.log(this.rdsData)
+                                Obj.showMoreData = response.data.rdss.length > 0;
+                                this.rdsData = Obj;
                             }).catch(reason=>{
                                 if (config.DEBUG) console.log(reason)
                                 this.$Message.error("数据加载失败！")
@@ -98,7 +97,7 @@
                         "&device__id="+device_id
                     ).then(response=>{
                     if(response.data.rdss.length>0){
-                        device.rds = device.rds.concat(response.data.rdss);
+                        this.rdsData.rds = this.rdsData.rds.concat(response.data.rdss);
                     }
                     else {
                         this.rdsData.showMoreData=false;
