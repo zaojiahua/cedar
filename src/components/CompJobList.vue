@@ -142,6 +142,9 @@
             getSelection() {
                 return this.$refs.table.getSelection()
             },
+            toggleSelect(_index){
+                this.$refs.table.toggleSelect(_index)
+            },
             deleteRow(index){
                 this.data.splice(index, 1)
             },
@@ -155,6 +158,9 @@
                 let pageIndex = 10*(page-1);
                 let pageUrl = url + '&offset=' + pageIndex +  '&limit=10';
                 this.refreshViaUrl(pageUrl);
+            },
+            clearSelection(){
+                this.$refs.table.selectAll(false)
             }
 
         },

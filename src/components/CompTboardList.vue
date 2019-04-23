@@ -17,9 +17,10 @@
         <Row>
             <slot name="header-bottom"></slot>
         </Row>
-        <Table :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick">
+        <Table ref="table" :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick">
             <template slot-scope="{row, index}" slot="pauseOrDelete">
-                <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-square'" @click="pauseOrDeleteTboard(index)">
+                <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-square'"
+                        @click="pauseOrDeleteTboard(index)">
                 </Button>
             </template>
         </Table>
@@ -48,6 +49,14 @@
             propAutoLoad: {
                 type: Boolean,
                 default: true
+            },
+            propShowActionColumn: {
+                type: Boolean,
+                default: false
+            },
+            propMultiSelect: {
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -64,12 +73,6 @@
                         title: "任务名称",
                         key: "board_name",
                         sortable: true
-                    },
-                    {
-                        width: 100,
-                        align: "center",
-                        title: "停止 / 删除",
-                        slot: "pauseOrDelete"
                     }
                 ],
                 data: [
@@ -96,9 +99,7 @@
                 }
 
                 let dateRageCondition = ""
-                console.log(this.filterDateRange)
                 if (this.filterDateRange && this.filterDateRange[0] && this.filterDateRange[1]) {
-                    console.log(this.filterDateRange)
                     dateRageCondition = "&board_stamp__gte=" +
                         this.filterDateRange[0].getFullYear() +
                         "-" +
@@ -136,78 +137,100 @@
             onConditionChange() {
                 this.refresh()
             },
-            pauseOrDeleteTboard(index){
+            pauseOrDeleteTboard(index) {
                 let isPauseOrDelete = this._isPauseOrDelete(index)
-                if(isPauseOrDelete==="pause"){
+                if (isPauseOrDelete === "pause") {
                     this._pauseTboard(index)
-                } else if(isPauseOrDelete==="delete"){
+                } else if (isPauseOrDelete === "delete") {
                     this._deleteTboard(index)
                 }
             },
-            _isPauseOrDelete(index){
+            _isPauseOrDelete(index) {
                 // return pause when row data is true or null or undefined
-                if(this.data[index]["finished_flag"]===false){
+                if (this.data[index]["finished_flag"] === false) {
                     return "pause"
                 } else {
                     return "delete"
                 }
             },
-            _deleteTboard(index){
+            _deleteTboard(index) {
                 event.stopPropagation();
                 let row = this.data[index]
                 let root = this
                 this.$Modal.confirm({
                     title: "您确认要删除任务 " + row.board_name + " 吗?",
-                    onOk(){
+                    onOk() {
                         root.$ajax.delete(
                             "api/v1/cedar/tboard/" + row.id + "/"
-                        ).then(response=>{
+                        ).then(response => {
                             root.data.splice(index, 1)
                             root.$Message.success("删除成功")
                         }).catch(reason => {
-                            if(config.DEBUG) console.log(reason)
+                            if (config.DEBUG) console.log(reason)
                             root.$Message.error("删除失败")
                         })
                     }
                 })
             },
-            _pauseTboard(index){
+            _pauseTboard(index) {
                 event.stopPropagation();
                 let row = this.data[index]
                 let root = this
                 let coralUrl = utils.getCoralUrl(config.CREATETBOARD_PORT)
                 let userId = localStorage.getItem('id');
-                let boardStamp = row.board_stamp.replace(/\-/g,'_').replace(/\:/g,'_').replace(/\ /g,'_')
+                let boardStamp = row.board_stamp.replace(/\-/g, '_').replace(/\:/g, '_').replace(/\ /g, '_')
                 this.$Modal.confirm({
                     title: "您确认要停止任务 " + row.board_name + " 吗?",
-                    onOk(){
-                        root.$ajax.post(coralUrl,{
-                            requestName:"removeTBoard",
-                            boardName:boardStamp,
-                            ownerID:userId
-                         }).then(response=>{
-                            if(response.data.state==="OK"){
+                    onOk() {
+                        root.$ajax.post(coralUrl, {
+                            requestName: "removeTBoard",
+                            boardName: boardStamp,
+                            ownerID: userId
+                        }).then(response => {
+                            if (response.data.state === "OK") {
                                 root.$Message.success("停止任务成功!")
                                 root.onConditionChange();
-                            }else{
+                            } else {
                                 root.$Message.error("停止任务失败!")
-                                if(response.data.state){
+                                if (response.data.state) {
                                     root.$Message.error(response.data.state);
                                 }
                             }
                         }).catch(reason => {
-                            if(config.DEBUG) console.log(reason)
+                            if (config.DEBUG) console.log(reason)
                             root.$Message.error("停止任务失败!")
                         })
                     }
                 })
             },
-            onRowClick(row, index){
+            onRowClick(row, index) {
                 this.$emit("on-row-click", row, index)
+            },
+            getSelection(){
+                return this.$refs.table.getSelection()
+            },
+            clearSelection(){
+                this.$refs.table.selectAll(false)
+            },
+            toggleSelect(_index){
+                return this.$refs.table.toggleSelect(_index)
             }
 
         },
         created() {
+            if (this.propShowActionColumn)
+                this.columns.push({
+                    width: 100,
+                    align: "center",
+                    title: "停止 / 删除",
+                    slot: "pauseOrDelete"
+                })
+            if (this.propMultiSelect)
+                this.columns.splice(0, 0, {
+                    type: 'selection',
+                    width: 60,
+                    align: 'center'
+                })
             if (this.propAutoLoad)
                 this.refresh()
         }
