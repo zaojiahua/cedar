@@ -138,7 +138,7 @@
                 notification: 0,
                 showModal:false,
                 versionInfo:utils.validate(versionSerializer,{}),
-                permissions: sessionStorage.permissions === undefined ? [] : sessionStorage.permissions,
+                permissions:  sessionStorage.permissions === undefined ? "" : sessionStorage.permissions,
                 currentRouter: router.currentRoute
             };
         },
@@ -187,7 +187,7 @@
                     .get("api/v1/permissions/")
                     .then(response=>{
                         sessionStorage.permissions = response.data
-                        this.permissions = response.data
+                        this.permissions = sessionStorage.permissions
                     })
                     .catch(reason=>{
                         sessionStorage.permissions = []
@@ -201,6 +201,8 @@
                             title: "取得用户权限失败: "+msg
                         })
                     })
+            }else {
+                this.permissions = sessionStorage.permissions
             }
         }
     }
