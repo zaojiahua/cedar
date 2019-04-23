@@ -10,7 +10,7 @@
             <Tag closable v-for="(tboard, index) in tboards" :key="tboard.id" @on-close="onTboardTagClose(index)">{{tboard.board_name}}</Tag>
         </Row>
         <Row type="flex">
-            <Spin v-show="loadingData" size="large" style="position: fixed; width: 100%; height: inherit; left: 50%;"></Spin>
+            <Spin v-show="loadingData" size="large" style="position: absolute; width: 100%; height: inherit; left: 50%;"></Spin>
             <div :class="loadingData ? 'opacity-row' : ''">
                 <div class="rds-box"
                      v-for="item in rdsData" :key="item.id" @mouseenter="onRdsMouseEnter(item)"
