@@ -51,10 +51,9 @@
 
             },
             savePwdBtn(){
-                if(this.userInfo.password===""){
+                if(this.userInfo.password===null){
                     this.$Message.warning("请输入密码!");
                 }else {
-                    console.log(localStorage.getItem('id'));
                     this.$Loading.start();
                     this.$ajax
                         .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",{
