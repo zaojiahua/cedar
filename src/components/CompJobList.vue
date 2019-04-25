@@ -9,7 +9,8 @@
                 </Button>
             </template>
         </Table>
-        <Page v-if="propShowPage" :current="1" :total="1000" simple @on-change="pageOnChange" style="margin-top:20px;text-align: center "/>
+        <Page v-if="propShowPage" :current="currentPage" :total="dataTotal" :page-size="propPageSize" simple @on-change="onPageChange"
+              style="margin-top:20px;text-align: center "/>
     </div>
 </template>
 
@@ -21,7 +22,7 @@
         jobs: [
             {
                 id: "number",
-                job_label:"string",
+                job_label: "string",
                 job_name: "string",
                 test_area: [
                     {
@@ -62,6 +63,10 @@
             propShowPage: {
                 type: Boolean,
                 default: true
+            },
+            propPageSize: {
+                type: Number,
+                default: config.PAGE_SIZE
             }
         },
         data() {
@@ -81,14 +86,19 @@
                     }
                 ],
                 data: [],
+                dataTotal: 0,
+                offset: 0,
+                urlParam: "",
+                currentPage: 1
             }
         },
         methods: {
-            _requestErrorHandle(reason){
+            _requestErrorHandle(reason) {
                 if (config.DEBUG) console.log(reason)
                 this.$Message.error("载入失败")
             },
-            _responseHandle(response){
+            _responseHandle(response) {
+                this.dataTotal = parseInt(response.headers["total-count"])
                 this.data = utils.validate(getJobSerializer, response.data).jobs
                 this.data.forEach(job => {
                     if (job.counter === null) job.counter = 1
@@ -105,20 +115,21 @@
                     job.display_custom_tag = custom_tags.join(', ')
                 })
             },
-            refreshViaUrl(url){
-                this.$ajax.get(url)
-                    .then(response=>{
-                        this._responseHandle(response)
-                    }).catch(reason => {
-                        this._requestErrorHandle(reason)
-                })
+            _setUrlParam(param){
+                this.urlParam = param
             },
-            refresh(data) {
+            refreshWithData(data) {
                 if (data !== undefined) {
                     this.data = data
-                    return
                 }
-                this.$ajax.get("api/v1/cedar/job/?fields=" +
+            },
+            refreshWithParam(param){
+                this._setUrlParam(param)
+                this.onPageChange(1)
+            },
+            refresh() {
+                let url =
+                    "api/v1/cedar/job/?fields=" +
                     "id," +
                     "job_label," +
                     "job_name," +
@@ -127,39 +138,42 @@
                     "test_area.description," +
                     "custom_tag," +
                     "custom_tag.id," +
-                    "custom_tag.custom_tag_name&" +
-                    "job_deleted=False")
-                    .then(response => {
-                        this._responseHandle(response)
-                    })
-                    .catch(reason => {
-                        this._requestErrorHandle(reason)
-                    })
+                    "custom_tag.custom_tag_name" +
+                    "&job_deleted=False" +
+                    "&ordering=id" +
+                    this.urlParam
+
+                if(this.propShowPage){
+                    url = url +
+                        "&limit=" + config.PAGE_SIZE +
+                        "&offset=" + this.offset
+                }
+
+                this.$ajax.get(url)
+                    .then(this._responseHandle)
+                    .catch(this._requestErrorHandle)
             },
-            getData(){
+            getData() {
                 return this.data
             },
             getSelection() {
                 return this.$refs.table.getSelection()
             },
-            toggleSelect(_index){
+            toggleSelect(_index) {
                 this.$refs.table.toggleSelect(_index)
             },
-            deleteRow(index){
+            deleteRow(index) {
                 this.data.splice(index, 1)
             },
-            onRowClick(row, index){
+            onRowClick(row, index) {
                 this.$emit("on-row-click", row, index)
             },
-            pageOnChange(page){
-                this.$emit("pageData",page);
+            onPageChange(page) {
+                this.offset = this.propPageSize * (page-1)
+                this.currentPage = page
+                this.refresh()
             },
-            getPageData(url,page){
-                let pageIndex = 10*(page-1);
-                let pageUrl = url + '&offset=' + pageIndex +  '&limit=10';
-                this.refreshViaUrl(pageUrl);
-            },
-            clearSelection(){
+            clearSelection() {
                 this.$refs.table.selectAll(false)
             }
 

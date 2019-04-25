@@ -12,21 +12,11 @@
                             <Avatar>{{ username.substr(0,1).toUpperCase() }}</Avatar>
                             {{ username }}
                         </MenuItem>
-                        <MenuItem name="1">
-                            提醒
-                            <Badge :count="notification" :offset="[12,-4]">
-                                <Icon type="ios-notifications-outline" size="24"/>
-                            </Badge>
-                        </MenuItem>
-                        <MenuItem name="2" @click.native="getSysVersion">
+                        <MenuItem name="1" @click.native="getSysVersion">
                             关于TMach
                             <Icon type="ios-help-circle-outline" size="24"/>
                         </MenuItem>
-                        <MenuItem name="3">
-                            设置
-                            <Icon type="ios-settings-outline" size="24"/>
-                        </MenuItem>
-                        <MenuItem name="4" @click.native="logout">
+                        <MenuItem name="2" @click.native="logout">
                             登出
                             <Icon type="ios-exit-outline" size="24">
                             </Icon>
@@ -49,10 +39,6 @@
                             <Icon type="md-filing" size="24"/>
                             <span>日志文件</span>
                         </MenuItem>
-                        <MenuItem name='system-status' :to="{name: 'home'}">
-                            <Icon type="md-speedometer" size="24"/>
-                            <span>系统状态</span>
-                        </MenuItem>
                         <MenuItem name="job-management" :to="{name: 'job-management'}">
                             <Icon type="ios-briefcase-outline" size="24"/>
                             <span>用例管理</span>
@@ -68,10 +54,6 @@
                         <MenuItem name="rds-management" :to="{name: 'rds-management'}">
                             <Icon type="ios-pie-outline" size="24"/>
                             <span>测试数据</span>
-                        </MenuItem>
-                        <MenuItem name="issue-management" :to="{name: 'home'}">
-                            <Icon type="ios-bug-outline" size="24"/>
-                            <span>缺陷管理</span>
                         </MenuItem>
                         <MenuItem name="device-management" :to="{name: 'device-management'}">
                             <Icon type="ios-phone-portrait" size="24"/>

@@ -9,7 +9,10 @@ export default {
     "CONFIG_PORT":"10808",
     "DEVINDOOR_PORT":"10802",
     "CREATETBOARD_PORT":"10811",
-    "JOBSVC_PORT":"10801"
+    "JOBSVC_PORT":"10801",
+    // Paging setting
+    "PAGE_SIZE": 5,
+    "LARGE_PAGE_SIZE": 50
 }
 
 /*
