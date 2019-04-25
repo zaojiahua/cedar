@@ -176,9 +176,11 @@
                     }
                 }
                 if(this.updatePwd===true){
-                    if(this.addShow===true&&this.userInfo.password===null){
+                    if(this.userInfo.username===""){
+                        this.$Message.warning("请输入登录名！");
+                    }else if(this.addShow===true&&this.userInfo.password===null){
                         this.$Message.warning("请输入密码！");
-                    }else {
+                    } else {
                         this.$Loading.start();
                         this.$ajax
                             .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",AjaxParamObj)
@@ -192,6 +194,8 @@
                                 let errorMsg = "";
                                 if (error.response.status >= 500) {
                                     errorMsg = "服务器错误！"
+                                }else if(error.response.status=== 400){
+                                    errorMsg = "该用户名已存在，请重新输入！"
                                 } else {
                                     errorMsg = error.toString()
                                 }
@@ -201,7 +205,9 @@
                     }
 
                 }else {
-                    if(this.userInfo.password===null){
+                    if(this.userInfo.username===""){
+                        this.$Message.warning("请输入登录名！");
+                    }else if(this.userInfo.password===null){
                         this.$Message.warning("请输入密码！");
                     }else {
                         this.$Loading.start();
@@ -217,6 +223,8 @@
                                 let errorMsg = "";
                                 if (error.response.status >= 500) {
                                     errorMsg = "服务器错误！"
+                                }else if(error.response.status=== 400){
+                                    errorMsg = "该用户名已存在，请重新输入！"
                                 } else {
                                     errorMsg = error.toString()
                                 }
