@@ -95,6 +95,7 @@
                 <p slot="footer" style="text-align: center">
                     <Button type="primary"  @click="showModal = false">关闭</Button>
                 </p>
+                <Spin size="large" fix v-if="showVersionLoading"></Spin>
             </Modal>
         </Layout>
     </div>
@@ -121,7 +122,8 @@
                 showModal:false,
                 versionInfo:utils.validate(versionSerializer,{}),
                 permissions:  sessionStorage.permissions === undefined ? "" : sessionStorage.permissions,
-                currentRouter: router.currentRoute
+                currentRouter: router.currentRoute,
+                showVersionLoading:false,
             };
         },
         computed:{
@@ -150,14 +152,17 @@
             },
             getSysVersion(){
                 this.showModal = true;
+                this.showVersionLoading = true;
                 this.$Loading.start();
                 let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)
                 this.$ajax.post(coralUrl,{
                     requestName:'getTMachVersionInfo'
                 }).then(response=>{
+                    this.showVersionLoading = false;
                     this.versionInfo = utils.validate(versionSerializer,response.data);
                     this.$Loading.finish();
                 }).catch(error=>{
+                    this.showVersionLoading = false;
                     this.$Loading.error();
                     if(config.DEBUG) console.log(error);
                 })

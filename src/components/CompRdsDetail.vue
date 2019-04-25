@@ -1,9 +1,7 @@
 <template>
     <Card dis-hover>
         <p>
-            <Button type="primary">修改</Button>
-            <Button style="margin-left: 20px;">导出</Button>
-            <Button type="error" style="float: right" @click="delRds()">删除</Button>
+            <Button type="error" @click="delRds()">删除</Button>
         </p>
         <Form :label-width="120">
             <Divider>RDS信息</Divider>
@@ -57,17 +55,16 @@
             <FormItem>
                 <b slot="label">日志文件：</b>
                 <ButtonGroup>
-                    <Button v-for="files in rdsInfo.rdslog">{{files.file_name}}</Button>
+                    <Button v-for="files in rdsInfo.rdslog" :key="files.id" @click="downloadLog(files.log_file)">{{ files.file_name }}</Button>
                 </ButtonGroup>
             </FormItem>
         </Form>
-        <div style="height: 600px;">设备温度曲线</div>
         <div>
             <span>截图：共 {{rdsInfo.rdsscreenshot.length}} 张</span>
             <br>
-            <img v-for="img in rdsInfo.rdsscreenshot" :src=img.img_file :alt=img.img_file>
+            <img v-for="img in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.img_file :alt=img.img_file>
         </div>
-
+        <Spin size="large" fix v-if="showSpin"></Spin>
     </Card>
 </template>
 
@@ -120,11 +117,14 @@
     export default {
         data(){
             return{
+                baseUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT,
                 rdsInfo:utils.validate(rdsSerializer,{}),
+                showSpin:false,
             }
         },
         methods:{
             refresh(rdsId){
+                this.showSpin=true;
                 this.$ajax
                     .get("api/v1/cedar/rds/"+rdsId+"/?fields="+
                         "id,"+
@@ -140,6 +140,7 @@
                         "end_time,"+
                         "job_assessment_value")
                     .then(response=>{
+                        this.showSpin=false;
                         this.rdsInfo = utils.validate(rdsSerializer,response.data);
                         if(this.rdsInfo.job_assessment_value==="0"){
                             this.rdsInfo.result = "通过";
@@ -148,9 +149,9 @@
                         }else{
                             this.rdsInfo.result = "无效";
                         }
-                        console.log(this.rdsInfo)
                     })
                     .catch(error=>{
+                        this.showSpin=false;
                         if (config.DEBUG) console.log(error)
                         let errorMsg = "";
                         if (error.response.status >= 500) {
@@ -185,8 +186,11 @@
                             })
                     }
                 });
+            },
+            downloadLog(path){
+                window.open(this.baseUrl+path)
             }
-        }
+        },
     }
 </script>
 

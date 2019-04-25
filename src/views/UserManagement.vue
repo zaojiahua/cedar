@@ -26,7 +26,7 @@
                     </FormItem>
                 </Form>
                 <div  class="drawer-footer">
-                    <Button v-if="updatePwd" style="float: left" @click="addShow=true">修改密码</Button>
+                    <Button v-if="updatePwd" style="float: left" @click="addShow=true;userInfo.password=null">修改密码</Button>
                     <Button type="primary" style="margin-right: 20px" @click="update">确认</Button>
                     <Button  @click="showUserDetail = false">取消</Button>
                 </div>
@@ -160,7 +160,6 @@
                     })
             },
             update (){
-                this.showUserDetail = false;
                 let AjaxParamObj={};
                 if(this.addShow===true){
                     AjaxParamObj = {
@@ -176,43 +175,63 @@
                         groups:this.userInfo.role
                     }
                 }
-                this.$Loading.start();
                 if(this.updatePwd===true){
-                    this.$ajax
-                        .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",AjaxParamObj)
-                        .then(response => {
-                            this.$Message.success('修改成功');
-                            this.getUserData();
-                            this.$Loading.finish()
-                        })
-                        .catch(error => {
-                            let errorMsg = "";
-                            if (error.response.status >= 500) {
-                                errorMsg = "服务器错误！"
-                            } else {
-                                errorMsg = error.toString()
-                            }
-                            this.$Message.error(errorMsg)
-                            this.$Loading.error()
-                        })
+                    if(this.userInfo.username===""){
+                        this.$Message.warning("请输入登录名！");
+                    }else if(this.addShow===true&&this.userInfo.password===null){
+                        this.$Message.warning("请输入密码！");
+                    } else {
+                        this.$Loading.start();
+                        this.$ajax
+                            .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",AjaxParamObj)
+                            .then(response => {
+                                this.showUserDetail = false;
+                                this.$Message.success('修改成功');
+                                this.getUserData();
+                                this.$Loading.finish()
+                            })
+                            .catch(error => {
+                                let errorMsg = "";
+                                if (error.response.status >= 500) {
+                                    errorMsg = "服务器错误！"
+                                }else if(error.response.status=== 400){
+                                    errorMsg = "该用户名已存在，请重新输入！"
+                                } else {
+                                    errorMsg = error.toString()
+                                }
+                                this.$Message.error(errorMsg)
+                                this.$Loading.error()
+                            })
+                    }
+
                 }else {
-                    this.$ajax
-                        .post("api/v1/cedar/reefuser/",AjaxParamObj)
-                        .then(response => {
-                            this.$Message.success('添加成功');
-                            this.getUserData();
-                            this.$Loading.finish()
-                        })
-                        .catch(error => {
-                            let errorMsg = "";
-                            if (error.response.status >= 500) {
-                                errorMsg = "服务器错误！"
-                            } else {
-                                errorMsg = error.toString()
-                            }
-                            this.$Message.error(errorMsg)
-                            this.$Loading.error()
-                        })
+                    if(this.userInfo.username===""){
+                        this.$Message.warning("请输入登录名！");
+                    }else if(this.userInfo.password===null){
+                        this.$Message.warning("请输入密码！");
+                    }else {
+                        this.$Loading.start();
+                        this.$ajax
+                            .post("api/v1/cedar/reefuser/",AjaxParamObj)
+                            .then(response => {
+                                this.showUserDetail = false;
+                                this.$Message.success('添加成功');
+                                this.getUserData();
+                                this.$Loading.finish()
+                            })
+                            .catch(error => {
+                                let errorMsg = "";
+                                if (error.response.status >= 500) {
+                                    errorMsg = "服务器错误！"
+                                }else if(error.response.status=== 400){
+                                    errorMsg = "该用户名已存在，请重新输入！"
+                                } else {
+                                    errorMsg = error.toString()
+                                }
+                                this.$Message.error(errorMsg)
+                                this.$Loading.error()
+                            })
+                    }
                 }
             },
             addUser(){

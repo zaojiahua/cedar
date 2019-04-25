@@ -13,8 +13,8 @@
             <Spin v-show="loadingData" size="large" style="position: absolute; width: 100%; height: inherit; left: 50%;"></Spin>
             <div :class="loadingData ? 'opacity-row' : ''">
                 <div class="rds-box"
-                     v-for="item in rdsData" :key="item.id" @mouseenter="onRdsMouseEnter(item)"
-                     @mouseleave="onRdsMouseLeave" @click="onRdsBoxClick(item)"></div>
+                     v-for="(item,index) in rdsData" :key="item.id" @mouseenter="onRdsMouseEnter(item)"
+                     @mouseleave="onRdsMouseLeave" @click="onRdsBoxClick(item,index)"></div>
             </div>
             <Button style="width: 100%; margin-top: 8px;" v-show="showMore"
                     @click="loadMoreData(false)" :disabled="loadingData">加载更多
@@ -27,7 +27,7 @@
             <comp-tboard-list :prop-multi-select="true" ref="tboardList" @on-row-click="onTboardListRowClick"></comp-tboard-list>
         </Modal>
         <Drawer v-model="showRdsDetail" :closable="false" width="50" transfer>
-            <comp-rds-detail ref="rdsDetail"></comp-rds-detail>
+            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne"></comp-rds-detail>
         </Drawer>
     </Card>
 </template>
@@ -89,7 +89,8 @@
                 tboards: [],
                 showJobSelector: false,
                 showTboardSelector: false,
-                showRdsDetail: false
+                showRdsDetail: false,
+                rdsIndex:null,
             }
         },
         methods: {
@@ -189,10 +190,15 @@
             onTboardListRowClick(row, index){
                 this.$refs.tboardList.toggleSelect(index)
             },
-            onRdsBoxClick(rds){
+            onRdsBoxClick(rds,index){
                 this.$refs.rdsDetail.refresh(rds.id)
                 this.showRdsDetail = true
+                this.rdsIndex=index;
             },
+            delRdsOne(){
+                this.showRdsDetail = false;
+                this.rdsData.splice(this.rdsIndex, 1)
+            }
         },
         created() {
             if(config.DEBUG && (this.propDeviceId===null)) console.log("CompRdsList的参数propDeviceId不可为空!")

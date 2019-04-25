@@ -129,11 +129,12 @@
                         requestName:'getDeviceInDoor'
                     })
                     .then(response=>{
-                        if(!response.data){
+                        if(utils.validate(addDeviceSerializer,response.data).ipAddress===null){
                             this.addDeviceError('未找到可添加设备', '请将设备从USB上拔除,并返回第一步确认操作无遗漏')
                             this.addBtn = false;
                             this.backStepOne = true;
-                        }else if(utils.validate(addDeviceSerializer,response.data).ipAddress.length===0){
+                            this.deviceInfo = utils.validate(addDeviceSerializer,response.data);
+                        }else if(utils.validate(addDeviceSerializer,response.data).ipAddress===""){
                             this.addBtn = false;
                             this.rescan = true;
                             this.deviceInfo = utils.validate(addDeviceSerializer,response.data);
