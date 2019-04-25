@@ -17,7 +17,7 @@
         </Row>
         <Divider></Divider>
         <Row>
-            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" @pageData="pageData"></comp-job-list>
+            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
         </Row>
         <Drawer v-model="showDetail" :draggable="true" :closable="false" width="50">
             <comp-job-detail ref="jobDetail" :prop-del-job="true" @closeDrawer="closeDrawer" @delJobOne="delJobOne"></comp-job-detail>
@@ -67,23 +67,10 @@
                     conditions.push(conditionStr)
                 })
 
-                let param = conditions.join("&")
-                return param
+                return conditions.join("&")
             },
             onJobFilterChange(selected){
-                let param = this.selectedDetail(selected)
-                this.$refs.jobList.refreshViaUrl(
-                    "api/v1/cedar/job/?fields=" +
-                    "id," +
-                    "job_name," +
-                    "custom_tag," +
-                    "custom_tag.id," +
-                    "custom_tag.custom_tag_name," +
-                    "test_area," +
-                    "test_area.id," +
-                    "test_area.description&"+
-                    "job_deleted=False&"+param
-                )
+                this.$refs.jobList.refreshWithParam("&" + this.selectedDetail(selected))
             },
             getJobList(){
                 this.selectedJob = this.$refs.jobList.getSelection();
@@ -96,7 +83,6 @@
             delJobList(){
                 let jobList = this.getJobList();
                 let that = this;
-                console.log(jobList)
                 if(jobList.length===0){
                     this.$Modal.confirm({
                         title: "提示",
@@ -176,21 +162,7 @@
                         }
                     });
                 }
-            },
-            pageData(pageIndex){
-                let param = this.selectedDetail(this.$refs.jobFilter._jobRender())
-                let url = "api/v1/cedar/job/?fields=" +
-                    "id," +
-                    "job_name," +
-                    "custom_tag," +
-                    "custom_tag.id," +
-                    "custom_tag.custom_tag_name," +
-                    "test_area," +
-                    "test_area.id," +
-                    "test_area.description&"+
-                    "job_deleted=False&"+param
-                this.$refs.jobList.getPageData(url,pageIndex);
-            },
+            }
         },
         created(){
             this.uploadUrl = utils.getCoralUrl(config.JOBSVC_PORT);

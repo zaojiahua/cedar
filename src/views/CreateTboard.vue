@@ -27,7 +27,7 @@
             </Row>
             <Row type="flex" style="margin-top: 16px;">
                 <Col span="11">
-                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" @pageData="pageData"></comp-job-list>
+                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
                 </Col>
                 <Col span="2">
                     <Row type="flex" justify="center" style="margin: auto;">
@@ -113,7 +113,6 @@
                 this.$refs.selectDevice.toggleSelect(index)
             },
             toPageChooseJob(){
-
                 this.selectedDevice = this.$refs.deviceList.getData()
                 this.current = 1
             },
@@ -143,23 +142,10 @@
                 return param
             },
             onJobFilterChange(selected){
-                // this.jobRequestSource.cancel()
-                let param = this.selectedDetail(selected);
-                this.$refs.jobList.refreshViaUrl(
-                    "api/v1/cedar/job/?fields=" +
-                    "id," +
-                    "job_name," +
-                    "custom_tag," +
-                    "custom_tag.id," +
-                    "custom_tag.custom_tag_name," +
-                    "test_area," +
-                    "test_area.id," +
-                    "test_area.description&"+
-                    "job_deleted=False&"+param
-                )
+                this.$refs.jobList.refreshWithParam("&" + this.selectedDetail(selected))
             },
             selectJob(){
-                this.$refs.jobSelectedList.refresh(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection()))
+                this.$refs.jobSelectedList.refreshWithData(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection()))
             },
             toPageFillInfo(){
                 this.selectedJob = this.$refs.jobSelectedList.getData()
@@ -167,20 +153,6 @@
             },
             backToPageChooseDevice(){
                 this.current = 0
-            },
-            pageData(pageIndex){
-                let param = this.selectedDetail(this.$refs.jobFilter._jobRender())
-                let url = "api/v1/cedar/job/?fields=" +
-                    "id," +
-                    "job_name," +
-                    "custom_tag," +
-                    "custom_tag.id," +
-                    "custom_tag.custom_tag_name," +
-                    "test_area," +
-                    "test_area.id," +
-                    "test_area.description&"+
-                    "job_deleted=False&"+param
-                this.$refs.jobList.getPageData(url,pageIndex);
             },
             // Page "Fill info"
             complete(){

@@ -17,7 +17,7 @@
         </Row>
 
         <Table ref="table" border :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading"></Table>
-        <Page :current="1" :total="1000" simple @on-change="pageOnChange" style="margin-top:20px;text-align: center "/>
+        <Page :total="dataTotal" :page-size="propPageSize" simple @on-change="pageOnChange" style="margin-top:20px;text-align: center "/>
     </div>
 </template>
 
@@ -79,6 +79,10 @@
             propMultiSelect:{ // Multi selection feature
                 type: Boolean,
                 default: false
+            },
+            propPageSize: {
+                type: Number,
+                default: config.PAGE_SIZE
             }
         },
         data() {
@@ -152,6 +156,8 @@
                 tableDeviceColumn: [],
                 // Devices data
                 data: [],
+                dataTotal: 0,
+                offset: 0,
                 // Add device
                 showAddDevice: false,
                 // Multi Selection
@@ -186,7 +192,11 @@
                         'tempport.port,' +
                         'tempport.description,' +
                         'monitor_index,' +
-                        'monitor_index.port')
+                        'monitor_index.port' +
+                        '&limit=' + this.propPageSize +
+                        "&offset=" + this.offset +
+                        "&ordering=id"
+                    )
                     .then(response => {
                         this._responseHandle(response);
                     })
@@ -195,6 +205,7 @@
                     })
             },
             _responseHandle(response){
+                this.dataTotal = parseInt(response.headers["total-count"])
                 this.data = utils.validate(getDeviceListSerializer, response.data['devices'])
                 this.data.forEach(device=>{
                     device.cpu_name = device.phone_model.cpu_name
@@ -269,36 +280,8 @@
 
             },
             pageOnChange(page){
-                let resIndex = 10*(page-1);
-                this.$ajax
-                    .get('api/v1/cedar/device/?fields=' +
-                        'id,' +
-                        'device_label,' +
-                        'phone_model,' +
-                        'phone_model.phone_model_name,' +
-                        'rom_version,' +
-                        'rom_version.version,' +
-                        'device_name,' +
-                        'android_version,' +
-                        'android_version.version,' +
-                        'phone_model.cpu_name,' +
-                        'ip_address,' +
-                        'status,' +
-                        'powerport,' +
-                        'powerport.port,' +
-                        'tempport,' +
-                        'tempport.port,' +
-                        'tempport.description,' +
-                        'monitor_index,' +
-                        'monitor_index.port' +
-                        '&offset=' + resIndex +
-                        '&limit=10')
-                    .then(response => {
-                        this._responseHandle(response);
-                    })
-                    .catch(reason => {
-                        this._requestErrorHandle(reason);
-                    })
+                this.offset = this.propPageSize*(page-1);
+                this.refresh()
             }
         },
         created() {
