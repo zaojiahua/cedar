@@ -115,7 +115,12 @@
             toPageChooseJob(){
 
                 this.selectedDevice = this.$refs.deviceList.getData()
-                this.current = 1
+                if(this.selectedDevice.length>0){
+                    this.current = 1
+                }else {
+                    this.$Message.warning("请选择要进行测试的设备！");
+                }
+
             },
             // Page "Choose job"
             selectedDetail(selected){
@@ -163,7 +168,12 @@
             },
             toPageFillInfo(){
                 this.selectedJob = this.$refs.jobSelectedList.getData()
-                this.current = 2
+                if(this.selectedJob.length>0){
+                    this.current = 2
+                }else {
+                    this.$Message.warning("请选择用例要进行测试的用例！");
+                }
+
             },
             backToPageChooseDevice(){
                 this.current = 0
@@ -190,42 +200,50 @@
                     console.log(this.tboardName)
                     console.log(this.tboardRepeatTime)
                 }
-                let deviceList = [];
-                this.selectedDevice.forEach(device=>{
-                    deviceList.push(device.device_label);
-                })
-                let jobList = [];
-                this.selectedJob.forEach(job=>{
-                    jobList.push(job.job_label);
-                })
-                utils._initDate();
-                let boardStamp = new Date().format("yyyy_MM_dd_hh_mm_ss");
-                let coralUrl = utils.getCoralUrl(config.CREATETBOARD_PORT);
-                let userId = localStorage.getItem('id');
-                this.$ajax
-                    .post(coralUrl,{
-                        requestName:"insertTBoard",
-                        boardDict:{
-                            boardName:this.tboardName,
-                            deviceIDList:deviceList,
-                            jobIDList:jobList,
-                            jobListNum:this.tboardRepeatTime,
-                            boardStamp:boardStamp,
-                            ownerID:userId
+                if(this.tboardRepeatTime===null){
+                    this.$Message.warning("请输入运行轮次！")
+                }else{
+                    let deviceList = [];
+                    this.selectedDevice.forEach(device=>{
+                        deviceList.push(device.device_label);
+                    })
+                    let jobList = [];
+                    this.selectedJob.forEach(job=>{
+                        for (let i=0;i<job.counter;i++){
+                            jobList.push(job.job_label);
                         }
                     })
-                    .then(response=>{
-                        if(response.data.state){
-                            this.$Message.success("任务启动成功！")
-                            main.$router.push({name: "tboard-management"})
-                        }else {
-                            this.$Message.error("任务启动失败！")
-                        }
-                    })
-                    .catch(error=>{
-                        if(config.DEBUG) console.log(error)
-                        this.$Message.error("任务启动失败")
-                    })
+                    utils._initDate();
+                    let boardStamp = new Date().format("yyyy_MM_dd_hh_mm_ss");
+                    let coralUrl = utils.getCoralUrl(config.CREATETBOARD_PORT);
+                    let userId = localStorage.getItem('id');
+                    this.$ajax
+                        .post(coralUrl,{
+                            requestName:"insertTBoard",
+                            boardDict:{
+                                boardName:this.tboardName,
+                                deviceIDList:deviceList,
+                                jobIDList:jobList,
+                                jobListNum:this.tboardRepeatTime,
+                                boardStamp:boardStamp,
+                                ownerID:userId
+                            }
+                        })
+                        .then(response=>{
+                            if(response.data.state){
+                                this.$Message.success("任务启动成功！")
+                                main.$router.push({name: "tboard-management"})
+                            }else {
+                                this.$Message.error("任务启动失败！")
+                                if(config.DEBUG) console.log(response.data);
+                            }
+                        })
+                        .catch(error=>{
+                            if(config.DEBUG) console.log(error)
+                            this.$Message.error("任务启动失败")
+                        })
+                }
+
             },
             backToPageChooseJob(){
                 this.current = 1
