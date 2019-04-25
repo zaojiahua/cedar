@@ -9,8 +9,8 @@
                     </div>
                     <div class="layout-nav">
                         <MenuItem name="0" :to="{name: 'personal-data'}">
-                            <Avatar>R</Avatar>
-                            Raymond
+                            <Avatar>{{ username.substr(0,1).toUpperCase() }}</Avatar>
+                            {{ username }}
                         </MenuItem>
                         <MenuItem name="1">
                             提醒
@@ -142,6 +142,7 @@
                 permissions:  sessionStorage.permissions === undefined ? "" : sessionStorage.permissions,
                 currentRouter: router.currentRoute,
                 showVersionLoading:false,
+                username:localStorage.username,
             };
         },
         computed:{
