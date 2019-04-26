@@ -5,7 +5,7 @@
         </Row>
         <Row style="height: 50px;">
             <Col span="12">
-                <Upload :data="uploadData" :action="uploadUrl" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
+                <Upload ref="upload" :data="uploadData" :action="uploadUrl" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
                     <Button icon="ios-cloud-upload-outline">导入用例</Button>
                 </Upload>
             </Col>
@@ -131,12 +131,21 @@
                 this.$Message.error("文件上传失败！")
             },
             handleUploadSuccess(response){
-                this.$Message.success("文件上传成功！")
+                if(response.state==="OK"){
+                    this.$Message.success("文件上传成功！")
+                }else{
+                    this.$Notice.error({
+                        title:"文件上传失败",
+                        desc:"未使用正确的压缩包文件,请检查后重试！"
+                    })
+                    setTimeout(hander=>{
+                        this.$refs.upload.clearFiles();
+                    },500)
+                }
             },
             exportCase(){
                 let jobList = this.getJobList();
                 let that = this;
-                console.log(jobList)
                 if(jobList.length===0){
                     this.$Modal.confirm({
                         title: "提示",
@@ -153,7 +162,11 @@
                                     jobIdList: jobList
                                 })
                                 .then(response=>{
-                                    window.location.href=response.data.file;
+                                    if(response.data.file){
+                                        window.location.href=response.data.file;
+                                    }else {
+                                        this.$Message.error("导出用例失败!")
+                                    }
                                 })
                                 .catch(error=>{
                                     if (config.DEBUG) console.log(error)
