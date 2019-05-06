@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Table ref="table" :columns="columns" :data="data" @on-row-click="onRowClick">
+        <Table ref="table" :columns="columns" :data="data" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="counter">
                 <InputNumber :min="1" v-model="data[index].counter"></InputNumber>
             </template>
@@ -86,6 +86,7 @@
                     }
                 ],
                 data: [],
+                selection: [],
                 dataTotal: 0,
                 offset: 0,
                 urlParam: "",
@@ -114,6 +115,20 @@
                     job.display_job_test_area = job_test_areas.join(', ')
                     job.display_custom_tag = custom_tags.join(', ')
                 })
+
+                /* 将之前已经选中的选项重新勾选 */
+                if(this.selection[this.currentPage] !== undefined){
+                    let ids = []
+                    this.selection[this.currentPage].forEach(item=>{
+                        ids.push(item.id)
+                    })
+
+                    for(let i=0; i<this.data.length; ++i){
+                        if(ids.includes(this.data[i].id)){
+                            this.data[i]._checked = true
+                        }
+                    }
+                }
             },
             _setUrlParam(param){
                 this.urlParam = param
@@ -157,7 +172,11 @@
                 return this.data
             },
             getSelection() {
-                return this.$refs.table.getSelection()
+                let selection = []
+                this.selection.forEach(items=>{
+                    selection = selection.concat(items)
+                })
+                return selection
             },
             toggleSelect(_index) {
                 this.$refs.table.toggleSelect(_index)
@@ -175,6 +194,9 @@
             },
             clearSelection() {
                 this.$refs.table.selectAll(false)
+            },
+            onSelectionChange(selection){
+                this.selection[this.currentPage] = selection
             }
 
         },
