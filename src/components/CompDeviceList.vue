@@ -16,8 +16,8 @@
             </Col>
         </Row>
 
-        <Table ref="table" border :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading"></Table>
-        <Page :total="dataTotal" :page-size="propPageSize" simple @on-change="pageOnChange" style="margin-top:20px;text-align: center "/>
+        <Table ref="table" border :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
+        <Page :total="dataTotal" :current="currentPage" :page-size="propPageSize" simple @on-change="pageOnChange" style="margin-top:20px;text-align: center "/>
     </div>
 </template>
 
@@ -161,7 +161,9 @@
                 // Add device
                 showAddDevice: false,
                 // Multi Selection
-                selectedDevice: []
+                selectedDevice: [],
+                currentPage:1,
+                selection:[]
             }
         },
         methods: {
@@ -228,6 +230,19 @@
                     device.monitorport = monitorPortStr.substring(0, monitorPortStr.length-2)
                 })
                 this.loading = false
+
+                /* 将之前已经选中的选项重新勾选 */
+                if(this.selection[this.currentPage] !== undefined){
+                    let ids = []
+                    this.selection[this.currentPage].forEach(item=>{
+                        ids.push(item.id)
+                    })
+                    for(let i=0; i<this.data.length; ++i){
+                        if(ids.includes(this.data[i].id)){
+                            this.data[i]._checked = true
+                        }
+                    }
+                }
             },
             _requestErrorHandle(reason){
                 if (config.DEBUG) console.log(reason)
@@ -258,7 +273,11 @@
                 this.$refs.table.toggleSelect(index)
             },
             getSelection(){
-                return this.$refs.table.getSelection()
+                let selection = []
+                this.selection.forEach(items=>{
+                    selection = selection.concat(items)
+                })
+                return selection
             },
             getData(){
                 return this.data
@@ -281,7 +300,11 @@
             },
             pageOnChange(page){
                 this.offset = this.propPageSize*(page-1);
+                this.currentPage = page;
                 this.refresh()
+            },
+            onSelectionChange(selection){
+                this.selection[this.currentPage] = selection
             }
         },
         created() {
