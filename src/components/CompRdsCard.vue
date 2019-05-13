@@ -13,7 +13,7 @@
             <Spin v-show="loadingData" size="large" style="position: absolute; width: 100%; height: inherit; left: 50%;"></Spin>
             <div :class="loadingData ? 'opacity-row' : ''">
                 <div class="rds-box"
-                     v-for="(item,index) in rdsData" :key="item.id" @mouseenter="onRdsMouseEnter(item)"
+                     v-for="(item,index) in rdsData" :key="item.id" :class="getRdsColorClass(item.job_assessment_value)" @mouseenter="onRdsMouseEnter(item)"
                      @mouseleave="onRdsMouseLeave" @click="onRdsBoxClick(item,index)"></div>
             </div>
             <Button style="width: 100%; margin-top: 8px;" v-show="showMore"
@@ -156,8 +156,8 @@
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
-                            this.$Message.error("数据加载失败!")
-                            this.loadingData = false
+                        this.$Message.error("数据加载失败!")
+                        this.loadingData = false
                     })
             },
             openJobList(){
@@ -198,7 +198,13 @@
             delRdsOne(){
                 this.showRdsDetail = false;
                 this.rdsData.splice(this.rdsIndex, 1)
-            }
+            },
+            getRdsColorClass(type) {
+                if (type === "0") return "success"
+                if (type === "1") return "failed"
+                if (type === "-1") return "invalid"
+                return "invalid"
+            },
         },
         created() {
             if(config.DEBUG && (this.propDeviceId===null)) console.log("CompRdsList的参数propDeviceId不可为空!")
@@ -211,7 +217,6 @@
     .rds-box {
         height: 24px;
         width: 24px;
-        background-color: #1bbc9c;
         display: inline-block;
         margin-right: 2px;
         cursor: pointer;
@@ -224,5 +229,14 @@
 
     .opacity-row {
         opacity: 0.5;
+    }
+    .success{
+        background-color: #1bbc9c;
+    }
+    .failed{
+        background-color: #FFAE25;
+    }
+    .invalid{
+        background-color: #BDC3C7;
     }
 </style>
