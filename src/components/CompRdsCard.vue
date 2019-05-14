@@ -202,7 +202,6 @@
             getRdsColorClass(type) {
                 if (type === "0") return "success"
                 if (type === "1") return "failed"
-                if (type === "-1") return "invalid"
                 return "invalid"
             },
         },
