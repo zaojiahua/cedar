@@ -17,13 +17,14 @@
         <Row>
             <slot name="header-bottom"></slot>
         </Row>
-        <Table ref="table" :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick">
+        <Table :loading="showLoading" ref="table" :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick">
             <template slot-scope="{row, index}" slot="pauseOrDelete">
                 <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-square'"
                         @click="pauseOrDeleteTboard(index)">
                 </Button>
             </template>
         </Table>
+        <Page :total="dataTotal" :current="currentPage" :page-size="propPageSize" simple @on-change="pageOnChange" style="margin-top:20px;text-align: center "/>
     </Card>
 </template>
 
@@ -57,6 +58,10 @@
             propMultiSelect: {
                 type: Boolean,
                 default: false
+            },
+            propPageSize: {
+                type: Number,
+                default: config.PAGE_SIZE
             }
         },
         data() {
@@ -83,12 +88,14 @@
                 ],
                 filterCondition: "all",
                 filterDateRange: null,
+                dataTotal:0,
+                currentPage:1,
+                offset: 0,
+                showLoading:false,
             }
         },
         methods: {
-            refresh(data) {
-                if (data !== undefined && data !== null)
-                    this.data = data
+            refresh() {
                 let finishedCondition = ""
                 if (this.filterCondition === "all") {
                     finishedCondition = ""
@@ -114,7 +121,7 @@
                         this.filterDateRange[1].getDate()
                 }
                 let userId = localStorage.getItem('id');
-
+                this.showLoading = true;
                 this.$ajax.get(
                     "api/v1/cedar/tboard/?fields=" +
                     "id," +
@@ -122,19 +129,27 @@
                     "board_name," +
                     "finished_flag" +
                     "&author__id=" + userId +
+                    "&ordering=-board_stamp" +
+                    '&limit=' + this.propPageSize +
+                    "&offset=" + this.offset +
                     finishedCondition +
                     dateRageCondition
                 ).then(response => {
+                    this.dataTotal = parseInt(response.headers["total-count"])
                     this.data = utils.validate(getTboardSerializer, response.data).tboards
+                    this.showLoading = false;
                 }).catch(reason => {
                     if (config.DEBUG) console.log(reason)
                     this.$Message.error("载入失败")
+                    this.showLoading = false;
                 })
             },
             getDate() {
                 return this.data
             },
             onConditionChange() {
+                this.currentPage=1;
+                this.offset = 0;
                 this.refresh()
             },
             pauseOrDeleteTboard(index) {
@@ -214,7 +229,12 @@
             },
             toggleSelect(_index){
                 return this.$refs.table.toggleSelect(_index)
-            }
+            },
+            pageOnChange(page){
+                this.offset = this.propPageSize*(page-1);
+                this.currentPage = page;
+                this.refresh()
+            },
 
         },
         created() {
