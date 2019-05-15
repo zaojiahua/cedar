@@ -31,7 +31,7 @@
                             <Tooltip content="用户管理" placement="right" :disabled="!isCollapsed">
                                 <Icon type="md-person" size="24"/>
                             </Tooltip>
-                                <span>用户管理</span>
+                            <span>用户管理</span>
                         </MenuItem>
                         <MenuItem v-if="permissions.includes('apiv1.upgrade_system')" name="sys-upgrade" :to="{name: 'system-upgrade'}">
                             <Tooltip content="系统升级" placement="right" :disabled="!isCollapsed">
