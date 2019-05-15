@@ -2,6 +2,7 @@
 node_modules
 /dist
 src/lib/ip.js
+public/ip.js
 
 # local env files
 .env.local

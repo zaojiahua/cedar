@@ -1,4 +1,4 @@
-import ip from "./ip"
+// noinspection JSUnresolvedVariable
 export default {
     "DEBUG": true,
     "REEF_HOST": ip.REEF_HOST,

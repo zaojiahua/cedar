@@ -4,7 +4,7 @@ deploy:
   stage: deploy
   script:
     - npm install
-    - cp /etc/cedar/conf/ip.js src/lib/ip.js
+    - cp /etc/cedar/conf/ip.js public/ip.js
     - npm run build
     - ls
     - rm -rf tmp || true
