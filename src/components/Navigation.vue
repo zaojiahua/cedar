@@ -28,35 +28,51 @@
                 <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;">
                     <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass" :active-name="currentRouter.name">
                         <MenuItem v-if="permissions.includes('apiv1.user_management')" name="user-management" :to="{name: 'user-management'}">
-                            <Icon type="md-person" size="24"/>
+                            <Tooltip content="用户管理" placement="right" :disabled="!isCollapsed">
+                                <Icon type="md-person" size="24"/>
+                            </Tooltip>
                             <span>用户管理</span>
                         </MenuItem>
                         <MenuItem v-if="permissions.includes('apiv1.upgrade_system')" name="sys-upgrade" :to="{name: 'system-upgrade'}">
-                            <Icon type="md-sync" size="24"/>
+                            <Tooltip content="系统升级" placement="right" :disabled="!isCollapsed">
+                                <Icon type="md-sync" size="24"/>
+                            </Tooltip>
                             <span>系统升级</span>
                         </MenuItem>
                         <MenuItem v-if="permissions.includes('apiv1.view_system_log')" name="log-files" :to="{name: 'log-files'}">
-                            <Icon type="md-filing" size="24"/>
+                            <Tooltip content="日志文件" placement="right" :disabled="!isCollapsed">
+                                <Icon type="md-filing" size="24"/>
+                            </Tooltip>
                             <span>日志文件</span>
                         </MenuItem>
                         <MenuItem name="job-management" :to="{name: 'job-management'}">
-                            <Icon type="ios-briefcase-outline" size="24"/>
+                            <Tooltip content="用例管理" placement="right" :disabled="!isCollapsed">
+                                <Icon type="ios-briefcase-outline" size="24"/>
+                            </Tooltip>
                             <span>用例管理</span>
                         </MenuItem>
                         <MenuItem name="create-tboard" :to="{name: 'create-tboard'}">
-                            <Icon type="ios-add-circle-outline" size="24"/>
+                            <Tooltip content="新建任务" placement="right" :disabled="!isCollapsed">
+                                <Icon type="ios-add-circle-outline" size="24"/>
+                            </Tooltip>
                             <span>新建任务</span>
                         </MenuItem>
                         <MenuItem name="tboard-management" :to="{name: 'tboard-management'}">
-                            <Icon type="ios-folder-open-outline" size="24"/>
+                            <Tooltip content="我的任务" placement="right" :disabled="!isCollapsed">
+                                <Icon type="ios-folder-open-outline" size="24"/>
+                            </Tooltip>
                             <span>我的任务</span>
                         </MenuItem>
                         <MenuItem name="rds-management" :to="{name: 'rds-management'}">
-                            <Icon type="ios-pie-outline" size="24"/>
+                            <Tooltip content="测试数据" placement="right" :disabled="!isCollapsed">
+                                <Icon type="ios-pie-outline" size="24"/>
+                            </Tooltip>
                             <span>测试数据</span>
                         </MenuItem>
                         <MenuItem name="device-management" :to="{name: 'device-management'}">
-                            <Icon type="ios-phone-portrait" size="24"/>
+                            <Tooltip content="设备管理" placement="right" :disabled="!isCollapsed">
+                                <Icon type="ios-phone-portrait" size="24"/>
+                            </Tooltip>
                             <span>设备管理</span>
                         </MenuItem>
 
@@ -253,5 +269,8 @@
         transition: font-size .2s ease .2s, transform .2s ease .2s;
         vertical-align: middle;
         font-size: 22px;
+    }
+    .ivu-tooltip{
+        margin-right: 6px;
     }
 </style>
