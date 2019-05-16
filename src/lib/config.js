@@ -17,9 +17,9 @@ export default {
 
 /*
 ip配置儅不包含在代碼中, 每個部署版本需自行建置, 格式如下:
-PATH: ./src/lib/ip.js
+PATH: {{PROJECT_ROOT}}/public/ip.js
 
-export default {
+let ip = {
     KEY_NAME: VALUE,
     KEY_NAME: VALUE,
     KEY_NAME: VALUE
@@ -27,8 +27,8 @@ export default {
 
 如:
 
-export default{
-    "REEF_HOST": "127.0.0.1",
+let ip = {
+    "REEF_HOST": "10.80.3.138",
     "CORAL_HOST":"10.80.3.100",
     "INDOOR_HOST":"10.80.3.138",
 }
