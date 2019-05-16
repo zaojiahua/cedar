@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Layout>
+        <Layout :style="{minHeight: '100vh'}">
             <Header class="header" style="padding-left:0px;">
                 <Menu mode="horizontal" theme="dark" active-name="1" style="background-color: transparent">
                     <div class="layout-logo">
@@ -24,8 +24,8 @@
                     </div>
                 </Menu>
             </Header>
-            <Layout style="position: absolute; top: 64px; left: 0px; right: 0px; bottom: 0px;">
-                <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;">
+            <Layout>
+                <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;padding-bottom: 48px">
                     <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass" :active-name="currentRouter.name">
                         <MenuItem v-if="permissions.includes('apiv1.user_management')" name="user-management" :to="{name: 'user-management'}">
                             <Tooltip content="用户管理" placement="right" :disabled="!isCollapsed">
