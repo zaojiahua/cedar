@@ -133,6 +133,7 @@
                     // 不统一的命名额外处理
                     if(key==="job_test_area") key = "test_area"
                     else if(key==="phone_model") key = "phone_models"
+                    else if(key==="reefuser") key = "author"
 
 
                     condition.forEach(item=>{
