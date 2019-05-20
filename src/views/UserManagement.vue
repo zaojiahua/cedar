@@ -7,7 +7,7 @@
             </p>
             <Table ref="table" stripe :columns="userColumns" :data="userData"></Table>
         </Card>
-        <Drawer v-model="showUserDetail" :draggable="true" width="50" title="用户信息">
+        <Drawer v-model="dShowUserDetail" :draggable="true" width="50" title="用户信息">
             <Card>
                 <Form  v-model="userInfo" :label-width="80">
                     <FormItem label="登录名：">
@@ -16,7 +16,7 @@
                     <FormItem label="真实姓名：">
                         <Input v-model="userInfo.firstname" placeholder="Enter your name..."></Input>
                     </FormItem>
-                    <FormItem label="密码：" v-if="addShow">
+                    <FormItem label="密码：" v-if="dShowPassword">
                         <Input v-model="userInfo.password" type="password" placeholder="Enter password..."></Input>
                     </FormItem>
                     <FormItem label="角色：">
@@ -26,9 +26,9 @@
                     </FormItem>
                 </Form>
                 <div  class="drawer-footer">
-                    <Button v-if="updatePwd" style="float: left" @click="addShow=true;userInfo.password=null">修改密码</Button>
+                    <Button v-if="showPwdUpdateInput" style="float: left" @click="dShowPassword=true;userInfo.password=null">修改密码</Button>
                     <Button type="primary" style="margin-right: 20px" @click="update">确认</Button>
-                    <Button  @click="showUserDetail = false">取消</Button>
+                    <Button  @click="dShowUserDetail = false">取消</Button>
                 </div>
             </Card>
         </Drawer>
@@ -87,7 +87,7 @@
                                     },
                                     on: {
                                         click: () => {
-                                            this.show(params.index);
+                                            this.showUserDetail(params.index);
                                         }
                                     }
                                 }, '修改'),
@@ -108,9 +108,9 @@
                     }
                 ],
                 userData:[],
-                showUserDetail:false,
-                addShow:false,
-                updatePwd:false,
+                dShowUserDetail:false,
+                dShowPassword:false,
+                showPwdUpdateInput:false,
                 showModal:false,
                 delObj:'',
                 groupList:[],
@@ -124,10 +124,10 @@
             }
         },
         methods:{
-            show(index){
-                this.showUserDetail = true;
-                this.addShow=false;
-                this.updatePwd=true;
+            showUserDetail(index){
+                this.dShowUserDetail = true;
+                this.dShowPassword=false;
+                this.showPwdUpdateInput=true;
                 this.userInfo.username  = this.userData[index].username;
                 this.userInfo.firstname  = this.userData[index].firstname;
                 this.userInfo.id  = this.userData[index].id;
@@ -161,7 +161,7 @@
             },
             update (){
                 let AjaxParamObj={};
-                if(this.addShow===true){
+                if(this.dShowPassword===true){
                     AjaxParamObj = {
                         username:this.userInfo.username,
                         last_name:this.userInfo.firstname,
@@ -175,17 +175,17 @@
                         groups:this.userInfo.role
                     }
                 }
-                if(this.updatePwd===true){
+                if(this.showPwdUpdateInput===true){
                     if(this.userInfo.username===""){
                         this.$Message.warning("请输入登录名！");
-                    }else if(this.addShow===true&&this.userInfo.password===null){
+                    }else if(this.dShowPassword===true&&this.userInfo.password===null){
                         this.$Message.warning("请输入密码！");
                     } else {
                         this.$Loading.start();
                         this.$ajax
                             .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",AjaxParamObj)
                             .then(response => {
-                                this.showUserDetail = false;
+                                this.dShowUserDetail = false;
                                 this.$Message.success('修改成功');
                                 this.getUserData();
                                 this.$Loading.finish()
@@ -214,7 +214,7 @@
                         this.$ajax
                             .post("api/v1/cedar/reefuser/",AjaxParamObj)
                             .then(response => {
-                                this.showUserDetail = false;
+                                this.dShowUserDetail = false;
                                 this.$Message.success('添加成功');
                                 this.getUserData();
                                 this.$Loading.finish()
@@ -235,9 +235,9 @@
                 }
             },
             addUser(){
-                this.updatePwd=false;
-                this.addShow=true;
-                this.showUserDetail = true;
+                this.showPwdUpdateInput=false;
+                this.dShowPassword=true;
+                this.dShowUserDetail = true;
                 this.userInfo.username  = "";
                 this.userInfo.firstname  = "";
                 this.userInfo.password  = null;
