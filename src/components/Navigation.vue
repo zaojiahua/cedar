@@ -187,24 +187,25 @@
         },
         created(){
             if(sessionStorage.permissions === undefined){
-                this.$ajax
-                    .get("api/v1/permissions/")
-                    .then(response=>{
-                        sessionStorage.permissions = response.data
-                        this.permissions = sessionStorage.permissions
-                    })
-                    .catch(reason=>{
-                        sessionStorage.permissions = []
-                        let msg = ""
-                        if(reason.response === undefined){
-                            msg = "请确认您的网路"
-                        } else {
-                            msg = reason.response.status
-                        }
-                        this.$Notice.error({
-                            title: "取得用户权限失败: "+msg
-                        })
-                    })
+                // this.$ajax
+                //     .get("api/v1/permissions/")
+                //     .then(response=>{
+                //         sessionStorage.permissions = response.data
+                //         this.permissions = sessionStorage.permissions
+                //     })
+                //     .catch(reason=>{
+                //         sessionStorage.permissions = []
+                //         let msg = ""
+                //         if(reason.response === undefined){
+                //             msg = "请确认您的网路"
+                //         } else {
+                //             msg = reason.response.status
+                //         }
+                //         this.$Notice.error({
+                //             title: "取得用户权限失败: "+msg
+                //         })
+                //     })
+                this.sessionStorage = []
             }else {
                 this.permissions = sessionStorage.permissions
             }
