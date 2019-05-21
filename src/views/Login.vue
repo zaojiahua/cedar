@@ -47,7 +47,7 @@
         },
         methods: {
             login() {
-                this.$Loading.start()
+                // this.$Loading.start()
                 this.$ajax
                     .post('api/v1/login/', {
                         username: this.username,
@@ -62,7 +62,7 @@
                         }
                         this.$router.push({name: "home"})
                         this.$Message.success('成功登入!');
-                        this.$Loading.finish()
+                        // this.$Loading.finish()
                     })
                     .catch(error => {
                         let errorMsg = "";
@@ -76,7 +76,7 @@
                             errorMsg = error.toString()
                         }
                         this.$Message.error(errorMsg)
-                        this.$Loading.error()
+                        // this.$Loading.error()
                     })
 
 
