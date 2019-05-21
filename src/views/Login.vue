@@ -83,7 +83,6 @@
             }
         },
         mounted() {
-            console.log("mounted")
             localStorage.removeItem("token")
             localStorage.removeItem("id")
             sessionStorage.removeItem("permissions")

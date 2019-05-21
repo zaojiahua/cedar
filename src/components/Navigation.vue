@@ -186,7 +186,9 @@
             }
         },
         created(){
+            console.log("1")
             if(sessionStorage.permissions === undefined){
+                console.log("2")
                 // this.$ajax
                 //     .get("api/v1/permissions/")
                 //     .then(response=>{
@@ -206,9 +208,11 @@
                 //         })
                 //     })
                 this.sessionStorage = []
+                console.log("3")
             }else {
                 this.permissions = sessionStorage.permissions
             }
+            console.log("4")
         }
     }
 </script>
