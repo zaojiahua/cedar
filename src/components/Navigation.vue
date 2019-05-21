@@ -186,33 +186,28 @@
             }
         },
         created(){
-            console.log("1")
             if(sessionStorage.permissions === undefined){
-                console.log("2")
-                // this.$ajax
-                //     .get("api/v1/permissions/")
-                //     .then(response=>{
-                //         sessionStorage.permissions = response.data
-                //         this.permissions = sessionStorage.permissions
-                //     })
-                //     .catch(reason=>{
-                //         sessionStorage.permissions = []
-                //         let msg = ""
-                //         if(reason.response === undefined){
-                //             msg = "请确认您的网路"
-                //         } else {
-                //             msg = reason.response.status
-                //         }
-                //         this.$Notice.error({
-                //             title: "取得用户权限失败: "+msg
-                //         })
-                //     })
-                this.sessionStorage = []
-                console.log("3")
+                this.$ajax
+                    .get("api/v1/permissions/")
+                    .then(response=>{
+                        sessionStorage.permissions = response.data
+                        this.permissions = sessionStorage.permissions
+                    })
+                    .catch(reason=>{
+                        sessionStorage.permissions = []
+                        let msg = ""
+                        if(reason.response === undefined){
+                            msg = "请确认您的网路"
+                        } else {
+                            msg = reason.response.status
+                        }
+                        this.$Notice.error({
+                            title: "取得用户权限失败: "+msg
+                        })
+                    })
             }else {
                 this.permissions = sessionStorage.permissions
             }
-            console.log("4")
         }
     }
 </script>
