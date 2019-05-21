@@ -5,7 +5,7 @@ deploy:
   script:
     - npm install
     - cp /etc/cedar/conf/ip.js public/ip.js
-    - vue-cli-service build --mode development
+    - npm run build
     - ls
     - rm -rf tmp || true
     - mkdir tmp
