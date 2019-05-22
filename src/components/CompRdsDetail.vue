@@ -59,12 +59,15 @@
                 </ButtonGroup>
             </FormItem>
         </Form>
-        <div>
-            <span>截图：共 {{rdsInfo.rdsscreenshot.length}} 张</span>
+        <div style="color: #515a6e;padding-left: 48px;font-size: 12px">
+            <b style="cursor: default">截图：共 {{rdsInfo.rdsscreenshot.length}} 张</b>
             <br>
-            <img v-for="img in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.img_file :alt=img.img_file>
+            <img style="margin: 5px" v-for="img in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name @click="viewOriginalImg(img.id)">
         </div>
         <Spin size="large" fix v-if="showSpin"></Spin>
+        <Modal v-model="showImgModal" :fullscreen="true" footer-hide style="text-align: center">
+            <img :src=baseUrl+imgInfo.img_file :alt="imgInfo.file_name" style="max-height: 98%;max-width: 100%">
+        </Modal>
     </Card>
 </template>
 
@@ -104,7 +107,7 @@
         }],
         rdsscreenshot: [{
             id:"number",
-            img_file:"string",
+            thumbs_file:"string",
             file_name:"string"
         }],
         start_time: "string",
@@ -113,6 +116,12 @@
             board_name: "string"
         }
     }
+    const imgSerializer = {
+            id:"number",
+            file_name:"string",
+            img_file:"string"
+        }
+
 
     export default {
         data(){
@@ -120,6 +129,8 @@
                 baseUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT,
                 rdsInfo:utils.validate(rdsSerializer,{}),
                 showSpin:false,
+                showImgModal:false,
+                imgInfo:utils.validate(imgSerializer,{}),
             }
         },
         methods:{
@@ -134,7 +145,7 @@
                         "device.android_version,device.android_version.id,device.android_version.version,"+
                         "device.rom_version,device.rom_version.id,device.rom_version.version,"+
                         "rdslog,rdslog.id,rdslog.log_file,rdslog.file_name,"+
-                        "rdsscreenshot,rdsscreenshot.id,rdsscreenshot.img_file,rdsscreenshot.file_name,"+
+                        "rdsscreenshot,rdsscreenshot.id,rdsscreenshot.thumbs_file,rdsscreenshot.file_name,"+
                         "tboard,tboard.id,tboard.board_name,"+
                         "start_time,"+
                         "end_time,"+
@@ -189,6 +200,24 @@
             },
             downloadLog(path){
                 window.open(this.baseUrl+path)
+            },
+            viewOriginalImg(imgId){
+                this.showImgModal = true;
+                this.$ajax
+                    .get("api/v1/cedar/rds_screenshot/"+imgId+"/?fields="+
+                        "id,img_file,file_name")
+                    .then(response=>{
+                        this.imgInfo = utils.validate(imgSerializer,response.data);
+                    }).catch(error=>{
+                        if (config.DEBUG) console.log(error)
+                        let errorMsg = "";
+                        if (error.response.status >= 500) {
+                            errorMsg = "服务器错误！"
+                        } else {
+                            errorMsg = "图片读取失败！"
+                        }
+                        this.$Message.error(errorMsg)
+                })
             }
         },
     }
