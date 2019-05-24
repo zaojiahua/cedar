@@ -39,7 +39,7 @@
     import CompTboardList from "./CompTboardList";
     import CompRdsDetail from "./CompRdsDetail";
 
-    const pageSize = 50
+    const pageSize = config.LARGE_PAGE_SIZE
 
     const getRdsSerializer = {
         rdss: [

@@ -12,7 +12,7 @@ export default {
     "JOBSVC_PORT":"10801",
     // Paging setting
     "PAGE_SIZE": 10,
-    "LARGE_PAGE_SIZE": 50
+    "LARGE_PAGE_SIZE": 500
 }
 
 /*
