@@ -236,6 +236,8 @@
                 this.selectedTempPorts = []
                 this.selectedPowerPorts = ""
                 this.selectedMonitorPorts = ""
+                this.disablePowerPorts = [];
+                this.disableTempPorts = [];
                 ajax.all(
                     [
                         ajax.get(
@@ -284,36 +286,28 @@
                     this.monitorPorts = utils.validate(serializer.monitorPortSerializer, monitorPortResponse.data).monitorports
 
                     //tempPort Detail
-                    let ports = []     //当前device下选中的port， 可选中,可取消状态
+                    let deviceTempPorts = []     //当前device下选中的port， 可选中,可取消状态
                     this.device.tempport.forEach(port=>{
-                        ports.push(port.port)
+                        deviceTempPorts.push(port.port)
                     })
-                    let busyTempPorts=[]    //所有被占用的tempPort
+
                     this.tempPorts.forEach(port=>{
-                        if(port.status==="busy")  busyTempPorts.push(port.port)
-                    })
-                    this.selectedTempPorts = busyTempPorts
-                    let disableTempPorts = []
-                    this.selectedTempPorts.forEach(port=>{
-                        if(ports.indexOf(port)===-1){
-                            disableTempPorts.push(port);
+                        if(deviceTempPorts.includes(port.port)){
+                            this.selectedTempPorts.push(port.port);
+                        }
+                        else if (port.status==="busy"){
+                            this.disableTempPorts.push(port.port);
+                            this.selectedTempPorts.push(port.port);
                         }
                     })
-                    this.disableTempPorts = disableTempPorts;    //需要disable状态的数据
 
                     //powerPort Detail
                     this.selectedPowerPorts = this.device.powerport.port
-                    let busyPowerPorts=[]
                     this.powerPorts.forEach(port=>{
-                        if(port.status==="busy")  busyPowerPorts.push(port.port)
-                    })
-                    let disablePowerPorts = []
-                    busyPowerPorts.forEach(port=>{
-                        if(this.selectedPowerPorts!==port){
-                            disablePowerPorts.push(port);
+                        if(port.status==="busy"&&this.selectedPowerPorts!==port.port){
+                            this.disablePowerPorts.push(port.port);
                         }
                     })
-                    this.disablePowerPorts = disablePowerPorts;
 
                     //monitorPort Detail
                      this.device.monitor_index.forEach(port=>{
