@@ -39,7 +39,7 @@
             </p>
             <p style="text-align: center;font-size: 16px;">你确定要删除该用户吗？</p>
             <p slot="footer" style="text-align: center">
-                <Button type="primary" style="margin-right: 100px;" @click="remove(delObj)">确定</Button>
+                <Button type="primary" style="margin-right: 100px;" @click="removeUserOne(delIndex)">确定</Button>
                 <Button @click="showModal = false">取消</Button>
             </p>
         </Modal>
@@ -47,9 +47,12 @@
 </template>
 
 <script>
+    import CompUserDetail from "../components/CompUserDetail"
     import config from "../lib/config"
+
     export default {
         name: "UserManagement",
+        components:{ CompUserDetail },
         data(){
             return {
                 userColumns:[
@@ -99,7 +102,7 @@
                                     on: {
                                         click: () => {
                                             this.showModal = true;
-                                            this.delObj = params.index;
+                                            this.delIndex = params.index;
                                         }
                                     }
                                 }, '删除')
@@ -112,15 +115,8 @@
                 dShowPassword:false,
                 showPwdUpdateInput:false,
                 showModal:false,
-                delObj:'',
-                groupList:[],
-                userInfo:{
-                    id:null,
-                    username:"",
-                    firstname:"",
-                    role:[],
-                    password:null
-                }
+                delIndex:null,
+                componentStatus:false,
             }
         },
         methods:{
@@ -137,7 +133,12 @@
                     this.userInfo.role  = [];
                 }
             },
-            remove (index) {
+            addUser(){
+                this.showUserDetail = true;
+                this.componentStatus = false;
+                this.$refs.userDetail.addUserBtn();
+            },
+            removeUserOne (index) {
                 this.$Loading.start();
                 this.$ajax
                     .delete("api/v1/cedar/reefuser/"+ this.userData[index].id +"/")
@@ -276,31 +277,6 @@
                         this.$Loading.error()
                     })
             },
-            getGroup(){
-                this.$Loading.start()
-                this.$ajax
-                    .get("api/v1/cedar/group/?fields=name")
-                    .then(response=>{
-                        let groupObj = [];
-                        for (let i=0;i<response.data.groups.length;i++){
-                            groupObj.push(response.data.groups[i].name)
-                        }
-                        this.groupList = groupObj;
-                        this.$Loading.finish();
-                    })
-                    .catch(error=>{
-                        if (config.DEBUG) console.log(error);
-                        let errorMsg = "";
-                        if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
-                        } else {
-                            errorMsg = error.toString()
-                        }
-                        this.$Message.error(errorMsg)
-                        this.$Loading.error();
-                    })
-
-            },
             delUserList(){
                 let userList = this.$refs.table.getSelection();
                 if(userList.length>0){
@@ -334,12 +310,10 @@
                         content: "请选择要删除的数据！"
                     });
                 }
-
             }
         },
         created(){
             this.getUserData();
-            this.getGroup();
         }
     }
 </script>
