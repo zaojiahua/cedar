@@ -50,12 +50,12 @@
         <Collapse :value="[0,1,2]">
             <Panel>温度感应片配对
                 <CheckboxGroup slot="content" v-model="selectedTempPorts">
-                    <Checkbox v-for="item in tempPorts" :label="item.port" :key="item.id" :disabled="disablePorts(item.port,disableTempPorts)">{{item.port}}</Checkbox>
+                    <Checkbox v-for="item in tempPorts" :label="item.port" :key="item.id" :disabled="isDisabled(item.port,disableTempPorts)">{{item.port}}</Checkbox>
                 </CheckboxGroup>
             </Panel>
             <Panel>智能充电口配对
                 <RadioGroup  slot="content" v-model="selectedPowerPorts">
-                    <Radio  v-for="item in powerPorts" :label="item.port" :key="item.id" :disabled="disablePorts(item.port,disablePowerPorts)">{{item.port}}</Radio >
+                    <Radio  v-for="item in powerPorts" :label="item.port" :key="item.id" :disabled="isDisabled(item.port,disablePowerPorts)">{{item.port}}</Radio >
                 </RadioGroup >
             </Panel>
             <Panel>工业相机配对
@@ -328,7 +328,7 @@
 
             },
             //ports disable
-            disablePorts(port,disablePorts){
+            isDisabled(port,disablePorts){
                 if(disablePorts.indexOf(port)!==-1)
                     return true;
                 return false;
