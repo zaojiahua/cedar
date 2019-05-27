@@ -7,8 +7,30 @@
             </p>
             <Table ref="table" stripe :columns="userColumns" :data="userData"></Table>
         </Card>
-        <Drawer v-model="showUserDetail" :draggable="true" width="50" title="用户信息">
-            <comp-user-detail :propStatus="componentStatus" ref="userDetail" @onCancelClick="closeDrawer" @afterSendRequest="afterSendRequest"></comp-user-detail>
+        <Drawer v-model="dShowUserDetail" :draggable="true" width="50" title="用户信息">
+            <Card>
+                <Form  v-model="userInfo" :label-width="80">
+                    <FormItem label="登录名：">
+                        <Input v-model="userInfo.username" placeholder="Enter username..."></Input>
+                    </FormItem>
+                    <FormItem label="真实姓名：">
+                        <Input v-model="userInfo.firstname" placeholder="Enter your name..."></Input>
+                    </FormItem>
+                    <FormItem label="密码：" v-if="dShowPassword">
+                        <Input v-model="userInfo.password" type="password" placeholder="Enter password..."></Input>
+                    </FormItem>
+                    <FormItem label="角色：">
+                        <CheckboxGroup v-model="userInfo.role">
+                            <Checkbox v-for="item in groupList" :label="item" :key="item"></Checkbox><br/>
+                        </CheckboxGroup>
+                    </FormItem>
+                </Form>
+                <div  class="drawer-footer">
+                    <Button v-if="showPwdUpdateInput" style="float: left" @click="dShowPassword=true;userInfo.password=null">修改密码</Button>
+                    <Button type="primary" style="margin-right: 20px" @click="update">确认</Button>
+                    <Button  @click="dShowUserDetail = false">取消</Button>
+                </div>
+            </Card>
         </Drawer>
         <Modal v-model="showModal" :closable="false" :mask-closable="false"  width="360">
             <p slot="header" style="color:#f60;text-align:center">
@@ -68,7 +90,7 @@
                                     },
                                     on: {
                                         click: () => {
-                                            this.showUserInfo(params.index);
+                                            this.showUserDetail(params.index);
                                         }
                                     }
                                 }, '修改'),
@@ -89,20 +111,27 @@
                     }
                 ],
                 userData:[],
-                showUserDetail:false,
+                dShowUserDetail:false,
+                dShowPassword:false,
+                showPwdUpdateInput:false,
                 showModal:false,
                 delIndex:null,
                 componentStatus:false,
             }
         },
         methods:{
-            closeDrawer(msg){
-                this.showUserDetail = msg;
-            },
-            showUserInfo(index){
-                this.showUserDetail = true;
-                this.componentStatus = true;
-                this.$refs.userDetail.showUserInfoBtn(this.userData[index]);
+            showUserDetail(index){
+                this.dShowUserDetail = true;
+                this.dShowPassword=false;
+                this.showPwdUpdateInput=true;
+                this.userInfo.username  = this.userData[index].username;
+                this.userInfo.firstname  = this.userData[index].firstname;
+                this.userInfo.id  = this.userData[index].id;
+                if(this.userData[index].role){
+                    this.userInfo.role  = this.userData[index].role.split(",");
+                }else {
+                    this.userInfo.role  = [];
+                }
             },
             addUser(){
                 this.showUserDetail = true;
@@ -131,9 +160,89 @@
                         this.$Loading.error()
                     })
             },
-            afterSendRequest(flag){
-                this.showUserDetail = flag;
-                this.getUserData();
+            update (){
+                let AjaxParamObj={};
+                if(this.dShowPassword===true){
+                    AjaxParamObj = {
+                        username:this.userInfo.username,
+                        last_name:this.userInfo.firstname,
+                        groups:this.userInfo.role,
+                        password:this.userInfo.password
+                    }
+                }else {
+                    AjaxParamObj = {
+                        username:this.userInfo.username,
+                        last_name:this.userInfo.firstname,
+                        groups:this.userInfo.role
+                    }
+                }
+                if(this.showPwdUpdateInput===true){
+                    if(this.userInfo.username===""){
+                        this.$Message.warning("请输入登录名！");
+                    }else if(this.dShowPassword===true&&this.userInfo.password===null){
+                        this.$Message.warning("请输入密码！");
+                    } else {
+                        this.$Loading.start();
+                        this.$ajax
+                            .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",AjaxParamObj)
+                            .then(response => {
+                                this.dShowUserDetail = false;
+                                this.$Message.success('修改成功');
+                                this.getUserData();
+                                this.$Loading.finish()
+                            })
+                            .catch(error => {
+                                let errorMsg = "";
+                                if (error.response.status >= 500) {
+                                    errorMsg = "服务器错误！"
+                                }else if(error.response.status=== 400){
+                                    errorMsg = "该用户名已存在，请重新输入！"
+                                } else {
+                                    errorMsg = error.toString()
+                                }
+                                this.$Message.error(errorMsg)
+                                this.$Loading.error()
+                            })
+                    }
+
+                }else {
+                    if(this.userInfo.username===""){
+                        this.$Message.warning("请输入登录名！");
+                    }else if(this.userInfo.password===null){
+                        this.$Message.warning("请输入密码！");
+                    }else {
+                        this.$Loading.start();
+                        this.$ajax
+                            .post("api/v1/cedar/reefuser/",AjaxParamObj)
+                            .then(response => {
+                                this.dShowUserDetail = false;
+                                this.$Message.success('添加成功');
+                                this.getUserData();
+                                this.$Loading.finish()
+                            })
+                            .catch(error => {
+                                let errorMsg = "";
+                                if (error.response.status >= 500) {
+                                    errorMsg = "服务器错误！"
+                                }else if(error.response.status=== 400){
+                                    errorMsg = "该用户名已存在，请重新输入！"
+                                } else {
+                                    errorMsg = error.toString()
+                                }
+                                this.$Message.error(errorMsg)
+                                this.$Loading.error()
+                            })
+                    }
+                }
+            },
+            addUser(){
+                this.showPwdUpdateInput=false;
+                this.dShowPassword=true;
+                this.dShowUserDetail = true;
+                this.userInfo.username  = "";
+                this.userInfo.firstname  = "";
+                this.userInfo.password  = null;
+                this.userInfo.role  = [];
             },
             getUserData(){
                 this.$Loading.start();
