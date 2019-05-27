@@ -2,27 +2,27 @@
     <Card>
         <Form  v-model="userInfo" :label-width="80">
             <FormItem label="登录名：">
-                <Input v-model="userInfo.username" placeholder="Enter username..." @on-keyup="usernameVerify"></Input>
+                <Input v-model="userInfo.username" placeholder="Enter username..." @on-keyup="usernameVerifyFeedback"></Input>
                 <p v-show="showNameTip" style="color: red;">{{ nameTipMsg }}</p>
             </FormItem>
             <FormItem label="真实姓名：">
                 <Input v-model="userInfo.firstname" placeholder="Enter your name..."></Input>
             </FormItem>
             <FormItem label="密码：" v-if="showPassword">
-                <Input v-model="userInfo.password" type="password" placeholder="Enter password..." @on-keyup="passwordVerify"></Input>
+                <Input v-model="userInfo.password" type="password" placeholder="Enter password..." @on-keyup="passwordVerifyFeedback"></Input>
                 <p v-show="showPwdTip" style="color: red;">{{ pwdTipMsg }}</p>
             </FormItem>
             <FormItem label="角色：">
-                <CheckboxGroup v-model="userInfo.role" @on-change="groupVerify">
+                <CheckboxGroup v-model="userInfo.role" @on-change="groupVerifyFeedback">
                     <Checkbox v-for="item in groupList" :label="item" :key="item"></Checkbox><br/>
                 </CheckboxGroup>
                 <p v-show="showGroupTip" style="color: red;">{{ groupTipMsg }}</p>
             </FormItem>
         </Form>
         <div  class="drawer-footer">
-            <Button v-if="propUpdatePwdBtn" style="float: left" @click="showPassword=true;userInfo.password=null">修改密码</Button>
-            <Button type="primary" style="margin-right: 20px" @click="sendRequest">确认</Button>
-            <Button  @click="closeDetail">取消</Button>
+            <Button v-if="propStatus" style="float: left" @click="showPassword=true;userInfo.password=null">修改密码</Button>
+            <Button type="primary" style="margin-right: 20px" @click="onSave">确认</Button>
+            <Button  @click="cancelClick">取消</Button>
         </div>
     </Card>
 </template>
@@ -34,7 +34,7 @@
     export default {
         name:"CompUserDetail",
         props:{
-            propUpdatePwdBtn:{
+            propStatus:{
                 type: Boolean,
                 default: false
             }
@@ -79,8 +79,8 @@
                 }
                 this.resetVerifyTip();
             },
-            closeDetail(){
-                this.$emit("closeDrawer",false);
+            cancelClick(){
+                this.$emit("onCancelClick",false);
             },
             getGroup(){
                 this.$Loading.start()
@@ -106,33 +106,35 @@
                         this.$Loading.error();
                     })
             },
-            sendRequest(){
-                this.usernameVerify();
-                if(this.showPassword) this.passwordVerify();
-                this.groupVerify();
+            onSave(){
+                this.usernameVerifyFeedback();
+                if(this.showPassword){
+                    this.passwordVerifyFeedback();
+                }
+                this.groupVerifyFeedback();
                 if(this.showNameTip===true||this.showPwdTip===true||this.showGroupTip===true)
                     return;
                 // get url params
-                let AjaxParamObj={};
+                let ajaxParamObj={};
                 if(this.showPassword===true){
-                    AjaxParamObj = {
+                    ajaxParamObj = {
                         username:this.userInfo.username,
                         last_name:this.userInfo.firstname,
                         groups:this.userInfo.role,
                         password:this.userInfo.password
                     }
                 }else {
-                    AjaxParamObj = {
+                    ajaxParamObj = {
                         username:this.userInfo.username,
                         last_name:this.userInfo.firstname,
                         groups:this.userInfo.role
                     }
                 }
                 //send request
-                if(this.propUpdatePwdBtn){    //update  user
+                if(this.propStatus){    //update  user
                     this.$Loading.start();
                     this.$ajax
-                        .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",AjaxParamObj)
+                        .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",ajaxParamObj)
                         .then(response => {
                             this.$Message.success('修改成功');
                             this.$Loading.finish()
@@ -154,7 +156,7 @@
                 }else{        // add new user
                     this.$Loading.start();
                     this.$ajax
-                        .post("api/v1/cedar/reefuser/",AjaxParamObj)
+                        .post("api/v1/cedar/reefuser/",ajaxParamObj)
                         .then(response => {
                             this.$Message.success('添加成功');
                             this.$Loading.finish()
@@ -178,41 +180,47 @@
             //表单验证
             usernameVerify(){
                 if(this.userInfo.username.trim()===""){
-                    this.showNameTip = true;
-                    this.nameTipMsg = "登录名不能为空！"
+                   return "登录名不能为空！"
                 }else if (this.userInfo.username.trim().length<5||this.userInfo.username.trim().length>30) {
-                    this.showNameTip = true;
-                    this.nameTipMsg = "登录名的长度应在5-30个字符之内！"
+                    return "登录名的长度应在5-30个字符之内！"
                 } else if (!/^[a-zA-Z0-9_]+$/.test(this.userInfo.username)) {
-                    this.showNameTip = true;
-                    this.nameTipMsg = '请输入字母数字下划线，不能输入特殊字符！'
+                    return "请输入字母数字下划线，不能输入特殊字符！"
                 } else {
-                    this.showNameTip = false;
-                    this.nameTipMsg = "";
+                    return  "";
                 }
             },
             passwordVerify(){
                 if(!this.userInfo.password){
-                    this.showPwdTip = true;
-                    this.pwdTipMsg = "密码不能为空！"
+                    return "密码不能为空！"
                 }else if (this.userInfo.password.length<6||this.userInfo.password.length>30) {
-                    this.showPwdTip = true;
-                    this.pwdTipMsg = "密码长度应在6-30个字符之内！"
+                    return "密码长度应在6-30个字符之内！"
                 }else {
-                    this.showPwdTip = false;
-                    this.pwdTipMsg = "";
+                    return  "";
                 }
             },
             groupVerify(){
                 if(this.userInfo.role.length<1){
-                    this.showGroupTip = true;
-                    this.groupTipMsg = "请选择该用户拥有的权限（至少选择一项）！";
+                    return  "请选择该用户拥有的权限（至少选择一项）！";
                 }else {
-                    this.showGroupTip = false;
-                    this.groupTipMsg = "";
+                    return "";
                 }
             },
-
+            //表单验证信息反馈
+            usernameVerifyFeedback(){
+                let result = this.usernameVerify()
+                this.showNameTip = result !== ""
+                this.nameTipMsg = result
+            },
+            passwordVerifyFeedback(){
+                let result = this.passwordVerify()
+                this.showPwdTip = result !== ""
+                this.pwdTipMsg = result
+            },
+            groupVerifyFeedback(){
+                let result = this.groupVerify();
+                this.showGroupTip= result !== ""
+                this.groupTipMsg = result
+            },
             //重置表单验证提示信息
             resetVerifyTip(){
                 this.showNameTip = false;
