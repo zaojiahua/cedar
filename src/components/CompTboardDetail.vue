@@ -47,9 +47,8 @@
                 </Col>
             </Row>
             <Divider orientation="left">设备运行结果</Divider>
-            <CellGroup>
-                <Cell v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click.native="onCellClick(statistic)">
-                    <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px">
+                <div v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click.native="onCellClick(statistic)" style="padding: 7px 16px;">
+                    <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;">
                         <Col>
                             <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
                                 <p>{{(statistic.pass*100/statistic.total).toFixed(1)}}%</p>
@@ -64,8 +63,10 @@
                             <b>无效: </b><span>{{statistic.invalid}}</span>
                         </Col>
                     </Row>
-                </Cell>
-            </CellGroup>
+                    <Row>
+                        <comp-temperature-histogram :device-id="statistic.id" ref="histogram"></comp-temperature-histogram>
+                    </Row>
+                </div>
         </Form>
         <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
             <comp-device-detail ref="deviceDetail"></comp-device-detail>
@@ -82,6 +83,7 @@
     import CompDeviceDetail from "./CompDeviceDetail";
     import CompJobList from "./CompJobList";
     import CompJobDetail from "./CompJobDetail";
+    import CompTemperatureHistogram from "./CompTemperatureHistogram";
 
     const getTboardSerializer = {
         board_name: "string",
@@ -104,7 +106,9 @@
             id: "number",
             username: "string",
             last_name: "string"
-        }
+        },
+        board_stamp: "date",
+        end_time: "date"
 
     }
     const getRdsSerializer = {
@@ -122,6 +126,7 @@
     }
     const statisticDataSerializer = [
         {
+            id: "number",
             deviceLabel: "string",
             deviceName: "string",
             total: "number",
@@ -133,7 +138,7 @@
 
     export default {
         name: "CompTboardDetail",
-        components: {CompJobList, CompDeviceDetail, CompJobDetail},
+        components: {CompTemperatureHistogram, CompJobList, CompDeviceDetail, CompJobDetail},
         data() {
             return {
                 data: utils.validate(getTboardSerializer, {}),
@@ -174,14 +179,19 @@
                     "author," +
                     "author.id," +
                     "author.username," +
-                    "author.last_name"
+                    "author.last_name," +
+                    "board_stamp," +
+                    "end_time"
                 ).then(response => {
                     this.data = utils.validate(getTboardSerializer, response.data)
+                    // 刷新所有温度图表
+                    this.$refs.histogram.forEach(histogram=>{
+                        histogram.refresh(this.data.board_stamp, this.data.end_time)
+                    })
                 }).catch(reason => {
                     if (config.DEBUG) console.log(reason)
                     this.$Message.error("载入失败")
                 })
-
                 this.$ajax.get(
                     "api/v1/cedar/get_rds_rapid/?tboard__id=" + tboardId
                 ).then(response => {
