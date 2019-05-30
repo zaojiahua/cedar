@@ -50,12 +50,12 @@
         <Collapse :value="[0,1,2]">
             <Panel>温度感应片配对
                 <CheckboxGroup slot="content" v-model="selectedTempPorts">
-                    <Checkbox v-for="item in tempPorts" :label="item.port" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
+                    <Checkbox v-for="item in tempPorts" :label="item.port" :key="item.id" :disabled="isDisabled(item.port,disableTempPorts)">{{item.port}}</Checkbox>
                 </CheckboxGroup>
             </Panel>
             <Panel>智能充电口配对
                 <RadioGroup  slot="content" v-model="selectedPowerPorts">
-                    <Radio  v-for="item in powerPorts" :label="item.port" :key="item.id" :disabled="!editable">{{item.port}}</Radio >
+                    <Radio  v-for="item in powerPorts" :label="item.port" :key="item.id" :disabled="isDisabled(item.port,disablePowerPorts)">{{item.port}}</Radio >
                 </RadioGroup >
             </Panel>
             <Panel>工业相机配对
@@ -175,6 +175,8 @@
                 tempPorts: utils.validate(serializer.tempPortSerializer, {}).tempports,
                 powerPorts: utils.validate(serializer.powerPortSerializer, {}).powerports,
                 monitorPorts: utils.validate(serializer.monitorPortSerializer, {}).monitorports,
+                disableTempPorts:[],
+                disablePowerPorts:[],
                 selectedTempPorts:[],
                 selectedPowerPorts: "",
                 selectedMonitorPorts: "",
@@ -234,6 +236,8 @@
                 this.selectedTempPorts = []
                 this.selectedPowerPorts = ""
                 this.selectedMonitorPorts = ""
+                this.disablePowerPorts = [];
+                this.disableTempPorts = [];
                 ajax.all(
                     [
                         ajax.get(
@@ -258,17 +262,22 @@
                             "port," +
                             "description," +
                             "device," +
-                            "device.id"),
+                            "device.id," +
+                            "status" +
+                            "&ordering=port"),
                         ajax.get("api/v1/cedar/power_port/?fields=" +
                             "id," +
                             "port," +
                             "device," +
-                            "device.id"),
+                            "device.id," +
+                            "status"+
+                            "&ordering=port"),
                         ajax.get("api/v1/cedar/monitor_port/?fields=" +
                             "id," +
                             "port," +
                             "device," +
-                            "device.id")
+                            "device.id" +
+                            "&ordering=port")
                     ]
                 ).then(ajax.spread((deviceResponse, tempPortResponse, powerPortResponse, monitorPortResponse)=>{
                     this.device = utils.validate(serializer.deviceSerializer, deviceResponse.data)
@@ -276,18 +285,34 @@
                     this.powerPorts = utils.validate(serializer.powerPortSerializer, powerPortResponse.data).powerports
                     this.monitorPorts = utils.validate(serializer.monitorPortSerializer, monitorPortResponse.data).monitorports
 
-                    let ports = []
+                    //tempPort Detail
+                    let deviceTempPorts = []     //当前device下选中的port， 可选中,可取消状态
                     this.device.tempport.forEach(port=>{
-                        ports.push(port.port)
+                        deviceTempPorts.push(port.port)
                     })
-                    this.selectedTempPorts = ports
 
+                    this.tempPorts.forEach(port=>{
+                        if(deviceTempPorts.includes(port.port)){
+                            this.selectedTempPorts.push(port.port);
+                        }
+                        else if (port.status==="busy"){
+                            this.disableTempPorts.push(port.port);
+                            this.selectedTempPorts.push(port.port);
+                        }
+                    })
+
+                    //powerPort Detail
                     this.selectedPowerPorts = this.device.powerport.port
+                    this.powerPorts.forEach(port=>{
+                        if(port.status==="busy"&&this.selectedPowerPorts!==port.port){
+                            this.disablePowerPorts.push(port.port);
+                        }
+                    })
 
-                    this.device.monitor_index.forEach(port=>{
+                    //monitorPort Detail
+                     this.device.monitor_index.forEach(port=>{
                         this.selectedMonitorPorts = port.port
                     })
-
                 })).catch(reason => {
                     if(config.DEBUG)
                         console.log(reason)
@@ -295,6 +320,12 @@
                     this.$Message.error("读取数据时出错! "+status)
                 })
 
+            },
+            //ports disable
+            isDisabled(port,disablePorts){
+                if(disablePorts.indexOf(port)!==-1)
+                    return true;
+                return false;
             },
             // Update device
             updateDevice(){
