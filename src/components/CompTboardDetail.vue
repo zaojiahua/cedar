@@ -47,7 +47,8 @@
                 </Col>
             </Row>
             <Divider orientation="left">设备运行结果</Divider>
-                <div v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click.native="onCellClick(statistic)" style="padding: 7px 16px;">
+                <Card v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click.native="onCellClick(statistic)"
+                      style="padding: 7px 16px; cursor: pointer;">
                     <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;">
                         <Col>
                             <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
@@ -66,7 +67,7 @@
                     <Row>
                         <comp-temperature-histogram :device-id="statistic.id" ref="histogram"></comp-temperature-histogram>
                     </Row>
-                </div>
+                </Card>
         </Form>
         <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
             <comp-device-detail ref="deviceDetail"></comp-device-detail>
