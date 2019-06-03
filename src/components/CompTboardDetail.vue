@@ -47,7 +47,7 @@
                 </Col>
             </Row>
             <Divider orientation="left">设备运行结果</Divider>
-                <div v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click.native="onCellClick(statistic)" style="padding: 7px 16px;">
+                <div v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click="onCellClick(statistic)" style="padding: 7px 16px;">
                     <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;">
                         <Col>
                             <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
@@ -64,7 +64,10 @@
                         </Col>
                     </Row>
                     <Row>
-                        <comp-temperature-histogram :device-id="statistic.id" ref="histogram"></comp-temperature-histogram>
+                        <comp-temperature-histogram v-if="showTemperatures" :device-id="statistic.id" ref="histogram" @isShow="isShowTemperatures"></comp-temperature-histogram>
+                    </Row>
+                    <Row style="margin-top: 10px;">
+                        <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @isShow="isShowPower"></comp-battery-level-histogram>
                     </Row>
                 </div>
         </Form>
@@ -84,6 +87,7 @@
     import CompJobList from "./CompJobList";
     import CompJobDetail from "./CompJobDetail";
     import CompTemperatureHistogram from "./CompTemperatureHistogram";
+    import CompBatteryLevelHistogram from "./CompBatteryLevelHistogram";
 
     const getTboardSerializer = {
         board_name: "string",
@@ -138,7 +142,7 @@
 
     export default {
         name: "CompTboardDetail",
-        components: {CompTemperatureHistogram, CompJobList, CompDeviceDetail, CompJobDetail},
+        components: {CompTemperatureHistogram, CompJobList, CompDeviceDetail, CompJobDetail, CompBatteryLevelHistogram},
         data() {
             return {
                 data: utils.validate(getTboardSerializer, {}),
@@ -152,11 +156,15 @@
                 showMoreDetail: false,
                 showDeviceDetail: false,
                 showJobDetail: false,
+                showPower:true,
+                showTemperatures:true,
 
             }
         },
         methods: {
             refresh(tboardId) {
+                this.showPower = true;
+                this.showTemperatures = true;
                 this.totalStatisticData.pass
                     = this.totalStatisticData.fail
                     = this.totalStatisticData.invalid
@@ -259,6 +267,12 @@
             },
             onCellClick(statistic){
                 this.$emit('on-cell-click', this.data.id, statistic)
+            },
+            isShowPower(flag){
+                this.showPower = flag;
+            },
+            isShowTemperatures(flag){
+                this.showTemperatures = flag;
             }
         }
     }

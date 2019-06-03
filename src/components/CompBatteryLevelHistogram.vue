@@ -1,5 +1,5 @@
 <template>
-    <div ref="main" id="main" style="height: 80px;">
+    <div ref="power" id="power" style="height: 80px;">
     </div>
 </template>
 
@@ -7,27 +7,26 @@
     import echarts from "echarts"
     import utils from "../lib/utils"
 
-    const getTemperatureSerializer = {
-        "devicetemperatures": [
+    const getPowersSerializer = {
+        "devicepowers": [
             {
-                "temperature": "number",
+                "battery_level": "number",
                 "record_datetime": "date",
-                "temp_port": {
+                "power_port": {
                     "port": "string"
                 },
             }
         ]
     }
-
     export default {
-        name: "CompTemperatureHistogram",
+        name:"CompBatteryLevelHistogram",
         props:{
             deviceId:{
                 type: Number
             }
         },
         data(){
-            return {
+            return{
                 histogram: null,
                 series: []
             }
@@ -38,22 +37,17 @@
                 this.setDefaultOption()
                 this.histogram.showLoading()
 
-                this.$ajax.get("api/v1/cedar/get_device_temperature_rapid/?device_id=" + this.deviceId +
+                this.$ajax.get("api/v1/cedar/get_device_power_rapid/?device_id=" + this.deviceId +
                     "&record_datetime__gt=" + startTime +
                     "&record_datetime__lt=" + endTime
                 ).then(response=>{
-                    let deviceTemperatures = utils.validate(getTemperatureSerializer, response.data).devicetemperatures
-                    if(deviceTemperatures.length<1){
-                        this.$emit("isShow",false);
-                        this.histogram.hideLoading()
-                        return;
-                    }
+                    let devicePowers = utils.validate(getPowersSerializer, response.data).devicepowers
                     let curPort = null
                     let curData = []
                     let data = {}
-                    deviceTemperatures.forEach(dt=>{
-                        if(dt.temp_port.port !== curPort){
-                            curPort = dt.temp_port.port
+                    devicePowers.forEach(dt=>{
+                        if(dt.power_port.port !== curPort){
+                            curPort = dt.power_port.port
                             if(data.hasOwnProperty(curPort)){
                                 curData = data[curPort].data
                             } else {
@@ -62,18 +56,18 @@
                                     name: curPort,
                                     type: 'line',
                                     smooth: true,
-                                    lineStyle:{
-                                    },
-                                    areaStyle: {
-                                    },
                                     data: curData
                                 }
                             }
                         }
-                        curData.push([dt.record_datetime, dt.temperature])
+                        curData.push([dt.record_datetime, dt.battery_level])
                     })
 
-
+                    if(curPort === null){
+                        this.$emit("isShow",false);
+                        this.histogram.hideLoading()
+                        return;
+                    }
 
                     let series = []
                     Object.keys(data).forEach(key=>{
@@ -93,7 +87,7 @@
                 // 指定图表的配置项和数据
                 let option = {
                     title: {
-                        "text": "温度",
+                        "text": "电量",
                         "textStyle": {
                             "fontSize": 12
                         },
@@ -124,12 +118,8 @@
             }
         },
         mounted() {
-            this.histogram = echarts.init(document.getElementById("main"))
+            this.histogram = echarts.init(document.getElementById("power"))
             this.setDefaultOption()
         }
     }
 </script>
-
-<style scoped>
-
-</style>
