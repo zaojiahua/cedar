@@ -232,6 +232,7 @@
             },
             // Load data
             refresh(device_id){
+                this.spinShow = true;
                 let ajax = this.$ajax
                 this.selectedTempPorts = []
                 this.selectedPowerPorts = ""
@@ -313,7 +314,9 @@
                      this.device.monitor_index.forEach(port=>{
                         this.selectedMonitorPorts = port.port
                     })
+                    this.spinShow = false;
                 })).catch(reason => {
+                    this.spinShow = false;
                     if(config.DEBUG)
                         console.log(reason)
                     let status = reason.response?reason.response.status : "Network error!"
