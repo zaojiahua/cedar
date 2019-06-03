@@ -16,7 +16,7 @@
         </Row>
         <Divider orientation="left">{{statistic.deviceName}} 任务运行结果</Divider>
         <Form :label-width="80">
-            <Card v-for="statistic in jobStatistic" dis-hover style="margin-bottom: 16px;">
+            <Card v-for="statistic in jobStatistic" :key="statistic.id" dis-hover style="margin-bottom: 16px;">
                 <FormItem style="margin-bottom: 8px;">
                     <b slot="label">任务名称:</b>
                     <Input disabled class="disabled-input"
