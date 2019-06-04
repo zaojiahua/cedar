@@ -43,8 +43,8 @@
                     "&record_datetime__lt=" + endTime
                 ).then(response=>{
                     let deviceTemperatures = utils.validate(getTemperatureSerializer, response.data).devicetemperatures
-                    if(deviceTemperatures.length<1){
-                        this.$emit("isShow",false);
+                    if(deviceTemperatures.length===0){
+                        this.$emit("on-no-data");
                         this.histogram.hideLoading()
                         return;
                     }

@@ -28,7 +28,7 @@
         data(){
             return{
                 histogram: null,
-                series: []
+                series: {},
             }
         },
         methods:{
@@ -42,37 +42,32 @@
                     "&record_datetime__lt=" + endTime
                 ).then(response=>{
                     let devicePowers = utils.validate(getPowersSerializer, response.data).devicepowers
-                    let curPort = null
-                    let curData = []
-                    let data = {}
-                    devicePowers.forEach(dt=>{
-                        if(dt.power_port.port !== curPort){
-                            curPort = dt.power_port.port
-                            if(data.hasOwnProperty(curPort)){
-                                curData = data[curPort].data
-                            } else {
-                                curData = []
-                                data[curPort] = {
-                                    name: curPort,
-                                    type: 'line',
-                                    smooth: true,
-                                    data: curData
-                                }
-                            }
-                        }
-                        curData.push([dt.record_datetime, dt.battery_level])
-                    })
-
-                    if(curPort === null){
-                        this.$emit("isShow",false);
+                    if(devicePowers.length === 0){
+                        this.$emit("on-no-data");
                         this.histogram.hideLoading()
                         return;
                     }
-
-                    let series = []
-                    Object.keys(data).forEach(key=>{
-                        series.push(data[key])
+                    let curData = []
+                    devicePowers.forEach(dp=>{
+                        let port = "未配置"
+                        let charging = ""
+                        if(dp.power_port.port !== null){
+                            port = dp.power_port.port;
+                        }
+                        if(dp.charging){
+                            charging = "正在充电"
+                        }else {
+                            charging = "未充电"
+                        }
+                        curData.push([dp.record_datetime, dp.battery_level,port,charging ])
                     })
+                    let series = {
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {
+                        },
+                        data: curData
+                    }
 
                     this.series = series
 
@@ -84,6 +79,11 @@
                 })
             },
             setDefaultOption(){
+                let schema = [
+                    {name: 'power', index: 0, text: '电量'},
+                    {name: 'port', index: 1, text: '充电口'},
+                    {name: 'charging', index: 2, text: '充电状态'},
+                ];
                 // 指定图表的配置项和数据
                 let option = {
                     title: {
@@ -95,7 +95,14 @@
                         left: "0px"
                     },
                     tooltip:{
-                        trigger: "axis"
+                        trigger: "axis",
+                        formatter: function (obj) {
+                            let value = obj[0].value
+                            return value[0] + '<br>'
+                                + schema[0].text + '：' + value[1] + '<br>'
+                                + schema[1].text + '：' + value[2] + '<br>'
+                                + schema[2].text + '：' + value[3] + '<br>'
+                        }
                     },
                     grid:{
                         left:"30px",
@@ -110,7 +117,8 @@
                         type: "value",
                         splitNumber: 1,
                         show: true
-                    }
+                    },
+                    color:["#25a902"]
                 };
 
                 // 使用刚指定的配置项和数据显示图表。
