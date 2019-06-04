@@ -64,10 +64,10 @@
                         </Col>
                     </Row>
                     <Row>
-                        <comp-temperature-histogram v-if="showTemperatures" :device-id="statistic.id" ref="histogram" @isShow="isShowTemperatures"></comp-temperature-histogram>
+                        <comp-temperature-histogram v-if="showTemperatures" :device-id="statistic.id" ref="histogram" @on-no-data="showTemperaturesHistogram"></comp-temperature-histogram>
                     </Row>
                     <Row style="margin-top: 10px;">
-                        <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @isShow="isShowPower"></comp-battery-level-histogram>
+                        <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @on-no-data="showPowerHistogram"></comp-battery-level-histogram>
                     </Row>
                 </div>
             <Divider orientation="left">用例运行结果</Divider>
@@ -310,11 +310,11 @@
             onJobCellClick(statistic){
                 this.$emit('on-job-cell-click', this.data.id, statistic)
             },
-            isShowPower(flag){
-                this.showPower = flag;
+            showPowerHistogram(){
+                this.showPower = false;
             },
-            isShowTemperatures(flag){
-                this.showTemperatures = flag;
+            showTemperaturesHistogram(){
+                this.showTemperatures = false;
             }
         }
     }
