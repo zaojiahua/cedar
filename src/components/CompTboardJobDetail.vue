@@ -1,5 +1,5 @@
 <template>
-    <Card :title="statistic.deviceName+' ('+statistic.deviceLabel + ')'" dis-hover>
+    <Card :title="statistic.job_name+'('+statistic.id + ')'" dis-hover>
         <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
             <Col>
                 <i-circle :percent="statistic.pass/statistic.total*100">
@@ -11,16 +11,16 @@
                 <b>总共: </b><span>{{statistic.total}}</span><br>
                 <b>通过: </b><span>{{statistic.pass}}</span><br>
                 <b>失败: </b><span>{{statistic.fail}}</span><br>
-                <b>无效: </b><span>{{statistic.invalid}}</span>
+                <b>无效: </b><span>{{statistic.na}}</span>
             </Col>
         </Row>
-        <Divider orientation="left">{{statistic.deviceName}} 任务运行结果</Divider>
+        <Divider orientation="left">{{statistic.job_name}} 任务运行结果</Divider>
         <Form :label-width="80">
-            <Card v-for="statistic in jobStatistic" dis-hover style="margin-bottom: 16px;">
+            <Card v-for="statistic in deviceStatistic" dis-hover style="margin-bottom: 16px;">
                 <FormItem style="margin-bottom: 8px;">
-                    <b slot="label">用例名称:</b>
+                    <b slot="label">设备名称:</b>
                     <Input disabled class="disabled-input"
-                           :value="statistic.jobName + ' (' + statistic.jobLabel + ')'"></Input>
+                           :value="statistic.device_name + ' (' + statistic.device_label + ')'"></Input>
                 </FormItem>
                 <FormItem style="margin-bottom: 0px;">
                     <b slot="label">结果总数:</b>
@@ -45,25 +45,23 @@
 </template>
 
 <script>
-    import CompDeviceDetail from "./CompDeviceDetail";
     import utils from "../lib/utils";
     import config from "../lib/config";
 
 
     const statisticSerializer = {
         id: "number",
-        deviceLabel: "string",
-        deviceName: "string",
+        job_name: "string",
         total: "number",
         pass: "number",
         fail: "number",
         invalid: "number"
     }
-    const jobStatisticSerializer = [
+    const deviceStatisticSerializer = [
         {
             id: "number",
-            job_name: "string",
-            job_label: "string",
+            device_name: "string",
+            device_label: "string",
             total: "number",
             pass: "number",
             fail: "number",
@@ -75,10 +73,10 @@
             {
                 id: "number",
                 job_assessment_value: "string",
-                job: {
+                device: {
                     id: "number",
-                    job_name: "string",
-                    job_label: "string",
+                    device_name: "string",
+                    device_label: "string",
                 }
             }
         ]
@@ -86,12 +84,11 @@
 
 
     export default {
-        name: "CompTboardDeviceDetail",
-        components: {CompDeviceDetail},
+        name: "CompTboardJobDetail",
         data() {
             return {
                 statistic: utils.validate(statisticSerializer, {}),
-                jobStatistic: utils.validate(jobStatisticSerializer, []),
+                deviceStatistic: utils.validate(deviceStatisticSerializer, []),
                 spinShow:false,
             }
         },
@@ -114,12 +111,12 @@
                     "api/v1/cedar/rds/?fields=" +
                     "id," +
                     "job_assessment_value," +
-                    "job," +
-                    "job.id," +
-                    "job.job_name," +
-                    "job.job_label" +
+                    "device," +
+                    "device.id," +
+                    "device.device_name," +
+                    "device.device_label" +
                     "&tboard=" + tboardId +
-                    "&device=" + statistic.id
+                    "&job=" + statistic.id
                 ).then(response => {
                     /*  Parse data to structure
                         [
@@ -135,37 +132,37 @@
                         ]
                     */
                     let rdss = utils.validate(getRdsSerializer, response.data).rdss
-                    let jobStatistic = []
+                    let deviceStatistic = []
                     let keys = {}
                     for (let i = 0; i < rdss.length; ++i) {
                         let rds = rdss[i]
                         let index = null
-                        if (rds.job.id === null) continue
-                        if (!keys.hasOwnProperty(rds.job.id)) {
-                            jobStatistic.push({
-                                id: rds.job.id,
-                                jobName: rds.job.job_name,
-                                jobLabel: rds.job.job_label,
+                        if (rds.device.id === null) continue
+                        if (!keys.hasOwnProperty(rds.device.id)) {
+                            deviceStatistic.push({
+                                id: rds.device.id,
+                                device_name: rds.device.device_name,
+                                device_label: rds.device.device_label,
                                 total: 0.0001,
                                 pass: 0,
                                 fail: 0,
                                 invalid: 0
                             })
-                            keys[rds.job.id] = jobStatistic.length - 1
+                            keys[rds.device.id] = deviceStatistic.length - 1
                         }
 
-                        index = keys[rds.job.id]
-                        jobStatistic[index].total += 1
+                        index = keys[rds.device.id]
+                        deviceStatistic[index].total += 1
 
                         if (rds.job_assessment_value === '0') {
-                            jobStatistic[index].pass += 1
+                            deviceStatistic[index].pass += 1
                         } else if (rds.job_assessment_value === '1') {
-                            jobStatistic[index].fail += 1
+                            deviceStatistic[index].fail += 1
                         } else {
-                            jobStatistic[index].invalid += 1
+                            deviceStatistic[index].invalid += 1
                         }
 
-                        this.jobStatistic = jobStatistic
+                        this.deviceStatistic = deviceStatistic
                     }
                     this.spinShow = false;
                 }).catch(reason => {

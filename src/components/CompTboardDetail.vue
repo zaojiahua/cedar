@@ -47,8 +47,8 @@
                 </Col>
             </Row>
             <Divider orientation="left">设备运行结果</Divider>
-                <div v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click="onCellClick(statistic)" style="padding: 7px 16px;">
-                    <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;">
+                <div v-for="statistic in deviceStatisticData" :key="statistic.device_label" style="padding: 7px 16px;">
+                    <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;" @click.native="onCellClick(statistic)">
                         <Col>
                             <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
                                 <p>{{(statistic.pass*100/statistic.total).toFixed(1)}}%</p>
@@ -70,6 +70,24 @@
                         <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @isShow="isShowPower"></comp-battery-level-histogram>
                     </Row>
                 </div>
+            <Divider orientation="left">用例运行结果</Divider>
+            <div v-for="statistic in jobStatisticData" :key="statistic.id" @click="onJobCellClick(statistic)" style="padding: 7px 16px;">
+                <Row type="flex" align="middle" style="margin: 16px 0">
+                    <Col>
+                        <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
+                            <p>{{(statistic.pass*100/statistic.total).toFixed(1)}}%</p>
+                            <small>成功率</small>
+                        </i-circle>
+                    </Col>
+                    <Col style="margin-left: 16px;">
+                        <b>用例名称: </b><span>{{statistic.job_name}}</span><br>
+                        <b>总共: </b><span>{{statistic.total}}</span><br>
+                        <b>通过: </b><span>{{statistic.pass}}</span><br>
+                        <b>失败: </b><span>{{statistic.fail}}</span><br>
+                        <b>无效: </b><span>{{statistic.na}}</span>
+                    </Col>
+                </Row>
+            </div>
         </Form>
         <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
             <comp-device-detail ref="deviceDetail"></comp-device-detail>
@@ -77,6 +95,7 @@
         <Modal v-model="showJobDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
             <comp-job-detail ref="jobDetail" :prop-close-btn="false"></comp-job-detail>
         </Modal>
+        <Spin size="large" fix v-if="showLoading"></Spin>
     </Card>
 </template>
 
@@ -139,6 +158,16 @@
             invalid: "number"
         }
     ]
+    const jobStatisticDataSerializer = [
+        {
+            id: "number",
+            job_name: "string",
+            total: "number",
+            pass: "number",
+            fail: "number",
+            na: "number"
+        }
+    ]
 
     export default {
         name: "CompTboardDetail",
@@ -158,11 +187,14 @@
                 showJobDetail: false,
                 showPower:true,
                 showTemperatures:true,
+                showLoading:false,
+                jobStatisticData:utils.validate(jobStatisticDataSerializer, []),
 
             }
         },
         methods: {
             refresh(tboardId) {
+                this.showLoading = true;
                 this.showPower = true;
                 this.showTemperatures = true;
                 this.totalStatisticData.pass
@@ -196,9 +228,11 @@
                     this.$refs.histogram.forEach(histogram=>{
                         histogram.refresh(this.data.board_stamp, this.data.end_time)
                     })
+                    this.showLoading = false;
                 }).catch(reason => {
                     if (config.DEBUG) console.log(reason)
                     this.$Message.error("载入失败")
+                    this.showLoading = false;
                 })
                 this.$ajax.get(
                     "api/v1/cedar/get_rds_rapid/?tboard__id=" + tboardId
@@ -264,9 +298,17 @@
                     }
                     this.deviceStatisticData = utils.validate(statisticDataSerializer, statistic)
                 })
+                this.$ajax.get("api/v1/statistics/get_tboard_running_detail/?tboard_id=" + tboardId )
+                    .then(response=>{
+                        this.jobStatisticData = utils.validate(jobStatisticDataSerializer, response.data.jobs)
+
+                    })
             },
             onCellClick(statistic){
                 this.$emit('on-cell-click', this.data.id, statistic)
+            },
+            onJobCellClick(statistic){
+                this.$emit('on-job-cell-click', this.data.id, statistic)
             },
             isShowPower(flag){
                 this.showPower = flag;
