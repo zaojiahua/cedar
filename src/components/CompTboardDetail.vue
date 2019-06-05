@@ -32,20 +32,22 @@
                 <Input disabled class="disabled-input" :value="data.author.username"></Input>
             </FormItem>
             <Divider orientation="left">总体运行结果</Divider>
-            <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
-                <Col>
-                    <i-circle :percent="(totalStatisticData.pass/totalStatisticData.total*100)">
-                        <p style="font-size:24px">{{(totalStatisticData.pass/totalStatisticData.total*100).toFixed(1)}}%</p>
-                        <small>成功率</small>
-                    </i-circle>
-                </Col>
-                <Col style="margin-left:16px;">
-                    <b>总共: </b><span>{{totalStatisticData.total.toFixed()}}</span><br>
-                    <b>通过: </b><span>{{totalStatisticData.pass}}</span><br>
-                    <b>失败: </b><span>{{totalStatisticData.fail}}</span><br>
-                    <b>无效: </b><span>{{totalStatisticData.invalid}}</span>
-                </Col>
-            </Row>
+            <Card style="cursor: pointer;" @click.native="onTotalResultClick">
+                <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
+                    <Col>
+                        <i-circle :percent="(totalStatisticData.pass/totalStatisticData.total*100)">
+                            <p style="font-size:24px">{{(totalStatisticData.pass/totalStatisticData.total*100).toFixed(1)}}%</p>
+                            <small>成功率</small>
+                        </i-circle>
+                    </Col>
+                    <Col style="margin-left:16px;">
+                        <b>总共: </b><span>{{totalStatisticData.total.toFixed()}}</span><br>
+                        <b>通过: </b><span>{{totalStatisticData.pass}}</span><br>
+                        <b>失败: </b><span>{{totalStatisticData.fail}}</span><br>
+                        <b>无效: </b><span>{{totalStatisticData.invalid}}</span>
+                    </Col>
+                </Row>
+            </Card>
             <Divider orientation="left">设备运行结果</Divider>
                 <Card v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click.native="onCellClick(statistic)"
                       style="padding: 7px 16px; cursor: pointer;">
@@ -257,6 +259,12 @@
                     }
                     this.deviceStatisticData = utils.validate(statisticDataSerializer, statistic)
                 })
+            },
+            getData(){
+                return _.cloneDeep(this.data)
+            },
+            onTotalResultClick(){
+                this.$emit('on-total-result-click')
             },
             onCellClick(statistic){
                 this.$emit('on-cell-click', this.data.id, statistic)
