@@ -1,5 +1,5 @@
 <template>
-    <Card :title="statistic.job_name+'('+statistic.id + ')'" dis-hover>
+    <Card :title="'用例名称: ' + statistic.job_name+'('+statistic.id + ')'" dis-hover>
         <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
             <Col>
                 <i-circle :percent="statistic.pass/statistic.total*100">
@@ -14,7 +14,7 @@
                 <b>无效: </b><span>{{statistic.na}}</span>
             </Col>
         </Row>
-        <Divider orientation="left">{{statistic.job_name}} 任务运行结果</Divider>
+        <Divider orientation="left">{{statistic.job_name}} 运行结果</Divider>
         <Form :label-width="80">
             <Card v-for="statistic in deviceStatistic" :key="statistic.id" dis-hover style="margin-bottom: 16px;">
                 <FormItem style="margin-bottom: 8px;">

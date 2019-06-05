@@ -50,7 +50,7 @@
             </Card>
             <Divider orientation="left">设备运行结果</Divider>
             <Card v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click.native="onCellClick(statistic)"
-                  style="padding: 7px 16px; cursor: pointer;">
+                  style="padding: 7px 16px; margin-bottom: 8px; cursor: pointer;">
                 <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;">
                     <Col>
                         <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
@@ -76,7 +76,8 @@
                 </Row>
             </Card>
             <Divider orientation="left">用例运行结果</Divider>
-            <div v-for="statistic in jobStatisticData" :key="statistic.id" @click="onJobCellClick(statistic)" style="padding: 7px 16px;">
+            <Card v-for="statistic in jobStatisticData" :key="statistic.id" @click.native="onJobCellClick(statistic)"
+                  style="padding: 7px 16px; margin-bottom: 8px; cursor: pointer;">
                 <Row type="flex" align="middle" style="margin: 16px 0">
                     <Col>
                         <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
@@ -92,7 +93,7 @@
                         <b>无效: </b><span>{{statistic.na}}</span>
                     </Col>
                 </Row>
-            </div>
+            </Card>
         </Form>
         <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
             <comp-device-detail ref="deviceDetail"></comp-device-detail>
