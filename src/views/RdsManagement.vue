@@ -16,10 +16,11 @@
         </Row>
         <Row type="flex">
             <Col span="24">
-                <comp-rds-list ref="rdsList" v-for="item in devices" :key="item.id"
+                <comp-rds-card ref="rdsCard" v-for="item in devices" :key="item.id"
                                :prop-device-label="item.device_label" :prop-device-id="item.id"
+                               :prop-default-tboards="defaultTboards"
                                @rds-mouse-enter="onRdsMouseEnter"
-                               @rds-mouse-leave="onRdsMouseLeave"></comp-rds-list>
+                               @rds-mouse-leave="onRdsMouseLeave"></comp-rds-card>
             </Col>
         </Row>
         <Row v-show="devices.length === 0" type="flex" justify="center" style="margin-top: 16px;">
@@ -44,7 +45,7 @@
 
 <script>
     import CompDeviceList from "../components/CompDeviceList";
-    import CompRdsList from "../components/CompRdsCard";
+    import CompRdsCard from "../components/CompRdsCard";
     import utils from "../lib/utils";
 
     const tipDataSerializer = {
@@ -58,13 +59,31 @@
         job_assessment_value: "string"
     }
 
+    const getDeviceSerializer = {
+        tboards: [
+            {
+                id: "number",
+                board_name: "string",
+                device: [
+                    {
+                        id: "number",
+                        device_label: "string",
+                        device_name: "string"
+                    }
+                ]
+            }
+        ]
+    }
+
+
     export default {
-        components: {CompDeviceList, CompRdsList},
+        components: {CompDeviceList, CompRdsCard},
         data() {
             return {
                 showSelectDeviceModal: false,
                 devices: [],
-                tipData: utils.validate(tipDataSerializer, null)
+                tipData: utils.validate(tipDataSerializer, null),
+                defaultTboards: []
             }
         },
         methods: {
@@ -80,6 +99,26 @@
             onRdsMouseLeave() {
                 this.tipData = utils.validate(tipDataSerializer, null)
             }
+        },
+        mounted(){
+            let tboardId = NaN
+            if(this.$route.query.hasOwnProperty("tboard")) {
+                tboardId = _.parseInt(this.$route.query.tboard)
+            }
+            if(isNaN(tboardId)) return
+            this.$ajax.get("api/v1/cedar/tboard/?" +
+                "fields=id,board_name,device,device.id,device.device_label,device.device_name" +
+                "&id=" + tboardId)
+                .then(response=>{
+                    let data = utils.validate(getDeviceSerializer, response.data)
+                    if(data.tboards.length > 0){
+                        this.devices = _.cloneDeep(data.tboards[0].device)
+                        this.defaultTboards.push({
+                            id: data.tboards[0].id,
+                            board_name: data.tboards[0].board_name
+                        })
+                    }
+                })
         }
     }
 

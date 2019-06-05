@@ -32,46 +32,49 @@
                 <Input disabled class="disabled-input" :value="data.author.username"></Input>
             </FormItem>
             <Divider orientation="left">总体运行结果</Divider>
-            <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
-                <Col>
-                    <i-circle :percent="(totalStatisticData.pass/totalStatisticData.total*100)">
-                        <p style="font-size:24px">{{(totalStatisticData.pass/totalStatisticData.total*100).toFixed(1)}}%</p>
-                        <small>成功率</small>
-                    </i-circle>
-                </Col>
-                <Col style="margin-left:16px;">
-                    <b>总共: </b><span>{{totalStatisticData.total.toFixed()}}</span><br>
-                    <b>通过: </b><span>{{totalStatisticData.pass}}</span><br>
-                    <b>失败: </b><span>{{totalStatisticData.fail}}</span><br>
-                    <b>无效: </b><span>{{totalStatisticData.invalid}}</span>
-                </Col>
-            </Row>
+            <Card style="cursor: pointer;" @click.native="onTotalResultClick">
+                <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
+                    <Col>
+                        <i-circle :percent="(totalStatisticData.pass/totalStatisticData.total*100)">
+                            <p style="font-size:24px">{{(totalStatisticData.pass/totalStatisticData.total*100).toFixed(1)}}%</p>
+                            <small>成功率</small>
+                        </i-circle>
+                    </Col>
+                    <Col style="margin-left:16px;">
+                        <b>总共: </b><span>{{totalStatisticData.total.toFixed()}}</span><br>
+                        <b>通过: </b><span>{{totalStatisticData.pass}}</span><br>
+                        <b>失败: </b><span>{{totalStatisticData.fail}}</span><br>
+                        <b>无效: </b><span>{{totalStatisticData.invalid}}</span>
+                    </Col>
+                </Row>
+            </Card>
             <Divider orientation="left">设备运行结果</Divider>
-                <div v-for="statistic in deviceStatisticData" :key="statistic.device_label" style="padding: 7px 16px;">
-                    <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;" @click.native="onCellClick(statistic)">
-                        <Col>
-                            <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
-                                <p>{{(statistic.pass*100/statistic.total).toFixed(1)}}%</p>
-                                <small>成功率</small>
-                            </i-circle>
-                        </Col>
-                        <Col style="margin-left: 16px;">
-                            <b>设备名称: </b><span>{{statistic.deviceName}}</span><br>
-                            <b>总共: </b><span>{{statistic.total}}</span><br>
-                            <b>通过: </b><span>{{statistic.pass}}</span><br>
-                            <b>失败: </b><span>{{statistic.fail}}</span><br>
-                            <b>无效: </b><span>{{statistic.invalid}}</span>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <p v-if="!showTemperatures" style="margin-left: 40px;color: #FF9900">该设备没有温度信息</p>
-                        <comp-temperature-histogram v-if="showTemperatures" :device-id="statistic.id" ref="histogram" @on-no-data="showTemperaturesHistogram"></comp-temperature-histogram>
-                    </Row>
-                    <Row style="margin-top: 10px;">
-                        <p v-if="!showPower" style="margin-left: 40px;color: #FF9900">该设备没有电量信息</p>
-                        <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @on-no-data="showPowerHistogram"></comp-battery-level-histogram>
-                    </Row>
-                </div>
+            <Card v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click.native="onCellClick(statistic)"
+                  style="padding: 7px 16px; cursor: pointer;">
+                <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;">
+                    <Col>
+                        <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
+                            <p>{{(statistic.pass*100/statistic.total).toFixed(1)}}%</p>
+                            <small>成功率</small>
+                        </i-circle>
+                    </Col>
+                    <Col style="margin-left: 16px;">
+                        <b>设备名称: </b><span>{{statistic.deviceName}}</span><br>
+                        <b>总共: </b><span>{{statistic.total}}</span><br>
+                        <b>通过: </b><span>{{statistic.pass}}</span><br>
+                        <b>失败: </b><span>{{statistic.fail}}</span><br>
+                        <b>无效: </b><span>{{statistic.invalid}}</span>
+                    </Col>
+                </Row>
+                <Row>
+                    <p v-if="!showTemperatures" style="margin-left: 40px;color: #FF9900">该设备没有温度信息</p>
+                    <comp-temperature-histogram v-if="showTemperatures" :device-id="statistic.id" ref="histogram" @on-no-data="showTemperaturesHistogram"></comp-temperature-histogram>
+                </Row>
+                <Row style="margin-top: 10px;">
+                    <p v-if="!showPower" style="margin-left: 40px;color: #FF9900">该设备没有电量信息</p>
+                    <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @on-no-data="showPowerHistogram"></comp-battery-level-histogram>
+                </Row>
+            </Card>
             <Divider orientation="left">用例运行结果</Divider>
             <div v-for="statistic in jobStatisticData" :key="statistic.id" @click="onJobCellClick(statistic)" style="padding: 7px 16px;">
                 <Row type="flex" align="middle" style="margin: 16px 0">
@@ -305,6 +308,12 @@
                         this.jobStatisticData = utils.validate(jobStatisticDataSerializer, response.data.jobs)
 
                     })
+            },
+            getData(){
+                return _.cloneDeep(this.data)
+            },
+            onTotalResultClick(){
+                this.$emit('on-total-result-click')
             },
             onCellClick(statistic){
                 this.$emit('on-cell-click', this.data.id, statistic)

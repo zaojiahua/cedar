@@ -10,11 +10,12 @@ export default {
         return "http://"+config.INDOOR_HOST+":"+port;
     },
     validate(serializer, data){
+        let dataClone = _.cloneDeep(data)
         // 广度优先遍历
         if(Object.prototype.toString.call(serializer) === "[object Object]"){
-            return this._process_obj(serializer, data)
+            return this._process_obj(serializer, dataClone)
         } else if(Object.prototype.toString.call(serializer) === "[object Array]"){
-            return this._check_array(serializer[0], data)
+            return this._check_array(serializer[0], dataClone)
         } else {
             throw TypeError("serializer must be object or array!")
         }

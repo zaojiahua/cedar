@@ -4,6 +4,7 @@ import router from './router'
 import iView from 'iview'
 import './theme/classic.less'
 import axios from 'axios'
+import lodash from 'lodash'
 import {Service} from 'axios-middleware';
 import ConsoleLogMiddleware from './middleware/ConsoleLogMiddleware'
 import config from "./lib/config"
@@ -31,6 +32,7 @@ service.register(middleware)
 // Vue settings
 Vue.config.debug = true
 Vue.prototype.$ajax = axios
+let _ = lodash
 Vue.use(iView)
 
 //Load authentication from local

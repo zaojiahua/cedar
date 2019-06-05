@@ -3,7 +3,10 @@
         <Drawer v-model="showTboardDetail" width="60" :closable="false" transfer :mask="!tboardDetailQuickView">
             <Button icon="md-arrow-dropright" size="small" @click="showTboardDetail = false"
                     style="position: fixed; top:45%; width:32px; height:64px;"></Button>
-            <comp-tboard-detail style="margin-left: 48px;" @on-cell-click="onTboardDetailCellClick" @on-job-cell-click="onTboardDetailJobCellClick"
+            <comp-tboard-detail style="margin-left: 48px;"
+                                @on-cell-click="onTboardDetailCellClick"
+                                @on-total-result-click="onTboardDetailTotalResultClick"
+                                @on-job-cell-click="onTboardDetailJobCellClick"
                                 ref="tboardDetail"></comp-tboard-detail>
         </Drawer>
 
@@ -48,6 +51,16 @@
             onTboardRowClick(row, index) {
                 this.showTboardDetail = true
                 this.$refs.tboardDetail.refresh(row.id)
+            },
+            onTboardDetailTotalResultClick(){
+                let tboard = this.$refs.tboardDetail.getData()
+                let route = this.$router.resolve({
+                    name: "rds-management",
+                    query: {
+                        tboard: tboard.id
+                    }
+                })
+                window.open(route.href, "_blank")
             },
             onTboardDetailCellClick(tboardId, statistic){
                 this.showTboardMoreDetail = true

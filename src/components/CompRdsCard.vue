@@ -77,6 +77,10 @@
             propDeviceId: {
                 type: Number,
                 default: null
+            },
+            propDefaultTboards: {  // tboard data with id and board_name
+                type: Array,
+                default: []
             }
         },
         data: function () {
@@ -204,6 +208,14 @@
                 if (type === "1") return "failed"
                 return "invalid"
             },
+        },
+        watch:{
+            propDefaultTboards:{
+                handler: function(val, oldVal){
+                    this.tboards = val
+                },
+                immediate: true
+            }
         },
         created() {
             if(config.DEBUG && (this.propDeviceId===null)) console.log("CompRdsList的参数propDeviceId不可为空!")
