@@ -81,6 +81,10 @@
             propDefaultTboards: {  // tboard data with id and board_name
                 type: Array,
                 default: []
+            },
+            propDefaultJobs: {  // Job data with id, job_label, job_name
+                type: Array,
+                default: ()=>{return []}
             }
         },
         data: function () {
@@ -211,8 +215,15 @@
         },
         watch:{
             propDefaultTboards:{
-                handler: function(val, oldVal){
+                handler: function(val){
                     this.tboards = val
+                },
+                immediate: true
+            },
+            propDefaultJobs:{
+                handler: function(val){
+                    console.log(val)
+                    this.jobs = val
                 },
                 immediate: true
             }

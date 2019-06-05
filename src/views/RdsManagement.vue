@@ -17,8 +17,10 @@
         <Row type="flex">
             <Col span="24">
                 <comp-rds-card ref="rdsCard" v-for="item in devices" :key="item.id"
-                               :prop-device-label="item.device_label" :prop-device-id="item.id"
+                               :prop-device-id="item.id"
+                               :prop-device-label="item.device_label"
                                :prop-default-tboards="defaultTboards"
+                               :prop-default-jobs="defaultJobs"
                                @rds-mouse-enter="onRdsMouseEnter"
                                @rds-mouse-leave="onRdsMouseLeave"></comp-rds-card>
             </Col>
@@ -59,7 +61,7 @@
         job_assessment_value: "string"
     }
 
-    const getDeviceSerializer = {
+    const getDataSerializer = {
         tboards: [
             {
                 id: "number",
@@ -69,6 +71,13 @@
                         id: "number",
                         device_label: "string",
                         device_name: "string"
+                    }
+                ],
+                job: [
+                    {
+                        id: "number",
+                        job_label: "string",
+                        job_name: "string"
                     }
                 ]
             }
@@ -83,7 +92,8 @@
                 showSelectDeviceModal: false,
                 devices: [],
                 tipData: utils.validate(tipDataSerializer, null),
-                defaultTboards: []
+                defaultTboards: [],
+                defaultJobs: []
             }
         },
         methods: {
@@ -107,16 +117,27 @@
             }
             if(isNaN(tboardId)) return
             this.$ajax.get("api/v1/cedar/tboard/?" +
-                "fields=id,board_name,device,device.id,device.device_label,device.device_name" +
+                "fields=" +
+                "id," +
+                "board_name," +
+                "device," +
+                "device.id," +
+                "device.device_label," +
+                "device.device_name," +
+                "job," +
+                "job.id," +
+                "job.job_label," +
+                "job.job_name" +
                 "&id=" + tboardId)
                 .then(response=>{
-                    let data = utils.validate(getDeviceSerializer, response.data)
+                    let data = utils.validate(getDataSerializer, response.data)
                     if(data.tboards.length > 0){
-                        this.devices = _.cloneDeep(data.tboards[0].device)
+                        this.devices = data.tboards[0].device
                         this.defaultTboards.push({
                             id: data.tboards[0].id,
                             board_name: data.tboards[0].board_name
                         })
+                        this.defaultJobs = data.tboards[0].job
                     }
                 })
         }
