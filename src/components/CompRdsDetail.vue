@@ -62,11 +62,11 @@
         <div style="color: #515a6e;padding-left: 48px;font-size: 12px">
             <b style="cursor: default">截图：共 {{rdsInfo.rdsscreenshot.length}} 张</b>
             <br>
-            <img style="margin: 5px" v-for="img in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name @click="viewOriginalImg(img.id)">
+            <img style="margin: 5px; cursor: pointer;" v-for="img in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name @click="viewOriginalImg(img.id)">
         </div>
         <Spin size="large" fix v-if="showSpin"></Spin>
         <Modal v-model="showImgModal" :fullscreen="true" footer-hide style="text-align: center">
-            <img :src=baseUrl+imgInfo.img_file :alt="imgInfo.file_name" style="max-height: 98%;max-width: 100%">
+            <img :src=baseUrl+imgInfo.img_file :alt="imgInfo.file_name" style="max-height: 98%;max-width: 100%;">
         </Modal>
     </Card>
 </template>
