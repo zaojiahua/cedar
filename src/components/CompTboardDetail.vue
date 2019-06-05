@@ -64,9 +64,11 @@
                         </Col>
                     </Row>
                     <Row>
+                        <p v-if="!showTemperatures" style="margin-left: 40px;color: #FF9900">该设备没有温度信息</p>
                         <comp-temperature-histogram v-if="showTemperatures" :device-id="statistic.id" ref="histogram" @on-no-data="showTemperaturesHistogram"></comp-temperature-histogram>
                     </Row>
                     <Row style="margin-top: 10px;">
+                        <p v-if="!showPower" style="margin-left: 40px;color: #FF9900">该设备没有电量信息</p>
                         <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @on-no-data="showPowerHistogram"></comp-battery-level-histogram>
                     </Row>
                 </div>
