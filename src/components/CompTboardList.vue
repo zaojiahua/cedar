@@ -140,14 +140,11 @@
                     this.data = utils.validate(getTboardSerializer, response.data).tboards
                     this.showLoading = false;
                     /* 将之前已经选中的选项重新勾选 */
-                    console.log(this.selection[this.currentPage])
                     if(this.selection[this.currentPage] !== undefined){
                         let ids = []
                         this.selection[this.currentPage].forEach(item=>{
                             ids.push(item.id)
                         })
-                        console.log(ids)
-                        console.log(this.data)
                         for(let i=0; i<this.data.length; ++i){
                             if(ids.includes(this.data[i].id)){
                                 this.data[i]._checked = true
