@@ -170,11 +170,11 @@
             },
             openJobList(){
                 this.showJobSelector = true
-                this.$refs.jobList.clearSelection()
+                // this.$refs.jobList.clearSelection()
             },
             openTboardList(){
                 this.showTboardSelector = true
-                this.$refs.tboardList.clearSelection()
+                // this.$refs.tboardList.clearSelection()
             },
             onJobTagClose(_index){
                 this.jobs.splice(_index, 1)
