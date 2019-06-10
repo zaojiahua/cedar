@@ -231,8 +231,13 @@
                 ).then(response => {
                     this.data = utils.validate(getTboardSerializer, response.data)
                     // 刷新所有温度图表
+                    let endTime = this.data.end_time;
+                    if(this.data.end_time===null){
+                        utils._initDate();
+                        endTime = new Date().format("yyyy-MM-dd hh:mm:ss");
+                    }
                     this.$refs.histogram.forEach(histogram=>{
-                        histogram.refresh(this.data.board_stamp, this.data.end_time)
+                        histogram.refresh(this.data.board_stamp,endTime)
                     })
                     this.showLoading = false;
                 }).catch(reason => {
