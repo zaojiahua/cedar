@@ -54,13 +54,15 @@
             <Divider>其他信息</Divider>
             <FormItem>
                 <b slot="label">日志文件：</b>
+                <p v-if="showLogTip" style="color: #FF9900">暂无日志文件信息</p>
                 <ButtonGroup>
                     <Button v-for="files in rdsInfo.rdslog" :key="files.id" @click="downloadLog(files.log_file)">{{ files.file_name }}</Button>
                 </ButtonGroup>
             </FormItem>
         </Form>
         <div style="color: #515a6e;padding-left: 48px;font-size: 12px">
-            <b style="cursor: default">截图：共 {{rdsInfo.rdsscreenshot.length}} 张</b>
+            <b style="cursor: default">截图：</b><b style="cursor: default" v-if="!showScreenTip">共 {{rdsInfo.rdsscreenshot.length}} 张</b>
+            <label v-if="showScreenTip" style="color: #FF9900">暂无截图信息</label>
             <br>
             <img style="margin: 5px; cursor: pointer;" v-for="img in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name @click="viewOriginalImg(img.id)">
         </div>
@@ -131,11 +133,15 @@
                 showSpin:false,
                 showImgModal:false,
                 imgInfo:utils.validate(imgSerializer,{}),
+                showLogTip:false,
+                showScreenTip:false,
             }
         },
         methods:{
             refresh(rdsId){
                 this.showSpin=true;
+                this.showLogTip=false;
+                this.showScreenTip=false;
                 this.$ajax
                     .get("api/v1/cedar/rds/"+rdsId+"/?fields="+
                         "id,"+
@@ -160,6 +166,10 @@
                         }else{
                             this.rdsInfo.result = "无效";
                         }
+                        if(this.rdsInfo.rdslog.length===0)
+                            this.showLogTip=true;
+                        if(this.rdsInfo.rdsscreenshot.length===0)
+                            this.showScreenTip=true;
                     })
                     .catch(error=>{
                         this.showSpin=false;
