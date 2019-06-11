@@ -3,7 +3,7 @@
         <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
             <Col>
                 <i-circle :percent="statistic.pass/statistic.total*100">
-                    <p style="font-size:24px">{{(statistic.pass/statistic.total*100).toFixed(1)}}%</p>
+                    <p style="font-size:24px">{{statistic.total===0 ? 0 : (statistic.pass/statistic.total*100).toFixed(1)}}%</p>
                     <small>成功率</small>
                 </i-circle>
             </Col>

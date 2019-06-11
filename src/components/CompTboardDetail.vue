@@ -81,7 +81,7 @@
                 <Row type="flex" align="middle" style="margin: 16px 0">
                     <Col>
                         <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
-                            <p>{{(statistic.pass*100/statistic.total).toFixed(1)}}%</p>
+                            <p>{{statistic.total===0 ? 0 : (statistic.pass*100/statistic.total).toFixed(1)}}%</p>
                             <small>成功率</small>
                         </i-circle>
                     </Col>
@@ -306,7 +306,11 @@
                 })
                 this.$ajax.get("api/v1/statistics/get_tboard_running_detail/?tboard_id=" + tboardId )
                     .then(response=>{
-                        this.jobStatisticData = utils.validate(jobStatisticDataSerializer, response.data.jobs)
+                        if(response.data.devices.length===0){
+                            this.jobStatisticData = []
+                        }else {
+                            this.jobStatisticData = utils.validate(jobStatisticDataSerializer, response.data.jobs)
+                        }
 
                     })
             },
