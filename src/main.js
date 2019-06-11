@@ -9,6 +9,9 @@ import {Service} from 'axios-middleware';
 import ConsoleLogMiddleware from './middleware/ConsoleLogMiddleware'
 import config from "./lib/config"
 import AuthenticationMiddleware from "./middleware/AuthenticationMiddleware";
+import utils from "./lib/utils";
+
+utils._initDate();
 
 // Axios settings
 axios.defaults.baseURL = "http://"+config.REEF_HOST+":"+config.REEF_PORT
