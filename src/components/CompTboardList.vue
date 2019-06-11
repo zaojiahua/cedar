@@ -17,7 +17,7 @@
         <Row>
             <slot name="header-bottom"></slot>
         </Row>
-        <Table :loading="showLoading" ref="table" :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick">
+        <Table :loading="showLoading" ref="table" :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="pauseOrDelete">
                 <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-square'"
                         @click="pauseOrDeleteTboard(index)">
@@ -92,6 +92,7 @@
                 currentPage:1,
                 offset: 0,
                 showLoading:false,
+                selection:[],
             }
         },
         methods: {
@@ -138,6 +139,18 @@
                     this.dataTotal = parseInt(response.headers["total-count"])
                     this.data = utils.validate(getTboardSerializer, response.data).tboards
                     this.showLoading = false;
+                    /* 将之前已经选中的选项重新勾选 */
+                    if(this.selection[this.currentPage] !== undefined){
+                        let ids = []
+                        this.selection[this.currentPage].forEach(item=>{
+                            ids.push(item.id)
+                        })
+                        for(let i=0; i<this.data.length; ++i){
+                            if(ids.includes(this.data[i].id)){
+                                this.data[i]._checked = true
+                            }
+                        }
+                    }
                 }).catch(reason => {
                     if (config.DEBUG) console.log(reason)
                     this.$Message.error("载入失败")
@@ -222,7 +235,11 @@
                 this.$emit("on-row-click", row, index)
             },
             getSelection(){
-                return this.$refs.table.getSelection()
+                let selection = []
+                this.selection.forEach(items=>{
+                    selection = selection.concat(items)
+                })
+                return selection
             },
             clearSelection(){
                 this.$refs.table.selectAll(false)
@@ -234,6 +251,9 @@
                 this.offset = this.propPageSize*(page-1);
                 this.currentPage = page;
                 this.refresh()
+            },
+            onSelectionChange(selection){
+                this.selection[this.currentPage] = selection
             },
 
         },
