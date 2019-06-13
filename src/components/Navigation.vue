@@ -9,8 +9,7 @@
                     </div>
                     <div class="layout-nav">
                         <MenuItem name="0" :to="{name: 'personal-data'}">
-                            <Avatar>{{ username.substr(0,1).toUpperCase() }}</Avatar>
-                            {{ username }}
+                            Hi! {{ username }}
                         </MenuItem>
                         <MenuItem name="1" @click.native="getSysVersion">
                             关于TMach
