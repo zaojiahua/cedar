@@ -1,8 +1,7 @@
 <template>
     <div>
         <Row style="margin-bottom: 16px;" v-if="propShowSearch">
-            <AutoComplete   style="width: calc(100% - 70px)"
-
+            <AutoComplete  style="width: calc(100% - 75px)"
                 v-model="keyword"
                 :clearable="true"
                 @on-select="jobSearch"
@@ -11,7 +10,7 @@
                 placeholder="Enter something...">
                 <Option v-for="(item,index) in filterJobNameList" :value="item" :key="index">{{ item }}</Option>
             </AutoComplete>
-            <Button @click="jobSearch(keyword)" type="primary">search</Button>
+            <Button style="height: 32px;" @click="jobSearch(keyword)" type="primary">search</Button>
         </Row>
         <Table ref="table" :columns="columns" :data="data" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="counter">
@@ -249,6 +248,9 @@
                 this.filterJobNameList = list
             },
             jobSearch(value){
+                if(value.indexOf("&")!==-1){
+                    value = value.replace(/\&/g,"%26")
+                }
                 let url =
                     "api/v1/cedar/job/?fields=" +
                     "id," +
