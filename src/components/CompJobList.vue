@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Row style="margin-bottom: 16px;" v-if="propShowSearch">
+        <Row style="margin-bottom: 18px;" v-if="propShowSearch">
             <AutoComplete  style="width: calc(100% - 75px)"
                 v-model="keyword"
                 :clearable="true"
