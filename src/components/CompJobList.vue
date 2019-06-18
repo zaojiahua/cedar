@@ -1,5 +1,17 @@
 <template>
     <div>
+        <Row style="margin-bottom: 18px;" v-if="propShowSearch">
+            <AutoComplete  style="width: calc(100% - 75px)"
+                v-model="keyword"
+                :clearable="true"
+                @on-select="jobSearch"
+                @on-search="handleSearch"
+                @on-clear="clearSearch"
+                placeholder="Enter something...">
+                <Option v-for="(item,index) in filterJobNameList" :value="item" :key="index">{{ item }}</Option>
+            </AutoComplete>
+            <Button style="height: 32px;" @click="jobSearch(keyword)" type="primary">search</Button>
+        </Row>
         <Table ref="table" :columns="columns" :data="data" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="counter">
                 <InputNumber :min="1" v-model="data[index].counter"></InputNumber>
@@ -67,6 +79,10 @@
             propPageSize: {
                 type: Number,
                 default: config.PAGE_SIZE
+            },
+            propShowSearch: {
+                type: Boolean,
+                default: true
             }
         },
         data() {
@@ -90,7 +106,10 @@
                 dataTotal: 0,
                 offset: 0,
                 urlParam: "",
-                currentPage: 1
+                currentPage: 1,
+                allJobNameList:[],
+                keyword: '',
+                filterJobNameList: []
             }
         },
         methods: {
@@ -139,6 +158,7 @@
                 }
             },
             refreshWithParam(param){
+                this.keyword = "";
                 this._setUrlParam(param)
                 this.onPageChange(1)
             },
@@ -164,9 +184,17 @@
                         "&offset=" + this.offset
                 }
 
+                if(this.propShowSearch&&this.keyword!==""){
+                    url = url + "&job_name__icontains=" +  this.keyword;
+                }
                 this.$ajax.get(url)
                     .then(this._responseHandle)
                     .catch(this._requestErrorHandle)
+
+                if(this.propShowSearch){
+                    this.filterJobNameList = [];
+                    this.getJobNameList()
+                }
             },
             getData() {
                 return this.data
@@ -197,6 +225,62 @@
             },
             onSelectionChange(selection){
                 this.selection[this.currentPage] = selection
+            },
+            getJobNameList(){
+                this.$ajax.get("api/v1/cedar/job/?fields=job_name"+this.urlParam)
+                    .then(response=>{
+                        let jobNameList = [];
+                        response.data.jobs.forEach(job=>{
+                            jobNameList.push(job.job_name)
+                        })
+                        this.allJobNameList = jobNameList;
+                    })
+                    .catch(this._requestErrorHandle)
+            },
+            handleSearch (value) {
+                let list = [];
+                if(this.allJobNameList.toString().toUpperCase().indexOf(value.toUpperCase())!==-1){
+                    this.allJobNameList.forEach(item=>{
+                        if(item.toUpperCase().indexOf(value.toUpperCase())!==-1)
+                            list.push(item)
+                    })
+                }
+                this.filterJobNameList = list
+            },
+            jobSearch(value){
+                if(value.indexOf("&")!==-1){
+                    value = value.replace(/\&/g,"%26")
+                }
+                let url =
+                    "api/v1/cedar/job/?fields=" +
+                    "id," +
+                    "job_label," +
+                    "job_name," +
+                    "test_area," +
+                    "test_area.id," +
+                    "test_area.description," +
+                    "custom_tag," +
+                    "custom_tag.id," +
+                    "custom_tag.custom_tag_name" +
+                    "&job_deleted=False" +
+                    "&ordering=id" +
+                    "&job_name__icontains=" +  value +
+                    this.urlParam
+
+                if(this.propShowPage){
+                    this.currentPage = 1;
+                    url = url +
+                        "&limit=" + config.PAGE_SIZE +
+                        "&offset=0"
+                }
+                this.$ajax.get(url)
+                    .then(this._responseHandle)
+                    .catch(this._requestErrorHandle)
+            },
+            clearSearch(){
+                this.keyword = "";
+                this.currentPage = 1;
+                this.refresh();
             }
 
         },

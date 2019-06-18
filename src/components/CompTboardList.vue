@@ -38,7 +38,8 @@
                 id: "number",
                 board_stamp: "date",
                 board_name: "string",
-                finished_flag: "boolean"
+                finished_flag: "boolean",
+                success_ratio: "number"
             }
         ]
     }
@@ -78,12 +79,18 @@
                         title: "任务名称",
                         key: "board_name",
                         sortable: true
+                    },
+                    {
+                        title: "任务成功率",
+                        key: "success_ratio",
+                        sortable: true
                     }
                 ],
                 data: [
                     {
                         board_stamp: "2018-01-01 20:20:20",
-                        board_name: "board_name"
+                        board_name: "board_name",
+                        success_ratio: 0
                     }
                 ],
                 filterCondition: "all",
@@ -128,7 +135,8 @@
                     "id," +
                     "board_stamp," +
                     "board_name," +
-                    "finished_flag" +
+                    "finished_flag," +
+                    "success_ratio" +
                     "&author__id=" + userId +
                     "&ordering=-board_stamp" +
                     '&limit=' + this.propPageSize +

@@ -25,12 +25,12 @@
             <Row>
                 <comp-filter ref="jobFilter" @on-change="onJobFilterChange"></comp-filter>
             </Row>
-            <Row type="flex" style="margin-top: 16px;">
+            <Row type="flex">
                 <Col span="11">
                     <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
                 </Col>
                 <Col span="2">
-                    <Row type="flex" justify="center" style="margin: auto;">
+                    <Row type="flex" justify="center" style="margin-top: 48px;">
                         <Button @click="selectJob">
                             添加
                             <Icon type="ios-arrow-forward" />
@@ -38,7 +38,7 @@
                     </Row>
                 </Col>
                 <Col span="11">
-                    <comp-job-list ref="jobSelectedList" :prop-auto-load="false"
+                    <comp-job-list style="margin-top: 48px" ref="jobSelectedList" :prop-auto-load="false" :prop-show-search="false"
                                    :prop-show-counter="true" :prop-deletable="true" :prop-show-page="false"></comp-job-list>
                 </Col>
             </Row>
