@@ -8,7 +8,7 @@
         </Row>
         <Spin fix size="large" v-if="showLoading"></Spin>
         <div class="content">
-            <Card style="margin-bottom: 15px;cursor: default" v-for="item in logList" :key="item.id" @click.native="openLogDetail(item.file_path)">
+            <Card style="margin-bottom: 15px;cursor: default" v-for="item in logList" :key="item.id" @click.native="openLogDetail(item.file_name,item.file_path)">
                 <Row>
                     <Col span="18">
                         <b style="font-size: 16px;">{{ item.file_name }}</b>
@@ -101,8 +101,9 @@
                 }
                 this.refresh();
             },
-            openLogDetail(path){
+            openLogDetail(name,path){
                 this.showLogDetail = true;
+                this.fileName = name;
                 this.$refs.logDetail.refresh(path)
             }
         }
