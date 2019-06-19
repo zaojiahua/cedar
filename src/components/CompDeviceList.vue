@@ -84,7 +84,7 @@
                 type: Number,
                 default: config.PAGE_SIZE
             },
-            propCreateTboard:{
+            propDeviceStatus:{
                 type: Boolean,
                 default: false
             }
@@ -179,7 +179,7 @@
                 }
                 this.loading = true
                 let deviceStatusCondition = ""
-                if(this.propCreateTboard){
+                if(this.propDeviceStatus){
                     deviceStatusCondition = "&status=idle"
                 }
                 this.$ajax
