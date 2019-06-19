@@ -58,9 +58,9 @@
             refresh(){
                 this.showLoading = true;
                 this.showTip=false;
-                let dateRageCondition = ""
+                let dateRangeCondition = ""
                 if (this.filterDateRange && this.filterDateRange[0] && this.filterDateRange[1]) {
-                    dateRageCondition = "&start_time=" +
+                    dateRangeCondition = "&start_time=" +
                         this.filterDateRange[0].getFullYear() +
                         "-" +
                         (this.filterDateRange[0].getMonth() + 1) +
@@ -79,7 +79,7 @@
                     keywordCondition = "&q="+this.keyword
                 this.$ajax.get(
                     "api/v1/search/rds_log_search/?" +
-                    dateRageCondition +
+                    dateRangeCondition +
                     keywordCondition
                 ).then(response=>{
                     this.logList = response.data;
