@@ -7,7 +7,7 @@
         </Steps>
         <div v-if="current===0">
             <Modal v-model="showSelectDeviceModal" :fullscreen="true" :transfer="false" :closable="false" @on-ok="getDeviceSelection">
-                <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true"
+                <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true" :prop-device-status="true"
                                   @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
             </Modal>
             <comp-device-list ref="deviceList" :prop-add-mode="false" :prop-auto-load="false"></comp-device-list>

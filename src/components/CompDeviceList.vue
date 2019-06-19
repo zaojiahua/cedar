@@ -83,6 +83,10 @@
             propPageSize: {
                 type: Number,
                 default: config.PAGE_SIZE
+            },
+            propDeviceStatus:{
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -174,6 +178,10 @@
                     return
                 }
                 this.loading = true
+                let deviceStatusCondition = ""
+                if(this.propDeviceStatus){
+                    deviceStatusCondition = "&status=idle"
+                }
                 this.$ajax
                     .get('api/v1/cedar/device/?fields=' +
                         'id,' +
@@ -197,6 +205,7 @@
                         'monitor_index.port' +
                         '&limit=' + this.propPageSize +
                         "&offset=" + this.offset +
+                        deviceStatusCondition +
                         "&ordering=id"
                     )
                     .then(response => {
