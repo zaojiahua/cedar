@@ -9,8 +9,9 @@
             <div slot="right" class="split-pane">
                 <Card style="height: 890px;margin-left: 5px;">
                     <p slot="title">{{ flieName }}</p>
-                    <Input :rows="38" class="view-log" type="textarea" disabled v-model="fileContent"></Input>
+                    <Input :autosize="{minRows: 42,maxRows: 42}" class="view-log" type="textarea" disabled v-model="fileContent"></Input>
                 </Card>
+                <Spin size="large" fix v-if="showLoading"></Spin>
             </div>
         </Split>
     </div>
@@ -33,6 +34,7 @@
                 split1:0.3,
                 fileContent:"",
                 flieName:"",
+                showLoading:false
             }
 
         },
@@ -54,17 +56,19 @@
                     })
             },
             showLogContent(row){
-                console.log(row)
+                this.showLoading = true;
                 let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+row.filename;
                 this.$ajax
                     .get(coralUrl)
                     .then(response=>{
                         this.flieName = row.filename;
                         this.fileContent = response.data;
+                        this.showLoading = false;
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
                         this.$Message.error("读取数据失败！")
+                        this.showLoading = false;
                     })
             },
             showFirstContent(){
