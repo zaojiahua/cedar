@@ -235,9 +235,11 @@
                     if(this.data.end_time===null){
                         endTime = new Date().format("yyyy-MM-dd hh:mm:ss");
                     }
-                    this.$refs.histogram.forEach(histogram=>{
-                        histogram.refresh(this.data.board_stamp,endTime)
-                    })
+                    if(this.$refs.histogram){
+                        this.$refs.histogram.forEach(histogram=>{
+                            histogram.refresh(this.data.board_stamp,endTime)
+                        })
+                    }
                     this.showLoading = false;
                 }).catch(reason => {
                     if (config.DEBUG) console.log(reason)
