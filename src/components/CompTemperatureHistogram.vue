@@ -1,5 +1,5 @@
 <template>
-    <div ref="main" id="main" style="height: 80px;">
+    <div ref="main" :id="'main'+deviceId" style="height: 80px;">
     </div>
 </template>
 
@@ -124,7 +124,7 @@
             }
         },
         mounted() {
-            this.histogram = echarts.init(document.getElementById("main"))
+            this.histogram = echarts.init(document.getElementById("main"+this.deviceId))
             this.setDefaultOption()
         }
     }
