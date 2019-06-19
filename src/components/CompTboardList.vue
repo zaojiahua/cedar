@@ -113,9 +113,9 @@
                     finishedCondition = "&finished_flag=True"
                 }
 
-                let dateRageCondition = ""
+                let dateRangeCondition = ""
                 if (this.filterDateRange && this.filterDateRange[0] && this.filterDateRange[1]) {
-                    dateRageCondition = "&board_stamp__gte=" +
+                    dateRangeCondition = "&board_stamp__gte=" +
                         this.filterDateRange[0].getFullYear() +
                         "-" +
                         (this.filterDateRange[0].getMonth() + 1) +
@@ -142,7 +142,7 @@
                     '&limit=' + this.propPageSize +
                     "&offset=" + this.offset +
                     finishedCondition +
-                    dateRageCondition
+                    dateRangeCondition
                 ).then(response => {
                     this.dataTotal = parseInt(response.headers["total-count"])
                     this.data = utils.validate(getTboardSerializer, response.data).tboards
