@@ -49,9 +49,9 @@
                 </Row>
             </Card>
             <Divider orientation="left">设备运行结果</Divider>
-            <Card v-for="statistic in deviceStatisticData" :key="statistic.device_label" @click.native="onCellClick(statistic)"
+            <Card v-for="statistic in deviceStatisticData" :key="statistic.device_label"
                   style="padding: 7px 16px; margin-bottom: 8px; cursor: pointer;">
-                <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;">
+                <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;" @click.native="onCellClick(statistic)">
                     <Col>
                         <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
                             <p>{{(statistic.pass*100/statistic.total).toFixed(1)}}%</p>
@@ -68,11 +68,11 @@
                 </Row>
                 <Row>
                     <p v-if="!showTemperatures" style="margin-left: 40px;color: #FF9900">该设备没有温度信息</p>
-                    <comp-temperature-histogram v-if="showTemperatures" :device-id="statistic.id" ref="histogram" @on-no-data="showTemperaturesHistogram"></comp-temperature-histogram>
+                    <comp-temperature-histogram v-if="showTemperatures" :device-id="statistic.id" ref="histogram" @on-no-data="hideTemperaturesHistogram"></comp-temperature-histogram>
                 </Row>
                 <Row style="margin-top: 10px;">
                     <p v-if="!showPower" style="margin-left: 40px;color: #FF9900">该设备没有电量信息</p>
-                    <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @on-no-data="showPowerHistogram"></comp-battery-level-histogram>
+                    <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @on-no-data="hidePowerHistogram"></comp-battery-level-histogram>
                 </Row>
             </Card>
             <Divider orientation="left">用例运行结果</Divider>
@@ -330,10 +330,10 @@
             onJobCellClick(statistic){
                 this.$emit('on-job-cell-click', this.data.id, statistic)
             },
-            showPowerHistogram(){
+            hidePowerHistogram(){
                 this.showPower = false;
             },
-            showTemperaturesHistogram(){
+            hideTemperaturesHistogram(){
                 this.showTemperatures = false;
             }
         }
