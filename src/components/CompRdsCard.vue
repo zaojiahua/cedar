@@ -20,10 +20,10 @@
                     @click="loadMoreData(false)" :disabled="loadingData">加载更多
             </Button>
         </Row>
-        <Modal v-model="showJobSelector" :transfer="true" fullscreen @on-ok="onJobListOk">
+        <Modal v-model="showJobSelector" :transfer="true" fullscreen :closable="false" @on-ok="onJobListOk">
             <comp-job-list :propMultiSelect="true" ref="jobList" @on-row-click="onJobListRowClick"></comp-job-list>
         </Modal>
-        <Modal v-model="showTboardSelector" :transfer="true" fullscreen @on-ok="onTboardListOk">
+        <Modal v-model="showTboardSelector" :transfer="true" fullscreen :closable="false" @on-ok="onTboardListOk">
             <comp-tboard-list :prop-multi-select="true" ref="tboardList" @on-row-click="onTboardListRowClick"></comp-tboard-list>
         </Modal>
         <Drawer v-model="showRdsDetail" :closable="false" width="50" transfer>
