@@ -214,14 +214,13 @@
         watch:{
             propDefaultTboards:{
                 handler: function(val){
-                    this.tboards = val
+                    this.tboards = _.cloneDeep(val)
                 },
                 immediate: true
             },
             propDefaultJobs:{
                 handler: function(val){
-                    console.log(val)
-                    this.jobs = val
+                    this.jobs = _.cloneDeep(val)
                 },
                 immediate: true
             }
