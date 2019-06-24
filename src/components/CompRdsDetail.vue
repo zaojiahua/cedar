@@ -51,6 +51,10 @@
                 <b slot="label">ROM版本：</b>
                 <Input v-model="rdsInfo.device.rom_version.version" class="disabled-input" disabled></input>
             </FormItem>
+            <div>
+                <comp-temperature-histogram v-if="showTemperatures" :device-id="rdsInfo.device.id" ref="histogram" @on-no-data="hideTemperaturesHistogram"></comp-temperature-histogram>
+                <p v-else style="margin-left: 40px;color: #FF9900">该RDS没有温度信息</p>
+            </div>
             <Divider>其他信息</Divider>
             <FormItem>
                 <b slot="label">日志文件：</b>
@@ -76,6 +80,7 @@
 <script>
     import config from "../lib/config";
     import utils from "../lib/utils";
+    import CompTemperatureHistogram from "./CompTemperatureHistogram";
 
     const rdsSerializer = {
         device: {
@@ -126,6 +131,7 @@
 
 
     export default {
+        components:{ CompTemperatureHistogram },
         data(){
             return{
                 baseUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT,
@@ -135,6 +141,7 @@
                 imgInfo:utils.validate(imgSerializer,{}),
                 showLogTip:false,
                 showScreenTip:false,
+                showTemperatures:false,
             }
         },
         methods:{
@@ -170,6 +177,14 @@
                             this.showLogTip=true;
                         if(this.rdsInfo.rdsscreenshot.length===0)
                             this.showScreenTip=true;
+                        this.showTemperatures=true;
+                        let endTime = this.rdsInfo.end_time;
+                        if(this.rdsInfo.end_time===null){
+                            endTime = new Date().format("yyyy-MM-dd hh:mm:ss");
+                        }
+                        this.$nextTick(function () {
+                            this.$refs.histogram.refresh(this.rdsInfo.start_time,endTime)
+                        })
                     })
                     .catch(error=>{
                         this.showSpin=false;
@@ -228,6 +243,9 @@
                         }
                         this.$Message.error(errorMsg)
                 })
+            },
+            hideTemperaturesHistogram(){
+                this.showTemperatures=false;
             }
         },
     }
