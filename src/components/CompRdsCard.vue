@@ -1,5 +1,5 @@
 <template>
-    <Card style="margin-bottom: 16px;" dis-hover>
+    <Card style="margin-bottom: 16px;" dis-hover v-if="showRdsCard">
         <Divider orientation="left">{{ propDeviceLabel }}</Divider>
         <Row type="flex" style="margin-bottom: 16px;" align="bottom">
             <Button style="margin-right: 16px;" @click="openJobList">选取用例</Button>
@@ -85,6 +85,10 @@
             propDefaultJobs: {  // Job data with id, job_label, job_name
                 type: Array,
                 default: ()=>{return []}
+            },
+            propFilterDateRange:{
+                type: Array,
+                default: []
             }
         },
         data: function () {
@@ -99,6 +103,7 @@
                 showTboardSelector: false,
                 showRdsDetail: false,
                 rdsIndex:null,
+                showRdsCard:true,
             }
         },
         methods: {
@@ -109,6 +114,22 @@
                 this.$emit('rds-mouse-leave')
             },
             loadMoreData(reset) {
+                let dateRangeCondition = ""
+                if (this.propFilterDateRange && this.propFilterDateRange[0] && this.propFilterDateRange[1]) {
+                    dateRangeCondition = "&start_time__gte=" +
+                        this.propFilterDateRange[0].getFullYear() +
+                        "-" +
+                        (this.propFilterDateRange[0].getMonth() + 1) +
+                        "-" +
+                        this.propFilterDateRange[0].getDate() +
+                        " 00:00:00&end_time__lte=" +
+                        this.propFilterDateRange[1].getFullYear() +
+                        "-" +
+                        (this.propFilterDateRange[1].getMonth() + 1) +
+                        "-" +
+                        this.propFilterDateRange[1].getDate() +
+                        " 23:59:59"
+                }
                 this.loadingData = true
                 if(reset){
                     this.dataOffset = 0
@@ -136,6 +157,7 @@
                     "job,job.id,job.job_name" +
                     jobCondition +
                     tboardCondition +
+                    dateRangeCondition +
                     "&limit=" + pageSize +
                     "&offset=" + this.dataOffset +
                     "&device=" + this.propDeviceId)
@@ -145,10 +167,12 @@
                             this.rdsData = utils.validate(getRdsSerializer, response.data).rdss
                         else
                             this.rdsData = this.rdsData.concat(utils.validate(getRdsSerializer, response.data).rdss)
+                        this.showRdsCard = this.rdsData.length > 0;
                         return this.$ajax
                             .get("api/v1/cedar/rds/?fields=id" +
                                 jobCondition +
                                 tboardCondition +
+                                dateRangeCondition +
                                 "&limit=1" +
                                 "&offset=" + this.dataOffset +
                                 "&device=" + this.propDeviceId)
@@ -223,6 +247,11 @@
                     this.jobs = _.cloneDeep(val)
                 },
                 immediate: true
+            },
+            propFilterDateRange:{
+                handler: function(){
+                    this.loadMoreData(true)
+                }
             }
         },
         created() {
