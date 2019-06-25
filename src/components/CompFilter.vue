@@ -176,6 +176,7 @@
             },
             closeTag(event, name) {
                 this.checked.splice(this.checked.indexOf(name), 1)
+                this.onChange()
             },
             _jobRender(){
                 let selectedData = {}
