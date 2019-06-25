@@ -23,7 +23,7 @@
 
         <div v-if="current===1">
             <Row>
-                <comp-filter ref="jobFilter" @on-change="onJobFilterChange"></comp-filter>
+                <comp-filter @on-return-data="onDefaultJobList" ref="jobFilter" :prop-default-device="selectedDevice" @on-change="onJobFilterChange"></comp-filter>
             </Row>
             <Row type="flex">
                 <Col span="11">
@@ -120,6 +120,9 @@
                     this.$Message.warning("请选择要进行测试的设备！");
                 }
 
+            },
+            onDefaultJobList(defaultSelection){
+                this.$refs.jobList.refreshWithParam("&" + this.selectedDetail(defaultSelection))
             },
             // Page "Choose job"
             selectedDetail(selected){

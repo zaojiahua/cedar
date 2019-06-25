@@ -117,6 +117,12 @@
                 type: Boolean,
                 default: false
             },
+            propDefaultDevice:{
+                type: Array,
+                default: () => {
+                    return []
+                }
+            }
         },
         data() {
             return {
@@ -154,6 +160,7 @@
                 ],
                 filterData: {},
                 checked: [],
+                defaultPhoneModelList:{},
             }
 
         },
@@ -233,6 +240,24 @@
                         reefuser: utils.validate(getReefUserSerializer, reefuser_resp.data).reefusers,
                         custom_tag: utils.validate(getCustomTagSerializer, custom_tag_resp.data).customtags,
                         job_assessment_value:getJobAssessmentValue.job_assessment_value
+                    }
+                    //detail phoneModel   from select device
+                    if(this.propDefaultDevice.length>0){
+                        let defaultPhoneModel = [];
+                        this.propDefaultDevice.forEach(item=>{
+                            if(defaultPhoneModel.indexOf(item.phone_model) === -1)
+                                defaultPhoneModel.push(item.phone_model)
+                        })
+
+                        let phoneModelList = [];
+                        this.filterData.phone_model.forEach((item,index)=>{
+                            if(defaultPhoneModel.indexOf(item.phone_model_name) !== -1){
+                                this.checked.push("phone_model_:_"+ index + "_:_" + item.phone_model_name)
+                                phoneModelList.push(item);
+                            }
+                        })
+                        this.defaultPhoneModelList.phone_model = phoneModelList;
+                        this.$emit("on-return-data",this.defaultPhoneModelList)
                     }
                 })).catch(reason => {
                 if (config.DEBUG) console.log(reason)
