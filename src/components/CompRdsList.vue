@@ -12,7 +12,7 @@
             </Tag>
         </Row>
         <Row style="margin-bottom: 16px;">
-            <DatePicker type="daterange" placeholder="测试开始时间" :transfer="true"></DatePicker>
+            <DatePicker v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true"></DatePicker>
         </Row>
         <Row type="flex">
             <Col span="24">
@@ -21,6 +21,7 @@
                                :prop-device-label="item.device_label"
                                :prop-default-tboards="defaultTboards"
                                :prop-default-jobs="defaultJobs"
+                               :prop-filter-date-range="filterDateRange"
                                @rds-mouse-enter="onRdsMouseEnter"
                                @rds-mouse-leave="onRdsMouseLeave"></comp-rds-card>
             </Col>
@@ -91,7 +92,8 @@
                 devices: [],
                 tipData: utils.validate(tipDataSerializer, null),
                 defaultTboards: [],
-                defaultJobs: []
+                defaultJobs: [],
+                filterDateRange:null,
             }
         },
         methods: {
