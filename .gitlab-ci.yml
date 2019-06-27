@@ -16,6 +16,6 @@ deploy:
     - ls
     - docker restart cedar
   only:
-    - master
+    - devp
   tags:
     - deploy
