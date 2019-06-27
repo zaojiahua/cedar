@@ -9,7 +9,7 @@
             <div slot="right" class="split-pane">
                 <Card style="height: 890px;margin-left: 5px;">
                     <p slot="title">{{ flieName }}</p>
-                    <Input :autosize="{minRows: 42,maxRows: 42}" class="view-log" type="textarea" disabled v-model="fileContent"></Input>
+                    <Input :autosize="{minRows: 38,maxRows: 38}" class="view-log" type="textarea" disabled v-model="fileContent"></Input>
                 </Card>
                 <Spin size="large" fix v-if="showLoading"></Spin>
             </div>
