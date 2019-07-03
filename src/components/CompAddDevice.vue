@@ -124,6 +124,7 @@
                 this.backStepOne = false;
                 this.spinShow = true;
                 this.$Loading.start();
+                this.addedDeviceName="";
                 this.$ajax
                     .post(coralUrl,{
                         requestName:'getDeviceInDoor'
