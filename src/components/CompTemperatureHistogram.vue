@@ -116,7 +116,17 @@
                         type: "value",
                         splitNumber: 1,
                         show: true
-                    }
+                    },
+                    dataZoom:[
+                        {
+                            height: 8,
+                            bottom: 20,
+                            type:'slider',
+                        },
+                        {
+                            type:'inside'
+                        }
+                    ],
                 };
 
                 // 使用刚指定的配置项和数据显示图表。
