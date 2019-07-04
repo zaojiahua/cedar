@@ -5,7 +5,7 @@
         </Row>
         <Row style="height: 50px;">
             <Col span="12">
-                <Upload ref="upload" :data="uploadData" :action="uploadUrl" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
+                <Upload ref="upload" :data="uploadData" :action="uploadUrl+'/form/'" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
                     <Button icon="ios-cloud-upload-outline">导入用例</Button>
                 </Upload>
             </Col>
