@@ -118,7 +118,17 @@
                         splitNumber: 1,
                         show: true
                     },
-                    color:["#25a902"]
+                    color:["#25a902"],
+                    dataZoom:[
+                        {
+                            height: 8,
+                            bottom: 20,
+                            type:'slider',
+                        },
+                        {
+                            type:'inside'
+                        }
+                    ],
                 };
 
                 // 使用刚指定的配置项和数据显示图表。
