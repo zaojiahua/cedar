@@ -334,8 +334,11 @@
             updateDevice(){
                 let coralUrl = utils.getCoralUrl(config.CONFIG_PORT)
                 let temperDict = {}
-                if(this.selectedTempPorts.length>0){
-                    this.selectedTempPorts.forEach(port=>{
+                let configPorts = this.selectedTempPorts.filter(selectedPort=> {
+                    return this.disableTempPorts.indexOf(selectedPort)===-1
+                })
+                if(configPorts.length>0){
+                    configPorts.forEach(port=>{
                         temperDict[port] = "desc";     //给温感片加默认备注
                     })
                 }
