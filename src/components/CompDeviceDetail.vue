@@ -334,6 +334,7 @@
             updateDevice(){
                 let coralUrl = utils.getCoralUrl(config.CONFIG_PORT)
                 let temperDict = {}
+                //将当前设备要配置的温感片提取出来
                 let configPorts = this.selectedTempPorts.filter(selectedPort=> {
                     return this.disableTempPorts.indexOf(selectedPort)===-1
                 })
