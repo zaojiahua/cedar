@@ -6,26 +6,26 @@
                 <Form ref="formInline" inline>
                     <Row>
                         <FormItem>
-                            <Input type="text" v-model="username" placeholder="请输入账户">
+                            <Input type="text" v-model="username" :autofocus="true" @keyup.enter.native="login" placeholder="请输入账户">
                                 <Icon type="ios-person-outline" slot="prepend"></Icon>
                             </Input>
                         </FormItem>
                     </Row>
                     <Row>
                         <FormItem>
-                            <Input type="password" v-model="password" placeholder="请输入密码">
+                            <Input type="password" v-model="password" @keyup.enter.native="login" placeholder="请输入密码">
                                 <Icon type="ios-lock-outline" slot="prepend"></Icon>
                             </Input>
                         </FormItem>
                     </Row>
                     <Row type="flex" justify="start">
                         <FormItem>
-                            <Checkbox v-model="keepLogin">保持登入</Checkbox>
+                            <Checkbox v-model="keepLogin" @keyup.enter.native="login">保持登入</Checkbox>
                         </FormItem>
                     </Row>
                     <Row type="flex" justify="end">
                         <FormItem>
-                            <Button id="loginButton" type="primary" @click="login" style="width: 200px;">登入
+                            <Button id="loginButton" type="primary" @click="login" @keyup.enter="login" style="width: 200px;">登入
                             </Button>
                         </FormItem>
                     </Row>
