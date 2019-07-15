@@ -1,5 +1,10 @@
 <template>
     <Card style="margin-bottom: 16px;" dis-hover v-if="showRdsCard">
+        <Row>
+            <Tooltip content="通过"><span class="color-tip" style="background-color: #1bbc9c"></span></Tooltip>
+            <Tooltip content="未通过"><span class="color-tip" style="background-color: #FFAE25"></span></Tooltip>
+            <Tooltip content="无效"><span class="color-tip" style="background-color: #BDC3C7"></span></Tooltip>
+        </Row>
         <Divider orientation="left">{{ propDeviceLabel }}</Divider>
         <Row type="flex" style="margin-bottom: 16px;" align="bottom">
             <Button style="margin-right: 16px;" @click="openJobList">选取用例</Button>
@@ -286,5 +291,12 @@
     }
     .invalid{
         background-color: #BDC3C7;
+    }
+    .color-tip{
+        display: block;
+        width: 10px;
+        height: 10px;
+        margin-right: 15px;
+        border-radius: 50%;
     }
 </style>
