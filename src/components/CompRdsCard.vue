@@ -160,7 +160,8 @@
                     dateRangeCondition +
                     "&limit=" + pageSize +
                     "&offset=" + this.dataOffset +
-                    "&device=" + this.propDeviceId)
+                    "&device=" + this.propDeviceId +
+                    "&ordering=-start_time")
                     .then(response=>{
                         this.dataOffset += pageSize
                         if(reset)  // 数据加载完成才清空原有数据，以免画面闪烁。
