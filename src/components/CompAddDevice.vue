@@ -92,10 +92,8 @@
             addDevice(){
                 this.$Loading.start()
                 this.spinShow = true;
-                let coralUrl = utils.getInDoorUrl(config.DEVINDOOR_PORT);
-                this.$ajax.post(coralUrl,
+                this.$ajax.post("api/v1/cedar/set_device_in_door/",
                     {
-                        requestName:"setDeviceInDoor",
                         deviceID: this.deviceInfo.deviceID,
                         deviceName: this.addedDeviceName
                     }
@@ -117,7 +115,6 @@
                 })
             },
             getDeviceInDoor(){
-                let coralUrl = utils.getInDoorUrl(config.DEVINDOOR_PORT);
                 this.addDeviceStep=3;
                 this.addBtn = true;
                 this.rescan = false;
@@ -126,9 +123,7 @@
                 this.$Loading.start();
                 this.addedDeviceName="";
                 this.$ajax
-                    .post(coralUrl,{
-                        requestName:'getDeviceInDoor'
-                    })
+                    .post("api/v1/cedar/get_device_in_door/", {})
                     .then(response=>{
                         if(utils.validate(addDeviceSerializer,response.data).ipAddress===null){
                             this.addDeviceError('未找到可添加设备', '请将设备从USB上拔除,并返回第一步确认操作无遗漏')
