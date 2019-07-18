@@ -1,5 +1,8 @@
 <template>
-    <div ref="main" :id="'main'+deviceId" style="height: 80px;">
+    <div>
+        <div v-if="showTemperatures" ref="main" :id="'main'+deviceId" style="height: 80px;">
+        </div>
+        <p v-else style="margin-left: 40px;color: #FF9900">该设备没有温度信息</p>
     </div>
 </template>
 
@@ -29,64 +32,65 @@
         data(){
             return {
                 histogram: null,
-                series: []
+                series: [],
+                showTemperatures:true,
             }
         },
         methods:{
             refresh(startTime, endTime){
-                this.histogram.clear()
-                this.setDefaultOption()
-                this.histogram.showLoading()
-
-                this.$ajax.get("api/v1/cedar/get_device_temperature_rapid/?device_id=" + this.deviceId +
-                    "&record_datetime__gt=" + startTime +
-                    "&record_datetime__lt=" + endTime
-                ).then(response=>{
-                    let deviceTemperatures = utils.validate(getTemperatureSerializer, response.data).devicetemperatures
-                    if(deviceTemperatures.length===0){
-                        this.$emit("on-no-data");
-                        this.histogram.hideLoading()
-                        return;
-                    }
-                    let curPort = null
-                    let curData = []
-                    let data = {}
-                    deviceTemperatures.forEach(dt=>{
-                        if(dt.temp_port.port !== curPort){
-                            curPort = dt.temp_port.port
-                            if(data.hasOwnProperty(curPort)){
-                                curData = data[curPort].data
-                            } else {
-                                curData = []
-                                data[curPort] = {
-                                    name: curPort,
-                                    type: 'line',
-                                    smooth: true,
-                                    lineStyle:{
-                                    },
-                                    areaStyle: {
-                                    },
-                                    data: curData
+                this.showTemperatures=true;
+                this.$nextTick(function () {
+                    this.histogram = echarts.init(document.getElementById("main"+this.deviceId))
+                    this.histogram.clear()
+                    this.setDefaultOption()
+                    this.histogram.showLoading()
+                    this.$ajax.get("api/v1/cedar/get_device_temperature_rapid/?device_id=" + this.deviceId +
+                        "&record_datetime__gt=" + startTime +
+                        "&record_datetime__lt=" + endTime
+                    ).then(response=>{
+                        let deviceTemperatures = utils.validate(getTemperatureSerializer, response.data).devicetemperatures
+                        if(deviceTemperatures.length===0){
+                            this.showTemperatures=false;
+                            this.histogram.hideLoading()
+                            return;
+                        }
+                        let curPort = null
+                        let curData = []
+                        let data = {}
+                        deviceTemperatures.forEach(dt=>{
+                            if(dt.temp_port.port !== curPort){
+                                curPort = dt.temp_port.port
+                                if(data.hasOwnProperty(curPort)){
+                                    curData = data[curPort].data
+                                } else {
+                                    curData = []
+                                    data[curPort] = {
+                                        name: curPort,
+                                        type: 'line',
+                                        smooth: true,
+                                        lineStyle:{
+                                        },
+                                        areaStyle: {
+                                        },
+                                        data: curData
+                                    }
                                 }
                             }
-                        }
-                        curData.push([dt.record_datetime, dt.temperature])
+                            curData.push([dt.record_datetime, dt.temperature])
+                        })
+
+                        let series = []
+                        Object.keys(data).forEach(key=>{
+                            series.push(data[key])
+                        })
+
+                        this.series = series
+
+                        this.histogram.setOption({
+                            series: this.series
+                        })
+                        this.histogram.hideLoading()
                     })
-
-
-
-                    let series = []
-                    Object.keys(data).forEach(key=>{
-                        series.push(data[key])
-                    })
-
-                    this.series = series
-
-                    this.histogram.setOption({
-                        series: this.series
-                    })
-                    this.histogram.hideLoading()
-
                 })
             },
             setDefaultOption(){

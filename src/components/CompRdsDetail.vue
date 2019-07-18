@@ -52,8 +52,7 @@
                 <Input v-model="rdsInfo.device.rom_version.version" class="disabled-input" disabled></input>
             </FormItem>
             <div>
-                <comp-temperature-histogram v-if="showTemperatures" :device-id="rdsInfo.device.id" ref="histogram" @on-no-data="hideTemperaturesHistogram"></comp-temperature-histogram>
-                <p v-else style="margin-left: 40px;color: #FF9900">该RDS没有温度信息</p>
+                <comp-temperature-histogram v-if="showTemperatures" :device-id="rdsInfo.device.id" ref="histogram"></comp-temperature-histogram>
             </div>
             <Divider>其他信息</Divider>
             <FormItem>
@@ -243,9 +242,6 @@
                         }
                         this.$Message.error(errorMsg)
                 })
-            },
-            hideTemperaturesHistogram(){
-                this.showTemperatures=false;
             }
         },
     }

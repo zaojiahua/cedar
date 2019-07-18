@@ -67,12 +67,10 @@
                     </Col>
                 </Row>
                 <Row>
-                    <comp-temperature-histogram v-if="showTemperatures" :device-id="statistic.id" ref="histogram" @on-no-data="hideTemperaturesHistogram"></comp-temperature-histogram>
-                    <p v-else style="margin-left: 40px;color: #FF9900">该设备没有温度信息</p>
+                    <comp-temperature-histogram :device-id="statistic.id" ref="histogram"></comp-temperature-histogram>
                 </Row>
                 <Row style="margin-top: 10px;">
-                    <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @on-no-data="hidePowerHistogram"></comp-battery-level-histogram>
-                    <p v-else style="margin-left: 40px;color: #FF9900">该设备没有电量信息</p>
+                    <comp-battery-level-histogram :device-id="statistic.id" ref="histogram"></comp-battery-level-histogram>
                 </Row>
             </Card>
             <Divider orientation="left">用例运行结果</Divider>
@@ -191,8 +189,6 @@
                 showMoreDetail: false,
                 showDeviceDetail: false,
                 showJobDetail: false,
-                showPower:true,
-                showTemperatures:true,
                 showLoading:false,
                 jobStatisticData:utils.validate(jobStatisticDataSerializer, []),
 
@@ -201,115 +197,120 @@
         methods: {
             refresh(tboardId) {
                 this.showLoading = true;
-                this.showPower = true;
-                this.showTemperatures = true;
                 this.totalStatisticData.pass
                     = this.totalStatisticData.fail
                     = this.totalStatisticData.invalid
                     = 0
                 this.totalStatisticData.total = 0.0001  // Prevent divide by zero
 
-                this.$ajax.get(
-                    "api/v1/cedar/tboard/" + tboardId + "/?fields=" +
-                    "id," +
-                    "board_name," +
-                    "job," +
-                    "job.id," +
-                    "job.job_name," +
-                    "job.job_label," +
-                    "device," +
-                    "device.id," +
-                    "device.device_name," +
-                    "device.device_label," +
-                    "repeat_time," +
-                    "author," +
-                    "author.id," +
-                    "author.username," +
-                    "author.last_name," +
-                    "board_stamp," +
-                    "end_time"
-                ).then(response => {
-                    this.data = utils.validate(getTboardSerializer, response.data)
-                    // 刷新所有温度图表
-                    let endTime = this.data.end_time;
-                    if(this.data.end_time===null){
-                        endTime = new Date().format("yyyy-MM-dd hh:mm:ss");
-                    }
-                    if(this.$refs.histogram){
-                        this.$refs.histogram.forEach(histogram=>{
-                            histogram.refresh(this.data.board_stamp,endTime)
-                        })
-                    }
-                    this.showLoading = false;
-                }).catch(reason => {
-                    if (config.DEBUG) console.log(reason)
-                    this.$Message.error("载入失败")
-                    this.showLoading = false;
-                })
-                this.$ajax.get(
-                    "api/v1/cedar/get_rds_rapid/?tboard__id=" + tboardId
-                ).then(response => {
-                    let rdss = utils.validate(getRdsSerializer, response.data).rdss
-                    let keys = []
-                    /*
-                        keys structure:
-                        {
-                            DeviceLabel1: 0,
-                            DeviceLabel2: 1
-                        }
 
-                    */
-                    let statistic = []
-                    /* After processing, statistic will like below:
-                        [
+                let requests = [
+                    this.$ajax.get(
+                        "api/v1/cedar/tboard/" + tboardId + "/?fields=" +
+                        "id," +
+                        "board_name," +
+                        "job," +
+                        "job.id," +
+                        "job.job_name," +
+                        "job.job_label," +
+                        "device," +
+                        "device.id," +
+                        "device.device_name," +
+                        "device.device_label," +
+                        "repeat_time," +
+                        "author," +
+                        "author.id," +
+                        "author.username," +
+                        "author.last_name," +
+                        "board_stamp," +
+                        "end_time"
+                    ),
+                    this.$ajax.get(
+                        "api/v1/cedar/get_rds_rapid/?tboard__id=" + tboardId
+                    )
+                ]
+                this.$ajax.all(requests)
+                    .then(this.$ajax.spread((rboard_resp,rds_resp) => {
+                        let rdss = utils.validate(getRdsSerializer, rds_resp.data).rdss
+                        let keys = []
+                        /*
+                            keys structure:
                             {
-                                id: 1,  <-- device.id
-                                deviceLabel: "DeviceLabel",
-                                deviceName: "Device1",
-                                total: 1,
-                                pass: 0,
-                                fail: 0,
-                                invalid: 0
+                                DeviceLabel1: 0,
+                                DeviceLabel2: 1
                             }
-                        ]
-                    */
-                    for (let i = 0; i < rdss.length; ++i) {
-                        let deviceLabel = rdss[i].device.device_label
-                        if (deviceLabel === null) continue
 
-                        let index = null
+                        */
+                        let statistic = []
+                        /* After processing, statistic will like below:
+                            [
+                                {
+                                    id: 1,  <-- device.id
+                                    deviceLabel: "DeviceLabel",
+                                    deviceName: "Device1",
+                                    total: 1,
+                                    pass: 0,
+                                    fail: 0,
+                                    invalid: 0
+                                }
+                            ]
+                        */
+                        for (let i = 0; i < rdss.length; ++i) {
+                            let deviceLabel = rdss[i].device.device_label
+                            if (deviceLabel === null) continue
 
-                        if (!keys.hasOwnProperty(deviceLabel)) {
-                            statistic.push({
-                                id: rdss[i].device.id,
-                                deviceLabel: rdss[i].device.device_label,
-                                deviceName: rdss[i].device.device_name,
-                                total: 0,
-                                pass: 0,
-                                fail: 0,
-                                invalid: 0
-                            })
-                            index = statistic.length - 1
-                            keys[deviceLabel] = index
+                            let index = null
+
+                            if (!keys.hasOwnProperty(deviceLabel)) {
+                                statistic.push({
+                                    id: rdss[i].device.id,
+                                    deviceLabel: rdss[i].device.device_label,
+                                    deviceName: rdss[i].device.device_name,
+                                    total: 0,
+                                    pass: 0,
+                                    fail: 0,
+                                    invalid: 0
+                                })
+                                index = statistic.length - 1
+                                keys[deviceLabel] = index
+                            }
+                            index = keys[deviceLabel]
+
+                            statistic[index].total += 1
+                            this.totalStatisticData.total += 1
+
+                            if (rdss[i].job_assessment_value === "0") {  // 成功
+                                this.totalStatisticData.pass += 1
+                                statistic[index].pass += 1
+                            } else if (rdss[i].job_assessment_value === "1") {  //失败
+                                this.totalStatisticData.fail += 1
+                                statistic[index].fail += 1
+                            } else {
+                                this.totalStatisticData.invalid += 1
+                                statistic[index].invalid += 1
+                            }
                         }
-                        index = keys[deviceLabel]
+                        this.deviceStatisticData = utils.validate(statisticDataSerializer, statistic)
 
-                        statistic[index].total += 1
-                        this.totalStatisticData.total += 1
-
-                        if (rdss[i].job_assessment_value === "0") {  // 成功
-                            this.totalStatisticData.pass += 1
-                            statistic[index].pass += 1
-                        } else if (rdss[i].job_assessment_value === "1") {  //失败
-                            this.totalStatisticData.fail += 1
-                            statistic[index].fail += 1
-                        } else {
-                            this.totalStatisticData.invalid += 1
-                            statistic[index].invalid += 1
+                        this.data = utils.validate(getTboardSerializer, rboard_resp.data)
+                        // 刷新所有温度图表
+                        let endTime = this.data.end_time;
+                        if(this.data.end_time===null){
+                            endTime = new Date().format("yyyy-MM-dd hh:mm:ss");
                         }
-                    }
-                    this.deviceStatisticData = utils.validate(statisticDataSerializer, statistic)
-                })
+                        this.$nextTick(function () {
+                            if (this.$refs.histogram) {
+                                this.$refs.histogram.forEach(histogram => {
+                                    histogram.refresh(this.data.board_stamp, endTime)
+                                })
+                            }
+                        })
+                        this.showLoading = false;
+                    })).catch(reason => {
+                        if (config.DEBUG) console.log(reason)
+                        this.$Message.error("载入失败")
+                        this.showLoading = false;
+                    })
                 this.$ajax.get("api/v1/statistics/get_tboard_running_detail/?tboard_id=" + tboardId )
                     .then(response=>{
                         if(response.data.devices.length===0){
@@ -331,12 +332,6 @@
             },
             onJobCellClick(statistic){
                 this.$emit('on-job-cell-click', this.data.id, statistic)
-            },
-            hidePowerHistogram(){
-                this.showPower = false;
-            },
-            hideTemperaturesHistogram(){
-                this.showTemperatures = false;
             }
         }
     }
