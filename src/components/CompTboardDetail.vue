@@ -67,12 +67,10 @@
                     </Col>
                 </Row>
                 <Row>
-                    <comp-temperature-histogram v-if="showTemperatures" :device-id="statistic.id" ref="histogram" @on-no-data="hideTemperaturesHistogram"></comp-temperature-histogram>
-                    <p v-else style="margin-left: 40px;color: #FF9900">该设备没有温度信息</p>
+                    <comp-temperature-histogram :device-id="statistic.id" ref="histogram"></comp-temperature-histogram>
                 </Row>
                 <Row style="margin-top: 10px;">
-                    <comp-battery-level-histogram v-if="showPower" :device-id="statistic.id" ref="histogram" @on-no-data="hidePowerHistogram"></comp-battery-level-histogram>
-                    <p v-else style="margin-left: 40px;color: #FF9900">该设备没有电量信息</p>
+                    <comp-battery-level-histogram :device-id="statistic.id" ref="histogram"></comp-battery-level-histogram>
                 </Row>
             </Card>
             <Divider orientation="left">用例运行结果</Divider>
@@ -191,8 +189,6 @@
                 showMoreDetail: false,
                 showDeviceDetail: false,
                 showJobDetail: false,
-                showPower:true,
-                showTemperatures:true,
                 showLoading:false,
                 jobStatisticData:utils.validate(jobStatisticDataSerializer, []),
 
@@ -201,8 +197,6 @@
         methods: {
             refresh(tboardId) {
                 this.showLoading = true;
-                this.showPower = true;
-                this.showTemperatures = true;
                 this.totalStatisticData.pass
                     = this.totalStatisticData.fail
                     = this.totalStatisticData.invalid
@@ -338,12 +332,6 @@
             },
             onJobCellClick(statistic){
                 this.$emit('on-job-cell-click', this.data.id, statistic)
-            },
-            hidePowerHistogram(){
-                this.showPower = false;
-            },
-            hideTemperaturesHistogram(){
-                this.showTemperatures = false;
             }
         }
     }
