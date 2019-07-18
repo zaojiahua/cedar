@@ -1,5 +1,8 @@
 <template>
-    <div ref="power" :id="'power'+deviceId" style="height: 80px;">
+    <div>
+        <div ref="power"  v-if="showPower" :id="'power'+deviceId" style="height: 80px;">
+        </div>
+        <p v-else style="margin-left: 40px;color: #FF9900">该设备没有电量信息</p>
     </div>
 </template>
 
@@ -29,53 +32,57 @@
             return{
                 histogram: null,
                 series: {},
+                showPower:true,
             }
         },
         methods:{
             refresh(startTime, endTime){
-                this.histogram.clear()
-                this.setDefaultOption()
-                this.histogram.showLoading()
+                this.showPower = true;
+                this.$nextTick(function () {
+                    this.histogram = echarts.init(document.getElementById("power"+this.deviceId))
+                    this.histogram.clear()
+                    this.setDefaultOption()
+                    this.histogram.showLoading()
 
-                this.$ajax.get("api/v1/cedar/get_device_power_rapid/?device_id=" + this.deviceId +
-                    "&record_datetime__gt=" + startTime +
-                    "&record_datetime__lt=" + endTime
-                ).then(response=>{
-                    let devicePowers = utils.validate(getPowersSerializer, response.data).devicepowers
-                    if(devicePowers.length === 0){
-                        this.$emit("on-no-data");
+                    this.$ajax.get("api/v1/cedar/get_device_power_rapid/?device_id=" + this.deviceId +
+                        "&record_datetime__gt=" + startTime +
+                        "&record_datetime__lt=" + endTime
+                    ).then(response=>{
+                        let devicePowers = utils.validate(getPowersSerializer, response.data).devicepowers
+                        if(devicePowers.length === 0){
+                            this.showPower = false;
+                            this.histogram.hideLoading()
+                            return;
+                        }
+                        let curData = []
+                        devicePowers.forEach(dp=>{
+                            let port = "未配置"
+                            let charging = ""
+                            if(dp.power_port.port !== null){
+                                port = dp.power_port.port;
+                            }
+                            if(dp.charging){
+                                charging = "正在充电"
+                            }else {
+                                charging = "未充电"
+                            }
+                            curData.push([dp.record_datetime, dp.battery_level,port,charging ])
+                        })
+                        let series = {
+                            type: 'line',
+                            smooth: true,
+                            areaStyle: {
+                            },
+                            data: curData
+                        }
+
+                        this.series = series
+
+                        this.histogram.setOption({
+                            series: this.series
+                        })
                         this.histogram.hideLoading()
-                        return;
-                    }
-                    let curData = []
-                    devicePowers.forEach(dp=>{
-                        let port = "未配置"
-                        let charging = ""
-                        if(dp.power_port.port !== null){
-                            port = dp.power_port.port;
-                        }
-                        if(dp.charging){
-                            charging = "正在充电"
-                        }else {
-                            charging = "未充电"
-                        }
-                        curData.push([dp.record_datetime, dp.battery_level,port,charging ])
                     })
-                    let series = {
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {
-                        },
-                        data: curData
-                    }
-
-                    this.series = series
-
-                    this.histogram.setOption({
-                        series: this.series
-                    })
-                    this.histogram.hideLoading()
-
                 })
             },
             setDefaultOption(){
