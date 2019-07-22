@@ -13,6 +13,11 @@
         </Row>
         <Row style="margin-bottom: 16px;">
             <DatePicker v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true"></DatePicker>
+            <p style="float: right">
+                <Tag type="dot" color="#1bbc9c">通过</Tag>
+                <Tag type="dot" color="#FFAE25">未通过</Tag>
+                <Tag type="dot" color="#BDC3C7">无效</Tag>
+            </p>
         </Row>
         <Row type="flex">
             <Col span="24">
