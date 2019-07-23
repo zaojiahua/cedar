@@ -81,6 +81,20 @@
                         sortable: true
                     },
                     {
+                        title:"任务进度",
+                        key:"progress",
+                        align: 'center',
+                        render: (h, params) => {
+                            return h('Progress',
+                                {
+                                    props: {
+                                        percent : this.progressList[params.index]
+                                    }
+                                }
+                            );
+                        }
+                    },
+                    {
                         title: "任务成功率",
                         key: "success_ratio",
                         sortable: true
@@ -100,6 +114,7 @@
                 offset: 0,
                 showLoading:false,
                 selection:[],
+                progressList:[],
             }
         },
         methods: {
@@ -144,10 +159,12 @@
                     finishedCondition +
                     dateRangeCondition
                 ).then(response => {
+                    let tboardIdList=[];
                     this.dataTotal = parseInt(response.headers["total-count"])
                     this.data = utils.validate(getTboardSerializer, response.data).tboards
                     this.data.forEach(item=>{
                         item.success_ratio = (item.success_ratio *100).toFixed(2) + "%";
+                        tboardIdList.push(item.id)
                     })
                     this.showLoading = false;
                     /* 将之前已经选中的选项重新勾选 */
@@ -162,6 +179,9 @@
                             }
                         }
                     }
+                    //准备任务进度条
+                    let tboardIdStr = tboardIdList.join(",");
+                    this.getProgress(tboardIdStr)
                 }).catch(reason => {
                     if (config.DEBUG) console.log(reason)
                     this.$Message.error("载入失败")
@@ -265,6 +285,24 @@
             },
             onSelectionChange(selection){
                 this.selection[this.currentPage] = selection
+            },
+            getProgress(tboardIdStr){
+                let root = this;
+                root.$ajax.get("api/v1/statistics/get_tboard_progress/?tboards=" + tboardIdStr + "&ordering=-id")
+                    .then(response => {
+                        root.progressList = [];
+                        let progresses = response.data.tboards.reverse()
+                        progresses.forEach(item => {
+                            root.progressList.push(parseInt((item.progress * 100).toFixed(1)))
+                        })
+                        setTimeout(function (){
+                            root.getProgress(tboardIdStr)
+                        },5000)
+                    })
+                    .catch(error => {
+                        if (config.DEBUG) console.log(error)
+                        root.$Message.error("进度读取失败！")
+                    })
             },
 
         },
