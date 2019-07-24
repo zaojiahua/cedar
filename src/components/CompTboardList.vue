@@ -88,7 +88,7 @@
                             return h('Progress',
                                 {
                                     props: {
-                                        percent : this.progressList[params.index]
+                                        percent : this.progressList[params.row.id]
                                     }
                                 }
                             );
@@ -115,6 +115,7 @@
                 showLoading:false,
                 selection:[],
                 progressList:[],
+                timer:null,
             }
         },
         methods: {
@@ -181,7 +182,8 @@
                     }
                     //准备任务进度条
                     let tboardIdStr = tboardIdList.join(",");
-                    this.getProgress(tboardIdStr)
+                    if(tboardIdStr.length>0)
+                        this.getProgress(tboardIdStr)
                 }).catch(reason => {
                     if (config.DEBUG) console.log(reason)
                     this.$Message.error("载入失败")
@@ -288,14 +290,15 @@
             },
             getProgress(tboardIdStr){
                 let root = this;
-                root.$ajax.get("api/v1/statistics/get_tboard_progress/?tboards=" + tboardIdStr + "&ordering=-id")
+                clearTimeout(root.timer);
+                root.$ajax.get("api/v1/statistics/get_tboard_progress/?tboards=" + tboardIdStr)
                     .then(response => {
                         root.progressList = [];
                         let progresses = response.data.tboards.reverse()
                         progresses.forEach(item => {
-                            root.progressList.push(parseInt((item.progress * 100).toFixed(1)))
+                            this.$set(root.progressList,item.id,parseInt((item.progress * 100).toFixed(1)))
                         })
-                        setTimeout(function (){
+                        root.timer = setTimeout(function (){
                             root.getProgress(tboardIdStr)
                         },5000)
                     })
