@@ -15,7 +15,7 @@
                 <Col>
                     <Button style="margin-right: 32px; width: 80px;" @click="showSelectDeviceModal=true">选择设备
                     </Button>
-                    <Button type="primary" style="width: 80px;" @click="toPageChooseJob">下一步</Button>
+                    <Button type="primary" style="width: 80px;" @click="toPageChooseJob" :disabled="disableFlag">下一步</Button>
                 </Col>
             </Row>
         </div>
@@ -102,12 +102,16 @@
                 tboardName: "",
                 tboardRepeatTime: 1,
                 showJobDetail:false,
+                disableFlag:true,
             }
         },
         methods: {
             // Page "Choose device"
             getDeviceSelection(){
-                this.$refs.deviceList.refresh(this.$refs.selectDevice.getSelection())
+                if(this.$refs.selectDevice.getSelection().length>0){
+                    this.$refs.deviceList.refresh(this.$refs.selectDevice.getSelection())
+                    this.disableFlag = false;
+                }
             },
             onSelectDeviceModalRowClick(data, index){
                 this.$refs.selectDevice.toggleSelect(index)
@@ -167,6 +171,7 @@
             },
             backToPageChooseDevice(){
                 this.current = 0
+                this.disableFlag = true;
             },
             // Page "Fill info"
             complete(){
