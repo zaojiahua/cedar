@@ -100,6 +100,9 @@
                 ).then(response=>{
                     if(response.data.state==="DONE"){
                         this.$Message.success("添加成功")
+                        this.$Notice.success({
+                            title: '设备即将重启,请稍侯...'
+                        });
                         this.$emit('afterDeviceAddSuccess', response.data)
                     }else{
                         this.$Message.error("添加失败！")
