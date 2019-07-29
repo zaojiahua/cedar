@@ -31,6 +31,10 @@
                 <b slot="label">操作人员:</b>
                 <Input disabled class="disabled-input" :value="data.author.username"></Input>
             </FormItem>
+            <FormItem>
+                <b slot="label">结束时间:</b>
+                <Input disabled class="disabled-input" :value="data.end_time"></Input>
+            </FormItem>
             <Divider orientation="left">总体运行结果</Divider>
             <Card style="cursor: pointer;" @click.native="onTotalResultClick">
                 <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
