@@ -90,7 +90,8 @@
                 columns: [
                     {
                         title: "用例名称",
-                        key: "job_name"
+                        key: "job_name",
+                        sortable: true
                     },
                     {
                         title: "测试用途",
@@ -99,6 +100,11 @@
                     {
                         title: "自定义标签",
                         key: "display_custom_tag"
+                    },
+                    {
+                        title: "更新时间",
+                        key: "updated_time",
+                        sortable: true
                     }
                 ],
                 data: [],
@@ -173,9 +179,10 @@
                     "test_area.description," +
                     "custom_tag," +
                     "custom_tag.id," +
-                    "custom_tag.custom_tag_name" +
+                    "custom_tag.custom_tag_name," +
+                    "updated_time" +
                     "&job_deleted=False" +
-                    "&ordering=id" +
+                    "&ordering=-updated_time" +
                     this.urlParam
 
                 if(this.propShowPage){
