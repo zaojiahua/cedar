@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="particles-js" style="position: absolute;background: #2F3638; width: 100%; height: 100%;">
+        <div id="particles-js" style="position: fixed;background: #2F3638; width: 100%; height: 100%;">
             <Card :bordered="true" style="padding: 0 12px; width: 260px; margin-left: auto; margin-right: auto; position: absolute; right: 0; left: 0; top: 30%">
                 <p id="title" slot="title">TMACH</p>
                 <Form ref="formInline" inline>
