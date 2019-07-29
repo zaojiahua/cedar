@@ -1,7 +1,7 @@
 <template>
     <div>
-        <Row type="flex" justify="center" align="middle" class="row" style="background: #2F3638;">
-            <Card :bordered="true" style="padding: 0 12px;">
+        <div id="particles-js" style="position: absolute;background: #2F3638; width: 100%; height: 100%;">
+            <Card :bordered="true" style="padding: 0 12px; width: 260px; margin-left: auto; margin-right: auto; position: absolute; right: 0; left: 0; top: 30%">
                 <p id="title" slot="title">TMACH</p>
                 <Form ref="formInline" inline>
                     <Row>
@@ -31,8 +31,7 @@
                     </Row>
                 </Form>
             </Card>
-        </Row>
-
+        </div>
     </div>
 </template>
 
@@ -87,6 +86,8 @@
             localStorage.removeItem("id")
             sessionStorage.removeItem("permissions")
             sessionStorage.removeItem("token")
+            particlesJS.load("particles-js", "particles.json")
+
         }
     }
 </script>
