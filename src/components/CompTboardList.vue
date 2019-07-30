@@ -298,6 +298,7 @@
                         progresses.forEach(item => {
                             this.$set(root.progressList,item.id,parseInt((item.progress * 100).toFixed(1)))
                         })
+                        clearTimeout(root.timer);
                         root.timer = setTimeout(function (){
                             root.getProgress(tboardIdStr)
                         },5000)
