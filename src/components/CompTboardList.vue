@@ -296,6 +296,8 @@
                         root.progressList = [];
                         let progresses = response.data.tboards.reverse()
                         progresses.forEach(item => {
+                            if(item.finished_flag)
+                                item.progress = 1.000;
                             this.$set(root.progressList,item.id,parseInt((item.progress * 100).toFixed(1)))
                         })
                         clearTimeout(root.timer);
