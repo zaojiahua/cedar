@@ -2,7 +2,7 @@
     <div>
         <slot name="detail"></slot>
         <Modal v-if="propAddMode" v-model="showAddDevice" :closable="false" :footer-hide="true">
-            <comp-add-device ref="addDevice" @afterDeviceAddSuccess="afterDeviceAddSuccess" @afterDeviceAddFailed="afterDeviceAddFailed"></comp-add-device>
+            <comp-add-device ref="addDevice" @afterDeviceAddSuccess="afterDeviceAddSuccess"></comp-add-device>
         </Modal>
         <Row type="flex" justify="space-between" style="margin-bottom: 8px;">
             <Col span="20">
@@ -17,7 +17,7 @@
         </Row>
 
         <Table ref="table" border :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
-        <Page :total="dataTotal" :current="currentPage" :page-size="propPageSize" simple @on-change="pageOnChange" style="margin-top:20px;text-align: center "/>
+        <Page :total="dataTotal" :current="currentPage" :page-size="propPageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
     </div>
 </template>
 
@@ -128,7 +128,7 @@
                                 });
                            }else {
                                this.phoneModelFilterList = value
-                               this.pageOnChange(1)                            }
+                               this.onPageChange(1)                            }
                         }
                     },
                     "rom_version": {
@@ -186,7 +186,7 @@
                             }
                             else {
                                 this.statusFilterList = value
-                                this.pageOnChange(1)
+                                this.onPageChange(1)
                             }
                         }
                     },
@@ -383,10 +383,7 @@
                 this.showAddDevice = false
                 this.refresh()
             },
-            afterDeviceAddFailed(reason){
-
-            },
-            pageOnChange(page){
+            onPageChange(page){
                 this.offset = this.propPageSize*(page-1);
                 this.currentPage = page;
                 this.refresh()
