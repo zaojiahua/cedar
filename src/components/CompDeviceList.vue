@@ -305,7 +305,8 @@
                     device.monitorport = monitorPortStr.substring(0, monitorPortStr.length-2)
                     deviceList.push(device.id);
                 })
-                this.$ajax.get("api/v1/cedar/get_device_power_battery_level/?device_id=" + deviceList.join(",") )
+                if(deviceList.length>0)
+                    this.$ajax.get("api/v1/cedar/get_device_power_battery_level/?device_id=" + deviceList.join(",") )
                     .then(response=>{
                         response.data.forEach(item=>{
                             this.data.forEach(device=>{
