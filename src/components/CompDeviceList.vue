@@ -218,6 +218,7 @@
             _responseHandle(response){
                 this.dataTotal = parseInt(response.headers["total-count"])
                 this.data = utils.validate(getDeviceListSerializer, response.data['devices'])
+                let deviceList = [];
                 this.data.forEach(device=>{
                     device.cpu_name = device.phone_model.cpu_name
                     device.phone_model = device.phone_model.phone_model_name
@@ -237,7 +238,20 @@
                         monitorPortStr = monitorPortStr+monitor.port+", "
                     })
                     device.monitorport = monitorPortStr.substring(0, monitorPortStr.length-2)
+                    deviceList.push(device.id);
                 })
+                this.$ajax.get("api/v1/cedar/get_device_power_battery_level/?device_id=" + deviceList.join(",") )
+                    .then(response=>{
+                        response.data.forEach(item=>{
+                            this.data.forEach(device=>{
+                                if(device.id === item.device)
+                                    this.$set(device,"power",item.battery_level)
+                            })
+                        })
+                    }).catch(error=>{
+                        if (config.DEBUG) console.log(error)
+                        this.$Message.error("电量数据载入失败！")
+                    })
                 this.loading = false
 
                 /* 将之前已经选中的选项重新勾选 */
