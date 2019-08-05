@@ -63,6 +63,12 @@
 
         }
     ]
+    const getPhoneModelSerializer = [
+        {
+            id: "number",
+            phone_model_name: "String",
+        }
+     ]
 
     export default {
         name: "CompDeviceManagement",
@@ -87,6 +93,10 @@
             propDeviceStatus:{
                 type: Boolean,
                 default: false
+            },
+            propFilterStatus:{
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -108,7 +118,18 @@
                     "phone_model": {
                         title: "设备型号",
                         key: "phone_model",
-                        sortable: true
+                        sortable: true,
+                        filters:[],
+                        filterRemote(value){
+                           if(this.propFilterStatus){
+                                this.$Modal.info({
+                                    title: "提示",
+                                    content: "当前状态不支持筛选功能！"
+                                });
+                           }else {
+                               this.phoneModelFilterList = value
+                               this.pageOnChange(1)                            }
+                        }
                     },
                     "rom_version": {
                         title: "ROM版本",
@@ -133,7 +154,41 @@
                     "status": {
                         title: "使用状态",
                         key: "status",
-                        sortable: true
+                        sortable: true,
+                        filters: [
+                            {
+                                label:"idle",
+                                value:"idle"
+                            },
+                            {
+                                label:"busy",
+                                value:"busy"
+                            },
+                            {
+                                label:"offline",
+                                value:"offline"
+                            },
+                            {
+                                label:"error",
+                                value:"error"
+                            }],
+                        filterRemote(value){
+                            if(this.propDeviceStatus){
+                                this.$Modal.info({
+                                    title: "提示",
+                                    content: "只允许查看空闲状态的设备！"
+                                });
+                            }else if(this.propFilterStatus){
+                                this.$Modal.info({
+                                    title: "提示",
+                                    content: "当前状态不支持筛选功能！"
+                                });
+                            }
+                            else {
+                                this.statusFilterList = value
+                                this.pageOnChange(1)
+                            }
+                        }
                     },
                     "power": {
                         title: "电量",
@@ -167,7 +222,9 @@
                 // Multi Selection
                 selectedDevice: [],
                 currentPage:1,
-                selection:[]
+                selection:[],
+                statusFilterList:[],
+                phoneModelFilterList:[],
             }
         },
         methods: {
@@ -179,8 +236,15 @@
                 }
                 this.loading = true
                 let deviceStatusCondition = ""
+                if(this.statusFilterList.length>0){
+                    deviceStatusCondition = "&status__in="+"ReefList["+this.statusFilterList.join("{%,%}")+"]"
+                }
                 if(this.propDeviceStatus){
                     deviceStatusCondition = "&status=idle"
+                }
+                let phoneModelCondition = ""
+                if(this.phoneModelFilterList.length>0){
+                    phoneModelCondition = "&phone_model__phone_model_name__in="+"ReefList["+this.phoneModelFilterList.join("{%,%}")+"]"
                 }
                 this.$ajax
                     .get('api/v1/cedar/device/?fields=' +
@@ -206,6 +270,7 @@
                         '&limit=' + this.propPageSize +
                         "&offset=" + this.offset +
                         deviceStatusCondition +
+                        phoneModelCondition +
                         "&ordering=id"
                     )
                     .then(response => {
@@ -333,6 +398,19 @@
         created() {
             if(this.propAutoLoad)
                 this.refresh()
+            this.$ajax.get("api/v1/cedar/get_device_phone_model/")
+                .then(response=>{
+                    let phoneModelList = utils.validate(getPhoneModelSerializer,response.data.device)
+                    let  phoneModelFilters = []
+                    phoneModelList.forEach(item=>{
+                        phoneModelFilters.push({label:item.phone_model_name,value:item.phone_model_name})
+                    })
+                    this.deviceColumn.phone_model.filters = phoneModelFilters;
+                })
+                .catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                    this.$Message.error("获取设备型号失败")
+                })
         },
         mounted() {
             this.deviceColumnChecked = localStorage.getItem("device-management:DEFAULT_DEVICE_COLUMN").split(",")
