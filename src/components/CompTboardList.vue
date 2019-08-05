@@ -328,6 +328,9 @@
                 })
             if (this.propAutoLoad)
                 this.refresh()
+        },
+        destroyed(){
+            clearTimeout(this.timer);
         }
     }
 </script>
