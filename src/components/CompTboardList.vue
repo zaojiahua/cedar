@@ -24,7 +24,7 @@
                 </Button>
             </template>
         </Table>
-        <Page :total="dataTotal" :current="currentPage" :page-size="propPageSize" simple @on-change="pageOnChange" style="margin-top:20px;text-align: center "/>
+        <Page :total="dataTotal" :current="currentPage" :page-size="propPageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
     </Card>
 </template>
 
@@ -280,7 +280,7 @@
             toggleSelect(_index){
                 return this.$refs.table.toggleSelect(_index)
             },
-            pageOnChange(page){
+            onPageChange(page){
                 this.offset = this.propPageSize*(page-1);
                 this.currentPage = page;
                 this.refresh()
