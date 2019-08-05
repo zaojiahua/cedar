@@ -54,14 +54,14 @@
                 </CheckboxGroup>
             </Panel>
             <Panel>智能充电口配对
-                <RadioGroup  slot="content" v-model="selectedPowerPorts">
-                    <Radio  v-for="item in powerPorts" :label="item.port" :key="item.id" :disabled="isDisabled(item.port,disablePowerPorts)">{{item.port}}</Radio >
-                </RadioGroup >
+                <CheckboxGroup  slot="content" v-model="selectedPowerPorts" @on-change="powerPortCheckbox">
+                    <Checkbox  v-for="item in powerPorts" :label="item.port" :key="item.id" :disabled="isDisabled(item.port,disablePowerPorts)">{{item.port}}</Checkbox >
+                </CheckboxGroup >
             </Panel>
             <Panel>工业相机配对
-                <RadioGroup slot="content" v-model="selectedMonitorPorts">
-                    <Radio v-for="item in monitorPorts" :label="item.port" :key="item.id" :disabled="!editable">{{item.port}}</Radio>
-                </RadioGroup>
+                <CheckboxGroup slot="content" v-model="selectedMonitorPorts" @on-change="monitorPortCheckbox">
+                    <Checkbox v-for="item in monitorPorts" :label="item.port" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
+                </CheckboxGroup>
             </Panel>
         </Collapse>
         <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable">
@@ -178,8 +178,12 @@
                 disableTempPorts:[],
                 disablePowerPorts:[],
                 selectedTempPorts:[],
-                selectedPowerPorts: "",
-                selectedMonitorPorts: "",
+                selectedPowerPorts: [],
+                selectedMonitorPorts: [],
+                selectedPowerPorts_copy:[],
+                selectedMonitorPorts_copy:[],
+                devicePowerPorts:"",
+                deviceMonitorPorts:"",
                 spinShow:false,
             }
         },
@@ -235,8 +239,8 @@
                 this.spinShow = true;
                 let ajax = this.$ajax
                 this.selectedTempPorts = []
-                this.selectedPowerPorts = ""
-                this.selectedMonitorPorts = ""
+                this.selectedPowerPorts = []
+                this.selectedMonitorPorts = []
                 this.disablePowerPorts = [];
                 this.disableTempPorts = [];
                 ajax.all(
@@ -303,17 +307,25 @@
                     })
 
                     //powerPort Detail
-                    this.selectedPowerPorts = this.device.powerport.port
+                    this.devicePowerPorts = this.device.powerport.port
+                    let devicePowerPorts = []     //当前device下选中的port， 可选中,可取消状态
+                    devicePowerPorts.push(this.device.powerport.port)
                     this.powerPorts.forEach(port=>{
-                        if(port.status==="busy"&&this.selectedPowerPorts!==port.port){
+                        if(devicePowerPorts.includes(port.port)){
+                            this.selectedPowerPorts.push(port.port);
+                        }else if(port.status==="busy"){
                             this.disablePowerPorts.push(port.port);
+                            this.selectedPowerPorts.push(port.port);
                         }
                     })
+                    this.selectedPowerPorts_copy = this.selectedPowerPorts
 
                     //monitorPort Detail
                      this.device.monitor_index.forEach(port=>{
-                        this.selectedMonitorPorts = port.port
+                        this.selectedMonitorPorts.push(port.port)
+                         this.deviceMonitorPorts = port.port;
                     })
+                    this.selectedMonitorPorts_copy = this.selectedMonitorPorts
                     this.spinShow = false;
                 })).catch(reason => {
                     this.spinShow = false;
@@ -351,8 +363,8 @@
                             deviceID:this.device.device_label,
                             deviceName:this.device.device_name,
                             tempPortDict:temperDict,
-                            monitorIndex:this.selectedMonitorPorts,
-                            powrCtrlPort:this.selectedPowerPorts
+                            monitorIndex:this.deviceMonitorPorts,
+                            powrCtrlPort:this.devicePowerPorts
                         }
                     }
                 ).then(response => {
@@ -375,7 +387,32 @@
             },
             cancelConfig(){
                 this.$emit('afterDeviceCancel')
-            }
+            },
+            powerPortCheckbox(value){
+                if(this.selectedPowerPorts_copy.length!==this.disablePowerPorts.length){
+                    if(this.selectedPowerPorts.indexOf(this.devicePowerPorts)!==-1){
+                        this.selectedPowerPorts.splice(this.selectedPowerPorts.indexOf(this.devicePowerPorts),1);
+                    }
+                }
+                value.forEach(item=>{
+                    if(this.selectedPowerPorts_copy.indexOf(item)===-1){
+                        this.devicePowerPorts = item;
+                    }
+                })
+                this.selectedPowerPorts_copy = this.selectedPowerPorts;
+            },
+            monitorPortCheckbox(value){
+                if(this.selectedMonitorPorts_copy.length!==0){
+                    if(this.selectedMonitorPorts.indexOf(this.deviceMonitorPorts)!==-1){
+                        this.selectedMonitorPorts.splice(this.selectedMonitorPorts.indexOf(this.deviceMonitorPorts),1);
+                    }
+                }
+                value.forEach(item=>{
+                    if(this.selectedMonitorPorts_copy.indexOf(item)===-1)
+                        this.deviceMonitorPorts = item;
+                })
+                this.selectedMonitorPorts_copy = this.selectedMonitorPorts;
+            },
 
         },
     }
