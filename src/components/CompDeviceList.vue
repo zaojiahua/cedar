@@ -310,8 +310,13 @@
                     .then(response=>{
                         response.data.forEach(item=>{
                             this.data.forEach(device=>{
-                                if(device.id === item.device)
-                                    this.$set(device,"power",item.battery_level)
+                                if(device.id === item.device){
+                                    if(item.battery_level){
+                                        this.$set(device,"power",item.battery_level + "%");
+                                        return;
+                                    }
+                                    this.$set(device,"power","无电量信息")
+                                }
                             })
                         })
                     }).catch(error=>{
