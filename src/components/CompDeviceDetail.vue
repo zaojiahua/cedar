@@ -355,6 +355,11 @@
                         temperDict[port] = "desc";     //给温感片加默认备注
                     })
                 }
+                //将当前设备要配置的充电口提取出来
+                let configPowerPorts = this.selectedPowerPorts.filter(selectedPort=> {
+                    return this.disablePowerPorts.indexOf(selectedPort)===-1
+                })
+
                 this.spinShow = true;
                 this.$ajax.post(coralUrl,
                     {
@@ -363,8 +368,8 @@
                             deviceID:this.device.device_label,
                             deviceName:this.device.device_name,
                             tempPortDict:temperDict,
-                            monitorIndex:this.deviceMonitorPorts,
-                            powrCtrlPort:this.devicePowerPorts
+                            monitorIndex:this.selectedMonitorPorts.join(","),
+                            powrCtrlPort:configPowerPorts.join(",")
                         }
                     }
                 ).then(response => {
