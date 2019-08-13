@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div ref="power"  v-if="showPower" :id="'power'+deviceId" style="height: 80px;">
+        <div ref="power"  v-if="showPower" :id="'power'+deviceId" style="height: 100px;">
         </div>
         <p v-else style="margin-left: 40px;color: #FF9900">该设备没有电量信息</p>
     </div>

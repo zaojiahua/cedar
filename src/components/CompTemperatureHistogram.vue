@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="showTemperatures" ref="main" :id="'main'+deviceId" style="height: 80px;">
+        <div v-if="showTemperatures" ref="main" :id="'main'+deviceId" style="height: 100px;">
         </div>
         <p v-else style="margin-left: 40px;color: #FF9900">该设备没有温度信息</p>
     </div>
@@ -54,6 +54,7 @@
                             this.histogram.hideLoading()
                             return;
                         }
+                        let temperatureList = [];
                         let curPort = null
                         let curData = []
                         let data = {}
@@ -77,7 +78,10 @@
                                 }
                             }
                             curData.push([dt.record_datetime, dt.temperature])
+                            temperatureList.push(dt.temperature)
                         })
+                        let maxTemperature = Math.ceil(Math.max.apply(null,temperatureList)+2);
+                        let minTemperature = Math.floor(Math.min.apply(null,temperatureList)-2);
 
                         let series = []
                         Object.keys(data).forEach(key=>{
@@ -85,9 +89,14 @@
                         })
 
                         this.series = series
+                        let temperRange = {
+                            max:maxTemperature,
+                            min:minTemperature,
+                        }
 
                         this.histogram.setOption({
-                            series: this.series
+                            series: this.series,
+                            yAxis: temperRange
                         })
                         this.histogram.hideLoading()
                     })
