@@ -59,7 +59,7 @@
                 <b slot="label">日志文件：</b>
                 <p v-if="showLogTip" style="color: #FF9900">暂无日志文件信息</p>
                 <ButtonGroup>
-                    <Button v-for="files in rdsInfo.rdslog" :key="files.id" @click="downloadLog(files.log_file)">{{ files.file_name }}</Button>
+                    <Button v-for="files in rdsInfo.rdslog" :key="files.id" @click="viewLogFile(files.log_file,files.file_name)">{{ files.file_name }}</Button>
                 </ButtonGroup>
             </FormItem>
         </Form>
@@ -73,6 +73,9 @@
         <Modal v-model="showImgModal" :fullscreen="true" footer-hide style="text-align: center">
             <img :src=baseUrl+imgInfo.img_file :alt="imgInfo.file_name" style="max-height: 98%;max-width: 100%;">
         </Modal>
+        <Modal v-model="showRdsLogModal" :fullscreen="true" :title="logName" ok-text="下载" @on-ok="downloadLog">
+            <comp-view-log-file ref="viewLogFile"></comp-view-log-file>
+        </Modal>
     </Card>
 </template>
 
@@ -80,6 +83,7 @@
     import config from "../lib/config";
     import utils from "../lib/utils";
     import CompTemperatureHistogram from "./CompTemperatureHistogram";
+    import CompViewLogFile from "./CompViewLogFile";
 
     const rdsSerializer = {
         device: {
@@ -130,7 +134,7 @@
 
 
     export default {
-        components:{ CompTemperatureHistogram },
+        components:{ CompTemperatureHistogram, CompViewLogFile },
         data(){
             return{
                 baseUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT,
@@ -141,6 +145,9 @@
                 showLogTip:false,
                 showScreenTip:false,
                 showTemperatures:false,
+                showRdsLogModal:false,
+                logName:"",
+                path:"",
             }
         },
         methods:{
@@ -222,8 +229,16 @@
                     }
                 });
             },
-            downloadLog(path){
-                window.open(this.baseUrl+path)
+            viewLogFile(path,fileName){
+                // window.open(this.baseUrl+path)
+                this.showRdsLogModal = true;
+                this.logName = fileName;
+                this.path = path;
+                this.$refs.viewLogFile.refresh(path)
+
+            },
+            downloadLog(){
+                window.open(this.baseUrl+this.path)
             },
             viewOriginalImg(imgId){
                 this.showImgModal = true;
