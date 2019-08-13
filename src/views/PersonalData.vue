@@ -85,7 +85,9 @@
             let userId = localStorage.getItem('id');
             this.userInfo.id = userId;
             this.$ajax
-                .get("api/v1/cedar/reefuser/?id="+userId)
+                .get("api/v1/cedar/reefuser/?fields=id,username,last_name," +
+                    "groups,groups.id,groups.name" +
+                    "&id="+userId)
                 .then(response=>{
                     let groups = [];
                     for(let i=0;i<response.data.reefusers[0].groups.length;i++){
