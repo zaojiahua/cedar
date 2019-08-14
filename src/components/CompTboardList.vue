@@ -63,6 +63,10 @@
             propPageSize: {
                 type: Number,
                 default: config.PAGE_SIZE
+            },
+            propPoll:{
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -183,7 +187,7 @@
                     }
                     //准备任务进度条
                     let tboardIdStr = tboardIdList.join(",");
-                    if(tboardIdStr.length>0) {
+                    if(tboardIdStr.length>0&&this.propPoll) {
                         this.getProgress(tboardIdStr)
                         this.getSuccessRatio(tboardIdStr)
                     }
@@ -296,7 +300,6 @@
                 clearTimeout(root.timer);
                 root.$ajax.get("api/v1/statistics/get_tboard_progress/?tboards=" + tboardIdStr)
                     .then(response => {
-                        root.progressList = [];
                         let progresses = response.data.tboards.reverse()
                         let runningList = [];
                         progresses.forEach(item => {
@@ -369,6 +372,7 @@
         },
         destroyed(){
             clearTimeout(this.timer);
+            clearTimeout(this.successRatioTimer);
         }
     }
 </script>
