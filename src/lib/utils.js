@@ -3,6 +3,9 @@ export default {
     getCoralUrl(port){
         return "http://"+config.CORAL_HOST+":"+port;
     },
+    getPageSize(){
+        return parseInt(localStorage.pageSize === undefined ? config.DEFAULT_PAGE_SIZE : localStorage.pageSize);
+    },
     validate(serializer, data){
         let dataClone = _.cloneDeep(data)
         // 广度优先遍历

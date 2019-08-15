@@ -21,7 +21,7 @@
                 </Button>
             </template>
         </Table>
-        <Page v-if="propShowPage" :current="currentPage" :total="dataTotal" :page-size="propPageSize" simple @on-change="onPageChange"
+        <Page v-if="propShowPage" :current="currentPage" :total="dataTotal" :page-size="pageSize" simple @on-change="onPageChange"
               style="margin-top:20px;text-align: center "/>
     </div>
 </template>
@@ -76,10 +76,6 @@
                 type: Boolean,
                 default: true
             },
-            propPageSize: {
-                type: Number,
-                default: config.PAGE_SIZE
-            },
             propShowSearch: {
                 type: Boolean,
                 default: true
@@ -115,7 +111,8 @@
                 currentPage: 1,
                 allJobNameList:[],
                 keyword: '',
-                filterJobNameList: []
+                filterJobNameList: [],
+                pageSize:config.DEFAULT_PAGE_SIZE,
             }
         },
         methods: {
@@ -187,7 +184,7 @@
 
                 if(this.propShowPage){
                     url = url +
-                        "&limit=" + config.PAGE_SIZE +
+                        "&limit=" + this.pageSize +
                         "&offset=" + this.offset
                 }
 
@@ -223,7 +220,7 @@
                 this.$emit("on-row-click", row, index)
             },
             onPageChange(page) {
-                this.offset = this.propPageSize * (page-1)
+                this.offset = this.pageSize * (page-1)
                 this.currentPage = page
                 this.refresh()
             },
@@ -277,7 +274,7 @@
                 if(this.propShowPage){
                     this.currentPage = 1;
                     url = url +
-                        "&limit=" + config.PAGE_SIZE +
+                        "&limit=" + config.DEFAULT_PAGE_SIZE +
                         "&offset=0"
                 }
                 this.$ajax.get(url)
@@ -292,6 +289,7 @@
 
         },
         created() {
+            this.pageSize = utils.getPageSize();
             if (this.propAutoLoad) this.refresh()
             if (this.propShowCounter)
                 this.columns.splice(0, 0, {
