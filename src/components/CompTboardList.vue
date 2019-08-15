@@ -184,7 +184,7 @@
                     }
                     //准备任务进度条
                     let tboardIdStr = tboardIdList.join(",");
-                    if(tboardIdStr.length>0&&this.propPoll) {
+                    if(tboardIdStr.length>0) {
                         this.getProgress(tboardIdStr)
                         this.getSuccessRatio(tboardIdStr)
                     }
@@ -309,7 +309,7 @@
                         })
                         //只轮询未完成的tboard
                         clearTimeout(root.timer);
-                        if(runningList.length !== 0)
+                        if(runningList.length !== 0&&this.propPoll)
                             root.timer = setTimeout(function (){
                                 root.getProgress(runningList.join(","))
                             },5000)
@@ -338,7 +338,7 @@
                         })
                         //只轮询未完成的tboard
                         clearTimeout(this.successRatioTimer);
-                        if(runningList.length !== 0)
+                        if(runningList.length !== 0&&this.propPoll)
                             this.successRatioTimer = setTimeout(function (){
                                 root.getSuccessRatio(runningList.join(","));
                             },5000)
