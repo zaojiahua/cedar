@@ -331,8 +331,8 @@
                                 runningList.push(item.id)
                             this.data.forEach(tboard=>{
                                 if(item.id === tboard.id) {
-                                    this.$set(tboard, tboard.success_ratio, (item.success_ratio * 100).toFixed(2) + "%")
-                                    this.$set(tboard, tboard.finished_flag, item.finished_flag)
+                                    this.$set(tboard, "success_ratio", (item.success_ratio * 100).toFixed(2) + "%")
+                                    this.$set(tboard, "finished_flag", item.finished_flag)
                                 }
                             })
                         })
