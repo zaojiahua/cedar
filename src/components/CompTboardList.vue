@@ -59,6 +59,10 @@
             propMultiSelect: {
                 type: Boolean,
                 default: false
+            },
+            propPoll:{
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -112,6 +116,7 @@
                 selection:[],
                 progressList:[],
                 timer:null,
+                successRatioTimer:null,
                 pageSize:config.DEFAULT_PAGE_SIZE,
             }
         },
@@ -179,8 +184,10 @@
                     }
                     //准备任务进度条
                     let tboardIdStr = tboardIdList.join(",");
-                    if(tboardIdStr.length>0)
+                    if(tboardIdStr.length>0&&this.propPoll) {
                         this.getProgress(tboardIdStr)
+                        this.getSuccessRatio(tboardIdStr)
+                    }
                 }).catch(reason => {
                     if (config.DEBUG) console.log(reason)
                     this.$Message.error("载入失败")
@@ -290,21 +297,55 @@
                 clearTimeout(root.timer);
                 root.$ajax.get("api/v1/statistics/get_tboard_progress/?tboards=" + tboardIdStr)
                     .then(response => {
-                        root.progressList = [];
                         let progresses = response.data.tboards.reverse()
+                        let runningList = [];
                         progresses.forEach(item => {
-                            if(item.finished_flag)
+                            if(item.finished_flag) {
                                 item.progress = 1.000;
+                            }else {
+                                runningList.push(item.id)
+                            }
                             this.$set(root.progressList,item.id,parseInt((item.progress * 100).toFixed(1)))
                         })
+                        //只轮询未完成的tboard
                         clearTimeout(root.timer);
-                        root.timer = setTimeout(function (){
-                            root.getProgress(tboardIdStr)
-                        },5000)
+                        if(runningList.length !== 0)
+                            root.timer = setTimeout(function (){
+                                root.getProgress(runningList.join(","))
+                            },5000)
                     })
                     .catch(error => {
                         if (config.DEBUG) console.log(error)
                         root.$Message.error("进度读取失败！")
+                    })
+            },
+            getSuccessRatio(tboardIdStr){
+                let root = this;
+                clearTimeout(this.successRatioTimer);
+                this.$ajax.get("api/v1/statistics/get_tboard_success_ratio/?tboards=" + tboardIdStr)
+                    .then(response=>{
+                        let successRatio = response.data.tboards;
+                        let runningList = [];
+                        successRatio.forEach(item => {
+                            if(!item.finished_flag)
+                                runningList.push(item.id)
+                            this.data.forEach(tboard=>{
+                                if(item.id === tboard.id) {
+                                    this.$set(tboard, tboard.success_ratio, (item.success_ratio * 100).toFixed(2) + "%")
+                                    this.$set(tboard, tboard.finished_flag, item.finished_flag)
+                                }
+                            })
+                        })
+                        //只轮询未完成的tboard
+                        clearTimeout(this.successRatioTimer);
+                        if(runningList.length !== 0)
+                            this.successRatioTimer = setTimeout(function (){
+                                root.getSuccessRatio(runningList.join(","));
+                            },5000)
+                    })
+                    .catch(error=>{
+                        if (config.DEBUG) console.log(error)
+                        this.$Message.error("成功率获取失败！")
                     })
             },
 
@@ -329,6 +370,7 @@
         },
         destroyed(){
             clearTimeout(this.timer);
+            clearTimeout(this.successRatioTimer);
         }
     }
 </script>
