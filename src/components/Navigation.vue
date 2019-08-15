@@ -2,7 +2,7 @@
     <div>
         <Layout :style="{minHeight: '100vh'}">
             <Header class="header" style="padding-left:0px;">
-                <Menu mode="horizontal" theme="dark" active-name="1" style="background-color: transparent">
+                <Menu mode="horizontal" theme="dark" active-name="0" style="background-color: transparent">
                     <div class="layout-logo">
                         <b>ANGELREEF</b>
                         <span>®</span>
@@ -11,11 +11,15 @@
                         <MenuItem name="0" :to="{name: 'personal-data'}">
                             Hi! {{ username }}
                         </MenuItem>
-                        <MenuItem name="1" @click.native="getSysVersion">
+                        <MenuItem name="1" :to="{name: 'setting'}">
+                            设置
+                            <Icon type="ios-settings-outline"  size="24"/>
+                        </MenuItem>
+                        <MenuItem name="2" @click.native="getSysVersion">
                             关于TMach
                             <Icon type="ios-help-circle-outline" size="24"/>
                         </MenuItem>
-                        <MenuItem name="2" @click.native="logout">
+                        <MenuItem name="3" @click.native="logout">
                             登出
                             <Icon type="ios-exit-outline" size="24">
                             </Icon>

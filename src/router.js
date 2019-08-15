@@ -12,6 +12,7 @@ import JobManagement from "./views/JobManagement";
 import LogFiles from "./views/LogFiles";
 import RdsManagement from "./views/RdsManagement"
 import SystemUpgrade from "./views/SystemUpgrade"
+import Setting from "./views/Setting"
 
 
 Vue.use(Router)
@@ -69,6 +70,11 @@ let router = new Router({
                     path: "system-upgrade",
                     name: "system-upgrade",
                     component: SystemUpgrade
+                },
+                {
+                    path: "setting",
+                    name: "setting",
+                    component: Setting
                 }
             ]
         },

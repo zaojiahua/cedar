@@ -24,7 +24,7 @@
                 </Button>
             </template>
         </Table>
-        <Page :total="dataTotal" :current="currentPage" :page-size="propPageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
+        <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
     </Card>
 </template>
 
@@ -59,10 +59,6 @@
             propMultiSelect: {
                 type: Boolean,
                 default: false
-            },
-            propPageSize: {
-                type: Number,
-                default: config.PAGE_SIZE
             },
             propPoll:{
                 type: Boolean,
@@ -121,6 +117,7 @@
                 progressList:[],
                 timer:null,
                 successRatioTimer:null,
+                pageSize:config.DEFAULT_PAGE_SIZE,
             }
         },
         methods: {
@@ -160,7 +157,7 @@
                     "success_ratio" +
                     "&author__id=" + userId +
                     "&ordering=-board_stamp" +
-                    '&limit=' + this.propPageSize +
+                    '&limit=' + this.pageSize +
                     "&offset=" + this.offset +
                     finishedCondition +
                     dateRangeCondition
@@ -288,7 +285,7 @@
                 return this.$refs.table.toggleSelect(_index)
             },
             onPageChange(page){
-                this.offset = this.propPageSize*(page-1);
+                this.offset = this.pageSize*(page-1);
                 this.currentPage = page;
                 this.refresh()
             },
@@ -354,6 +351,7 @@
 
         },
         created() {
+            this.pageSize = utils.getPageSize();
             if (this.propShowActionColumn)
                 this.columns.push({
                     width: 100,
