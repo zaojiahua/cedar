@@ -17,7 +17,7 @@
         </Row>
 
         <Table ref="table" border :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
-        <Page :total="dataTotal" :current="currentPage" :page-size="propPageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
+        <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
     </div>
 </template>
 
@@ -85,10 +85,6 @@
             propMultiSelect:{ // Multi selection feature
                 type: Boolean,
                 default: false
-            },
-            propPageSize: {
-                type: Number,
-                default: config.PAGE_SIZE
             },
             propDeviceStatus:{
                 type: Boolean,
@@ -223,6 +219,7 @@
                 selectedDevice: [],
                 currentPage:1,
                 selection:[],
+                pageSize:config.DEFAULT_PAGE_SIZE,
                 statusFilterList:[],
                 phoneModelFilterList:[],
             }
@@ -267,7 +264,7 @@
                         'tempport.description,' +
                         'monitor_index,' +
                         'monitor_index.port' +
-                        '&limit=' + this.propPageSize +
+                        '&limit=' + this.pageSize +
                         "&offset=" + this.offset +
                         deviceStatusCondition +
                         phoneModelCondition +
@@ -390,7 +387,7 @@
                 this.refresh()
             },
             onPageChange(page){
-                this.offset = this.propPageSize*(page-1);
+                this.offset = this.pageSize*(page-1);
                 this.currentPage = page;
                 this.refresh()
             },
@@ -399,6 +396,7 @@
             }
         },
         created() {
+            this.pageSize = utils.getPageSize();
             if(this.propAutoLoad)
                 this.refresh()
             this.$ajax.get("api/v1/cedar/get_device_phone_model/")
