@@ -118,6 +118,7 @@
                 timer:null,
                 successRatioTimer:null,
                 pageSize:config.DEFAULT_PAGE_SIZE,
+                tboardIdList:[],
             }
         },
         methods: {
@@ -162,12 +163,12 @@
                     finishedCondition +
                     dateRangeCondition
                 ).then(response => {
-                    let tboardIdList=[];
+                    this.tboardIdList=[];
                     this.dataTotal = parseInt(response.headers["total-count"])
                     this.data = utils.validate(getTboardSerializer, response.data).tboards
                     this.data.forEach(item=>{
                         item.success_ratio = (item.success_ratio *100).toFixed(2) + "%";
-                        tboardIdList.push(item.id)
+                        this.tboardIdList.push(item.id)
                     })
                     this.showLoading = false;
                     /* 将之前已经选中的选项重新勾选 */
@@ -183,7 +184,7 @@
                         }
                     }
                     //准备任务进度条
-                    let tboardIdStr = tboardIdList.join(",");
+                    let tboardIdStr = this.tboardIdList.join(",");
                     if(tboardIdStr.length>0) {
                         this.getProgress(tboardIdStr)
                         this.getSuccessRatio(tboardIdStr)
@@ -228,7 +229,15 @@
                         root.$ajax.delete(
                             "api/v1/cedar/tboard/" + row.id + "/"
                         ).then(response => {
+                            root.tboardIdList.splice(root.tboardIdList.indexOf(root.data[index].id),1)
                             root.data.splice(index, 1)
+                            clearTimeout(root.timer);
+                            clearTimeout(root.successRatioTimer);
+                            let tboardIdStr = root.tboardIdList.join(",");
+                            if(tboardIdStr.length>0) {
+                                root.getProgress(tboardIdStr)
+                                root.getSuccessRatio(tboardIdStr)
+                            }
                             root.$Message.success("删除成功")
                         }).catch(reason => {
                             if (config.DEBUG) console.log(reason)
