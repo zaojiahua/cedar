@@ -1,5 +1,5 @@
 <template>
-    <Card style="margin-bottom: 16px;" dis-hover v-if="showRdsCard">
+    <Card style="margin-bottom: 16px;" dis-hover>
         <Divider orientation="left">{{ propDeviceLabel }}</Divider>
         <Row type="flex" style="margin-bottom: 16px;" align="bottom">
             <Button style="margin-right: 16px;" @click="openJobList">选取用例</Button>
@@ -103,7 +103,6 @@
                 showTboardSelector: false,
                 showRdsDetail: false,
                 rdsIndex:null,
-                showRdsCard:true,
             }
         },
         methods: {
@@ -168,7 +167,6 @@
                             this.rdsData = utils.validate(getRdsSerializer, response.data).rdss
                         else
                             this.rdsData = this.rdsData.concat(utils.validate(getRdsSerializer, response.data).rdss)
-                        this.showRdsCard = this.rdsData.length > 0;
                         return this.$ajax
                             .get("api/v1/cedar/rds/?fields=id" +
                                 jobCondition +
