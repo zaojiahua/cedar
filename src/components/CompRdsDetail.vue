@@ -21,6 +21,10 @@
                 <b slot="label">测试结果：</b>
                 <Input v-model="rdsInfo.result" class="disabled-input" disabled></input>
             </FormItem>
+            <FormItem>
+                <b slot="label">rdsDict：</b>
+                <Input v-model="rdsInfo.rds_dict" class="disabled-input" disabled></input>
+            </FormItem>
             <Divider>用例信息</Divider>
             <FormItem>
                 <b slot="label">用例ID：</b>
@@ -168,10 +172,13 @@
                         "tboard,tboard.id,tboard.board_name,"+
                         "start_time,"+
                         "end_time,"+
-                        "job_assessment_value")
+                        "job_assessment_value," +
+                        "rds_dict")
                     .then(response=>{
                         this.showSpin=false;
                         this.rdsInfo = utils.validate(rdsSerializer,response.data);
+                        this.rdsInfo.rds_dict = JSON.stringify(this.rdsInfo.rds_dict);
+                        if(this.rdsInfo.rds_dict === "null") this.rdsInfo.rds_dict = "";
                         if(this.rdsInfo.job_assessment_value==="0"){
                             this.rdsInfo.result = "通过";
                         }else if(this.rdsInfo.job_assessment_value==="1"){
