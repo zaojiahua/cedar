@@ -30,6 +30,7 @@
                 <Col span="24">没有搜索结果，换个关键词试试！</Col>
             </Row>
         </div>
+        <Page v-if="showPage" :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
         <Drawer v-model="showLogDetail" :draggable="true" :closable="false" width="50" :title=fileName>
             <comp-rds-log-search-detail ref="logDetail"></comp-rds-log-search-detail>
         </Drawer>
@@ -38,6 +39,7 @@
 
 <script>
     import config from "../lib/config";
+    import utils from  "../lib/utils";
     import CompRdsLogSearchDetail from "./CompRdsLogSearchDetail";
 
     export default {
@@ -52,6 +54,11 @@
                 showTip:false,
                 fileName:"",
                 showLogDetail:false,
+                pageSize: config.DEFAULT_PAGE_SIZE,
+                currentPage:1,
+                dataTotal: 0,
+                offset: 0,
+                showPage:false,
             }
         },
         methods:{
@@ -80,12 +87,19 @@
                 this.$ajax.get(
                     "api/v1/search/rds_log_search/?" +
                     dateRangeCondition +
-                    keywordCondition
+                    keywordCondition +
+                    "&limit=" + this.pageSize +
+                    "&offset=" + this.offset +
+                    "&ordering=start_time desc"
                 ).then(response=>{
+                    this.dataTotal = parseInt(response.headers["total-count"])
                     this.logList = response.data;
                     this.showLoading = false;
-                    if(Object.keys(this.logList).length===0)
+                    if(Object.keys(this.logList).length===0) {
                         this.showTip = true;
+                        this.showPage = false;
+                    }else
+                        this.showPage = true;
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     this.$Message.error("文件搜索失败！")
@@ -99,20 +113,28 @@
                     });
                     return;
                 }
-                this.refresh();
+                this.onPageChange(1);
             },
             openLogDetail(name,path){
                 this.showLogDetail = true;
                 this.fileName = name;
                 this.$refs.logDetail.refresh(path)
-            }
+            },
+            onPageChange(page){
+                this.offset = this.pageSize*(page-1);
+                this.currentPage = page;
+                this.refresh()
+            },
+        },
+        created(){
+            this.pageSize = utils.getPageSize();
         }
     }
 </script>
 
 <style scoped>
     .content{
-        height: calc(100vh - 245px);
+        height: calc(100vh - 290px);
         overflow: auto;
     }
     .ivu-spin-fix{
