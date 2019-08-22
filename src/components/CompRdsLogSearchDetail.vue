@@ -1,7 +1,9 @@
 <template>
     <div>
         <Card>
-            {{logContent }}
+            <pre>
+                {{logContent }}
+            </pre>
         </Card>
         <Spin size="large" fix v-if="showLoading"></Spin>
     </div>
@@ -33,3 +35,10 @@
         }
     }
 </script>
+
+<style scoped>
+    pre{
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+    }
+</style>
