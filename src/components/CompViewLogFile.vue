@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div>
+        <pre>
             {{ logContent }}
-        </div>
+        </pre>
         <Spin size="large" fix v-if="showSpin"></Spin>
     </div>
 </template>
@@ -35,3 +35,10 @@
         }
     }
 </script>
+
+<style scoped>
+    pre{
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+    }
+</style>
