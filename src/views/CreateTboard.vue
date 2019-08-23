@@ -54,7 +54,7 @@
                 <Form :label-width="80">
                     <FormItem>
                         <b slot="label">任务名称</b>
-                        <Input v-model="tboardName" style="max-width: 600px;"></Input>
+                        <Input v-model="tboardName" style="max-width: 600px;" :maxlength="32"></Input>
                     </FormItem>
                     <FormItem>
                         <b slot="label">运行轮次</b>
