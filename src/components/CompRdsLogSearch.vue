@@ -1,13 +1,13 @@
 <template>
     <div>
         <Row type="flex" style="margin-bottom: 16px;">
-            <DatePicker v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" @on-change="refresh"></DatePicker>
+            <DatePicker v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" @on-change="onPageChange(1)"></DatePicker>
         </Row>
         <Row type="flex" style="margin-bottom: 16px;">
             <Input v-model="keyword" style="width: 100%;" search enter-button placeholder="请输入关键字..." @on-search="onSearch" />
         </Row>
         <Spin fix size="large" v-if="showLoading"></Spin>
-        <div class="content">
+        <div class="content" id="rdsLogSearch">
             <Card style="margin-bottom: 15px;cursor: default" v-for="item in logList" :key="item.id" @click.native="openLogDetail(item.file_name,item.file_path)">
                 <Row>
                     <Col span="18">
@@ -65,6 +65,7 @@
             refresh(){
                 this.showLoading = true;
                 this.showTip=false;
+                document.getElementById("rdsLogSearch").scrollTop  = 0;
                 let dateRangeCondition = ""
                 if (this.filterDateRange && this.filterDateRange[0] && this.filterDateRange[1]) {
                     dateRangeCondition = "&start_time=" +
