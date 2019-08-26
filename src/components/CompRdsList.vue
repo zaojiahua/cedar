@@ -19,6 +19,13 @@
                 <Tag type="dot" color="#BDC3C7">无效</Tag>
             </p>
         </Row>
+        <Row style="margin-bottom: 16px;">
+            <Select v-model="resultRange" multiple style="width:260px" placeholder="请选择测试结果类型">
+                <Option value="0"> 通过 </Option>
+                <Option value="1"> 未通过 </Option>
+                <Option value="-1"> 无效 </Option>
+            </Select>
+        </Row>
         <Row type="flex">
             <Col span="24">
                 <comp-rds-card ref="rdsCard" v-for="item in devices" :key="item.id"
@@ -27,6 +34,7 @@
                                :prop-default-tboards="defaultTboards"
                                :prop-default-jobs="defaultJobs"
                                :prop-filter-date-range="filterDateRange"
+                               :prop-result-range="resultRange"
                                @rds-mouse-enter="onRdsMouseEnter"
                                @rds-mouse-leave="onRdsMouseLeave"></comp-rds-card>
             </Col>
@@ -99,6 +107,7 @@
                 defaultTboards: [],
                 defaultJobs: [],
                 filterDateRange:null,
+                resultRange:[],
             }
         },
         methods: {
