@@ -89,6 +89,10 @@
             propFilterDateRange:{
                 type: Array,
                 default: []
+            },
+            propResultRange:{
+                type: Array,
+                default: []
             }
         },
         data: function () {
@@ -113,6 +117,21 @@
                 this.$emit('rds-mouse-leave')
             },
             loadMoreData(reset) {
+                //通过、未通过、无效条件选择
+                let resultRangeCondition = ""
+                if(this.propResultRange.length === 1 && this.propResultRange.indexOf("-1")=== -1)
+                    resultRangeCondition = "&job_assessment_value=ReefList[" + this.propResultRange.join("{%,%}") + "]";
+                else if(this.propResultRange.length === 1 && this.propResultRange.indexOf("-1")!== -1)
+                    resultRangeCondition = "&job_assessment_value!=1,0";
+                else if(this.propResultRange.length === 2 && this.propResultRange.indexOf("-1")=== -1)
+                    resultRangeCondition = "&job_assessment_value=ReefList[" + this.propResultRange.join("{%,%}") + "]";
+                else if(this.propResultRange.length === 2 && this.propResultRange.indexOf("1")=== -1)
+                    resultRangeCondition = "&job_assessment_value!=1";
+                else if(this.propResultRange.length === 2 && this.propResultRange.indexOf("0")=== -1)
+                    resultRangeCondition = "&job_assessment_value!=0";
+                else
+                    resultRangeCondition = ""
+                //时间参数选择
                 let dateRangeCondition = ""
                 if (this.propFilterDateRange && this.propFilterDateRange[0] && this.propFilterDateRange[1]) {
                     dateRangeCondition = "&start_time__gte=" +
@@ -149,14 +168,11 @@
                     })
                     tboardCondition = "&tboard__in=ReefList[" + tboardIds.join("{%,%}") + "]"
                 }
-                this.$ajax.get("api/v1/cedar/rds/?fields=" +
-                    "id," +
-                    "job_assessment_value," +
-                    "device,device.id,device.device_name," +
-                    "job,job.id,job.job_name" +
+                this.$ajax.get("api/v1/cedar/filter_rds_validity/?" +
                     jobCondition +
                     tboardCondition +
                     dateRangeCondition +
+                    resultRangeCondition +
                     "&limit=" + pageSize +
                     "&offset=" + this.dataOffset +
                     "&device=" + this.propDeviceId +
@@ -168,10 +184,11 @@
                         else
                             this.rdsData = this.rdsData.concat(utils.validate(getRdsSerializer, response.data).rdss)
                         return this.$ajax
-                            .get("api/v1/cedar/rds/?fields=id" +
+                            .get("api/v1/cedar/filter_rds_validity/?" +
                                 jobCondition +
                                 tboardCondition +
                                 dateRangeCondition +
+                                resultRangeCondition +
                                 "&limit=1" +
                                 "&offset=" + this.dataOffset +
                                 "&device=" + this.propDeviceId)
@@ -248,6 +265,11 @@
                 immediate: true
             },
             propFilterDateRange:{
+                handler: function(){
+                    this.loadMoreData(true)
+                }
+            },
+            propResultRange:{
                 handler: function(){
                     this.loadMoreData(true)
                 }
