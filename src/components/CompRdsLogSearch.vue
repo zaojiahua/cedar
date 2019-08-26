@@ -104,6 +104,11 @@
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     this.$Message.error("文件搜索失败！")
+                    if(error.response.status===400)
+                        this.$Notice.error({
+                            title: "ERROR",
+                            desc: error.response.data
+                        })
                     this.showLoading = false;
                 })
             },
