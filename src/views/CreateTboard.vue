@@ -120,6 +120,10 @@
                 this.selectedDevice = this.$refs.deviceList.getData()
                 if(this.selectedDevice.length>0){
                     this.current = 1
+                    this.$nextTick(function () {
+                        if(this.selectedJob.length>0 )
+                            this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
+                    })
                 }else {
                     this.$Message.warning("请选择要进行测试的设备！");
                 }
@@ -171,7 +175,11 @@
             },
             backToPageChooseDevice(){
                 this.current = 0
-                this.disableFlag = true;
+                if(this.selectedDevice.length === 0)
+                    this.disableFlag = true;
+                this.$nextTick(function () {
+                    this.$refs.deviceList.refresh(this.selectedDevice)
+                })
             },
             // Page "Fill info"
             complete(){
@@ -228,6 +236,9 @@
             },
             backToPageChooseJob(){
                 this.current = 1
+                this.$nextTick(function () {
+                    this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
+                })
             },
             JobOnRowClick(row){
                 this.showJobDetail = true;
