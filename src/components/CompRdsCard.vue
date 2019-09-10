@@ -120,11 +120,11 @@
                 //通过、未通过、无效条件选择
                 let resultRangeCondition = ""
                 if(this.propResultRange.length === 1 && this.propResultRange.indexOf("-1")=== -1)
-                    resultRangeCondition = "&job_assessment_value=ReefList[" + this.propResultRange.join("{%,%}") + "]";
+                    resultRangeCondition = "&job_assessment_value__in=ReefList[" + this.propResultRange.join("{%,%}") + "]";
                 else if(this.propResultRange.length === 1 && this.propResultRange.indexOf("-1")!== -1)
                     resultRangeCondition = "&job_assessment_value!=1,0";
                 else if(this.propResultRange.length === 2 && this.propResultRange.indexOf("-1")=== -1)
-                    resultRangeCondition = "&job_assessment_value=ReefList[" + this.propResultRange.join("{%,%}") + "]";
+                    resultRangeCondition = "&job_assessment_value__in=ReefList[" + this.propResultRange.join("{%,%}") + "]";
                 else if(this.propResultRange.length === 2 && this.propResultRange.indexOf("1")=== -1)
                     resultRangeCondition = "&job_assessment_value!=1";
                 else if(this.propResultRange.length === 2 && this.propResultRange.indexOf("0")=== -1)
