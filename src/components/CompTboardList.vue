@@ -167,7 +167,7 @@
                     this.dataTotal = parseInt(response.headers["total-count"])
                     this.data = utils.validate(getTboardSerializer, response.data).tboards
                     this.data.forEach(item=>{
-                        item.success_ratio = (item.success_ratio *100).toFixed(2) + "%";
+                        item.success_ratio = (item.success_ratio *100).toFixed(1) + "%";
                         this.tboardIdList.push(item.id)
                     })
                     this.showLoading = false;
@@ -340,7 +340,7 @@
                                 runningList.push(item.id)
                             this.data.forEach(tboard=>{
                                 if(item.id === tboard.id) {
-                                    this.$set(tboard, "success_ratio", (item.success_ratio * 100).toFixed(2) + "%")
+                                    this.$set(tboard, "success_ratio", (item.success_ratio * 100).toFixed(1) + "%")
                                     this.$set(tboard, "finished_flag", item.finished_flag)
                                 }
                             })
