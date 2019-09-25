@@ -40,8 +40,8 @@
                 <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
                     <Col>
                         <i-circle :percent="(totalStatisticData.pass/totalStatisticData.total*100)">
-                            <p style="font-size:24px">{{(totalStatisticData.pass/totalStatisticData.total*100).toFixed(1)}}%</p>
-                            <small>成功率</small>
+                            <p style="font-size:24px;font-weight: bold">{{(totalStatisticData.pass/totalStatisticData.total*100).toFixed(1)}}%</p>
+                            <small>总成功率</small>
                         </i-circle>
                     </Col>
                     <Col style="margin-left:16px;">
@@ -58,8 +58,8 @@
                 <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;" @click.native="onCellClick(statistic)">
                     <Col>
                         <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
-                            <p>{{(statistic.pass*100/statistic.total).toFixed(1)}}%</p>
-                            <small>成功率</small>
+                            <p style="font-weight: bold;margin-bottom: 2px">{{(statistic.pass*100/statistic.total).toFixed(1)}}%</p>
+                            <small>设备成功率</small>
                         </i-circle>
                     </Col>
                     <Col style="margin-left: 16px;">
@@ -83,8 +83,8 @@
                 <Row type="flex" align="middle" style="margin: 16px 0">
                     <Col>
                         <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
-                            <p>{{statistic.total===0 ? 0 : (statistic.pass*100/statistic.total).toFixed(1)}}%</p>
-                            <small>成功率</small>
+                            <p style="font-weight: bold;margin-bottom: 2px">{{statistic.total===0 ? 0 : (statistic.pass*100/statistic.total).toFixed(1)}}%</p>
+                            <small>用例成功率</small>
                         </i-circle>
                     </Col>
                     <Col style="margin-left: 16px;">
