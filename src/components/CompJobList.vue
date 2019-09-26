@@ -285,6 +285,12 @@
                 this.keyword = "";
                 this.currentPage = 1;
                 this.refresh();
+            },
+            getThisSelection(){
+                return this.selection;
+            },
+            setSelection(selection){
+                this.selection = selection;
             }
 
         },

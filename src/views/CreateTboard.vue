@@ -103,6 +103,8 @@
                 tboardRepeatTime: 1,
                 showJobDetail:false,
                 disableFlag:true,
+                deviceSelection:[],
+                jobSelection:[],
             }
         },
         methods: {
@@ -111,6 +113,7 @@
                 if(this.$refs.selectDevice.getSelection().length>0){
                     this.$refs.deviceList.refresh(this.$refs.selectDevice.getSelection())
                     this.disableFlag = false;
+                    this.deviceSelection = this.$refs.selectDevice.getThisSelection()
                 }
             },
             onSelectDeviceModalRowClick(data, index){
@@ -121,8 +124,10 @@
                 if(this.selectedDevice.length>0){
                     this.current = 1
                     this.$nextTick(function () {
-                        if(this.selectedJob.length>0 )
+                        if(this.selectedJob.length>0 ) {
                             this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
+                            this.$refs.jobList.setSelection(this.jobSelection)
+                        }
                     })
                 }else {
                     this.$Message.warning("请选择要进行测试的设备！");
@@ -166,6 +171,7 @@
             },
             toPageFillInfo(){
                 this.selectedJob = this.$refs.jobSelectedList.getData()
+                this.jobSelection = this.$refs.jobList.getThisSelection();
                 if(this.selectedJob.length>0){
                     this.current = 2
                 }else {
@@ -179,6 +185,7 @@
                     this.disableFlag = true;
                 this.$nextTick(function () {
                     this.$refs.deviceList.refresh(this.selectedDevice)
+                    this.$refs.selectDevice.setSelection(this.deviceSelection)
                 })
             },
             // Page "Fill info"
@@ -238,6 +245,7 @@
                 this.current = 1
                 this.$nextTick(function () {
                     this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
+                    this.$refs.jobList.setSelection(this.jobSelection);
                 })
             },
             JobOnRowClick(row){

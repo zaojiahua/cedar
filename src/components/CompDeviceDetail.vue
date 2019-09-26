@@ -47,7 +47,7 @@
                 <Input v-model="device.device_name" :disabled="!editable"></Input>
             </FormItem>
         </Form>
-        <Collapse :value="[0,1,2]">
+        <Collapse :value="[0,1,2,3]">
             <Panel>温度感应片配对
                 <CheckboxGroup slot="content" v-model="selectedTempPorts">
                     <Checkbox v-for="item in tempPorts" :label="item.port" :key="item.id" :disabled="isDisabled(item.port,disableTempPorts)">{{item.port}}</Checkbox>
@@ -62,6 +62,12 @@
                 <CheckboxGroup slot="content" v-model="selectedMonitorPorts" @on-change="monitorPortCheckbox">
                     <Checkbox v-for="item in monitorPorts" :label="item.port" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
                 </CheckboxGroup>
+            </Panel>
+            <Panel>其他
+                <p  slot="content">
+                    <span>是否开启 AITester </span>
+                    <i-switch v-model="openSwitch" style="float: right" />
+                </p>
             </Panel>
         </Collapse>
         <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable">
@@ -84,6 +90,7 @@
     const serializer = {
             deviceSerializer: {
                 id: "number",
+                auto_test: "boolean",
                 device_label: "string",
                 android_version: {
                     id: "number",
@@ -185,6 +192,7 @@
                 devicePowerPorts:"",
                 deviceMonitorPorts:"",
                 spinShow:false,
+                openSwitch:true,
             }
         },
         methods: {
@@ -260,7 +268,8 @@
                             "device_name," +
                             "tempport,tempport.id,tempport.port,tempport.description," +
                             "powerport,powerport.id,powerport.port," +
-                            "monitor_index,monitor_index.id,monitor_index.port"
+                            "monitor_index,monitor_index.id,monitor_index.port," +
+                            "auto_test"
                         ),
                         ajax.get("api/v1/cedar/temp_port/?fields=" +
                             "id," +
@@ -326,6 +335,9 @@
                          this.deviceMonitorPorts = port.port;
                     })
                     this.selectedMonitorPorts_copy = this.selectedMonitorPorts
+
+                    //aiTester
+                    this.openSwitch = this.device.auto_test
                     this.spinShow = false;
                 })).catch(reason => {
                     this.spinShow = false;
@@ -369,7 +381,8 @@
                             deviceName:this.device.device_name,
                             tempPortDict:temperDict,
                             monitorIndex:this.selectedMonitorPorts.join(","),
-                            powrCtrlPort:configPowerPorts.join(",")
+                            powrCtrlPort:configPowerPorts.join(","),
+                            aiTester :this.openSwitch
                         }
                     }
                 ).then(response => {

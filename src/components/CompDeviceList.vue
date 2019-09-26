@@ -402,6 +402,12 @@
             },
             onSelectionChange(selection){
                 this.selection[this.currentPage] = selection
+            },
+            getThisSelection(){
+                return this.selection;
+            },
+            setSelection(selection){
+                this.selection = selection;
             }
         },
         watch:{
