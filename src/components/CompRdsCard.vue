@@ -21,10 +21,10 @@
             </Button>
         </Row>
         <Modal v-model="showJobSelector" :transfer="true" fullscreen :closable="false" @on-ok="onJobListOk">
-            <comp-job-list :propMultiSelect="true" ref="jobList" @on-row-click="onJobListRowClick"></comp-job-list>
+            <comp-job-list v-if="showJobSelector" :propMultiSelect="true" :prop-tboard="propDefaultTboards" ref="jobList" @on-row-click="onJobListRowClick"></comp-job-list>
         </Modal>
         <Modal v-model="showTboardSelector" :transfer="true" fullscreen :closable="false" @on-ok="onTboardListOk">
-            <comp-tboard-list :prop-multi-select="true" ref="tboardList" @on-row-click="onTboardListRowClick"></comp-tboard-list>
+            <comp-tboard-list v-if="showTboardSelector" :prop-multi-select="true" :prop-tboard="propDefaultTboards" ref="tboardList" @on-row-click="onTboardListRowClick"></comp-tboard-list>
         </Modal>
         <Drawer v-model="showRdsDetail" :closable="false" width="50" transfer>
             <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne"></comp-rds-detail>
@@ -107,6 +107,8 @@
                 showTboardSelector: false,
                 showRdsDetail: false,
                 rdsIndex:null,
+                jobSelection:[],
+                tboardSelection:[],
             }
         },
         methods: {
@@ -210,9 +212,15 @@
             },
             openJobList(){
                 this.showJobSelector = true
+                this.$nextTick(function(){
+                    this.$refs.jobList.setSelection(this.jobSelection)
+                })
             },
             openTboardList(){
                 this.showTboardSelector = true
+                this.$nextTick(function(){
+                    this.$refs.tboardList.setSelection(this.tboardSelection)
+                })
             },
             onJobTagClose(_index){
                 this.jobs.splice(_index, 1)
@@ -224,6 +232,7 @@
             },
             onJobListOk(){
                 this.jobs = this.$refs.jobList.getSelection()
+                this.jobSelection = this.$refs.jobList.getThisSelection()
                 this.loadMoreData(true)
             },
             onJobListRowClick(row, index){
@@ -231,6 +240,7 @@
             },
             onTboardListOk(){
                 this.tboards = this.$refs.tboardList.getSelection()
+                this.tboardSelection = this.$refs.tboardList.getThisSelection()
                 this.loadMoreData(true)
             },
             onTboardListRowClick(row, index){

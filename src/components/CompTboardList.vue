@@ -63,6 +63,10 @@
             propPoll:{
                 type: Boolean,
                 default: false
+            },
+            propTboard:{
+                type: Array,
+                default: []
             }
         },
         data() {
@@ -119,6 +123,7 @@
                 successRatioTimer:null,
                 pageSize:config.DEFAULT_PAGE_SIZE,
                 tboardIdList:[],
+                tboard:[],
             }
         },
         methods: {
@@ -131,6 +136,10 @@
                 } else if (this.filterCondition === "history") {
                     finishedCondition = "&finished_flag=True"
                 }
+
+                let tboardCondition = ""
+                if(this.tboard.length>0)
+                    tboardCondition = "&id=" + this.tboard[0].id;
 
                 let dateRangeCondition = ""
                 if (this.filterDateRange && this.filterDateRange[0] && this.filterDateRange[1]) {
@@ -161,7 +170,8 @@
                     '&limit=' + this.pageSize +
                     "&offset=" + this.offset +
                     finishedCondition +
-                    dateRangeCondition
+                    dateRangeCondition +
+                    tboardCondition
                 ).then(response => {
                     this.tboardIdList=[];
                     this.dataTotal = parseInt(response.headers["total-count"])
@@ -357,7 +367,21 @@
                         this.$Message.error("成功率获取失败！")
                     })
             },
+            getThisSelection(){
+                return this.selection;
+            },
+            setSelection(selection){
+                this.selection = selection;
+            },
 
+        },
+        watch:{
+            propTboard:{
+                handler: function(val){
+                    this.tboard = _.cloneDeep(val)
+                },
+                immediate: true
+            },
         },
         created() {
             this.pageSize = utils.getPageSize();
