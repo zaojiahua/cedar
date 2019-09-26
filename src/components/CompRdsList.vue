@@ -2,12 +2,12 @@
     <div class="content">
         <Modal v-model="showSelectDeviceModal" :fullscreen="true" :closable="false"
                @on-ok="getDeviceSelection">
-            <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true"
+            <comp-device-list v-if="showSelectDeviceModal " ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true"
                               :prop-default-tboard="defaultTboards"
                               @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
         </Modal>
         <Row type="flex" style="margin-bottom: 16px;" align="bottom">
-            <Button type="primary" style="margin-right: 16px;" @click="showSelectDeviceModal=true">选取设备</Button>
+            <Button type="primary" style="margin-right: 16px;" @click="openDeviceList">选取设备</Button>
             <Tag closable type="border" v-for="(device, index) in devices" :key="device.id" :name="index"
                  @on-close="devices.splice(index, 1)">{{device.device_name}} ({{device.device_label}})
             </Tag>
@@ -109,11 +109,13 @@
                 defaultJobs: [],
                 filterDateRange:null,
                 resultRange:[],
+                deviceSelection:[],
             }
         },
         methods: {
             getDeviceSelection() {
                 this.devices = this.$refs.selectDevice.getSelection()
+                this.deviceSelection = this.$refs.selectDevice.getThisSelection()
             },
             onSelectDeviceModalRowClick(data, index) {
                 this.$refs.selectDevice.toggleSelect(index)
@@ -123,6 +125,12 @@
             },
             onRdsMouseLeave() {
                 this.tipData = utils.validate(tipDataSerializer, null)
+            },
+            openDeviceList(){
+                this.showSelectDeviceModal=true
+                this.$nextTick(function(){
+                    this.$refs.selectDevice.setSelection(this.deviceSelection)
+                })
             }
         },
         mounted(){
