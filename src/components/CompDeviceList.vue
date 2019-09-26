@@ -93,6 +93,10 @@
             propFilterStatus:{
                 type: Boolean,
                 default: false
+            },
+            propDefaultTboard:{
+                type: Array,
+                default: []
             }
         },
         data() {
@@ -222,6 +226,7 @@
                 pageSize:config.DEFAULT_PAGE_SIZE,
                 statusFilterList:[],
                 phoneModelFilterList:[],
+                tboard:[],
             }
         },
         methods: {
@@ -243,6 +248,9 @@
                 if(this.phoneModelFilterList.length>0){
                     phoneModelCondition = "&phone_model__phone_model_name__in="+"ReefList["+this.phoneModelFilterList.join("{%,%}")+"]"
                 }
+                let tboardCondition = ""
+                if(this.tboard.length>0)
+                    tboardCondition = "&tboard=" + this.tboard[0].id;
                 this.$ajax
                     .get('api/v1/cedar/device/?fields=' +
                         'id,' +
@@ -268,6 +276,7 @@
                         "&offset=" + this.offset +
                         deviceStatusCondition +
                         phoneModelCondition +
+                        tboardCondition +
                         "&ordering=id"
                     )
                     .then(response => {
@@ -394,6 +403,14 @@
             onSelectionChange(selection){
                 this.selection[this.currentPage] = selection
             }
+        },
+        watch:{
+            propDefaultTboard:{
+                handler: function(val){
+                    this.tboard = _.cloneDeep(val)
+                },
+                immediate: true
+            },
         },
         created() {
             this.pageSize = utils.getPageSize();

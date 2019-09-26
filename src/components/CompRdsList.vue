@@ -3,6 +3,7 @@
         <Modal v-model="showSelectDeviceModal" :fullscreen="true" :closable="false"
                @on-ok="getDeviceSelection">
             <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true"
+                              :prop-default-tboard="defaultTboards"
                               @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
         </Modal>
         <Row type="flex" style="margin-bottom: 16px;" align="bottom">
