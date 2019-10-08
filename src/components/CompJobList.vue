@@ -79,6 +79,10 @@
             propShowSearch: {
                 type: Boolean,
                 default: true
+            },
+            propTboard:{
+                type: Array,
+                default: []
             }
         },
         data() {
@@ -113,6 +117,7 @@
                 keyword: '',
                 filterJobNameList: [],
                 pageSize:config.DEFAULT_PAGE_SIZE,
+                tboard:[]
             }
         },
         methods: {
@@ -166,6 +171,9 @@
                 this.onPageChange(1)
             },
             refresh() {
+                let tboardCondition = ""
+                if(this.tboard.length>0)
+                    tboardCondition = "&tboard=" + this.tboard[0].id;
                 let url =
                     "api/v1/cedar/job/?fields=" +
                     "id," +
@@ -180,6 +188,7 @@
                     "updated_time" +
                     "&job_deleted=False" +
                     "&ordering=-updated_time" +
+                    tboardCondition +
                     this.urlParam
 
                 if(this.propShowPage){
@@ -293,6 +302,14 @@
                 this.selection = selection;
             }
 
+        },
+        watch:{
+            propTboard:{
+                handler: function(val){
+                    this.tboard = _.cloneDeep(val)
+                },
+                immediate: true
+            },
         },
         created() {
             this.pageSize = utils.getPageSize();
