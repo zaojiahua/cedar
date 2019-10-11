@@ -134,6 +134,7 @@
             handleUploadSuccess(response){
                 if(response.state==="OK"){
                     this.$Message.success("文件上传成功！")
+                    location.reload();
                 }else{
                     this.$Notice.error({
                         title:"文件上传失败",
