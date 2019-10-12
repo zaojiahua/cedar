@@ -114,7 +114,12 @@
                         left: "0px"
                     },
                     tooltip:{
-                        trigger: "axis"
+                        trigger: "axis",
+                        formatter: function (obj) {
+                            let value = obj[0].value
+                            return value[0] + '<br>'
+                                + obj[0].seriesName + ' ：' + value[1] + '℃' + '<br>'
+                        }
                     },
                     grid:{
                         left:"30px",
