@@ -1,7 +1,7 @@
 <template>
     <div>
         <Row type="flex" style="margin-bottom: 16px;">
-            <DatePicker v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" @on-change="onPageChange(1)"></DatePicker>
+            <DatePicker v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" @on-change="onPageChange(1)" :options="options"></DatePicker>
         </Row>
         <Row type="flex" style="margin-bottom: 16px;">
             <Input v-model="keyword" style="width: 100%;" search enter-button placeholder="请输入关键字..." @on-search="onSearch" />
@@ -42,6 +42,16 @@
     import utils from  "../lib/utils";
     import CompRdsLogSearchDetail from "./CompRdsLogSearchDetail";
 
+    const getDataSerializer = {
+        tboards: [
+            {
+                id: "number",
+                board_stamp: "string",
+                end_time: "string",
+            }
+        ]
+    }
+
     export default {
         name:"CompRdsLogSearch",
         components:{CompRdsLogSearchDetail},
@@ -59,6 +69,7 @@
                 dataTotal: 0,
                 offset: 0,
                 showPage:false,
+                options: {},
             }
         },
         methods:{
@@ -131,6 +142,31 @@
                 this.currentPage = page;
                 this.refresh()
             },
+        },
+        mounted(){
+            let tboardId = NaN
+            if(this.$route.query.hasOwnProperty("tboard")) {
+                tboardId = _.parseInt(this.$route.query.tboard)
+            }
+            if(isNaN(tboardId)) return
+            this.$ajax.get("api/v1/cedar/tboard/?" +
+                "fields=" +
+                "id," +
+                "board_stamp," +
+                "end_time" +
+                "&id=" + tboardId)
+                .then(response=>{
+                    let data = utils.validate(getDataSerializer, response.data)
+                    if(data.tboards.length > 0){
+                        //限制从tboard 跳转到rds 时的可选时间段
+                        let start = data.tboards[0].board_stamp.split(" ")
+                        let end = data.tboards[0].end_time.split(" ")
+                        this.options.disabledDate = function (date) {
+                            //判断面板上的时间是否在选定的时间范围（start-end）外，若结果返回true，则该时间点要被禁用，返回false，则该时间点可以被选择
+                            return date&&( date.valueOf() > new Date(end[0]) || date.valueOf() < new Date(start[0]) - 86400000 );
+                        }
+                    }
+                })
         },
         created(){
             this.pageSize = utils.getPageSize();

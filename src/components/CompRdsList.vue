@@ -112,10 +112,7 @@
                 filterDateRange:null,
                 resultRange:[],
                 deviceSelection:[],
-                options: {
-                    disabledDate (date) {
-                    }
-                },
+                options: {},
             }
         },
         methods: {
@@ -173,7 +170,8 @@
                         let start = data.tboards[0].board_stamp.split(" ")
                         let end = data.tboards[0].end_time.split(" ")
                         this.options.disabledDate = function (date) {
-                            return date&&date.valueOf() > new Date(end[0]) || date.valueOf() < new Date(start[0]) - 86400000;
+                            //判断面板上的时间是否在选定的时间范围（start-end）外，若结果返回true，则该时间点要被禁用，返回false，则该时间点可以被选择
+                            return date&&( date.valueOf() > new Date(end[0]) || date.valueOf() < new Date(start[0]) - 86400000 );
                         }
                     }
                 })
