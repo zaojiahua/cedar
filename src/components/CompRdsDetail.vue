@@ -71,11 +71,14 @@
             <b style="cursor: default">截图：</b><b style="cursor: default" v-if="!showScreenTip">共 {{rdsInfo.rdsscreenshot.length}} 张</b>
             <label v-if="showScreenTip" style="color: #FF9900">暂无截图信息</label>
             <br>
-            <img style="margin: 5px; cursor: pointer;" v-for="img in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name @click="viewOriginalImg(img.id)">
+            <img style="margin: 5px; cursor: pointer;" v-for="(img,index) in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name @click="viewOriginalImg(img.id,index)">
         </div>
         <Spin size="large" fix v-if="showSpin"></Spin>
         <Modal v-model="showImgModal" :fullscreen="true" footer-hide style="text-align: center">
+            <Icon type="ios-arrow-dropleft-circle" size="60"  style="position: fixed;top: 45%;left: 5%;cursor: pointer;opacity: 0.4" @click="prevBtn"/>
             <img :src=baseUrl+imgInfo.img_file :alt="imgInfo.file_name" style="max-height: 98%;max-width: 100%;">
+            <Icon type="ios-arrow-dropright-circle" size="60" style="position: fixed;top: 45%;right: 5%;cursor: pointer;opacity: 0.4" @click="nextBtn"/>
+            <p style="font-size: 20px"> {{ imgIndex+1 }} / {{ rdsInfo.rdsscreenshot.length }} </p>
         </Modal>
         <Modal v-model="showRdsLogModal" :fullscreen="true" :title="logName" ok-text="下载" @on-ok="downloadLog">
             <comp-view-log-file ref="viewLogFile"></comp-view-log-file>
@@ -152,6 +155,7 @@
                 showRdsLogModal:false,
                 logName:"",
                 path:"",
+                imgIndex:null,
             }
         },
         methods:{
@@ -247,8 +251,28 @@
             downloadLog(){
                 window.open(this.baseUrl+this.path)
             },
-            viewOriginalImg(imgId){
+            viewOriginalImg(imgId,index){
+                this.imgIndex = index
                 this.showImgModal = true;
+                this.getOriginalImg(imgId)
+            },
+            nextBtn(){
+                if(this.rdsInfo.rdsscreenshot[this.imgIndex+1]){
+                    this.imgIndex++
+                    let imgId = this.rdsInfo.rdsscreenshot[this.imgIndex].id
+                    this.showImgModal = true;
+                    this.getOriginalImg(imgId)
+                }
+            },
+            prevBtn(){
+                if(this.imgIndex===0)
+                    return
+                this.imgIndex--
+                let imgId = this.rdsInfo.rdsscreenshot[this.imgIndex].id
+                this.showImgModal = true;
+                this.getOriginalImg(imgId)
+            },
+            getOriginalImg(imgId){
                 this.$ajax
                     .get("api/v1/cedar/rds_screenshot/"+imgId+"/?fields="+
                         "id,img_file,file_name")
@@ -274,5 +298,8 @@
         background-color: #0000;
         color: #515a6e;
         border: #eee dotted 1px;
+    }
+    .ivu-icon-ios-arrow-dropleft-circle:hover,.ivu-icon-ios-arrow-dropright-circle:hover{
+        opacity: 1 !important;
     }
 </style>
