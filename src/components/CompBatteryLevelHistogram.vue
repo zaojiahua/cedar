@@ -1,5 +1,6 @@
 <template>
     <div>
+        <Tag type="dot" v-show="showPower" color="#28d290" style="position: absolute;top: -10px;right: 20px">正在充电</Tag>
         <div ref="power"  v-if="showPower" :id="'power'+deviceId" style="height: 100px;">
         </div>
         <p v-else style="margin-left: 40px;color: #FF9900">该设备没有电量信息</p>
@@ -67,14 +68,28 @@
                                 charging = "未充电"
                             }
                             curData.push([dp.record_datetime, dp.battery_level,port,charging ])
+
                         })
-                        let series = {
-                            type: 'line',
-                            smooth: true,
-                            areaStyle: {
+                        let series = [
+                            {
+                                type: 'line',
+                                smooth: true,
+                                data: curData
                             },
-                            data: curData
-                        }
+                            {
+                                name:'电量',
+                                type:'bar',
+                                itemStyle: {
+                                    color: function (params) {
+                                        if(params.data.includes("正在充电"))
+                                            return "#28d290"
+                                        else
+                                            return "#8ca79d"
+                                    }
+                                },
+                                data:curData
+                            }
+                        ]
 
                         this.series = series
 
@@ -125,7 +140,7 @@
                         splitNumber: 1,
                         show: true
                     },
-                    color:["#25a902"],
+                    color:["#28d290"],
                     dataZoom:[
                         {
                             height: 8,
@@ -148,3 +163,9 @@
         }
     }
 </script>
+
+<style scoped>
+    .ivu-tag{
+        border: none!important;
+    }
+</style>
