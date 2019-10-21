@@ -96,7 +96,9 @@
             },
             propDefaultTboard:{
                 type: Array,
-                default: []
+                default: ()=>{
+                    return []
+                }
             }
         },
         data() {
