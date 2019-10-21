@@ -49,7 +49,7 @@
                         logList.forEach(file=>{
                             this.logData.push({filename:file});
                         })
-                        this.showFirstContent();
+                        this.showLogContent(this.logData[0]);
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
                         this.$Message.error("数据加载失败！");
@@ -57,7 +57,7 @@
             },
             showLogContent(row){
                 this.showLoading = true;
-                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+row.filename;
+                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+row.filename + "?fromBeginning=True ";
                 this.$ajax
                     .get(coralUrl)
                     .then(response=>{
@@ -71,19 +71,6 @@
                         this.showLoading = false;
                     })
             },
-            showFirstContent(){
-                this.flieName = this.logData[0].filename;
-                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+this.flieName;
-                this.$ajax
-                    .get(coralUrl)
-                    .then(response=>{
-                        this.fileContent = response.data;
-                    })
-                    .catch(error=>{
-                        if (config.DEBUG) console.log(error)
-                        this.$Message.error("读取数据失败！")
-                    })
-            }
         },
         created(){
             this.getFileList();
