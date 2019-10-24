@@ -9,7 +9,10 @@
             <div slot="right" class="split-pane">
                 <Card style="height: 890px;margin-left: 5px;">
                     <p slot="title">{{ flieName }}</p>
-                    <Input :autosize="{minRows: 38,maxRows: 38}" class="view-log" type="textarea" disabled v-model="fileContent"></Input>
+                    <Input :autosize="{minRows: 36,maxRows: 36}" class="view-log" type="textarea" disabled v-model="fileContent"></Input>
+                    <p align="center" v-if="showMore">
+                        <Button style="margin-top: 10px" type="primary" @click="getNextContent">加载更多</Button>
+                    </p>
                 </Card>
                 <Spin size="large" fix v-if="showLoading"></Spin>
             </div>
@@ -34,7 +37,8 @@
                 split1:0.3,
                 fileContent:"",
                 flieName:"",
-                showLoading:false
+                showLoading:false,
+                showMore:false,
             }
 
         },
@@ -49,7 +53,7 @@
                         logList.forEach(file=>{
                             this.logData.push({filename:file});
                         })
-                        this.showFirstContent();
+                        this.showLogContent(this.logData[0]);
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
                         this.$Message.error("数据加载失败！");
@@ -57,30 +61,42 @@
             },
             showLogContent(row){
                 this.showLoading = true;
-                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+row.filename;
+                this.fileContent = ""
+                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+row.filename + "?fromBeginning=1 ";
+                //    0：接着读     1：从头读
                 this.$ajax
                     .get(coralUrl)
                     .then(response=>{
+                        this.showMore = true;
                         this.flieName = row.filename;
                         this.fileContent = response.data;
                         this.showLoading = false;
                     })
                     .catch(error=>{
+                        this.showMore = false;
                         if (config.DEBUG) console.log(error)
                         this.$Message.error("读取数据失败！")
                         this.showLoading = false;
                     })
             },
-            showFirstContent(){
-                this.flieName = this.logData[0].filename;
-                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+this.flieName;
+            getNextContent(){
+                this.showLoading = true;
+                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+this.flieName + "?fromBeginning=0 ";
                 this.$ajax
                     .get(coralUrl)
                     .then(response=>{
-                        this.fileContent = response.data;
+                        this.showMore = true;
+                        this.fileContent += response.data;
+                        this.showLoading = false;
                     })
                     .catch(error=>{
+                        this.showMore = false;
+                        this.showLoading = false;
                         if (config.DEBUG) console.log(error)
+                        if(error.response.statusText==="file read to end"){
+                            this.$Message.warning("没有更多内容了！")
+                            return
+                        }
                         this.$Message.error("读取数据失败！")
                     })
             }
