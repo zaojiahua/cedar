@@ -113,12 +113,20 @@
                         top: "0px",
                         left: "0px"
                     },
+                    legend:{
+                        right:"20px"
+                    },
                     tooltip:{
                         trigger: "axis",
                         formatter: function (obj) {
-                            let value = obj[0].value
-                            return value[0] + '<br>'
-                                + obj[0].seriesName + ' ：' + value[1] + '℃' + '<br>'
+                            let time = "";
+                            let str = "";
+                            obj.forEach(item=>{
+                                let value = item.value
+                                time = value[0] + '<br>'
+                                str += item.seriesName + ' ：' + value[1] + '℃' + '<br>'
+                            })
+                            return time + str
                         }
                     },
                     grid:{
