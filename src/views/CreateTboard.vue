@@ -58,7 +58,7 @@
                     </FormItem>
                     <FormItem>
                         <b slot="label">运行轮次</b>
-                        <InputNumber v-model="tboardRepeatTime" :min="1" precision="0"></InputNumber>
+                        <InputNumber v-model="tboardRepeatTime" :min="1" :precision="0"></InputNumber>
                     </FormItem>
                 </Form>
             </Card>
