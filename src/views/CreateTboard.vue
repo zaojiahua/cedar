@@ -228,7 +228,10 @@
                         .then(response=>{
                             if(response.data.state){
                                 this.$Message.success("任务启动成功！")
-                                main.$router.push({name: "tboard-management"})
+                                let route = this.$router.resolve({
+                                    name: "tboard-management",
+                                })
+                                window.open(route.href, "_self")
                             }else {
                                 this.$Message.error("任务启动失败！")
                                 if(config.DEBUG) console.log(response.data);
