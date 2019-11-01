@@ -1,6 +1,9 @@
 <template>
     <div>
-        <Tag type="dot" v-show="showPower" color="#28d290" style="position: absolute;top: -10px;right: 20px">正在充电</Tag>
+        <div  style="position: absolute;top: -10px;right: 20px">
+            <Tag type="dot" v-show="showPower" color="#8ca79d">未充电</Tag>
+            <Tag type="dot" v-show="showPower" color="#28d290">正在充电</Tag>
+        </div>
         <div ref="power"  v-if="showPower" :id="'power'+deviceId" style="height: 100px;">
         </div>
         <p v-else style="margin-left: 40px;color: #FF9900">该设备没有电量信息</p>
@@ -141,6 +144,7 @@
                         show: true
                     },
                     color:["#28d290"],
+                    barMaxWidth: 20,
                     dataZoom:[
                         {
                             height: 8,
