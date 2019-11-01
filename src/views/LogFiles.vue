@@ -9,10 +9,17 @@
             <div slot="right" class="split-pane">
                 <Card style="height: 890px;margin-left: 5px;">
                     <p slot="title">{{ flieName }}</p>
-                    <Input :autosize="{minRows: 36,maxRows: 36}" class="view-log" type="textarea" disabled v-model="fileContent"></Input>
-                    <p align="center" v-if="showMore">
-                        <Button style="margin-top: 10px" type="primary" @click="getNextContent">加载更多</Button>
-                    </p>
+                    <div class="log-content" style="height: 800px;overflow: auto" @scroll="scrollBottom">
+                        <div>
+                            {{ fileContent }}
+                        </div>
+                        <div v-show="scrollMore" style="position: relative;height: 50px;" @click="getNextContent">
+                            <Spin fix>
+                                <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+                                <div>Loading</div>
+                            </Spin>
+                        </div>
+                    </div>
                 </Card>
                 <Spin size="large" fix v-if="showLoading"></Spin>
             </div>
@@ -38,7 +45,7 @@
                 fileContent:"",
                 flieName:"",
                 showLoading:false,
-                showMore:false,
+                scrollMore:false,
             }
 
         },
@@ -67,13 +74,11 @@
                 this.$ajax
                     .get(coralUrl)
                     .then(response=>{
-                        this.showMore = true;
                         this.flieName = row.filename;
                         this.fileContent = response.data;
                         this.showLoading = false;
                     })
                     .catch(error=>{
-                        this.showMore = false;
                         if (config.DEBUG) console.log(error)
                         this.$Message.error("读取数据失败！")
                         this.showLoading = false;
@@ -85,13 +90,13 @@
                 this.$ajax
                     .get(coralUrl)
                     .then(response=>{
-                        this.showMore = true;
                         this.fileContent += response.data;
                         this.showLoading = false;
+                        this.scrollMore = false
                     })
                     .catch(error=>{
-                        this.showMore = false;
                         this.showLoading = false;
+                        this.scrollMore = false
                         if (config.DEBUG) console.log(error)
                         if(error.response.statusText==="file read to end"){
                             this.$Message.warning("没有更多内容了！")
@@ -99,7 +104,23 @@
                         }
                         this.$Message.error("读取数据失败！")
                     })
+            },
+            //监听滚动条是否下拉到底部
+            scrollBottom(){
+                // 滚动到页面底部时，请求下一部分内容
+                let scroll = this.$el.querySelector('.log-content')
+                //滚动条滚动的距离    scroll.scrollTop
+                //窗体高度    scroll.offsetHeight
+                //整个文本的高度    scroll.scrollHeight
+                if(scroll.offsetHeight + scroll.scrollTop - scroll.scrollHeight >= -1){
+                    this.scrollMore = true
+                    this.$nextTick(function () {
+                        this.getNextContent()
+                    })
+                }
             }
+
+
         },
         created(){
             this.getFileList();
@@ -115,9 +136,7 @@
     .split-pane{
         padding: 10px;
     }
-    .ivu-input[disabled] {
-        background-color: #fff;
-        cursor: default;
-        color: #515a6e!important;
+    .demo-spin-icon-load{
+        animation: ani-demo-spin 1s linear infinite;
     }
 </style>
