@@ -144,7 +144,7 @@
                         show: true
                     },
                     color:["#28d290"],
-                    barMaxWidth: 20,
+                    barMaxWidth: 5,
                     dataZoom:[
                         {
                             height: 8,
