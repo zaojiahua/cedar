@@ -75,11 +75,6 @@
                         })
                         let series = [
                             {
-                                type: 'line',
-                                smooth: true,
-                                data: curData
-                            },
-                            {
                                 name:'电量',
                                 type:'bar',
                                 itemStyle: {
@@ -144,7 +139,7 @@
                         show: true
                     },
                     color:["#28d290"],
-                    barMaxWidth: 5,
+                    barMaxWidth: 40,
                     dataZoom:[
                         {
                             height: 8,
