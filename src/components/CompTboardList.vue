@@ -262,24 +262,20 @@
                 event.stopPropagation();
                 let row = this.data[index]
                 let root = this
-                let coralUrl = utils.getCoralUrl(config.CREATETBOARD_PORT)
-                let userId = localStorage.getItem('id');
-                let boardStamp = row.board_stamp.replace(/\-/g, '_').replace(/\:/g, '_').replace(/\ /g, '_')
+                let coralUrl = utils.getCoralUrl(5000)+"/tboard/remove_tboard/"
+                let boardStamp = row.board_stamp
                 this.$Modal.confirm({
                     title: "您确认要停止任务 " + row.board_name + " 吗?",
                     onOk() {
-                        root.$ajax.post(coralUrl, {
-                            requestName: "removeTBoard",
-                            boardName: boardStamp,
-                            ownerID: userId
-                        }).then(response => {
-                            if (response.data.state === "OK") {
+                        root.$ajax.delete(coralUrl + boardStamp + "/")
+                        .then(response => {
+                            if (response.status === 204) {
                                 root.$Message.success("停止任务成功!")
                                 root.onConditionChange();
                             } else {
                                 root.$Message.error("停止任务失败!")
-                                if (response.data.state) {
-                                    root.$Message.error(response.data.state);
+                                if (response.data.description) {
+                                    root.$Message.error(response.data.description);
                                 }
                             }
                         }).catch(reason => {

@@ -211,19 +211,16 @@
                     })
                     utils._initDate();
                     let boardStamp = new Date().format("yyyy_MM_dd_hh_mm_ss");
-                    let coralUrl = utils.getCoralUrl(config.CREATETBOARD_PORT);
+                    let coralUrl = utils.getCoralUrl(5000)+"/tboard/insert_tboard/";
                     let userId = localStorage.getItem('id');
                     this.$ajax
                         .post(coralUrl,{
-                            requestName:"insertTBoard",
-                            boardDict:{
-                                boardName:this.tboardName,
-                                deviceIDList:deviceList,
-                                jobIDList:jobList,
-                                jobListNum:this.tboardRepeatTime,
-                                boardStamp:boardStamp,
-                                ownerID:userId
-                            }
+                            boardName:this.tboardName,
+                            device_label_list:deviceList,
+                            job_label_list:jobList,
+                            repeat_time:this.tboardRepeatTime,
+                            board_name:boardStamp,
+                            owner_label:userId
                         })
                         .then(response=>{
                             if(response.data.state){
