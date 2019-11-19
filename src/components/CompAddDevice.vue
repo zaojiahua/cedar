@@ -90,9 +90,10 @@
                 });
             },
             addDevice(){
+                let coralUrl = utils.getCoralUrl(5000)
                 this.$Loading.start()
                 this.spinShow = true;
-                this.$ajax.post("api/v1/cedar/set_device_in_door/",
+                this.$ajax.post(coralUrl+"/door/set_device_in_door/",
                     {
                         deviceID: this.deviceInfo.deviceID,
                         deviceName: this.addedDeviceName
@@ -118,6 +119,7 @@
                 })
             },
             getDeviceInDoor(){
+                let coralUrl = utils.getCoralUrl(5000)
                 this.addDeviceStep=3;
                 this.addBtn = true;
                 this.rescan = false;
@@ -126,7 +128,7 @@
                 this.$Loading.start();
                 this.addedDeviceName="";
                 this.$ajax
-                    .post("api/v1/cedar/get_device_in_door/", {})
+                    .get(coralUrl+"/door/get_device_in_door/")
                     .then(response=>{
                         if(utils.validate(addDeviceSerializer,response.data).ipAddress===null){
                             this.addDeviceError('未找到可添加设备', '请将设备从USB上拔除,并返回第一步确认操作无遗漏')
