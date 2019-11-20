@@ -1,21 +1,62 @@
 stages:
-  - deploy
-deploy:
-  stage: deploy
+  - build
+  - push
+#    - deploy
+
+variables:
+  docker_storage_username: 17625646261
+  docker_storage_passwd: aaa626181
+  docker_storage_url: registry.cn-beijing.aliyuncs.com
+  module_name: cedar
+  ssh_remote_ip: 10.0.0.81
+  ssh_remote_username: root
+
+before_script:
+  - docker_images_tag=`git log -1 --pretty=format:"%h"`
+  - DATA=`date +%Y%m%d`
+
+build:
+  stage: build
   script:
-    - npm install
-    - cp /etc/cedar/conf/ip.js public/ip.js
-    - npm run build
-    - ls
-    - rm -rf tmp || true
-    - mkdir tmp
-    - cp -rf dist tmp/cedar
-    - docker exec cedar rm -rf /app/cedar || true
-    - docker cp tmp/cedar cedar:/app
-    - rm -rf tmp
-    - ls
-    - docker restart cedar
+    - docker build -t $docker_storage_url/wavecut/$module_name:$DATA-$docker_images_tag .
   only:
-    - devp
+    - k8s-develop
   tags:
-    - deploy
+    - build
+
+push:
+  stage: push
+  script:
+    - pwd
+    - w
+    - docker login -u $docker_storage_username -p $docker_storage_passwd $docker_storage_url
+    - docker push $docker_storage_url/wavecut/$module_name:$DATA-$docker_images_tag
+    - ssh $ssh_remote_username@$ssh_remote_ip "pwd ; kubectl set image deployment/reef-deploy reef=$docker_storage_url/wavecut/$module_name:$DATA-$docker_images_tag"
+  only:
+    - k8s-develop
+  tags:
+    - push
+
+
+
+#stages:
+#  - deploy
+#deploy:
+#  stage: deploy
+#  script:
+#    - npm install
+#    - cp /etc/cedar/conf/ip.js public/ip.js
+#    - npm run build
+#    - ls
+#    - rm -rf tmp || true
+#    - mkdir tmp
+#    - cp -rf dist tmp/cedar
+#    - docker exec cedar rm -rf /app/cedar || true
+#    - docker cp tmp/cedar cedar:/app
+#    - rm -rf tmp
+#    - ls
+#    - docker restart cedar
+#  only:
+#    - devp
+#  tags:
+#    - deploy
