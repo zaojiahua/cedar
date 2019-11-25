@@ -2,7 +2,7 @@
 export default {
     "DEBUG": true,
     "REEF_HOST": ip.REEF_HOST,
-    "REEF_PORT": "80",
+    "REEF_PORT": "8000",
     "CORAL_HOST": ip.CORAL_HOST,
     "INDOOR_HOST": ip.INDOOR_HOST,
     "ADMIN_PORT":"10803",
