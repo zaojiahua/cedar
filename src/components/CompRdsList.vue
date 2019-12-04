@@ -32,6 +32,7 @@
                 <comp-rds-card ref="rdsCard" v-for="item in devices" :key="item.id"
                                :prop-device-id="item.id"
                                :prop-device-label="item.device_label"
+                               :prop-device-name="item.device_name"
                                :prop-default-tboards="defaultTboards"
                                :prop-default-jobs="defaultJobs"
                                :prop-filter-date-range="filterDateRange"
