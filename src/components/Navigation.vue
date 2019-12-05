@@ -174,8 +174,8 @@
                 this.showModal = true;
                 this.showVersionLoading = true;
                 this.$Loading.start();
-                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)
-                this.$ajax.post(coralUrl,{
+                let url = "http://"+config.UPDATE_HOST+":"+config.ADMIN_PORT
+                this.$ajax.post(url,{
                     requestName:'getTMachVersionInfo'
                 }).then(response=>{
                     this.showVersionLoading = false;
