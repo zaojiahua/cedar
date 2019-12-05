@@ -5,6 +5,7 @@ export default {
     "REEF_PORT": "8000",
     "CORAL_HOST": ip.CORAL_HOST,
     "INDOOR_HOST": ip.INDOOR_HOST,
+    "UPDATE_HOST": ip.UPDATE_HOST,
     "ADMIN_PORT":"10803",
     "CONFIG_PORT":"10808",
     "DEVINDOOR_PORT":"10802",
