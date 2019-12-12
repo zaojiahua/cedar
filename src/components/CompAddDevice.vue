@@ -147,6 +147,8 @@
                         this.spinShow=false;
                     })
                     .catch(error=>{
+                        this.addBtn = false;
+                        this.rescan = true;
                         if(config.DEBUG) console.log(error)
                         this.spinShow=false;
                         this.$Loading.error();
