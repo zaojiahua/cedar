@@ -221,19 +221,16 @@
             },
             deleteAjax(device_id,device_status){
                 this.spinShow = true;
-                let coralUrl = utils.getCoralUrl(config.CONFIG_PORT)
-                this.$ajax.post(coralUrl,{
-                    requestName:"releaseDevice",
-                    deviceID:device_id,
-                    deviceStatus:device_status
+                this.$ajax.post("api/v1/coral/release_device/",{
+                    ip_address:this.device.ip_address,
+                    device_label:device_id,
+                    tempport:this.device.tempport
                 }).then(response=>{
                     this.spinShow = false;
-                    if(response.data.status==="ok"){
+                    if(response.data==="success"){
                         this.$Message.success("该设备已从系统中移除");
                         this.$emit('after-device-delete')
-                    }else if(response.data.wrong){
-                        this.$Message.error(response.data.wrong)
-                    }else{
+                    } else{
                         this.$Message.error("设备移除失败！");
                     }
                 }).catch(error=>{
@@ -356,15 +353,17 @@
             },
             // Update device
             updateDevice(){
-                let coralUrl = utils.getCoralUrl(config.CONFIG_PORT)
-                let temperDict = {}
+                let temperDict = [];
                 //将当前设备要配置的温感片提取出来
                 let configPorts = this.selectedTempPorts.filter(selectedPort=> {
                     return this.disableTempPorts.indexOf(selectedPort)===-1
                 })
                 if(configPorts.length>0){
                     configPorts.forEach(port=>{
-                        temperDict[port] = "desc";     //给温感片加默认备注
+                        temperDict.push({
+                            port:port,
+                            description:"desc",     //给温感片加默认备注
+                        })
                     })
                 }
                 //将当前设备要配置的充电口提取出来
@@ -373,27 +372,23 @@
                 })
 
                 this.spinShow = true;
-                this.$ajax.post(coralUrl,
+                this.$ajax.post("api/v1/coral/set_device_config/",
                     {
-                        requestName:"setDeviceConfig",
-                        devConfDict:{
-                            deviceID:this.device.device_label,
-                            deviceName:this.device.device_name,
-                            tempPortDict:temperDict,
-                            monitorIndex:this.selectedMonitorPorts.join(","),
-                            powrCtrlPort:configPowerPorts.join(","),
-                            aiTester :this.openSwitch
-                        }
+                        device_label:this.device.device_label,
+                        device_name:this.device.device_name,
+                        tempport:temperDict,
+                        monitor_index:this.selectedMonitorPorts.join(","),
+                        powerport:{
+                            port:configPowerPorts.join(","),
+                        },
+                        auto_test :this.openSwitch
                     }
                 ).then(response => {
                     this.spinShow = false;
                     if(config.DEBUG) console.log(response.data)
-                    if(response.data.success){
+                    if(response.data==="success"){
                         this.$Message.success("配置成功")
                         this.$emit('after-device-update', response)
-                    }else if(response.data.wrong){
-                        this.$Message.error("配置失败")
-                        this.$Message.error(response.data.wrong)
                     }else{
                         this.$Message.error("配置失败")
                     }
