@@ -2,16 +2,18 @@
     <div class="container">
         <Split v-model="split1" min="200px" max="300px">
             <div slot="left" class="split-pane">
-                <Table highlight-row :columns="logColumns" :data="logData"  :height="890" @on-row-click="showLogContent">
+                <Table highlight-row :columns="logColumns" :data="logData" @on-row-click="showLogContent">
 
                 </Table>
+                <Page :current="currentPage" :total="dataTotal" :page-size="pageSize" simple @on-change="onPageChange"
+                      style="margin-top:20px;text-align: center "/>
             </div>
             <div slot="right" class="split-pane">
-                <Card style="height: 890px;margin-left: 5px;">
+                <Card style="height: 820px;margin-left: 5px;">
                     <p slot="title">{{ flieName }}</p>
-                    <div class="log-content" style="height: 800px;overflow: auto" @scroll="scrollBottom">
+                    <div class="log-content" style="height: 730px;overflow: auto" @scroll="scrollBottom">
                         <div>
-                            {{ fileContent }}
+                            <pre style="white-space: pre-wrap;overflow-wrap: break-word;">{{ fileContent }}</pre>
                         </div>
                         <div v-show="scrollMore" style="position: relative;height: 50px;" @click="getNextContent">
                             <Spin fix>
@@ -46,20 +48,32 @@
                 flieName:"",
                 showLoading:false,
                 scrollMore:false,
+                currentPage:1,
+                offset: 0,
+                pageSize:15,
+                dataTotal:0,
+                contentOffset:0,
+                loadFlag:true,
             }
 
         },
         methods:{
             getFileList(){
-                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT);
+                let coralUrl = utils.getCoralUrl(5000);
+                coralUrl = coralUrl +
+                    "/log/list/?" +
+                    "&limit=" + this.pageSize +
+                    "&offset=" + this.offset
                 this.$ajax
-                    .post(coralUrl,{
-                        requestName:"getCoralLogList"
-                    }).then(response=>{
+                    .get(coralUrl,)
+                    .then(response=>{
+                        let list = [];
+                        this.dataTotal = parseInt(response.headers["total-count"])
                         let logList = response.data;
                         logList.forEach(file=>{
-                            this.logData.push({filename:file});
+                            list.push({filename:file});
                         })
+                        this.logData = list
                         this.showLogContent(this.logData[0]);
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
@@ -69,7 +83,7 @@
             showLogContent(row){
                 this.showLoading = true;
                 this.fileContent = ""
-                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+row.filename + "?fromBeginning=1 ";
+                let coralUrl = utils.getCoralUrl(5000)+"/log/content/"+row.filename + "/?limit=1&offset=0 ";
                 //    0：接着读     1：从头读
                 this.$ajax
                     .get(coralUrl)
@@ -85,20 +99,24 @@
                     })
             },
             getNextContent(){
+                this.contentOffset++
                 this.showLoading = true;
-                let coralUrl = utils.getCoralUrl(config.ADMIN_PORT)+"/"+this.flieName + "?fromBeginning=0 ";
+                let coralUrl = utils.getCoralUrl(5000)+"/log/content/"+this.flieName + "/?limit=1&offset= " + this.contentOffset;
                 this.$ajax
                     .get(coralUrl)
                     .then(response=>{
                         this.fileContent += response.data;
                         this.showLoading = false;
                         this.scrollMore = false
+                        this.loadFlag = true
                     })
                     .catch(error=>{
                         this.showLoading = false;
                         this.scrollMore = false
+                        this.loadFlag = true
+                        this.contentOffset--
                         if (config.DEBUG) console.log(error)
-                        if(error.response.statusText==="file read to end"){
+                        if(error.response.data==="file read to end"){
                             this.$Message.warning("没有更多内容了！")
                             return
                         }
@@ -115,11 +133,18 @@
                 if(scroll.offsetHeight + scroll.scrollTop - scroll.scrollHeight >= -1){
                     this.scrollMore = true
                     this.$nextTick(function () {
-                        this.getNextContent()
+                        if(this.loadFlag){
+                            this.loadFlag = false
+                            this.getNextContent()
+                        }
                     })
                 }
+            },
+            onPageChange(page) {
+                this.offset = this.pageSize * (page-1)
+                this.currentPage = page
+                this.getFileList()
             }
-
 
         },
         created(){
@@ -130,7 +155,7 @@
 
 <style>
     .container{
-        height: 910px;
+        height: 840px;
         border: 1px solid #dcdee2;
     }
     .split-pane{
