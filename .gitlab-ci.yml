@@ -18,7 +18,7 @@ before_script:
 build:
   stage: build
   script:
-    - docker build -t $docker_storage_url/wavecut/$module_name:$DATA-$docker_images_tag .
+    - docker build -t $docker_storage_url/wavecut/$module_name:$DATE-$docker_images_tag .
   only:
     - k8s-develop
   tags:
