@@ -13,7 +13,7 @@ variables:
 
 before_script:
   - docker_images_tag=`git log -1 --pretty=format:"%h"`
-  - DATA=`date +%Y%m%d`
+  - DATE=`date +%Y%m%d`
 
 build:
   stage: build
@@ -30,7 +30,7 @@ push:
     - pwd
     - w
     - docker login -u $docker_storage_username -p $docker_storage_passwd $docker_storage_url
-    - docker push $docker_storage_url/wavecut/$module_name:$DATA-$docker_images_tag
+    - docker push $docker_storage_url/wavecut/$module_name:$DATE-$docker_images_tag
     - ssh $ssh_remote_username@$ssh_remote_ip "pwd ; bash deploy.sh $module_name $docker_storage_url/wavecut/$module_name:$DATE-$docker_images_tag"
   only:
     - k8s-develop
