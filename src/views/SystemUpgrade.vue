@@ -58,7 +58,7 @@
             }
         },
         created(){
-            this.updateUrl = utils.getCoralUrl(config.ADMIN_PORT)
+            this.updateUrl = "http://"+config.UPDATE_HOST+":"+config.ADMIN_PORT;
         }
     }
 </script>

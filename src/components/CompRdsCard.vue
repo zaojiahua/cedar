@@ -1,6 +1,6 @@
 <template>
     <Card style="margin-bottom: 16px;" dis-hover>
-        <Divider orientation="left">{{ propDeviceLabel }}</Divider>
+        <Divider orientation="left">{{ propDeviceName }} ( {{ propDeviceLabel }} )</Divider>
         <Row type="flex" style="margin-bottom: 16px;" align="bottom">
             <Button style="margin-right: 16px;" @click="openJobList">选取用例</Button>
             <Tag closable v-for="(job, index) in jobs" :key="job.id" @on-close="onJobTagClose(index)">{{job.job_name}}</Tag>
@@ -71,6 +71,10 @@
         components: {CompTboardList, CompJobList, CompRdsDetail},
         props: {
             propDeviceLabel: {
+                type: String,
+                default: ""
+            },
+            propDeviceName: {
                 type: String,
                 default: ""
             },
