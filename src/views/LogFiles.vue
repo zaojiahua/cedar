@@ -21,6 +21,7 @@
                                 <div>Loading</div>
                             </Spin>
                         </div>
+                        <div v-if="atLast" style="    text-align: center;color: #FF9900;">已到最后部分，没有更多内容了！</div>
                     </div>
                 </Card>
                 <Spin size="large" fix v-if="showLoading"></Spin>
@@ -54,6 +55,7 @@
                 dataTotal:0,
                 contentOffset:0,
                 loadFlag:true,
+                atLast:false,
             }
 
         },
@@ -113,11 +115,11 @@
                     .catch(error=>{
                         this.showLoading = false;
                         this.scrollMore = false
-                        this.loadFlag = true
                         this.contentOffset--
                         if (config.DEBUG) console.log(error)
                         if(error.response.data==="file read to end"){
                             this.$Message.warning("没有更多内容了！")
+                            this.atLast = true;
                             return
                         }
                         this.$Message.error("读取数据失败！")
@@ -131,9 +133,9 @@
                 //窗体高度    scroll.offsetHeight
                 //整个文本的高度    scroll.scrollHeight
                 if(scroll.offsetHeight + scroll.scrollTop - scroll.scrollHeight >= -1){
-                    this.scrollMore = true
                     this.$nextTick(function () {
                         if(this.loadFlag){
+                            this.scrollMore = true
                             this.loadFlag = false
                             this.getNextContent()
                         }
