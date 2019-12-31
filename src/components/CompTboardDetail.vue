@@ -1,5 +1,5 @@
 <template>
-    <Card title="Tboard1" dis-hover>
+    <Card :title="'Tboard(' + data.id + ')'" dis-hover>
         <Form :label-width="80">
             <FormItem>
                 <b slot="label">任务名称:</b>
