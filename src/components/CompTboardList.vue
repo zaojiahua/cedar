@@ -263,11 +263,11 @@
                 let row = this.data[index]
                 let root = this
                 let coralUrl = utils.getCoralUrl(5000)+"/tboard/remove_tboard/"
-                let boardStamp = row.board_stamp
+                let boardId = row.id
                 this.$Modal.confirm({
                     title: "您确认要停止任务 " + row.board_name + " 吗?",
                     onOk() {
-                        root.$ajax.delete(coralUrl + boardStamp + "/")
+                        root.$ajax.delete(coralUrl + boardId + "/")
                         .then(response => {
                             if (response.status === 204) {
                                 root.$Message.success("停止任务成功!")
