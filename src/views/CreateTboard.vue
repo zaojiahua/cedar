@@ -210,10 +210,9 @@
                         }
                     })
                     utils._initDate();
-                    let coralUrl = utils.getCoralUrl(5000)+"/tboard/insert_tboard/";
                     let userId = localStorage.getItem('id');
                     this.$ajax
-                        .post(coralUrl,{
+                        .post("api/v1/coral/insert_tboard/ ",{
                             device_label_list:deviceList,
                             job_label_list:jobList,
                             repeat_time:this.tboardRepeatTime,
