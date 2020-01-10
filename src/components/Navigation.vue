@@ -7,7 +7,12 @@
                         <b>ANGELREEF</b>
                         <span>®</span>
                     </div>
+
                     <div class="layout-nav">
+                        <div style="float: left;width: 160px;height: 30px;color: #fff">
+                            <span style="float: left; height: 18px;margin-top: -6px;">已使用：{{capacity.used}} <span style="color: #999">GB</span> / {{capacity.total}} <span style="color: #999">GB</span></span>
+                            <Progress hide-info :percent="capacity.total=== 0 ? 0 : parseFloat((capacity.used/capacity.total*100).toFixed(2))" :stroke-width="5" />
+                        </div>
                         <MenuItem name="0" :to="{name: 'personal-data'}">
                             Hi! {{ username }}
                         </MenuItem>
@@ -144,6 +149,11 @@
                 currentRouter: router.currentRoute,
                 showVersionLoading:false,
                 username:localStorage.username,
+                capacity:{
+                    free: 0,
+                    total: 0,
+                    used: 0,
+                }
             };
         },
         computed:{
@@ -186,9 +196,19 @@
                     this.$Loading.error();
                     if(config.DEBUG) console.log(error);
                 })
+            },
+            getReefUsage(){
+                this.$ajax.get("api/v1/cedar/get_reef_space_usage/?unit=GB")
+                    .then(response=>{
+                        this.capacity = response.data
+                    }).catch(error=>{
+                        if(config.DEBUG) console.log(error)
+                        this.$Message.error("取得容量信息失败")
+                    })
             }
         },
         created(){
+            this.getReefUsage()
             if(sessionStorage.permissions === undefined){
                 this.$ajax
                     .get("api/v1/permissions/")
