@@ -15,6 +15,10 @@
             <TabPane label="智能充电口列表" name="powerPortList">
                 <comp-power-port-list></comp-power-port-list>
             </TabPane>
+            <TabPane label="设备地图" name="paneList">
+                <comp-pane-list></comp-pane-list>
+            </TabPane>
+
         </Tabs>
     </Card>
 </template>
@@ -24,13 +28,15 @@
     import CompDeviceDetail from "../components/CompDeviceDetail"
     import CompTempPortList from "../components/CompTempPortList";
     import CompPowerPortList from "../components/CompPowerPortList";
+    import CompPaneList from "../components/CompPaneList";
 
     export default {
         components: {
             CompDeviceList,
             CompDeviceDetail,
             CompTempPortList,
-            CompPowerPortList
+            CompPowerPortList,
+            CompPaneList,
         },
         data() {
             return {
