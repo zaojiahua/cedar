@@ -384,7 +384,7 @@
                 ).then(response => {
                     this.spinShow = false;
                     if(config.DEBUG) console.log(response.data)
-                    if(response.data==="success"){
+                    if(response.status===200){
                         this.$Message.success("配置成功")
                         this.$emit('after-device-update', response)
                     }else{
