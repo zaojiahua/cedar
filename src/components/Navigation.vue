@@ -9,7 +9,7 @@
                     </div>
 
                     <div class="layout-nav">
-                        <div style="float: left;width: 160px;height: 30px;color: #fff">
+                        <div style="float: left;width: 200px;height: 30px;color: #fff">
                             <span style="float: left; height: 18px;margin-top: -6px;">已使用：{{capacity.used}} <span style="color: #999">GB</span> / {{capacity.total}} <span style="color: #999">GB</span></span>
                             <Progress hide-info :percent="capacity.total=== 0 ? 0 : parseFloat((capacity.used/capacity.total*100).toFixed(2))" :stroke-width="5" />
                         </div>
@@ -34,7 +34,7 @@
             </Header>
             <Layout>
                 <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;padding-bottom: 48px">
-                    <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass" :active-name="currentRouter.name">
+                    <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass" :active-name="$route.name">
                         <MenuItem v-if="permissions.includes('apiv1.user_management')" name="user-management" :to="{name: 'user-management'}">
                             <Tooltip content="用户管理" placement="right" :disabled="!isCollapsed">
                                 <Icon type="md-person" size="24"/>
@@ -128,7 +128,6 @@
     import main from "../main"
     import utils from "../lib/utils"
     import config from "../lib/config"
-    import router from "../router"
 
     const versionSerializer = {
         TMach_version:"string",
@@ -146,7 +145,6 @@
                 showModal:false,
                 versionInfo:utils.validate(versionSerializer,{}),
                 permissions:  sessionStorage.permissions === undefined ? "" : sessionStorage.permissions,
-                currentRouter: router.currentRoute,
                 showVersionLoading:false,
                 username:localStorage.username,
                 capacity:{
