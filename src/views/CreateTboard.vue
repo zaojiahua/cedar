@@ -73,6 +73,7 @@
             <comp-job-detail ref="jobDetail"  @closeDrawer="closeDrawer"></comp-job-detail>
         </Drawer>
 
+        <Spin size="large" fix v-if="showLoading"></Spin>
     </Card>
 </template>
 
@@ -105,6 +106,7 @@
                 disableFlag:true,
                 deviceSelection:[],
                 jobSelection:[],
+                showLoading:false,
             }
         },
         methods: {
@@ -209,6 +211,7 @@
                             jobList.push(job.job_label);
                         }
                     })
+                    this.showLoading = true;
                     utils._initDate();
                     let userId = localStorage.getItem('id');
                     this.$ajax
@@ -222,10 +225,10 @@
                         .then(response=>{
                             if(response.data.state){
                                 this.$Message.success("任务启动成功！")
-                                let route = this.$router.resolve({
+                                this.$router.push({
                                     name: "tboard-management",
                                 })
-                                window.open(route.href, "_self")
+                                this.showLoading = false;
                             }else {
                                 this.$Message.error("任务启动失败！")
                                 if(config.DEBUG) console.log(response.data);
@@ -234,6 +237,7 @@
                         .catch(error=>{
                             if(config.DEBUG) console.log(error)
                             this.$Message.error("任务启动失败")
+                            this.showLoading = false;
                         })
                 }
 
