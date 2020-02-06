@@ -3,12 +3,19 @@
         <Drawer width="50" v-model="showPowerPortDetail" :closable="false" :draggable="true">
             <comp-power-port-detail ref="detail"></comp-power-port-detail>
         </Drawer>
+        <Modal v-if="propAddMode" v-model="showAddHardWare" :closable="false" :mask-closable="false" :footer-hide="true">
+            <comp-add-hard-ware ref="addHardware" @on-close-modal="onCloseHardWareModal" @after-add-hardware-click="onCloseHardWareModal"></comp-add-hard-ware>
+        </Modal>
+        <Row v-if="propAddMode" style="margin-bottom: 15px;text-align: right">
+            <Button icon="md-add" type="primary" @click="onOpenHardWareModal">添加硬件模块</Button>
+        </Row>
         <Table :columns="powerPortColumns" :data="powerPorts" @on-row-click="onRowClick"></Table>
     </div>
 </template>
 
 <script>
     import CompPowerPortDetail from "./CompPowerPortDetail";
+    import CompAddHardWare from "./CompAddHardWare";
     import utils from "../lib/utils";
     import config from "../lib/config";
     const getPowerPortSerializer = {
@@ -26,7 +33,13 @@
     }
     export default {
         name: "CompPowerPortList",
-        components: {CompPowerPortDetail},
+        components: {CompPowerPortDetail,CompAddHardWare},
+        props:{
+            propAddMode:{
+                type:Boolean,
+                default:true
+            }
+        },
         data(){
             return {
                 powerPortColumns:[
@@ -42,7 +55,8 @@
                     }
                 ],
                 powerPorts:[],
-                showPowerPortDetail: false
+                showPowerPortDetail: false,
+                showAddHardWare:false,
             }
         },
         methods:{
@@ -74,7 +88,14 @@
             onRowClick(data, index){
                 this.showPowerPortDetail = true
                 this.$refs.detail.refresh(data.id)
-            }
+            },
+            onCloseHardWareModal(){
+                this.showAddHardWare = false;
+            },
+            onOpenHardWareModal(){
+                this.showAddHardWare = true;
+                this.$refs.addHardware.reset()
+            },
         },
         created() {
             this.refresh()

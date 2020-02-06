@@ -7,7 +7,9 @@
                         <b>ANGELREEF</b>
                         <span>®</span>
                     </div>
+
                     <div class="layout-nav">
+                        <comp-reef-usage></comp-reef-usage>
                         <MenuItem name="0" :to="{name: 'personal-data'}">
                             Hi! {{ username }}
                         </MenuItem>
@@ -29,7 +31,7 @@
             </Header>
             <Layout>
                 <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;padding-bottom: 48px">
-                    <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass" :active-name="currentRouter.name">
+                    <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass" :active-name="$route.name">
                         <MenuItem v-if="permissions.includes('apiv1.user_management')" name="user-management" :to="{name: 'user-management'}">
                             <Tooltip content="用户管理" placement="right" :disabled="!isCollapsed">
                                 <Icon type="md-person" size="24"/>
@@ -123,7 +125,7 @@
     import main from "../main"
     import utils from "../lib/utils"
     import config from "../lib/config"
-    import router from "../router"
+    import CompReefUsage from "./CompReefUsage"
 
     const versionSerializer = {
         TMach_version:"string",
@@ -134,6 +136,7 @@
     }
 
     export default {
+        components:{ CompReefUsage },
         data () {
             return {
                 isCollapsed: true,
@@ -141,9 +144,13 @@
                 showModal:false,
                 versionInfo:utils.validate(versionSerializer,{}),
                 permissions:  sessionStorage.permissions === undefined ? "" : sessionStorage.permissions,
-                currentRouter: router.currentRoute,
                 showVersionLoading:false,
                 username:localStorage.username,
+                capacity:{
+                    free: 0,
+                    total: 0,
+                    used: 0,
+                }
             };
         },
         computed:{
@@ -186,7 +193,7 @@
                     this.$Loading.error();
                     if(config.DEBUG) console.log(error);
                 })
-            }
+            },
         },
         created(){
             if(sessionStorage.permissions === undefined){
