@@ -5,7 +5,7 @@
         </Row>
         <Row style="height: 50px;">
             <Col span="12">
-                <Upload ref="upload" :data="uploadData" :action="uploadUrl+'/form/'" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
+                <Upload ref="upload" :action="uploadUrl" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
                     <Button icon="ios-cloud-upload-outline">导入用例</Button>
                 </Upload>
             </Col>
@@ -36,12 +36,10 @@
         components:{ CompFilter,CompJobList,CompJobDetail},
         data(){
             return{
+                baseUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT,
                 showDetail:false,
                 selectedJob:[],
                 rowIndex:null,
-                uploadData:{
-                    requestName:"importJob"
-                },
                 uploadUrl:"",
             }
         },
@@ -131,23 +129,12 @@
                 if (config.DEBUG) console.log(error);
                 this.$Message.error("文件上传失败！")
             },
-            handleUploadSuccess(response){
-                if(response.state==="OK"){
-                    this.$Message.success("文件上传成功！")
-                    location.reload();
-                }else{
-                    this.$Notice.error({
-                        title:"文件上传失败",
-                        desc:"未使用正确的压缩包文件,请检查后重试！"
-                    })
-                    setTimeout(hander=>{
-                        this.$refs.upload.clearFiles();
-                    },500)
-                }
+            handleUploadSuccess(response, file, fileList){
+                this.$Message.success("文件上传成功！")
             },
             exportCase(){
+                let root = this;
                 let jobList = this.getJobList();
-                let that = this;
                 if(jobList.length===0){
                     this.$Modal.confirm({
                         title: "提示",
@@ -159,13 +146,12 @@
                         content: "您确定要导出这些用例吗?",
                         onOk(){
                             this.$ajax
-                                .post(that.uploadUrl,{
-                                    requestName: "exportJob",
-                                    jobIdList: jobList
+                                .post("api/v1/cedar/job_export/",{
+                                    id: jobList
                                 })
                                 .then(response=>{
-                                    if(response.data.file){
-                                        window.location.href=response.data.file;
+                                    if(response.data){
+                                        window.location.href=root.baseUrl + response.data;
                                     }else {
                                         this.$Message.error("导出用例失败!")
                                     }
@@ -180,7 +166,7 @@
             }
         },
         created(){
-            this.uploadUrl = utils.getCoralUrl(config.JOBSVC_PORT);
+            this.uploadUrl =this.baseUrl + "/api/v1/cedar/job_import/";
         }
     }
 </script>
