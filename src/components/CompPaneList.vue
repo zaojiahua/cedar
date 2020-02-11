@@ -111,63 +111,23 @@
                 let str = this.pane.pane_name.split("@")
                 let size = str[1].replace("X","x").split("x")
 
-
-
                 this.$ajax.post("api/v1/cedar/create_paneview/",{
                     name:this.pane.pane_name,
                     type:this.paneType,
                     cabinet:10000,
                     width:parseInt(size[1]),
                     height:parseInt(size[0]),
-                    ret_level:2
+                    ret_level:0
                 }).then(response=>{
-                    // paneList.push(response.data)
-                    // this.refresh()
-                    // this.showAddPane = false
+                    this.refresh()
+                    this.showAddPane = false
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     if(error.status===400)
                         this.$Message.error("该项目名称已存在，请重新输入！")
                     else
-                        this.$Message.error("项目添加失败")
+                        this.$Message.error("项目添加失败,请检查后再重新添加！")
                 })
-
-
-
-
-
-
-
-
-                let slotList = [];
-                let sortObj = {}
-                let index = 0
-                for (let i = 1; i <= parseInt(size[0]); i++) {
-                    for (let j = 1; j <= parseInt(size[1]); j++) {
-                        index ++;
-                        sortObj = {
-                            id:index,
-                            status:"none",
-                            row:i,
-                            col:j,
-                            device:{}
-                        }
-                        slotList.push(sortObj)
-                    }
-                }
-
-                let paneObj = {
-                    pane_name:this.pane.pane_name ,
-                    w:parseInt(size[0]),
-                    h:parseInt(size[1]),
-                    slot:slotList
-                }
-
-                paneList.push(paneObj)
-                this.refresh()
-                this.showAddPane = false
-
-
             },
             onOpenModal(){
                 this.showAddPane=true;
