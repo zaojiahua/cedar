@@ -9,7 +9,7 @@
                         <Row v-for="w_index in propPane.height" :key="w_index">
                             <span class="h-index"> {{ w_index }}</span>
                             <Col class="pane-col" span="1" v-for="h_index in propPane.width" :key="h_index" :style="{background: hoverColor(w_index,h_index)}">
-                                <div class="pane-container" :style="{background:showColor(propPane.slotList,w_index-1,h_index-1)}" @mouseenter="onMouseOver(w_index,h_index)" @mouseleave="onMouseLeave" @click="onSlotClick(w_index,h_index)"></div>
+                                <div class="pane-container" :style="{background:showColor(propPane.slotList,w_index-1,h_index-1)}" @mouseenter="onMouseOver(w_index,h_index)" @mouseleave="onMouseLeave" @click="onSlotClick(w_index-1,h_index-1)"></div>
                             </Col>
                         </Row>
                         <p class="line" :style="{width: 50*propPane.width + 'px'}"></p>
@@ -57,6 +57,8 @@
                     return "#D04B40"
                 else if(paneSlot[key].status==="empty")
                     return "#CBD0D3"
+                else
+                    return "#D04B40"
             },
             hoverColor(row,col){
                 if((row===this.row&&col<=this.col)||(row<=this.row&&col===this.col))
@@ -84,7 +86,7 @@
                 if(this.propShowRemoveBtn)
                     alert('查看device的详细信息')
                 else{
-                    let key = row-1 + ',' + col-1
+                    let key = row + ',' + col
                     let id = this.propPane.slotList[key].id
                     this.$emit("on-slot-click",row,col,id)
                 }

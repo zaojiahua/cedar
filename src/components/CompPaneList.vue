@@ -141,30 +141,36 @@
             onAddDevice(paneObj,index){
                 this.paneIndex = index
                 this.openModal = true;
-                // this.propPane = paneObj;
                 this.propPane = this.paneList[index];
             },
             onSlotClick(row,col,id){
-                let device = {
-                    id:1,
-                    device_name:"addD1",
-                    status:"idle"
-                }
                 let key = row + "," + col
-
-                if(this.paneList[this.paneIndex].slotList[key].status==="OK"){
+                let paneId = this.paneList[this.paneIndex].id
+                if(this.paneList[this.paneIndex].slotList[key].status!=="empty"){
                     this.$Message.info("该区域已有设备，请在未放置设备区域添加设备！")
                     return
                 }
                 let root = this;
+                let x = row+1;
+                let y = col+1;
                 this.$Modal.confirm({
                     title:"提示：",
-                    content:"您确定要在该位置("+ row + "," + col +")处添加设备吗？",
+                    content:"您确定要在该位置("+ x + "," + y +")处添加设备吗？",
                     onOk(){
-                        let slotListItem = root.paneList[root.paneIndex].slotList[key];
-                        root.$set(slotListItem,"device",device)
-                        root.$set(slotListItem,"status","OK")
-                        root.openModal = false;
+                        this.$ajax.post("api/v1/cedar/link_paneview_device/",{
+                            paneslot: id,
+                            device: 4,
+                            paneview: paneId,
+                            ret_level: 1
+                        }).then(response=>{
+                            let slotListItem = root.paneList[root.paneIndex].slotList[key];
+                            root.$set(slotListItem,"device",response.data.device)
+                            root.$set(slotListItem,"status",response.data.status)
+                            // root.openModal = false;
+                        }).catch(error=>{
+                            if (config.DEBUG) console.log(error)
+                            root.$Message.error("添加设备失败")
+                        })
                     }
                 })
             }
