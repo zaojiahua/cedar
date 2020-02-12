@@ -16,7 +16,7 @@
                     </div>
                 </div>
             </div>
-            <p style="text-align: center;margin-top: 15px;"><span style="cursor: pointer" @click="addDevice(propPane,propIndex)">{{ propPane.pane_name }}</span></p>
+            <p style="text-align: center;margin-top: 15px;"><span style="cursor: pointer" @click="addDevice(propPane,propIndex)">{{ propPane.name }}</span></p>
 </div>
 </div>
 </template>
