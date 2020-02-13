@@ -28,6 +28,7 @@
 <script>
 
     import CompDeviceDetail from "../components/CompDeviceDetail"
+    import config from "../lib/config"
 
     export default {
         props:{
@@ -85,7 +86,18 @@
                 this.hoverColor(this.row,this.col)
             },
             removePane(index){
-                this.$emit('remove-pane',index)
+                this.$ajax.delete("api/v1/cedar/remove_paneview/",{
+                    data:{id: this.propPane.id}
+                }).then(response=>{
+                    this.$Message.success("支架移除成功!")
+                    this.$emit('remove-pane',index)
+                }).catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                    if(error.response.status===403)
+                        this.$Message.error("当前支架还有设备存在，请先移除设备之后再进行支架移除！")
+                    else
+                        this.$Message.error("未知错误：支架移除失败，请检查后重试！")
+                })
             },
             addDevice(item,index){
                 this.$emit("on-add-device",item,index)
