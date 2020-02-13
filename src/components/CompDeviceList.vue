@@ -16,7 +16,7 @@
             </Col>
         </Row>
 
-        <Table ref="table" border :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
+        <Table ref="table" border :highlight-row="propHighLight" :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
         <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
     </div>
 </template>
@@ -99,7 +99,15 @@
                 default: ()=>{
                     return []
                 }
-            }
+            },
+            propHighLight:{
+                type: Boolean,
+                default: false
+            },
+            propDeviceSlot:{
+                type: Boolean,
+                default: false
+            },
         },
         data() {
             return {
@@ -240,11 +248,15 @@
                 }
                 this.loading = true
                 let deviceStatusCondition = ""
+                let deviceSlotCondition = ""
                 if(this.statusFilterList.length>0){
                     deviceStatusCondition = "&status__in="+"ReefList["+this.statusFilterList.join("{%,%}")+"]"
                 }
                 if(this.propDeviceStatus){
                     deviceStatusCondition = "&status=idle"
+                }
+                if(this.propDeviceSlot){
+                    deviceSlotCondition = "&paneslot__isnull=True"
                 }
                 let phoneModelCondition = ""
                 if(this.phoneModelFilterList.length>0){
@@ -279,6 +291,7 @@
                         deviceStatusCondition +
                         phoneModelCondition +
                         tboardCondition +
+                        deviceSlotCondition +
                         "&ordering=id"
                     )
                     .then(response => {

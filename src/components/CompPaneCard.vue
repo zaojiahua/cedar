@@ -17,11 +17,17 @@
                 </div>
             </div>
             <p style="text-align: center;margin-top: 15px;"><span style="cursor: pointer" @click="addDevice(propPane,propIndex)">{{ propPane.name }}</span></p>
-</div>
-</div>
+        </div>
+        <Drawer v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
+            <comp-device-detail ref="deviceDetail" :prop-device-slot="true" @after-remove-pane-slot="afterRemovePaneSlot"></comp-device-detail>
+        </Drawer>
+
+    </div>
 </template>
 
 <script>
+
+    import CompDeviceDetail from "../components/CompDeviceDetail"
 
     export default {
         props:{
@@ -40,12 +46,14 @@
                 default:true
             }
         },
+        components:{ CompDeviceDetail },
         data(){
             return{
                 showRemove:false,
                 row:null,
                 col:null,
                 openModal:false,
+                showDeviceDetail:false,
             }
         },
         methods:{
@@ -83,13 +91,23 @@
                 this.$emit("on-add-device",item,index)
             },
             onSlotClick(row,col){
-                if(this.propShowRemoveBtn)
-                    alert('查看device的详细信息')
+                let key = row + ',' + col
+                let id = this.propPane.slotList[key].id
+                if(this.propShowRemoveBtn){
+                    if(this.propPane.slotList[key].device===null)
+                        this.$Message.warning("当前位置暂无设备，请先添加设备后再进行查看设备详情！")
+                    else {
+                        this.showDeviceDetail = true
+                        this.$refs.deviceDetail.refresh(this.propPane.slotList[key].device)
+                    }
+                }
                 else{
-                    let key = row + ',' + col
-                    let id = this.propPane.slotList[key].id
                     this.$emit("on-slot-click",row,col,id)
                 }
+            },
+            afterRemovePaneSlot(){
+                this.showDeviceDetail = false
+                this.$emit("after-remove-pane-slot")
             }
         },
         mounted(){

@@ -7,7 +7,7 @@
             <Tag type="dot" color="#D04B40">异常</Tag>
         </Row>
         <div v-for="(item,index) in paneList" :key="index" class="pane-list">
-            <comp-pane-card :prop-pane="item" :prop-index="index" @remove-pane="onRemovePane"  @on-add-device="onAddDevice"></comp-pane-card>
+            <comp-pane-card :prop-pane="item" :prop-index="index" @remove-pane="onRemovePane"  @on-add-device="onAddDevice" @after-remove-pane-slot="afterRemovePaneSlot"></comp-pane-card>
         </div>
         <div class="add-pane">
             <Icon type="ios-add" size="300" style="cursor: pointer" @click="onOpenModal"/>
@@ -49,6 +49,10 @@
             <comp-pane-card :prop-pane="propPane" :prop-show-remove-btn="false" @on-slot-click="onSlotClick"></comp-pane-card>
         </Modal>
 
+        <Modal v-model="openDevice" fullscreen :mask-closable="false" :closable="false" @on-ok="setDevice">
+            <comp-device-list ref="selectDevice" :prop-device-slot="true" :prop-high-light="true" :prop-add-mode="false" :prop-device-status="true"
+                              @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
+        </Modal>
 
 
     </div>
@@ -59,10 +63,12 @@
 
     import CompPaneCard from "./CompPaneCard"
     import config from "../lib/config"
+    import CompDeviceList from "../components/CompDeviceList";
+
 
 
     export default {
-        components:{ CompPaneCard },
+        components:{ CompPaneCard ,CompDeviceList },
         data(){
             return{
                 paneList:[],
@@ -74,6 +80,10 @@
                 propPane:{},
                 openModal:false,
                 paneIndex:null,
+                openDevice:false,
+                selectDevice:null,
+                slotKey:"",
+                slotId:null,
             }
         },
         methods:{
@@ -145,7 +155,8 @@
             },
             onSlotClick(row,col,id){
                 let key = row + "," + col
-                let paneId = this.paneList[this.paneIndex].id
+                this.slotKey = key
+                this.slotId = id
                 if(this.paneList[this.paneIndex].slotList[key].status!=="empty"){
                     this.$Message.info("该区域已有设备，请在未放置设备区域添加设备！")
                     return
@@ -157,22 +168,36 @@
                     title:"提示：",
                     content:"您确定要在该位置("+ x + "," + y +")处添加设备吗？",
                     onOk(){
-                        this.$ajax.post("api/v1/cedar/link_paneview_device/",{
-                            paneslot: id,
-                            device: 4,
+                        root.openDevice = true
+                        root.$refs.selectDevice.refresh()
+                    }
+                })
+            },
+            setDevice(){
+                let paneId = this.paneList[this.paneIndex].id
+                if(this.selectDevice!==null){
+                    this.$ajax.post("api/v1/cedar/link_paneview_device/",{
+                            paneslot: this.slotId,
+                            device: this.selectDevice,
                             paneview: paneId,
                             ret_level: 1
                         }).then(response=>{
-                            let slotListItem = root.paneList[root.paneIndex].slotList[key];
-                            root.$set(slotListItem,"device",response.data.device)
-                            root.$set(slotListItem,"status",response.data.status)
+                            let slotListItem = this.paneList[this.paneIndex].slotList[this.slotKey];
+                            this.$set(slotListItem,"device",response.data.device)
+                            this.$set(slotListItem,"status",response.data.status)
                             // root.openModal = false;
+                            this.$Message.success("添加设备成功，请继续添加或关闭弹窗！")
                         }).catch(error=>{
                             if (config.DEBUG) console.log(error)
-                            root.$Message.error("添加设备失败")
+                            this.$Message.error("添加设备失败")
                         })
-                    }
-                })
+                }
+            },
+            onSelectDeviceModalRowClick(row){
+                this.selectDevice = row.id
+            },
+            afterRemovePaneSlot(){
+                this.refresh()
             }
         },
         mounted(){
