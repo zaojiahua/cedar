@@ -66,7 +66,7 @@
             <Panel>其他
                 <p  slot="content">
                     <span>是否开启 AITester </span>
-                    <i-switch v-model="openSwitch" style="float: right" />
+                    <i-switch v-model="openSwitch" style="float: right" :disabled="!editable"/>
                 </p>
             </Panel>
         </Collapse>
@@ -78,6 +78,9 @@
                 <Button type="primary" style="margin-right: 16px;" @click="updateDevice">保存</Button>
                 <Button @click="cancelConfig">取消</Button>
             </Col>
+        </Row>
+        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="propDeviceSlot">
+            <Button type="error" @click="releaseDeviceSlot">解除设备关联</Button>
         </Row>
         <Spin size="large" fix v-if="spinShow"></Spin>
     </Card>
@@ -171,6 +174,10 @@
         name: "CompDeviceDetail",
         props:{
             editable:{
+                type: Boolean,
+                default: false
+            },
+            propDeviceSlot:{
                 type: Boolean,
                 default: false
             }
@@ -424,6 +431,18 @@
                 })
                 this.selectedMonitorPorts_copy = this.selectedMonitorPorts;
             },
+            // Device remove with paneView
+            releaseDeviceSlot(){
+                this.$ajax.post("api/v1/cedar/unlink_paneview_device/",{
+                    device: this.device.id
+                }).then(response=>{
+                    this.$emit("after-remove-pane-slot")
+                    this.$Message.success("设备解除关联成功")
+                }).catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                    this.$Message.error("设备解除关联失败，请确认后重试！")
+                })
+            }
 
         },
     }

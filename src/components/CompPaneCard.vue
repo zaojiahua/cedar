@@ -3,25 +3,31 @@
         <div @mouseenter="showRemove=true" @mouseleave="showRemove=false">
             <span v-if="propShowRemoveBtn" v-show="showRemove" class="remove" @click="removePane(propIndex)">移除</span>
             <div class="pane-box">
-                <div :style="{ width: (propPane.h*50+30) + 'px'}" style="margin:auto">
-                    <p style="margin-left: 20px"><span class="w-index" v-for="h_index in propPane.h">{{ h_index }}</span></p>
+                <div :style="{ width: (propPane.width*50+30) + 'px'}" style="margin:auto">
+                    <p style="margin-left: 20px"><span class="w-index" v-for="h_index in propPane.width">{{ h_index }}</span></p>
                     <div>
-                        <Row v-for="w_index in propPane.w" :key="w_index">
+                        <Row v-for="w_index in propPane.height" :key="w_index">
                             <span class="h-index"> {{ w_index }}</span>
-                            <Col class="pane-col" span="1" v-for="h_index in propPane.h" :key="h_index" :style="{background: hoverColor(w_index,h_index)}">
-                                <div class="pane-container" :style="{background:showColor(propPane.slotList,w_index,h_index)}" @mouseenter="onMouseOver(w_index,h_index)" @mouseleave="onMouseLeave" @click="onSlotClick(w_index,h_index)"></div>
+                            <Col class="pane-col" span="1" v-for="h_index in propPane.width" :key="h_index" :style="{background: hoverColor(w_index,h_index)}">
+                                <div class="pane-container" :style="{background:showColor(propPane.slotList,w_index-1,h_index-1)}" @mouseenter="onMouseOver(w_index,h_index)" @mouseleave="onMouseLeave" @click="onSlotClick(w_index-1,h_index-1)"></div>
                             </Col>
                         </Row>
-                        <p class="line" :style="{width: 50*propPane.h + 'px'}"></p>
+                        <p class="line" :style="{width: 50*propPane.width + 'px'}"></p>
                     </div>
                 </div>
             </div>
-            <p style="text-align: center;margin-top: 15px;"><span style="cursor: pointer" @click="addDevice(propPane,propIndex)">{{ propPane.pane_name }}</span></p>
+            <p style="text-align: center;margin-top: 15px;"><span style="cursor: pointer" @click="addDevice(propPane,propIndex)">{{ propPane.name }}</span></p>
         </div>
+        <Drawer v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
+            <comp-device-detail ref="deviceDetail" :prop-device-slot="true" @after-remove-pane-slot="afterRemovePaneSlot"></comp-device-detail>
+        </Drawer>
+
     </div>
 </template>
 
 <script>
+
+    import CompDeviceDetail from "../components/CompDeviceDetail"
 
     export default {
         props:{
@@ -40,24 +46,27 @@
                 default:true
             }
         },
+        components:{ CompDeviceDetail },
         data(){
             return{
                 showRemove:false,
                 row:null,
                 col:null,
                 openModal:false,
+                showDeviceDetail:false,
             }
         },
         methods:{
             showColor(paneSlot,row,col){
                 let key = row + ',' + col
-                if(paneSlot[key].status === "OK"){     //判断slot的状态，是否关联了device
-                    if(paneSlot[key].device.status==="idle"||paneSlot[key].device.status==="busy")  //判断device的状态
-                        return "#18A360"
-                    else
-                        return "#D04B40"
-                } else
+                if(paneSlot[key].status==="ok")  //判断device的状态
+                    return "#18A360"
+                else if(paneSlot[key].status==="error")
+                    return "#D04B40"
+                else if(paneSlot[key].status==="empty")
                     return "#CBD0D3"
+                else
+                    return "#D04B40"
             },
             hoverColor(row,col){
                 if((row===this.row&&col<=this.col)||(row<=this.row&&col===this.col))
@@ -79,14 +88,26 @@
                 this.$emit('remove-pane',index)
             },
             addDevice(item,index){
-                console.log(11111)
                 this.$emit("on-add-device",item,index)
             },
             onSlotClick(row,col){
-                if(this.propShowRemoveBtn)
-                    alert('查看device的详细信息')
-                else
-                    this.$emit("on-slot-click",row,col)
+                let key = row + ',' + col
+                let id = this.propPane.slotList[key].id
+                if(this.propShowRemoveBtn){
+                    if(this.propPane.slotList[key].device===null)
+                        this.$Message.warning("当前位置暂无设备，请先添加设备后再进行查看设备详情！")
+                    else {
+                        this.showDeviceDetail = true
+                        this.$refs.deviceDetail.refresh(this.propPane.slotList[key].device)
+                    }
+                }
+                else{
+                    this.$emit("on-slot-click",row,col,id)
+                }
+            },
+            afterRemovePaneSlot(){
+                this.showDeviceDetail = false
+                this.$emit("after-remove-pane-slot")
             }
         },
         mounted(){

@@ -7,7 +7,7 @@
             <Tag type="dot" color="#D04B40">异常</Tag>
         </Row>
         <div v-for="(item,index) in paneList" :key="index" class="pane-list">
-            <comp-pane-card :prop-pane="item" :prop-index="index" @remove-pane="onRemovePane"  @on-add-device="onAddDevice"></comp-pane-card>
+            <comp-pane-card :prop-pane="item" :prop-index="index" @remove-pane="onRemovePane"  @on-add-device="onAddDevice" @after-remove-pane-slot="afterRemovePaneSlot"></comp-pane-card>
         </div>
         <div class="add-pane">
             <Icon type="ios-add" size="300" style="cursor: pointer" @click="onOpenModal"/>
@@ -49,6 +49,10 @@
             <comp-pane-card :prop-pane="propPane" :prop-show-remove-btn="false" @on-slot-click="onSlotClick"></comp-pane-card>
         </Modal>
 
+        <Modal v-model="openDevice" fullscreen :mask-closable="false" :closable="false" @on-ok="setDevice">
+            <comp-device-list ref="selectDevice" :prop-device-slot="true" :prop-high-light="true" :prop-add-mode="false" :prop-device-status="true"
+                              @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
+        </Modal>
 
 
     </div>
@@ -59,1129 +63,12 @@
 
     import CompPaneCard from "./CompPaneCard"
     import config from "../lib/config"
+    import CompDeviceList from "../components/CompDeviceList";
 
-    const paneList = [
-        {
-            id:1,
-            pane_name:"Pane001",
-            w:2,
-            h:3,
-            slot:[
-                {
-                    id:1,
-                    status:"OK",
-                    row:1,
-                    col:1,
-                    device:{
-                        id:1,
-                        device_name:"Device1",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"none",
-                    row:1,
-                    col:2,
-                    device:null
-                },
-                {
-                    id:3,
-                    status:"none",
-                    row:1,
-                    col:3,
-                    device:null
-                },
-                {
-                    id:4,
-                    status:"none",
-                    row:2,
-                    col:1,
-                    device:null
-                },
-                {
-                    id:5,
-                    status:"none",
-                    row:2,
-                    col:2,
-                    device:null
-                },
-                {
-                    id:6,
-                    status:"OK",
-                    row:2,
-                    col:3,
-                    device:{
-                        id:1,
-                        device_name:"Device2",
-                        status:'error'
-                    }
-                }
-            ]
-        },
-        {
-            id:2,
-            pane_name:"Pane002",
-            w:4,
-            h:5,
-            slot:[
-                {
-                    id:1,
-                    status:"OK",
-                    row:1,
-                    col:1,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:1,
-                    col:2,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:1,
-                    col:3,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:1,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:1,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:2,
-                    col:1,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'error'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:2,
-                    col:2,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'busy'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:2,
-                    col:3,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'busy'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:2,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:2,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:3,
-                    col:1,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'error'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:3,
-                    col:2,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'heat'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:3,
-                    col:3,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:3,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:3,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:4,
-                    col:1,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'offline'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:4,
-                    col:2,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'offline'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:4,
-                    col:3,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:4,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:4,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-            ]
-        },
-        {
-            id:3,
-            pane_name:"Pane003",
-            w:6,
-            h:5,
-            slot:[
-                {
-                    id:1,
-                    status:"OK",
-                    row:1,
-                    col:1,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:1,
-                    col:2,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:1,
-                    col:3,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:1,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:1,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:2,
-                    col:1,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'error'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:2,
-                    col:2,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'offline'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:2,
-                    col:3,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:2,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:2,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:3,
-                    col:1,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:3,
-                    col:2,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'busy'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:3,
-                    col:3,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:3,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:3,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:4,
-                    col:1,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:4,
-                    col:2,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'error'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:4,
-                    col:3,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'heat'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:4,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:4,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:5,
-                    col:1,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:5,
-                    col:2,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:5,
-                    col:3,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:5,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:5,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:6,
-                    col:1,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:6,
-                    col:2,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:6,
-                    col:3,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:6,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:6,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-            ]
-        },
-        {
-            id:4,
-            pane_name:"Pane004",
-            w:6,
-            h:8,
-            slot:[
-                {
-                    id:1,
-                    status:"OK",
-                    row:1,
-                    col:1,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:1,
-                    col:2,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'busy'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:1,
-                    col:3,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:1,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:1,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:1,
-                    col:6,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:1,
-                    col:7,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:1,
-                    col:8,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:2,
-                    col:1,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:2,
-                    col:2,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:2,
-                    col:3,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:2,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:2,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:2,
-                    col:6,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:2,
-                    col:7,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:2,
-                    col:8,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:3,
-                    col:1,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:3,
-                    col:2,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:3,
-                    col:3,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:3,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:3,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:3,
-                    col:6,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:3,
-                    col:7,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'offline'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:3,
-                    col:8,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:4,
-                    col:1,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'error'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:4,
-                    col:2,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:4,
-                    col:3,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:4,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:4,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"error",
-                    row:4,
-                    col:6,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:4,
-                    col:7,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:4,
-                    col:8,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:5,
-                    col:1,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:5,
-                    col:2,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'error'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:5,
-                    col:3,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:5,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:5,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:5,
-                    col:6,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:5,
-                    col:7,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:5,
-                    col:8,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'error'
-                    }
-                },
-                {
-                    id:2,
-                    status:"none",
-                    row:6,
-                    col:1,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                    }
-                },
-                {
-                    id:2,
-                    status:"none",
-                    row:6,
-                    col:2,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                    }
-                },
-                {
-                    id:2,
-                    status:"OK",
-                    row:6,
-                    col:3,
-                    device:{
-                        id:42,
-                        device_name:"Device42",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:6,
-                    col:4,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"none",
-                    row:6,
-                    col:5,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:6,
-                    col:6,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:6,
-                    col:7,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'idle'
-                    }
-                },
-                {
-                    id:1,
-                    status:"OK",
-                    row:6,
-                    col:8,
-                    device:{
-                        id:221,
-                        device_name:"Device211",
-                        status:'error'
-                    }
-                },
-            ]
-        },
-    ]
 
 
     export default {
-        components:{ CompPaneCard },
+        components:{ CompPaneCard ,CompDeviceList },
         data(){
             return{
                 paneList:[],
@@ -1193,20 +80,30 @@
                 propPane:{},
                 openModal:false,
                 paneIndex:null,
+                openDevice:false,
+                selectDevice:null,
+                slotKey:"",
+                slotId:null,
             }
         },
         methods:{
             refresh(){
-                paneList.forEach(paneListObj=>{
-                    let slotList = [];
-                    paneListObj.slot.forEach(item=>{
-                        let key = item.row + ',' + item.col
-                        slotList[key] = item
-                    })
-                    this.$set(paneListObj, 'slotList' , slotList )
+                this.$ajax.get("api/v1/cedar/get_paneview/")
+                    .then(response=>{
+                        let paneList = response.data
+                        response.data.forEach(paneListObj=>{
+                            let slotList = [];
+                            paneListObj.paneslots.forEach(item=>{
+                                let key = item.row + ',' + item.col
+                                slotList[key] = item
+                            })
+                            this.$set(paneListObj, 'slotList' , slotList )
+                        })
+                        this.paneList = paneList;
+                    }).catch(error=>{
+                        if(config.DEBUG) console.log(error)
+                        this.$Message.error("取得paneView信息列表失败")
                 })
-                this.paneList = paneList;
-                console.log(this.paneList)
             },
 
             //添加pane
@@ -1224,63 +121,23 @@
                 let str = this.pane.pane_name.split("@")
                 let size = str[1].replace("X","x").split("x")
 
-
-
                 this.$ajax.post("api/v1/cedar/create_paneview/",{
                     name:this.pane.pane_name,
                     type:this.paneType,
                     cabinet:10000,
                     width:parseInt(size[1]),
                     height:parseInt(size[0]),
-                    ret_level:2
+                    ret_level:0
                 }).then(response=>{
-                    // paneList.push(response.data)
-                    // this.refresh()
-                    // this.showAddPane = false
+                    this.refresh()
+                    this.showAddPane = false
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     if(error.status===400)
                         this.$Message.error("该项目名称已存在，请重新输入！")
                     else
-                        this.$Message.error("项目添加失败")
+                        this.$Message.error("项目添加失败,请检查后再重新添加！")
                 })
-
-
-
-
-
-
-
-
-                let slotList = [];
-                let sortObj = {}
-                let index = 0
-                for (let i = 1; i <= parseInt(size[0]); i++) {
-                    for (let j = 1; j <= parseInt(size[1]); j++) {
-                        index ++;
-                        sortObj = {
-                            id:index,
-                            status:"none",
-                            row:i,
-                            col:j,
-                            device:{}
-                        }
-                        slotList.push(sortObj)
-                    }
-                }
-
-                let paneObj = {
-                    pane_name:this.pane.pane_name ,
-                    w:parseInt(size[0]),
-                    h:parseInt(size[1]),
-                    slot:slotList
-                }
-
-                paneList.push(paneObj)
-                this.refresh()
-                this.showAddPane = false
-
-
             },
             onOpenModal(){
                 this.showAddPane=true;
@@ -1294,32 +151,53 @@
             onAddDevice(paneObj,index){
                 this.paneIndex = index
                 this.openModal = true;
-                // this.propPane = paneObj;
                 this.propPane = this.paneList[index];
             },
-            onSlotClick(row,col){
-                let device = {
-                    id:1,
-                    device_name:"addD1",
-                    status:"idle"
-                }
+            onSlotClick(row,col,id){
                 let key = row + "," + col
-
-                if(this.paneList[this.paneIndex].slotList[key].status==="OK"){
+                this.slotKey = key
+                this.slotId = id
+                if(this.paneList[this.paneIndex].slotList[key].status!=="empty"){
                     this.$Message.info("该区域已有设备，请在未放置设备区域添加设备！")
                     return
                 }
                 let root = this;
+                let x = row+1;
+                let y = col+1;
                 this.$Modal.confirm({
                     title:"提示：",
-                    content:"您确定要在该位置("+ row + "," + col +")处添加设备吗？",
+                    content:"您确定要在该位置("+ x + "," + y +")处添加设备吗？",
                     onOk(){
-                        let slotListItem = root.paneList[root.paneIndex].slotList[key];
-                        root.$set(slotListItem,"device",device)
-                        root.$set(slotListItem,"status","OK")
-                        root.openModal = false;
+                        root.openDevice = true
+                        root.$refs.selectDevice.refresh()
                     }
                 })
+            },
+            setDevice(){
+                let paneId = this.paneList[this.paneIndex].id
+                if(this.selectDevice!==null){
+                    this.$ajax.post("api/v1/cedar/link_paneview_device/",{
+                            paneslot: this.slotId,
+                            device: this.selectDevice,
+                            paneview: paneId,
+                            ret_level: 1
+                        }).then(response=>{
+                            let slotListItem = this.paneList[this.paneIndex].slotList[this.slotKey];
+                            this.$set(slotListItem,"device",response.data.device)
+                            this.$set(slotListItem,"status",response.data.status)
+                            // root.openModal = false;
+                            this.$Message.success("添加设备成功，请继续添加或关闭弹窗！")
+                        }).catch(error=>{
+                            if (config.DEBUG) console.log(error)
+                            this.$Message.error("添加设备失败")
+                        })
+                }
+            },
+            onSelectDeviceModalRowClick(row){
+                this.selectDevice = row.id
+            },
+            afterRemovePaneSlot(){
+                this.refresh()
             }
         },
         mounted(){
