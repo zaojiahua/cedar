@@ -10,7 +10,7 @@ export default class AuthenticationMiddleware {
     }
 
     onResponseError(error) {
-        if(error.response !== undefined && (error.response.status === 401 || error.response.status === 403)){
+        if(error.response !== undefined && (error.response.status === 401) ){
             router.push({name: "login"})
         }
         throw error
