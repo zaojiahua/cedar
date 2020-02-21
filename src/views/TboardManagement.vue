@@ -10,7 +10,7 @@
                                 ref="tboardDetail"></comp-tboard-detail>
         </Drawer>
 
-        <comp-tboard-list style="margin-top: 16px;" @on-row-click="onTboardRowClick" :propShowActionColumn="true" :prop-poll="true">
+        <comp-tboard-list style="margin-top: 16px;" @on-row-click="onTboardRowClick" :propShowActionColumn="true" :prop-poll="true" :propDeleteMore="true">
             <div slot="header-bottom"  style="margin-top: 16px;">
                 <Tooltip content="开启后, 将关闭任务详情页面的遮罩，可以在多个任务之间快速切换浏览" max-width="100">
                     <span style="font-size: 12px; margin-right: 4px;">快速阅览</span>
