@@ -11,6 +11,7 @@ export default {
     "DEVINDOOR_PORT":"10802",
     "CREATETBOARD_PORT":"10811",
     "JOBSVC_PORT":"10801",
+    "WEBSOCKET":"8002",
     // Paging setting
     "DEFAULT_PAGE_SIZE": 10,
     "LARGE_PAGE_SIZE": 500

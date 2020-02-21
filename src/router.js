@@ -13,6 +13,7 @@ import LogFiles from "./views/LogFiles";
 import RdsManagement from "./views/RdsManagement"
 import SystemUpgrade from "./views/SystemUpgrade"
 import Setting from "./views/Setting"
+import CleanCenter from "./views/CleanCenter"
 
 
 Vue.use(Router)
@@ -75,6 +76,11 @@ let router = new Router({
                     path: "setting",
                     name: "setting",
                     component: Setting
+                },
+                {
+                    path: "clean-center",
+                    name: "clean-center",
+                    component: CleanCenter
                 }
             ]
         },

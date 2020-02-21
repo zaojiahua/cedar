@@ -80,7 +80,12 @@
                             </Tooltip>
                             <span>设备管理</span>
                         </MenuItem>
-
+                        <MenuItem name="clean-center" :to="{name: 'clean-center'}">
+                            <Tooltip content="清理中心" placement="right" :disabled="!isCollapsed">
+                                <Icon type="ios-trash" size="24"/>
+                            </Tooltip>
+                            <span>清理中心</span>
+                        </MenuItem>
                     </Menu>
                 </Sider>
                 <Content style="padding:16px;">
