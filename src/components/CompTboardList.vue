@@ -298,11 +298,9 @@
                     onOk() {
                         let id = []
                         id.push(row.id)
-                        root.$ajax.post("api/v1/cedar/change_status/",{
+                        root.$ajax.post("api/v1/cedar/delete_tboard/",{
                             tboard_id:id
                         }).then(response => {
-                            let message = {tboard_id:id}
-                            root.send(JSON.stringify(JSON.stringify(message)))
                             root.tboardIdList.splice(root.tboardIdList.indexOf(root.data[index].id),1)
                             root.data.splice(index, 1)
                             clearTimeout(root.timer);
@@ -453,11 +451,9 @@
                     title: "警告！",
                     content: "您确定要删除这些任务吗?",
                     onOk(){
-                        this.$ajax.post("api/v1/cedar/change_status/",{
+                        this.$ajax.post("api/v1/cedar/delete_tboard/",{
                             tboard_id:selectId
                         }).then(response=>{
-                            let message = {tboard_id:selectId}
-                            root.send(JSON.stringify(JSON.stringify(message)))
                             this.$Message.info("正在删除...该操作可能需要点时间，如需查看进度可进入清理中心页面！")
                             root.refresh()
                         }).catch(error=>{
@@ -466,24 +462,6 @@
                         })
                     }
                 })
-            },
-            socketInit() {
-                if(typeof(WebSocket) === "undefined"){
-                    alert("您的浏览器不支持socket")
-                }else{
-                    // 实例化socket
-                    this.socket = new WebSocket(this.path)
-                    console.log(this.socket)
-                    // 监听socket连接
-                    this.socket.onopen
-                    // 监听socket错误信息
-                    this.socket.onerror
-                    // 监听socket消息
-                    this.socket.onmessage
-                }
-            },
-            send(params) {
-                this.socket.send(params)
             },
 
         },
@@ -512,9 +490,6 @@
                 })
             if (this.propAutoLoad)
                 this.refresh()
-
-            // 初始化
-            this.socketInit()
 
         },
         destroyed(){
