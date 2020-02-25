@@ -55,7 +55,7 @@
             }
         },
         methods:{
-            getData(){
+            getData(reset){
                 this.$ajax.get( "api/v1/cedar/tboard/?fields=" +
                     "id," +
                     "board_stamp," +
@@ -70,6 +70,8 @@
                     if(response.data.tboards.length===0){
                         this.data = response.data.tboards
                         this.$Message.info("暂无待清理的数据")
+                        if(this.socket===null)
+                            this.socketInit()
                         return
                     }
                     response.data.tboards.forEach(item=>{
@@ -78,7 +80,8 @@
                         item.state = item.is_to_delete ? "待删除" : item.is_to_delete
                     })
                     this.data = response.data.tboards
-                    this.socketInit()
+                    if(reset)
+                        this.socketInit()
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     this.$Message.warning("取得数据失败！")
@@ -117,7 +120,7 @@
             },
         },
         created () {
-            this.getData()
+            this.getData(true)
         },
         destroyed () {
             // 销毁监听
