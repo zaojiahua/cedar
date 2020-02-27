@@ -1,8 +1,9 @@
 <template>
     <div>
-        <div @mouseenter="showRemove=true" @mouseleave="showRemove=false">
-            <span v-if="propShowRemoveBtn" v-show="showRemove" class="remove" @click="removePane(propIndex)">移除</span>
-            <div class="pane-box">
+        <div>
+            <div class="pane-box" @mouseenter="showRemove=true" @mouseleave="showRemove=false">
+                <span v-if="propShowRemoveBtn" v-show="showRemove" class="remove" style="right: 90px;color: #19be6b" @click="addDevice(propPane,propIndex)">添加设备</span>
+                <span v-if="propShowRemoveBtn" v-show="showRemove" class="remove" @click="removePane(propIndex)">移除支架</span>
                 <div :style="{ width: (propPane.width*50+30) + 'px'}" style="margin:auto">
                     <p style="margin-left: 20px"><span class="w-index" v-for="h_index in propPane.width">{{ h_index }}</span></p>
                     <div>
@@ -12,11 +13,11 @@
                                 <div class="pane-container" :style="{background:showColor(propPane.slotList,w_index-1,h_index-1)}" @mouseenter="onMouseOver(w_index,h_index)" @mouseleave="onMouseLeave" @click="onSlotClick(w_index-1,h_index-1)"></div>
                             </Col>
                         </Row>
-                        <p class="line" :style="{width: 50*propPane.width + 'px'}"></p>
+                        <p class="line" :style="{width: 50*propPane.width+1 + 'px'}"></p>
                     </div>
                 </div>
             </div>
-            <p style="text-align: center;margin-top: 15px;"><span style="cursor: pointer" @click="addDevice(propPane,propIndex)">{{ propPane.name }}</span></p>
+            <p style="text-align: center;margin-top: 15px;"><span style="cursor: pointer">{{ propPane.name }}</span></p>
         </div>
         <Drawer v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
             <comp-device-detail ref="deviceDetail" :prop-device-slot="true" @after-remove-pane-slot="afterRemovePaneSlot"></comp-device-detail>
@@ -155,6 +156,7 @@
         position: absolute;
         right: 15px;
         top: 10px;
+        color: #D04B40;
         cursor: pointer;
     }
     .pane-box{
@@ -179,8 +181,8 @@
     .line{
         height: 1px;
         border-top: 1px solid #dcdcdc;
-        margin-left: 20px;
-        margin-top: -1px;
+        margin-left: 19px;
+        /*margin-top: -1px;*/
     }
 </style>
 

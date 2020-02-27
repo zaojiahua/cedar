@@ -213,7 +213,7 @@
         float:left;
         width: 500px;
         height: 450px;
-        margin:0 20px 20px 0;
+        margin:0 20px 20px 2px;
     }
     .add-pane{
         float: left;
@@ -221,6 +221,7 @@
         height: 400px;
         text-align: center;
         padding-top: 40px;
+        margin-left: 2px;
         border:1px solid #dcdcdc;
     }
     .pane-size{
