@@ -55,38 +55,6 @@
             }
         },
         methods:{
-            getData(reset){
-                this.$ajax.get( "api/v1/cedar/tboard/?fields=" +
-                    "id," +
-                    "board_stamp," +
-                    "board_name," +
-                    "success_ratio," +
-                    "is_to_delete," +
-                    "author," +
-                    "author.username" +
-                    "&ordering=-board_stamp" +
-                    "&finished_flag=True&is_to_delete=True"
-                ).then(response=>{
-                    if(response.data.tboards.length===0){
-                        this.data = response.data.tboards
-                        this.$Message.info("暂无待清理的数据")
-                        if(this.socket===null)
-                            this.socketInit()
-                        return
-                    }
-                    response.data.tboards.forEach(item=>{
-                        item.author = item.author.username
-                        item.success_ratio = (item.success_ratio *100).toFixed(1) + "%";
-                        item.state = item.is_to_delete ? "待删除" : item.is_to_delete
-                    })
-                    this.data = response.data.tboards
-                    if(reset)
-                        this.socketInit()
-                }).catch(error=>{
-                    if(config.DEBUG) console.log(error)
-                    this.$Message.warning("取得数据失败！")
-                })
-            },
             socketInit() {
                 if(typeof(WebSocket) === "undefined"){
                     alert("您的浏览器不支持socket")
@@ -103,24 +71,20 @@
             },
             socketMessage(msg) {
                 let tboards = JSON.parse(msg.data).message
-                for (let key in tboards){
-                    let message = ""
-                    if(tboards[key]==="deleting")
-                        message = "正在删除"
-                    else if(tboards[key]==="deleted")
-                        message = "已删除"
+                tboards.forEach(item=>{
+                    if(item.state === "deleting")
+                        item.state = "正在删除"
+                    else if(item.state === "deleted")
+                        item.state = "已删除"
                     else
-                        message = "待删除"
-                    this.data.forEach(item=>{
-                        if(item.id===parseInt(key)){
-                            this.$set(item,"state",message)
-                        }
-                    })
-                }
+                        item.state = "待删除"
+
+                })
+                this.data = tboards
             },
         },
         created () {
-            this.getData(true)
+            this.socketInit()
         },
         destroyed () {
             // 销毁监听
