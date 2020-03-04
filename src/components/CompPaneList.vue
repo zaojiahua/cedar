@@ -3,14 +3,14 @@
         <Row style="margin-bottom: 15px;">
             <span>设备情况：</span>
             <Tag type="dot" color="#CBD0D3">暂无设备</Tag>
-            <Tag type="dot" color="#18A360">正常</Tag>
-            <Tag type="dot" color="#D04B40">异常</Tag>
+            <Tag type="dot" color="#85D700">正常</Tag>
+            <Tag type="dot" color="#D04B40"><span style="padding: 10px 0" @click="openErrorDevice=true">异常 ( {{ errorCount }} )</span></Tag>
         </Row>
         <div v-for="(item,index) in paneList" :key="index" class="pane-list">
             <comp-pane-card :prop-pane="item" :prop-index="index" @remove-pane="onRemovePane"  @on-add-device="onAddDevice" @after-remove-pane-slot="afterRemovePaneSlot"></comp-pane-card>
         </div>
         <div class="add-pane">
-            <Icon type="ios-add" size="300" style="cursor: pointer" @click="onOpenModal"/>
+            <Icon type="ios-add" size="180" style="cursor: pointer;margin: 35px auto;" @click="onOpenModal"/>
             <p>添加Pane</p>
         </div>
 
@@ -44,7 +44,7 @@
                 </p>
             </Card>
         </Modal>
-        <Modal v-model="openModal" :footer-hide="true" :mask-closable="false" width="530">
+        <Modal v-model="openModal" :footer-hide="true" :mask-closable="false" width="450">
             <p style="font-size: 16px;margin: 0 0 5px;">注：请在灰色位置区域添加要添加的设备！</p>
             <comp-pane-card :prop-pane="propPane" :prop-show-remove-btn="false" @on-slot-click="onSlotClick"></comp-pane-card>
         </Modal>
@@ -52,6 +52,18 @@
         <Modal v-model="openDevice" fullscreen :mask-closable="false" :closable="false" @on-ok="setDevice">
             <comp-device-list ref="selectDevice" :prop-device-slot="true" :prop-high-light="true" :prop-add-mode="false" :prop-device-status="true"
                               @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
+        </Modal>
+
+        <Modal v-model="openErrorDevice" fullscreen :mask-closable="false" :closable="false">
+            <comp-device-list ref="errorDevice" :prop-device-slot-error="true" :prop-add-mode="false"
+                              @on-row-click="onErrorDeviceRowClick">
+                <Drawer slot="detail" v-model="showDeviceDetail" :transfer="false" :inner="true" :draggable="true" :closable="false" width="50">
+                    <comp-device-detail ref="deviceDetail"></comp-device-detail>
+                </Drawer>
+            </comp-device-list>
+            <div slot="footer">
+                <Button type="primary" @click="openErrorDevice=false;showDeviceDetail=false;">返回</Button>
+            </div>
         </Modal>
 
 
@@ -64,11 +76,12 @@
     import CompPaneCard from "./CompPaneCard"
     import config from "../lib/config"
     import CompDeviceList from "../components/CompDeviceList";
+    import CompDeviceDetail from "../components/CompDeviceDetail"
 
 
 
     export default {
-        components:{ CompPaneCard ,CompDeviceList },
+        components:{ CompPaneCard ,CompDeviceList,CompDeviceDetail },
         data(){
             return{
                 paneList:[],
@@ -84,6 +97,9 @@
                 selectDevice:null,
                 slotKey:"",
                 slotId:null,
+                errorCount:0,
+                openErrorDevice:false,
+                showDeviceDetail:false,
             }
         },
         methods:{
@@ -198,10 +214,22 @@
             },
             afterRemovePaneSlot(){
                 this.refresh()
-            }
+            },
+            onErrorDeviceRowClick(row) {
+                this.showDeviceDetail = true
+                this.$refs.deviceDetail.refresh(row.id)
+            },
         },
         mounted(){
             this.refresh();
+            this.$ajax.get("api/v1/cedar/device/?fields=id&paneslot__isnull=False&status=error")
+                .then(response=>{
+                    this.errorCount = response.headers["total-count"]
+                })
+                .catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                    this.$Message.error("获取异常数据失败")
+                })
         }
     }
 </script>
@@ -211,22 +239,19 @@
     .pane-list{
         position:relative;
         float:left;
-        width: 500px;
-        height: 450px;
+        width: 420px;
+        height: 400px;
         margin:0 20px 20px 2px;
     }
     .add-pane{
         float: left;
-        width: 500px;
-        height: 400px;
+        width: 420px;
+        height: 350px;
         text-align: center;
-        padding-top: 40px;
+        padding-top: 30px;
         margin-left: 2px;
-        border:1px solid #dcdcdc;
-    }
-    .pane-size{
-        width: 80px;
-        margin-right: 5px;
+        color: #02A7F0;
+        border:1px solid #02A7F0;
     }
     .pane-type{
         margin-right: 20px!important;
