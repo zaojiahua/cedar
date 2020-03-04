@@ -4,7 +4,7 @@
             <div class="pane-box" @mouseenter="showRemove=true" @mouseleave="showRemove=false">
                 <span v-if="propShowRemoveBtn" v-show="showRemove" class="remove" style="right: 90px;color: #19be6b" @click="addDevice(propPane,propIndex)">添加设备</span>
                 <span v-if="propShowRemoveBtn" v-show="showRemove" class="remove" @click="removePane(propIndex)">移除支架</span>
-                <div :style="{ width: (propPane.width*50+30) + 'px'}" style="margin:auto">
+                <div :style="{ width: (propPane.width*40+30) + 'px'}" style="margin:auto">
                     <p style="margin-left: 20px"><span class="w-index" v-for="h_index in propPane.width">{{ h_index }}</span></p>
                     <div>
                         <Row v-for="w_index in propPane.height" :key="w_index">
@@ -13,7 +13,7 @@
                                 <div class="pane-container" :style="{background:showColor(propPane.slotList,w_index-1,h_index-1)}" @mouseenter="onMouseOver(w_index,h_index)" @mouseleave="onMouseLeave" @click="onSlotClick(w_index-1,h_index-1)"></div>
                             </Col>
                         </Row>
-                        <p class="line" :style="{width: 50*propPane.width+1 + 'px'}"></p>
+                        <p class="line" :style="{width: 40*propPane.width+1 + 'px'}"></p>
                     </div>
                 </div>
             </div>
@@ -62,7 +62,7 @@
             showColor(paneSlot,row,col){
                 let key = row + ',' + col
                 if(paneSlot[key].status==="ok")  //判断device的状态
-                    return "#18A360"
+                    return "#85D700"
                 else if(paneSlot[key].status==="error")
                     return "#D04B40"
                 else if(paneSlot[key].status==="empty")
@@ -142,14 +142,14 @@
         float:left;
         display: inline-block;
         width: 20px;
-        height: 50px;
-        line-height: 50px;
+        height: 40px;
+        line-height: 40px;
         text-align: center;
         border-right: 1px solid #dcdcdc;
     }
     .w-index{
         display: inline-block;
-        width: 50px;
+        width: 40px;
         text-align: center;
     }
     .remove{
@@ -160,15 +160,15 @@
         cursor: pointer;
     }
     .pane-box{
-        width: 500px;
-        height: 400px;
+        width: 420px;
+        height: 350px;
         display: flex;
         align-items: center;
         border:1px solid #dcdcdc;
     }
     .pane-col{
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         border: 1px solid #dcdcdc;
         border-bottom: none;
         border-left: none;
@@ -176,13 +176,12 @@
     .pane-container{
         width: 20px;
         height:20px;
-        margin:15px auto;
+        margin:10px auto;
     }
     .line{
         height: 1px;
         border-top: 1px solid #dcdcdc;
         margin-left: 19px;
-        /*margin-top: -1px;*/
     }
 </style>
 
