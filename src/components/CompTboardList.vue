@@ -495,7 +495,6 @@
         destroyed(){
             clearTimeout(this.timer);
             clearTimeout(this.successRatioTimer);
-            this.socket.onclose
         }
     }
 </script>
