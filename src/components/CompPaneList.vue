@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="margin-left: 2px">
         <Row style="margin-bottom: 15px;">
             <span>设备情况：</span>
             <Tag type="dot" color="#CBD0D3">暂无设备</Tag>
@@ -241,7 +241,7 @@
         float:left;
         width: 420px;
         height: 400px;
-        margin:0 20px 20px 2px;
+        margin:0 20px 20px 0;
     }
     .add-pane{
         float: left;

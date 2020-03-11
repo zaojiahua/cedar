@@ -9,11 +9,8 @@
                     </Drawer>
                 </comp-device-list>
             </TabPane>
-            <TabPane label="温度感应片列表" name="tempPortList">
-                <comp-temp-port-list></comp-temp-port-list>
-            </TabPane>
-            <TabPane label="智能充电口列表" name="powerPortList">
-                <comp-power-port-list></comp-power-port-list>
+            <TabPane label="硬件设备列表" name="tempPortList">
+                <Comp-hard-ware-list></Comp-hard-ware-list>
             </TabPane>
             <TabPane label="设备地图" name="paneList">
                 <comp-pane-list></comp-pane-list>
@@ -26,17 +23,15 @@
 <script>
     import CompDeviceList from "../components/CompDeviceList";
     import CompDeviceDetail from "../components/CompDeviceDetail"
-    import CompTempPortList from "../components/CompTempPortList";
-    import CompPowerPortList from "../components/CompPowerPortList";
     import CompPaneList from "../components/CompPaneList";
+    import CompHardWareList from "../components/CompHardWareList";
 
     export default {
         components: {
             CompDeviceList,
             CompDeviceDetail,
-            CompTempPortList,
-            CompPowerPortList,
             CompPaneList,
+            CompHardWareList,
         },
         data() {
             return {
