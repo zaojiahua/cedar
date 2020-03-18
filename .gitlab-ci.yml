@@ -3,9 +3,10 @@ stages:
 deploy:
   stage: deploy
   script:
-    ssh root@182.92.218.230 "cd /etc/cedar/conf; pwd; sh cedar_deploy.sh"
-    ssh root@39.105.123.128 "cd /etc/cedar/conf; pwd; sh cedar_deploy.sh"
+    - echo $deploy_ip
+    - echo `pwd`
+    - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip
   only:
-    - master
+    - schedules
   tags:
     - deploy
