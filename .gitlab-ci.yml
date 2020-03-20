@@ -4,8 +4,9 @@ deploy:
   stage: deploy
   script:
     - echo $deploy_ip
+    - echo $CI_COMMIT_SHA
     - echo `pwd`
-    - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip
+    - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip $CI_COMMIT_SHA
   only:
     - schedules
   tags:
