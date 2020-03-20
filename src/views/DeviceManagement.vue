@@ -1,6 +1,6 @@
 <template>
     <Card :shadow="true" :bordered="true">
-        <Tabs value="deviceList" style="background: #fff;">
+        <Tabs value="deviceList" style="background: #fff;"  @on-click="onTabClick">
             <TabPane label="测试设备列表" name="deviceList" :strip="true">
                 <comp-device-list ref="deviceList" @on-row-click="onDeviceRowClick">
                     <Drawer slot="detail" v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
@@ -10,7 +10,7 @@
                 </comp-device-list>
             </TabPane>
             <TabPane label="硬件设备列表" name="tempPortList">
-                <Comp-hard-ware-list></Comp-hard-ware-list>
+                <Comp-hard-ware-list ref="hardWareList"></Comp-hard-ware-list>
             </TabPane>
             <TabPane label="设备地图" name="paneList">
                 <comp-pane-list></comp-pane-list>
@@ -56,6 +56,14 @@
             },
             afterDeviceCancel(){
                 this.showDeviceDetail = false
+            },
+            onTabClick(name){
+                if(name==="tempPortList"){
+                    this.$refs.hardWareList.tableList = 1
+                    this.$nextTick(function(){
+                        this.$refs.hardWareList.$refs.hardWareTable.getHardWareData()
+                    })
+                }
             }
         }
     }
