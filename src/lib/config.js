@@ -1,6 +1,6 @@
 // noinspection JSUnresolvedVariable
 export default {
-    "DEBUG": true,
+    "DEBUG": false,
     "REEF_HOST": ip.REEF_HOST,
     "REEF_PORT": "8000",
     "CORAL_HOST": ip.CORAL_HOST,
