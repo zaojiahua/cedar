@@ -131,6 +131,7 @@
             },
             handleUploadSuccess(response, file, fileList){
                 this.$Message.success("文件上传成功！")
+                location.reload();
             },
             exportCase(){
                 let root = this;
