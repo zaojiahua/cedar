@@ -120,6 +120,7 @@
                         if(config.DEBUG) console.log(error)
                         this.$Message.error("取得paneView信息列表失败")
                 })
+                this.getErrorCount()
             },
 
             //添加pane
@@ -219,17 +220,19 @@
                 this.showDeviceDetail = true
                 this.$refs.deviceDetail.refresh(row.id)
             },
+            getErrorCount(){
+                this.$ajax.get("api/v1/cedar/device/?fields=id&paneslot__isnull=False&status=error")
+                    .then(response=>{
+                        this.errorCount = response.headers["total-count"]
+                    })
+                    .catch(error=>{
+                        if(config.DEBUG) console.log(error)
+                        this.$Message.error("获取异常数据失败")
+                    })
+            },
         },
         mounted(){
             this.refresh();
-            this.$ajax.get("api/v1/cedar/device/?fields=id&paneslot__isnull=False&status=error")
-                .then(response=>{
-                    this.errorCount = response.headers["total-count"]
-                })
-                .catch(error=>{
-                    if(config.DEBUG) console.log(error)
-                    this.$Message.error("获取异常数据失败")
-                })
         }
     }
 </script>
