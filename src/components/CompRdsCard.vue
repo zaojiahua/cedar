@@ -1,35 +1,38 @@
 <template>
-    <Card style="margin-bottom: 16px;" dis-hover>
-        <Divider orientation="left">{{ propDeviceName }} ( {{ propDeviceLabel }} )</Divider>
-        <Row type="flex" style="margin-bottom: 16px;" align="bottom">
-            <Button style="margin-right: 16px;" @click="openJobList">选取用例</Button>
-            <Tag closable v-for="(job, index) in jobs" :key="job.id" @on-close="onJobTagClose(index)">{{job.job_name}}</Tag>
-        </Row>
-        <Row type="flex" style="margin-bottom: 16px;" align="bottom">
-            <Button style="margin-right: 16px;" @click="openTboardList">选取任务</Button>
-            <Tag closable v-for="(tboard, index) in tboards" :key="tboard.id" @on-close="onTboardTagClose(index)">{{tboard.board_name}}</Tag>
-        </Row>
-        <Row type="flex">
-            <Spin v-show="loadingData" size="large" style="position: absolute; width: 100%; height: inherit; left: 50%;"></Spin>
-            <div :class="loadingData ? 'opacity-row' : ''">
-                <div class="rds-box"
-                     v-for="(item,index) in rdsData" :key="item.id" :class="getRdsColorClass(item.job_assessment_value)" @mouseenter="onRdsMouseEnter(item)"
-                     @mouseleave="onRdsMouseLeave" @click="onRdsBoxClick(item,index)"></div>
-            </div>
-            <Button style="width: 100%; margin-top: 8px;" v-show="showMore"
-                    @click="loadMoreData(false)" :disabled="loadingData">加载更多
-            </Button>
-        </Row>
-        <Modal v-model="showJobSelector" :transfer="true" fullscreen :closable="false" @on-ok="onJobListOk">
-            <comp-job-list v-if="showJobSelector" :propMultiSelect="true" :prop-tboard="propDefaultTboards" ref="jobList" @on-row-click="onJobListRowClick"></comp-job-list>
-        </Modal>
-        <Modal v-model="showTboardSelector" :transfer="true" fullscreen :closable="false" @on-ok="onTboardListOk">
-            <comp-tboard-list v-if="showTboardSelector" :prop-multi-select="true" :prop-tboard="propDefaultTboards" ref="tboardList" @on-row-click="onTboardListRowClick"></comp-tboard-list>
-        </Modal>
-        <Drawer v-model="showRdsDetail" :closable="false" width="50" transfer>
-            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne"></comp-rds-detail>
-        </Drawer>
-    </Card>
+    <div>
+        <Card style="margin-bottom: 16px;" dis-hover v-for="(rdsData,Index) in rdsDataList" :key="Index">
+            <!--<Divider orientation="left">{{ propDeviceName }} ( {{ propDeviceLabel }} )</Divider>-->
+            <!--<Row type="flex" style="margin-bottom: 16px;" align="bottom">-->
+            <!--<Button style="margin-right: 16px;" @click="openJobList">选取用例</Button>-->
+            <!--<Tag closable v-for="(job, index) in jobs" :key="job.id" @on-close="onJobTagClose(index)">{{job.job_name}}</Tag>-->
+            <!--</Row>-->
+            <!--<Row type="flex" style="margin-bottom: 16px;" align="bottom">-->
+            <!--<Button style="margin-right: 16px;" @click="openTboardList">选取任务</Button>-->
+            <!--<Tag closable v-for="(tboard, index) in tboards" :key="tboard.id" @on-close="onTboardTagClose(index)">{{tboard.board_name}}</Tag>-->
+            <!--</Row>-->
+            <Row type="flex">
+                <Spin v-show="loadingData" size="large" style="position: absolute; width: 100%; height: inherit; left: 50%;"></Spin>
+                <div :class="loadingData ? 'opacity-row' : ''">
+                    <div class="rds-box"
+                         v-for="(item,index) in rdsData" :key="item.id" :class="getRdsColorClass(item.job_assessment_value)" @mouseenter="onRdsMouseEnter(item)"
+                         @mouseleave="onRdsMouseLeave" @click="onRdsBoxClick(item,index)"></div>
+                </div>
+                <Button style="width: 100%; margin-top: 8px;" v-show="showMore"
+                @click="loadMoreData(false)" :disabled="loadingData">加载更多
+                </Button>
+            </Row>
+            <!--<Modal v-model="showJobSelector" :transfer="true" fullscreen :closable="false" @on-ok="onJobListOk">-->
+            <!--<comp-job-list v-if="showJobSelector" :propMultiSelect="true" :prop-tboard="propDefaultTboards" ref="jobList" @on-row-click="onJobListRowClick"></comp-job-list>-->
+            <!--</Modal>-->
+            <!--<Modal v-model="showTboardSelector" :transfer="true" fullscreen :closable="false" @on-ok="onTboardListOk">-->
+            <!--<comp-tboard-list v-if="showTboardSelector" :prop-multi-select="true" :prop-tboard="propDefaultTboards" ref="tboardList" @on-row-click="onTboardListRowClick"></comp-tboard-list>-->
+            <!--</Modal>-->
+            <Drawer v-model="showRdsDetail" :closable="false" width="50" transfer>
+                <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne"></comp-rds-detail>
+            </Drawer>
+        </Card>
+    </div>
+
 </template>
 
 <script>
@@ -113,6 +116,7 @@
                 rdsIndex:null,
                 jobSelection:[],
                 tboardSelection:[],
+                rdsDataList:[],
             }
         },
         methods: {
@@ -185,10 +189,15 @@
                     "&ordering=-start_time")
                     .then(response=>{
                         this.dataOffset += pageSize
-                        if(reset)  // 数据加载完成才清空原有数据，以免画面闪烁。
-                            this.rdsData = utils.validate(getRdsSerializer, response.data).rdss
-                        else
-                            this.rdsData = this.rdsData.concat(utils.validate(getRdsSerializer, response.data).rdss)
+                        if(reset) { // 数据加载完成才清空原有数据，以免画面闪烁。
+                            this.rdsDataList = []
+                            // this.rdsData = utils.validate(getRdsSerializer, response.data).rdss
+                            this.rdsDataList.push(utils.validate(getRdsSerializer, response.data).rdss)
+                        }
+                        else{
+                            // this.rdsData = this.rdsData.concat(utils.validate(getRdsSerializer, response.data).rdss)
+                            this.rdsDataList.push(utils.validate(getRdsSerializer, response.data).rdss)
+                        }
                         return this.$ajax
                             .get("api/v1/cedar/filter_rds_validity/?" +
                                 jobCondition +
@@ -257,7 +266,7 @@
             },
             delRdsOne(){
                 this.showRdsDetail = false;
-                this.rdsData.splice(this.rdsIndex, 1)
+                this.rdsData.splice(this.rdsIndex, 1)   /////////////
             },
             getRdsColorClass(type) {
                 if (type === "0") return "success"

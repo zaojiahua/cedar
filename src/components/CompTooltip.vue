@@ -20,7 +20,7 @@
     </div>
 </template>
 <script>
-    import {Tooltip} from 'iview';
+    import {Tooltip} from 'view-design';
 
     export default {
         name: 'CompTooltip',
