@@ -8,7 +8,7 @@ variables:
   docker_storage_passwd: aaa626181
   docker_storage_url: registry.cn-beijing.aliyuncs.com
   module_name: cedar
-  ssh_remote_ip: 10.0.0.81
+  ssh_remote_ip: 10.80.6.101
   ssh_remote_username: root
 
 before_script:
