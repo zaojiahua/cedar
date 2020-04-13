@@ -55,18 +55,18 @@
             </Panel>
             <Panel>智能充电口配对
                 <CheckboxGroup  slot="content" v-model="selectedPowerPorts" @on-change="powerPortCheckbox">
-                    <Checkbox  v-for="item in powerPorts" :label="item.port" :key="item.id" :disabled="isDisabled(item.port,disablePowerPorts)">{{item.port}}</Checkbox >
+                    <Checkbox  v-for="item in powerPorts" :label="item.id" :key="item.id" :disabled="isDisabled(item.id,disablePowerPorts)">{{item.port}}</Checkbox >
                 </CheckboxGroup >
             </Panel>
             <Panel>工业相机配对
                 <CheckboxGroup slot="content" v-model="selectedMonitorPorts" @on-change="monitorPortCheckbox">
-                    <Checkbox v-for="item in monitorPorts" :label="item.port" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
+                    <Checkbox v-for="item in monitorPorts" :label="item.id" :key="item.id" :disabled="!editable">{{item.port}}</Checkbox>
                 </CheckboxGroup>
             </Panel>
             <Panel>其他
                 <p  slot="content">
                     <span>是否开启 AITester </span>
-                    <i-switch v-model="openSwitch" style="float: right" />
+                    <i-switch v-model="openSwitch" style="float: right" :disabled="!editable"/>
                 </p>
             </Panel>
         </Collapse>
@@ -78,6 +78,9 @@
                 <Button type="primary" style="margin-right: 16px;" @click="updateDevice">保存</Button>
                 <Button @click="cancelConfig">取消</Button>
             </Col>
+        </Row>
+        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="propDeviceSlot">
+            <Button type="error" @click="releaseDeviceSlot">解除设备关联</Button>
         </Row>
         <Spin size="large" fix v-if="spinShow"></Spin>
     </Card>
@@ -171,6 +174,10 @@
         name: "CompDeviceDetail",
         props:{
             editable:{
+                type: Boolean,
+                default: false
+            },
+            propDeviceSlot:{
                 type: Boolean,
                 default: false
             }
@@ -313,23 +320,23 @@
                     })
 
                     //powerPort Detail
-                    this.devicePowerPorts = this.device.powerport.port
+                    this.devicePowerPorts = this.device.powerport.id
                     let devicePowerPorts = []     //当前device下选中的port， 可选中,可取消状态
-                    devicePowerPorts.push(this.device.powerport.port)
+                    devicePowerPorts.push(this.device.powerport.id)
                     this.powerPorts.forEach(port=>{
-                        if(devicePowerPorts.includes(port.port)){
-                            this.selectedPowerPorts.push(port.port);
+                        if(devicePowerPorts.includes(port.id)){
+                            this.selectedPowerPorts.push(port.id);
                         }else if(port.status==="busy"){
-                            this.disablePowerPorts.push(port.port);
-                            this.selectedPowerPorts.push(port.port);
+                            this.disablePowerPorts.push(port.id);
+                            this.selectedPowerPorts.push(port.id);
                         }
                     })
                     this.selectedPowerPorts_copy = this.selectedPowerPorts
 
                     //monitorPort Detail
                      this.device.monitor_index.forEach(port=>{
-                        this.selectedMonitorPorts.push(port.port)
-                         this.deviceMonitorPorts = port.port;
+                         this.selectedMonitorPorts.push(port.id)
+                         this.deviceMonitorPorts = port.id;
                     })
                     this.selectedMonitorPorts_copy = this.selectedMonitorPorts
 
@@ -377,16 +384,14 @@
                         device_label:this.device.device_label,
                         device_name:this.device.device_name,
                         tempport:temperDict,
-                        monitor_index:this.selectedMonitorPorts.join(","),
-                        powerport:{
-                            port:configPowerPorts.join(","),
-                        },
+                        monitor_index:this.selectedMonitorPorts.length===0 ? null : parseInt(this.selectedMonitorPorts.join(",")),
+                        powerport:configPowerPorts.length===0 ? null : parseInt(configPowerPorts.join(",")),
                         auto_test :this.openSwitch
                     }
                 ).then(response => {
                     this.spinShow = false;
                     if(config.DEBUG) console.log(response.data)
-                    if(response.data==="success"){
+                    if(response.status===200){
                         this.$Message.success("配置成功")
                         this.$emit('after-device-update', response)
                     }else{
@@ -426,6 +431,18 @@
                 })
                 this.selectedMonitorPorts_copy = this.selectedMonitorPorts;
             },
+            // Device remove with paneView
+            releaseDeviceSlot(){
+                this.$ajax.post("api/v1/cedar/unlink_paneview_device/",{
+                    device: this.device.id
+                }).then(response=>{
+                    this.$emit("after-remove-pane-slot")
+                    this.$Message.success("设备解除关联成功")
+                }).catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                    this.$Message.error("设备解除关联失败，请确认后重试！")
+                })
+            }
 
         },
     }

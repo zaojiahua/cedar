@@ -16,7 +16,7 @@
             </Col>
         </Row>
 
-        <Table ref="table" border :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
+        <Table ref="table" border :highlight-row="propHighLight" :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
         <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
     </div>
 </template>
@@ -59,7 +59,15 @@
                 {
                     port: "string"
                 }
-            ]
+            ],
+            paneslot: {
+                id: "number",
+                row: "number",
+                col: "number",
+                paneview: {
+                    name: "string"
+                }
+            }
 
         }
     ]
@@ -99,7 +107,19 @@
                 default: ()=>{
                     return []
                 }
-            }
+            },
+            propHighLight:{
+                type: Boolean,
+                default: false
+            },
+            propDeviceSlot:{
+                type: Boolean,
+                default: false
+            },
+            propDeviceSlotError:{  //error device in paneView
+                type: Boolean,
+                default: false
+            },
         },
         data() {
             return {
@@ -240,11 +260,19 @@
                 }
                 this.loading = true
                 let deviceStatusCondition = ""
+                let deviceSlotCondition = ""
+                let deviceSlotErrorCondition = ""
                 if(this.statusFilterList.length>0){
                     deviceStatusCondition = "&status__in="+"ReefList["+this.statusFilterList.join("{%,%}")+"]"
                 }
                 if(this.propDeviceStatus){
                     deviceStatusCondition = "&status=idle"
+                }
+                if(this.propDeviceSlot){
+                    deviceSlotCondition = "&paneslot__isnull=True"
+                }
+                if(this.propDeviceSlotError){
+                    deviceSlotErrorCondition = "&paneslot__isnull=False&status=error"
                 }
                 let phoneModelCondition = ""
                 if(this.phoneModelFilterList.length>0){
@@ -273,12 +301,20 @@
                         'tempport.port,' +
                         'tempport.description,' +
                         'monitor_index,' +
-                        'monitor_index.port' +
+                        'monitor_index.port,' +
+                        'paneslot,' +
+                        'paneslot.id,' +
+                        'paneslot.row,' +
+                        'paneslot.col,' +
+                        'paneslot.paneview,' +
+                        'paneslot.paneview.name' +
                         '&limit=' + this.pageSize +
                         "&offset=" + this.offset +
                         deviceStatusCondition +
                         phoneModelCondition +
                         tboardCondition +
+                        deviceSlotCondition +
+                        deviceSlotErrorCondition +
                         "&ordering=id"
                     )
                     .then(response => {
@@ -298,6 +334,7 @@
                     device.rom_version = device.rom_version.version
                     device.android_version = device.android_version.version
                     device.powerport = device.powerport.port
+                    device.paneslot = device.paneslot.paneview.name + '(' + (device.paneslot.row+1) + ',' + (device.paneslot.col+1) + ')'
                     let tempPortStr = ""
                     device.tempport.forEach(temp=>{
                         if(temp.description)
@@ -440,6 +477,19 @@
         },
         mounted() {
             this.deviceColumnChecked = localStorage.getItem("device-management:DEFAULT_DEVICE_COLUMN").split(",")
+            if (this.propDeviceSlotError) {
+                this.$delete(this.deviceColumn, "status")
+                this.$set(this.deviceColumn, "paneslot",{
+                    title: "位置",
+                    key: "paneslot",
+                    sortable: true
+                })
+                if(this.deviceColumnChecked.indexOf("status") > -1)
+                    this.deviceColumnChecked.splice(this.deviceColumnChecked.indexOf("status"),1);
+            }else {
+                if(this.deviceColumnChecked.indexOf("paneslot") > -1)
+                    this.deviceColumnChecked.splice(this.deviceColumnChecked.indexOf("paneslot"),1);
+            }
             this.onTableColumnChange()
         }
     }

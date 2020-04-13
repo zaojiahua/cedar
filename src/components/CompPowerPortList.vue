@@ -42,7 +42,7 @@
                     }
                 ],
                 powerPorts:[],
-                showPowerPortDetail: false
+                showPowerPortDetail: false,
             }
         },
         methods:{
@@ -74,7 +74,7 @@
             onRowClick(data, index){
                 this.showPowerPortDetail = true
                 this.$refs.detail.refresh(data.id)
-            }
+            },
         },
         created() {
             this.refresh()

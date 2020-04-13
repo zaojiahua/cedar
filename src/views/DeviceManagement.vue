@@ -1,6 +1,6 @@
 <template>
     <Card :shadow="true" :bordered="true">
-        <Tabs value="deviceList" style="background: #fff;">
+        <Tabs value="deviceList" style="background: #fff;"  @on-click="onTabClick">
             <TabPane label="测试设备列表" name="deviceList" :strip="true">
                 <comp-device-list ref="deviceList" @on-row-click="onDeviceRowClick">
                     <Drawer slot="detail" v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
@@ -9,12 +9,13 @@
                     </Drawer>
                 </comp-device-list>
             </TabPane>
-            <TabPane label="温度感应片列表" name="tempPortList">
-                <comp-temp-port-list></comp-temp-port-list>
+            <TabPane label="硬件设备列表" name="hardWare">
+                <Comp-hard-ware-list ref="hardWareList"></Comp-hard-ware-list>
             </TabPane>
-            <TabPane label="智能充电口列表" name="powerPortList">
-                <comp-power-port-list></comp-power-port-list>
+            <TabPane label="设备地图" name="paneList">
+                <comp-pane-list ref="paneViewList"></comp-pane-list>
             </TabPane>
+
         </Tabs>
     </Card>
 </template>
@@ -22,15 +23,15 @@
 <script>
     import CompDeviceList from "../components/CompDeviceList";
     import CompDeviceDetail from "../components/CompDeviceDetail"
-    import CompTempPortList from "../components/CompTempPortList";
-    import CompPowerPortList from "../components/CompPowerPortList";
+    import CompPaneList from "../components/CompPaneList";
+    import CompHardWareList from "../components/CompHardWareList";
 
     export default {
         components: {
             CompDeviceList,
             CompDeviceDetail,
-            CompTempPortList,
-            CompPowerPortList
+            CompPaneList,
+            CompHardWareList,
         },
         data() {
             return {
@@ -55,6 +56,16 @@
             },
             afterDeviceCancel(){
                 this.showDeviceDetail = false
+            },
+            onTabClick(name){
+                if(name==="hardWare"){
+                    this.$refs.hardWareList.tableList = 1
+                    this.$nextTick(function(){
+                        this.$refs.hardWareList.$refs.hardWareTable.getHardWareData()
+                    })
+                }else if(name==="paneList"){
+                    this.$refs.paneViewList.refresh()
+                }
             }
         }
     }

@@ -9,6 +9,7 @@
                 <Radio label="running">在测任务</Radio>
                 <Radio label="history">历史任务</Radio>
             </RadioGroup>
+            <Button v-show="!notHistory" type="error" style="float: right;" @click="onDelete">批量删除</Button>
         </Row>
         <Row style="margin-top: 16px;">
             <DatePicker v-model="filterDateRange" type="daterange" placeholder="选择创建日期范围" :transfer="true"
@@ -17,7 +18,14 @@
         <Row>
             <slot name="header-bottom"></slot>
         </Row>
-        <Table :loading="showLoading" ref="table" :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
+        <Table v-show="notHistory" :loading="showLoading" ref="table" :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
+            <template slot-scope="{row, index}" slot="pauseOrDelete">
+                <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-square'"
+                        @click="pauseOrDeleteTboard(index)">
+                </Button>
+            </template>
+        </Table>
+        <Table v-show="!notHistory" :loading="showLoading" ref="table" :columns="columns1" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="pauseOrDelete">
                 <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-square'"
                         @click="pauseOrDeleteTboard(index)">
@@ -69,12 +77,53 @@
                 default: ()=>{
                     return []
                 }
+            },
+            propDeleteMore:{
+                type: Boolean,
+                default:false
             }
         },
         data() {
             return {
                 // Table control
                 columns: [
+                    {
+                        width: 150,
+                        title: "创建日期",
+                        key: "board_stamp",
+                        sortable: true
+                    },
+                    {
+                        title: "任务名称",
+                        key: "board_name",
+                        sortable: true
+                    },
+                    {
+                        title:"任务进度",
+                        key:"progress",
+                        align: 'center',
+                        render: (h, params) => {
+                            return h('Progress',
+                                {
+                                    props: {
+                                        percent : this.progressList[params.row.id]
+                                    }
+                                }
+                            );
+                        }
+                    },
+                    {
+                        title: "任务成功率",
+                        key: "success_ratio",
+                        sortable: true
+                    }
+                ],
+                columns1: [
+                    {
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+                    },
                     {
                         width: 150,
                         title: "创建日期",
@@ -126,6 +175,9 @@
                 pageSize:config.DEFAULT_PAGE_SIZE,
                 tboardIdList:[],
                 tboard:[],
+                notHistory:true,
+                socket:null,
+                path:"ws://"+config.REEF_HOST+":"+config.WEBSOCKET+"/ws/tboard_delete/",
             }
         },
         methods: {
@@ -133,10 +185,15 @@
                 let finishedCondition = ""
                 if (this.filterCondition === "all") {
                     finishedCondition = ""
+                    this.notHistory = true
                 } else if (this.filterCondition === "running") {
                     finishedCondition = "&finished_flag=False"
+                    this.notHistory = true
                 } else if (this.filterCondition === "history") {
                     finishedCondition = "&finished_flag=True"
+                    if(this.propDeleteMore){
+                        this.notHistory = false
+                    }
                 }
 
                 let tboardCondition = ""
@@ -169,6 +226,7 @@
                     "success_ratio" +
                     "&author__id=" + userId +
                     "&ordering=-board_stamp" +
+                    "&is_to_delete=False" +
                     '&limit=' + this.pageSize +
                     "&offset=" + this.offset +
                     finishedCondition +
@@ -238,9 +296,11 @@
                 this.$Modal.confirm({
                     title: "您确认要删除任务 " + row.board_name + " 吗?",
                     onOk() {
-                        root.$ajax.delete(
-                            "api/v1/cedar/tboard/" + row.id + "/"
-                        ).then(response => {
+                        let id = []
+                        id.push(row.id)
+                        root.$ajax.post("api/v1/cedar/delete_tboard/",{
+                            tboard_id:id
+                        }).then(response => {
                             root.tboardIdList.splice(root.tboardIdList.indexOf(root.data[index].id),1)
                             root.data.splice(index, 1)
                             clearTimeout(root.timer);
@@ -250,7 +310,7 @@
                                 root.getProgress(tboardIdStr)
                                 root.getSuccessRatio(tboardIdStr)
                             }
-                            root.$Message.success("删除成功")
+                            root.$Message.success("正在删除...该操作可能需要点时间，如需查看进度可进入清理中心页面！")
                         }).catch(reason => {
                             if (config.DEBUG) console.log(reason)
                             root.$Message.error("删除失败")
@@ -262,12 +322,14 @@
                 event.stopPropagation();
                 let row = this.data[index]
                 let root = this
-                let coralUrl = utils.getCoralUrl(5000)+"/tboard/remove_tboard/"
-                let boardStamp = row.board_stamp
+                let boardId = row.id
                 this.$Modal.confirm({
                     title: "您确认要停止任务 " + row.board_name + " 吗?",
                     onOk() {
-                        root.$ajax.delete(coralUrl + boardStamp + "/")
+                        root.$ajax.post("api/v1/coral/remove_tboard/",
+                            {
+                                tboard_id:boardId
+                            })
                         .then(response => {
                             if (response.status === 204) {
                                 root.$Message.success("停止任务成功!")
@@ -371,6 +433,36 @@
             setSelection(selection){
                 this.selection = selection;
             },
+            onDelete(){
+                let selection = this.getSelection()
+                if(selection.length===0){
+                    this.$Modal.confirm({
+                        title:"提示：",
+                        content:"请先选择要删除的任务！",
+                    })
+                    return
+                }
+                let selectId = []
+                selection.forEach(item=>{
+                    selectId.push(item.id)
+                })
+                let root = this
+                this.$Modal.confirm({
+                    title: "警告！",
+                    content: "您确定要删除这些任务吗?",
+                    onOk(){
+                        this.$ajax.post("api/v1/cedar/delete_tboard/",{
+                            tboard_id:selectId
+                        }).then(response=>{
+                            this.$Message.info("正在删除...该操作可能需要点时间，如需查看进度可进入清理中心页面！")
+                            root.refresh()
+                        }).catch(error=>{
+                            if(config.DEBUG) console.log(error)
+                            this.$Message.error("删除任务失败，请检查后重试!")
+                        })
+                    }
+                })
+            },
 
         },
         watch:{
@@ -398,6 +490,7 @@
                 })
             if (this.propAutoLoad)
                 this.refresh()
+
         },
         destroyed(){
             clearTimeout(this.timer);
