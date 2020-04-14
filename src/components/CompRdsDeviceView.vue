@@ -1,11 +1,11 @@
 <template>
-    <div class="content">
+    <!--<div>-->
+    <div class="content" @scroll="onScroll">
         <Modal v-model="showSelectDeviceModal" :fullscreen="true" :closable="false"
                @on-ok="getDeviceSelection">
             <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true"
                               @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
         </Modal>
-
 
         <Row v-show="devices.length === 0" style="margin-bottom: 16px;">
             <DatePicker v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true"></DatePicker>
@@ -60,93 +60,10 @@
             <div style="margin-top: 16px;" class="device-statistic">
                 <Tabs value="deviceStatistic" type="card" name="inside">
                     <TabPane label="设备统计" name="deviceStatistic" tab="inside">
-                        <!--   设备 统计 部分   -->
-                        <Card :bordered="false">
-                            <p style="text-align: center;font-size: 16px;font-weight: bold;padding-top: 20px;">设备统计情况</p>
-                            <comp-dynamic-loading-chart></comp-dynamic-loading-chart>
-                        </Card>
-                        <!--   设备下的用例统计    -->
-                        <Card style="margin: 16px 0;" :bordered="false">
-                            <p style="margin-left: 20px;font-size: 14px;font-weight: bold;">用例统计</p>
-                            <p style="margin-left: 20px;font-size: 12px">设备：cactus---mt6765---65a4066f7d29<a href="javascript:" style="margin-left: 10px">设备详情</a></p>
-                            <div style="width: 280px;float: left;padding: 10px;margin-top: 30px">
-                                <comp-statistic-pie></comp-statistic-pie>
-                                <div style="font-size: 12px">
-                                    <Row>
-                                        <Col span="12">
-                                            <span class="iconTip" style="background: #2D8cF0"></span> 总共： {{ totalCount.total }}
-                                        </Col>
-                                        <Col span="12">
-                                            <span class="iconTip" style="background: #f5a623"></span> 失败： {{ totalCount.fail }}
-                                        </Col>
-                                    </Row>
-                                    <Row style="margin-top: 5px;">
-                                        <Col span="12">
-                                            <span class="iconTip" style="background: #999"></span> 无效： {{ totalCount.invalid }}
-                                        </Col>
-                                        <Col span="12">
-                                            <span class="iconTip" style="background: #1bbc9c"></span> 通过： {{ totalCount.pass }}
-                                        </Col>
-                                    </Row>
-                                </div>
-                            </div>
-                            <div style="margin-left: 280px">
-                                <p style="text-align: center;font-size: 16px;font-weight: bold">dev36 用例统计情况</p>
-                                <comp-dynamic-loading-chart></comp-dynamic-loading-chart>
-                            </div>
-
-                        </Card>
-
-
-                        <!--  RDS部分 -->
-
-                        <Card :bordered="false" style="overflow:hidden;">
-                            <p style="margin-left: 20px;font-size: 14px;font-weight: bold;">数据日历</p>
-                            <p style="margin-left: 20px;font-size: 12px">设备：【d1-02】    用例：【切换字体大小】<a href="javascript:" style="margin-left: 10px">用例详情</a></p>
-                            <div style="width: 280px;float: left;padding: 10px;">
-                                <RadioGroup v-model="date" type="button" size="small">
-                                    <Radio style="width: 100px;text-align: center;" label="日"></Radio>
-                                    <Radio style="width: 100px;text-align: center;" label="月"></Radio>
-                                </RadioGroup>
-                                <DatePicker v-model="filterDate" class="index-time" type="date" open ></DatePicker>
-                            </div>
-                            <div style="margin-left: 280px">
-                                <p style="text-align: center;font-size: 16px;font-weight: bold">2020年4月7日</p>
-                                <div style="margin-bottom: 20px;">
-                                    <Select v-model="resultRange" multiple style="width:230px" placeholder="请选择测试结果类型">
-                                        <Option value="0"> 通过 </Option>
-                                        <Option value="1"> 未通过 </Option>
-                                        <Option value="-1"> 无效 </Option>
-                                    </Select>
-                                    <p style="float: right">
-                                        <Tag type="dot" color="#1bbc9c">通过</Tag>
-                                        <Tag type="dot" color="#FFAE25">未通过</Tag>
-                                        <Tag type="dot" color="#BDC3C7">无效</Tag>
-                                    </p>
-                                </div>
-                                <!--<comp-rds-card></comp-rds-card>-->
-                                <comp-rds-card ref="rdsCard" v-for="item in devices" :key="item.id"
-                                               :prop-device-id="item.id"
-                                               :prop-device-label="item.device_label"
-                                               :prop-device-name="item.device_name"
-                                               :prop-default-tboards="defaultTboards"
-                                               :prop-default-jobs="defaultJobs"
-                                               :prop-filter-date-range="filterDateRange"
-                                               :prop-result-range="resultRange"
-                                               @rds-mouse-enter="onRdsMouseEnter"
-                                               @rds-mouse-leave="onRdsMouseLeave"></comp-rds-card>
-
-
-                                <comp-rds-result-list></comp-rds-result-list>
-
-                            </div>
-                        </Card>
-
-
-
-
-
-
+                        <comp-rds-device-statistic ref="rdsDeviceStatistic" :prop-devices="devices"  :prop-filter-date-range="filterDateRange"
+                                                   @rds-mouse-enter="onRdsMouseEnter"
+                                                   @rds-mouse-leave="onRdsMouseLeave">
+                        </comp-rds-device-statistic>
                     </TabPane>
                     <TabPane label="用例统计" name="jobStatistic" tab="inside">
                         <div style="height: 200px"></div>
@@ -155,23 +72,46 @@
             </div>
         </div>
 
-    </div>
+        <div v-show="tipData.id" style="position: fixed; bottom: 2px; right: 2px; background-color: #434343; border-radius: 5px;
+                    opacity: 0.9; color: #ebf7ff; padding: 8px;">
+            <span>ID：</span>
+            <span>{{tipData.id}}</span>
+            <br>
+            <span>设备名称：</span>
+            <span>{{tipData.device.device_name}}</span>
+            <br>
+            <span>用例名称：</span>
+            <span>{{tipData.job.job_name}}</span>
+            <br>
+            <span>结果：</span>
+            <span>{{tipData.job_assessment_value}}</span>
+        </div>
 
+    </div>
+    <!--</div>-->
 </template>
 
 <script>
     import CompDeviceList from "../components/CompDeviceList";
-    import CompRdsCard from "../components/CompRdsCard";
-    import CompDynamicLoadingChart from "../components/CompDynamicLoadingChart";
-    import CompStatisticPie from "../components/CompStatisticPie";
-    import CompRdsResultList from "../components/CompRdsResultList";
+    import CompRdsDeviceStatistic from "../components/CompRdsDeviceStatistic";
     import utils from "../lib/utils";
 
+    const tipDataSerializer = {
+        id: "number",
+        device: {
+            device_name: "string"
+        },
+        job: {
+            job_name: "string"
+        },
+        job_assessment_value: "string"
+    }
+
     export default {
-        components: {CompDeviceList, CompRdsCard, CompDynamicLoadingChart, CompStatisticPie, CompRdsResultList, },
+        components: {CompDeviceList, CompRdsDeviceStatistic, },
         data(){
             return{
-                filterDateRange:['2019-04-01', '2020-04-15'],
+                filterDateRange:['2020-03-01', '2020-04-15'],
                 devices: [],
                 showSelectDeviceModal:false,
                 deviceSelection:[],
@@ -182,8 +122,7 @@
                     pass:15132,
                     invalid:24
                 },
-                date:"日",
-                filterDate:null,
+                tipData:utils.validate(tipDataSerializer, null),
 
             }
         },
@@ -194,9 +133,6 @@
             getDeviceSelection() {
                 this.devices = this.$refs.selectDevice.getSelection()
                 this.deviceSelection = this.$refs.selectDevice.getThisSelection()    //记录当前选取设备的位置
-
-                console.log(this.devices)
-                console.log(this.deviceSelection)
             },
             openDeviceList(){
                 this.showSelectDeviceModal=true
@@ -208,7 +144,33 @@
                 if (count === 0)
                     return 0
                 return count/this.totalCount.total
-            }
+            },
+            onScroll(){
+                // 滚动到页面底部时，请求下一部分内容
+                let scroll = this.$el
+
+                //滚动条滚动的距离    scroll.scrollTop
+                //窗体高度    scroll.offsetHeight
+                //整个文本的高度    scroll.scrollHeight
+
+                // console.log(scroll.scrollTop + " : " +scroll.offsetHeight + " : " + scroll.scrollHeight)
+                // console.log(scroll.offsetHeight + scroll.scrollTop - scroll.scrollHeight)
+                if((scroll.offsetHeight + scroll.scrollTop - scroll.scrollHeight > -1) &&(this.$refs.rdsDeviceStatistic.$refs.rdsCard)&&this.$refs.rdsDeviceStatistic.loadingMoreRdsData===true){
+                    this.$refs.rdsDeviceStatistic.scrollMore = true
+                    this.$refs.rdsDeviceStatistic.loadingMoreRdsData = false
+                    this.$refs.rdsDeviceStatistic.$refs.rdsCard.loadMoreData(false)
+                }
+            },
+            onRdsMouseEnter(rds) {
+                this.tipData = utils.validate(tipDataSerializer, rds)
+            },
+            onRdsMouseLeave() {
+                this.tipData = utils.validate(tipDataSerializer, null)
+            },
+
+        },
+        mounted(){
+
         }
 
     }
@@ -221,13 +183,6 @@
         height: calc(100vh - 150px);
         overflow-y: auto;
         overflow-x: hidden;
-    }
-    .iconTip{
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-left: 20px;
     }
     .progress span{
         display: inline-block;
@@ -246,15 +201,5 @@
         margin-bottom: 0;
         border-bottom: none;
     }
-    //DatePicker 样式改变
-    .index-time {
-        .ivu-date-picker-rel {
-            display: none;
-        }
-        .ivu-select-dropdown {
-            position:static!important;
-        }
-    }
-
 
 </style>

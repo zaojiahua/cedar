@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="device" style="height: 400px;"></div>
+        <div :id="'device'+deviceId" style="height: 400px;"></div>
     </div>
 </template>
 
@@ -8,6 +8,11 @@
     import echarts from "echarts"
 
     export default {
+        props:{
+            deviceId:{
+                type:Number,
+            }
+        },
         data(){
             return{
                 histogram: null,
@@ -157,19 +162,18 @@
             },
             loadNextDataIntoGraph(){
                 if(this.nextDataCache["xAxis"].length>0) {
-                    this.xAxis.splice(0, this.batchSize);  //移除旧数据
+                    this.preDataCache.xAxis = this.preDataCache.xAxis.concat(this.xAxis.splice(0, this.batchSize));  //移除旧数据,将移除的数据加入前段缓存
                     this.xAxis = this.xAxis.concat(
                         this.nextDataCache["xAxis"].splice(0, this.batchSize)
                     );
 
-                    this.data1.splice(0, this.batchSize);
+                    this.preDataCache["data1"] = this.preDataCache["data1"].concat(this.data1.splice(0, this.batchSize));
                     let newData = this.nextDataCache["data1"].splice(0, this.batchSize);
                     this.data1 = this.data1.concat(
                         newData
                     );
 
-
-                    this.data2.splice(0, this.batchSize);
+                    this.preDataCache["data2"] = this.preDataCache["data2"].concat(this.data2.splice(0, this.batchSize));
                     this.data2 = this.data2.concat(
                         this.nextDataCache["data2"].splice(0, this.batchSize)
                     );
@@ -179,11 +183,6 @@
 
                     this.applyDataIntoGraph();
 
-                    this.preDataCache ={
-                        xAxis: [],
-                        data1: [],
-                        data2: []
-                    }
                 }
 
                 // 如果缓存的数据 < 目标阈值 加载更多数据
@@ -208,42 +207,35 @@
                     this.dataLock = false;
                 })
             },
+            // //向前的缓存起始应为空，向后加载时去除的数据直接放于前位缓存，前位缓存的数据来源始终为向后加载时溢出的数据
             loadPreDataIntoGraph(){
-                if(this.preDataCache["xAxis"].length>0) {
-                    this.xAxis.splice(-this.batchSize, this.batchSize);  //移除旧数据
-
-                    this.xAxis = this.preDataCache["xAxis"].splice(-this.batchSize, this.batchSize).concat(
-                        this.xAxis
-                    );
-
-                    this.data1.splice(-this.batchSize, this.batchSize);
-                    let newData = this.preDataCache["data1"].splice(-this.batchSize, this.batchSize);
-                    this.data1 = newData.concat(
-                        this.data1
-                    );
-
-
-                    this.data2.splice(-this.batchSize, this.batchSize);
-                    this.data2 = this.preDataCache["data2"].splice(-this.batchSize, this.batchSize).concat(
-                        this.data2
-                    );
-
-                    this.dataOffset -= this.batchSize
-                    this.prevIndex += this.batchSize
-
-                    this.applyDataIntoGraph();
-
-                    this.nextDataCache = {
-                        xAxis: [],
-                        data1: [],
-                        data2: []
-                    }
+                if(this.preDataCache["xAxis"].length===0){
+                    this.$Message.info("已是第一笔数据")
+                    return
                 }
 
-                // 如果缓存的数据 < 目标阈值 加载更多数据
-                if(this.preDataCache["xAxis"].length < this.cacheSize){
-                    this.loadPreCache()
-                }
+                this.nextDataCache.xAxis = this.xAxis.splice(-this.batchSize, this.batchSize).concat(this.nextDataCache.xAxis);  //移除旧数据,将移除的数据拼接到后段部分缓存
+
+                this.xAxis = this.preDataCache["xAxis"].splice(-this.batchSize, this.batchSize).concat(
+                    this.xAxis
+                );
+
+                this.nextDataCache["data1"] = this.data1.splice(-this.batchSize, this.batchSize).concat(this.nextDataCache["data1"]);
+                let newData = this.preDataCache["data1"].splice(-this.batchSize, this.batchSize);
+                this.data1 = newData.concat(
+                    this.data1
+                );
+
+
+                this.nextDataCache["data2"] = this.data2.splice(-this.batchSize, this.batchSize).concat(this.nextDataCache["data2"]);
+                this.data2 = this.preDataCache["data2"].splice(-this.batchSize, this.batchSize).concat(
+                    this.data2
+                );
+
+                this.dataOffset -= this.batchSize
+                this.prevIndex += this.batchSize
+
+                this.applyDataIntoGraph();
 
             },
 
@@ -327,12 +319,13 @@
         },
         mounted(){
             this.$nextTick(() => {
-                this.histogram = echarts.init(document.getElementById("device"));
+                this.histogram = echarts.init(document.getElementById("device"+this.deviceId));
 
                 this.getDefaultData();
 
                 //监听柱状图点击事件
                 this.histogram.on('click',params=> {
+                    console.log(params)
                     this.prevIndex = params.dataIndex
                     this.onStyleRender();
                     this.$emit("on-chart-click",params.data[0])
@@ -358,6 +351,8 @@
                 });
 
                 this.loadNextCache();
+                this.prevIndex = 0
+                this.onStyleRender();
             })
         },
         beforeDestroy(){

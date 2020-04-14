@@ -18,7 +18,7 @@
         <!--<TabPane label="任务数据视图" name="rdsGroupByTboard" tab="outer">-->
             <!--&lt;!&ndash;<comp-rds-device-view></comp-rds-device-view>&ndash;&gt;-->
         <!--</TabPane>-->
-        <TabPane label="日志文件搜索" name="logSearch">-->
+        <TabPane label="日志文件搜索" name="logSearch">
             <comp-rds-log-search></comp-rds-log-search>
         </TabPane>
     </Tabs>
