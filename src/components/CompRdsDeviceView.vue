@@ -1,5 +1,4 @@
 <template>
-    <!--<div>-->
     <div class="content" @scroll="onScroll">
         <Modal v-model="showSelectDeviceModal" :fullscreen="true" :closable="false"
                @on-ok="getDeviceSelection">
@@ -58,15 +57,22 @@
             </div>
             <!--     设备/用例维度统计情况    -->
             <div style="margin-top: 16px;" class="device-statistic">
-                <Tabs value="deviceStatistic" type="card" name="inside">
+                <Tabs v-model="tabName" type="card" name="inside">
                     <TabPane label="设备统计" name="deviceStatistic" tab="inside">
-                        <comp-rds-device-statistic ref="rdsDeviceStatistic" :prop-devices="devices"  :prop-filter-date-range="filterDateRange"
+                        <comp-rds-device-statistic ref="rdsDeviceStatistic"
+                                                   :prop-filter-date-range="filterDateRange"
+                                                   :prop-device-url="compDeviceUrl"
                                                    @rds-mouse-enter="onRdsMouseEnter"
                                                    @rds-mouse-leave="onRdsMouseLeave">
                         </comp-rds-device-statistic>
                     </TabPane>
                     <TabPane label="用例统计" name="jobStatistic" tab="inside">
-                        <div style="height: 200px"></div>
+                        <comp-rds-job-statistic ref="rdsJobStatistic"
+                                                   :prop-filter-date-range="filterDateRange"
+                                                   :prop-job-url="compJobUrl"
+                                                   @rds-mouse-enter="onRdsMouseEnter"
+                                                   @rds-mouse-leave="onRdsMouseLeave">
+                        </comp-rds-job-statistic>
                     </TabPane>
                 </Tabs>
             </div>
@@ -88,12 +94,12 @@
         </div>
 
     </div>
-    <!--</div>-->
 </template>
 
 <script>
     import CompDeviceList from "../components/CompDeviceList";
     import CompRdsDeviceStatistic from "../components/CompRdsDeviceStatistic";
+    import CompRdsJobStatistic from "../components/CompRdsJobStatistic";
     import utils from "../lib/utils";
 
     const tipDataSerializer = {
@@ -108,10 +114,12 @@
     }
 
     export default {
-        components: {CompDeviceList, CompRdsDeviceStatistic, },
+        components: {CompDeviceList, CompRdsDeviceStatistic, CompRdsJobStatistic },
         data(){
             return{
-                filterDateRange:['2020-03-01', '2020-04-15'],
+                compDeviceUrl:"",
+                compJobUrl:"",
+                filterDateRange:[new Date(new Date().getTime()-1000*60*60*24*150), new Date()],
                 devices: [],
                 showSelectDeviceModal:false,
                 deviceSelection:[],
@@ -123,6 +131,7 @@
                     invalid:24
                 },
                 tipData:utils.validate(tipDataSerializer, null),
+                tabName:"deviceStatistic"
 
             }
         },
@@ -133,6 +142,7 @@
             getDeviceSelection() {
                 this.devices = this.$refs.selectDevice.getSelection()
                 this.deviceSelection = this.$refs.selectDevice.getThisSelection()    //记录当前选取设备的位置
+                this.setRequestUrl()
             },
             openDeviceList(){
                 this.showSelectDeviceModal=true
@@ -148,17 +158,18 @@
             onScroll(){
                 // 滚动到页面底部时，请求下一部分内容
                 let scroll = this.$el
-
                 //滚动条滚动的距离    scroll.scrollTop
                 //窗体高度    scroll.offsetHeight
                 //整个文本的高度    scroll.scrollHeight
-
-                // console.log(scroll.scrollTop + " : " +scroll.offsetHeight + " : " + scroll.scrollHeight)
-                // console.log(scroll.offsetHeight + scroll.scrollTop - scroll.scrollHeight)
-                if((scroll.offsetHeight + scroll.scrollTop - scroll.scrollHeight > -1) &&(this.$refs.rdsDeviceStatistic.$refs.rdsCard)&&this.$refs.rdsDeviceStatistic.loadingMoreRdsData===true){
+                if((this.tabName==="deviceStatistic")&&(scroll.offsetHeight + scroll.scrollTop - scroll.scrollHeight > -1) &&(this.$refs.rdsDeviceStatistic.$refs.rdsCard)&&this.$refs.rdsDeviceStatistic.loadingMoreRdsData===true){
                     this.$refs.rdsDeviceStatistic.scrollMore = true
                     this.$refs.rdsDeviceStatistic.loadingMoreRdsData = false
                     this.$refs.rdsDeviceStatistic.$refs.rdsCard.loadMoreData(false)
+                }
+                if((scroll.offsetHeight + scroll.scrollTop - scroll.scrollHeight > -1)&&(this.tabName==="jobStatistic") &&(this.$refs.rdsJobStatistic.$refs.rdsCard)&&this.$refs.rdsJobStatistic.loadingMoreRdsData===true){
+                    this.$refs.rdsJobStatistic.scrollMore = true
+                    this.$refs.rdsJobStatistic.loadingMoreRdsData = false
+                    this.$refs.rdsJobStatistic.$refs.rdsCard.loadMoreData(false)
                 }
             },
             onRdsMouseEnter(rds) {
@@ -167,7 +178,33 @@
             onRdsMouseLeave() {
                 this.tipData = utils.validate(tipDataSerializer, null)
             },
+            setRequestUrl(){
+                let ids = []
+                this.devices.forEach(item=>{
+                    ids.push(item.id)
+                })
+                ids.join(",")
+                // return this.$ajax.get("api/v1/cedar/get_data_view/?devices="+ids+"&group_by=device&page=0&start_date="+ this.propFilterDateRange[0].format("yyyy-MM-dd") +"&end_date="+ this.propFilterDateRange[1].format("yyyy-MM-dd") + " 23:59:59")
+                this.compDeviceUrl = "api/v1/cedar/get_data_view/?devices="+ ids +
+                    "&group_by=device&page=0&ordering=-fail_ratio" +
+                    "&start_date="+ this.filterDateRange[0].format("yyyy-MM-dd") +
+                    "&end_date="+ this.filterDateRange[1].format("yyyy-MM-dd")
+                this.compJobUrl = "api/v1/cedar/get_data_view/?devices="+ ids +
+                    "&group_by=job&page=0&ordering=-fail_ratio" +
+                    "&start_date="+ this.filterDateRange[0].format("yyyy-MM-dd") +
+                    "&end_date="+ this.filterDateRange[1].format("yyyy-MM-dd")
+            }
 
+
+
+        },
+        watch:{
+            filterDateRange:{
+                handler: function(val){
+                    this.setRequestUrl()
+                },
+                immediate: true
+            }
         },
         mounted(){
 

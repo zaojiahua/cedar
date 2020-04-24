@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="statistic" style="height: 200px;"></div>
+        <div :id="'statistic'+propId" style="height: 200px;"></div>
     </div>
 </template>
 
@@ -8,6 +8,19 @@
     import echarts from "echarts"
 
     export default {
+        props:{
+            propData:{
+                type:Array,
+                default:()=>{return []}
+            },
+            propFailure:{
+                type:Number,
+            },
+            propId:{
+                type:Number,
+                default:0
+            }
+        },
         data() {
             return {
                 histogram:null,
@@ -17,10 +30,10 @@
         methods:{
             setDefaultOption(){
                 let option = {
-                    color:[ "#1bbc9c","#FFAE25","#999"],
+                    color:[ "#1bbc9c","#FFAE25","#999"],   //通过>未通过>无效
                     series: [
                         {
-                            name: '访问来源',
+                            name: '',
                             type: 'pie',
                             radius: ['50%', '70%'],
                             avoidLabelOverlap: false,
@@ -36,7 +49,7 @@
                                     show: true,
                                     position: 'center',
                                     formatter: ()=>{
-                                        let cont = Number(this.failure*100).toFixed(1);
+                                        let cont = (this.propFailure*100).toFixed(0);
                                         return cont + '%\n失败率'
                                     },
                                     textStyle: {
@@ -51,19 +64,22 @@
                                     show: false
                                 }
                             },
-                            data: [
-                                {value: 15132, name: '通过'},
-                                {value: 5780, name: '未通过'},
-                                {value: 240, name: '无效'},
-                            ]
+                            data: this.propData
                         }
                     ]
                 };
                 this.histogram.setOption(option)
             }
         },
+        watch:{
+            propData:{
+                handler:function () {
+                    this.setDefaultOption();
+                }
+            }
+        },
         mounted(){
-            this.histogram = echarts.init(document.getElementById("statistic"));
+            this.histogram = echarts.init(document.getElementById("statistic"+this.propId));
 
             this.setDefaultOption();
         }

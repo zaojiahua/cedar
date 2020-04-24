@@ -3,14 +3,17 @@
         <!--   设备 统计 部分   -->
         <Card :bordered="false">
             <p style="text-align: center;font-size: 16px;font-weight: bold;padding-top: 20px;">设备统计情况</p>
-            <comp-dynamic-loading-chart :device-id="-1"></comp-dynamic-loading-chart>
+            <comp-dynamic-loading-chart :device-id="-1" :prop-url="propDeviceUrl"
+                                        @after-load-data="afterDeviceDataLoading"
+                                        @on-chart-click="onDeviceChartClick" >
+            </comp-dynamic-loading-chart>
         </Card>
         <!--   设备下的用例统计    -->
-        <Card style="margin: 16px 0;" :bordered="false">
+        <Card style="margin: 16px 0;" :bordered="false" v-if="jobUrl.length>0">
             <p style="margin-left: 20px;font-size: 14px;font-weight: bold;">用例统计</p>
-            <p style="margin-left: 20px;font-size: 12px">设备：cactus---mt6765---65a4066f7d29<a href="javascript:" style="margin-left: 10px">设备详情</a></p>
-            <div style="width: 280px;float: left;padding: 10px;margin-top: 30px">
-                <comp-statistic-pie></comp-statistic-pie>
+            <p style="margin-left: 20px;font-size: 12px">设备：{{ deviceLabel }}<a href="javascript:" style="margin-left: 10px" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(deviceId)">设备详情</a></p>
+            <div style="width: 280px;float: left;padding: 10px;margin-top: 50px">
+                <comp-statistic-pie :prop-data="pieData" :prop-failure="totalCount.failureRate" :prop-id="-1"></comp-statistic-pie>
                 <div style="font-size: 12px">
                     <Row>
                         <Col span="12">
@@ -31,23 +34,25 @@
                 </div>
             </div>
             <div style="margin-left: 280px">
-                <p style="text-align: center;font-size: 16px;font-weight: bold">dev36 用例统计情况</p>
-                <comp-dynamic-loading-chart></comp-dynamic-loading-chart>
+                <p style="text-align: center;font-size: 16px;font-weight: bold">{{ deviceLabel }} 用例统计情况</p>
+                <comp-dynamic-loading-chart ref="jobChart" :prop-width="400" :prop-url="jobUrl" :device-id="-2"
+                                            @after-load-data="afterJobDataLoading"
+                                            @on-chart-click="onJobChartClick" ></comp-dynamic-loading-chart>
             </div>
 
         </Card>
 
         <!--  RDS部分 -->
-
-        <Card :bordered="false" style="overflow:hidden;">
+        <Card :bordered="false" style="overflow:hidden;" v-if="jobUrl.length>0">
             <p style="margin-left: 20px;font-size: 14px;font-weight: bold;">数据日历</p>
-            <p style="margin-left: 20px;font-size: 12px">设备：【d1-02】    用例：【切换字体大小】<a href="javascript:" style="margin-left: 10px">用例详情</a></p>
+            <p style="margin-left: 20px;font-size: 12px">设备：【{{ deviceLabel }}】    用例：【{{ jobName }}】<a href="javascript:" style="margin-left: 10px" @click="showJobDetail=true;$refs.jobDetail.refresh(jobId)">用例详情</a></p>
             <div style="width: 280px;float: left;padding: 10px;">
                 <RadioGroup v-model="date" type="button" size="small">
                     <Radio style="width: 100px;text-align: center;" :label="1">日</Radio>
                     <Radio style="width: 100px;text-align: center;" :label="2">月</Radio>
                 </RadioGroup>
-                <DatePicker v-model="filterDate" class="index-time" type="date" open :options="options"></DatePicker>
+                <DatePicker v-show="date===1" v-model="filterDate" class="index-time" type="date" open :options="options"></DatePicker>
+                <DatePicker v-show="date===2" v-model="monthData" class="index-time" type="month" open :options="monthOptions"></DatePicker>
             </div>
             <div style="margin-left: 280px">
                 <div v-show="date===1">
@@ -64,8 +69,9 @@
                             <Tag type="dot" color="#BDC3C7">无效</Tag>
                         </p>
                     </div>
-                    <comp-rds-card ref="rdsCard"
-                                   :prop-device-id="propDevices[0].id"
+                    <comp-rds-card ref="rdsCard" v-if="jobId!==null"
+                                   :prop-device-id="deviceId"
+                                   :prop-job-id="jobId"
                                    :prop-filter-date-range="filterDateOne"
                                    :prop-result-range="resultRange"
                                    @after-load-data="afterLoadData"
@@ -83,13 +89,23 @@
                 </div>
 
                 <div v-if="date===2">
-                    <p style="text-align: center;font-size: 16px;font-weight: bold">2020年4月数据日历</p>
+                    <p style="text-align: center;font-size: 16px;font-weight: bold">{{ monthData.format("yyyy年MM月") }}数据日历</p>
                     <comp-calendar-figure :prop-month="4" @on--click="onCalendarClick"></comp-calendar-figure>
                 </div>
 
 
             </div>
         </Card>
+
+        <Spin size="large" fix v-if="showLoading"></Spin>
+
+        <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
+            <comp-device-detail ref="deviceDetail"></comp-device-detail>
+        </Modal>
+        <Modal v-model="showJobDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
+            <comp-job-detail ref="jobDetail" :prop-close-btn="false"></comp-job-detail>
+        </Modal>
+
     </div>
 </template>
 
@@ -99,37 +115,50 @@
     import CompDynamicLoadingChart from "../components/CompDynamicLoadingChart";
     import CompStatisticPie from "../components/CompStatisticPie";
     import CompCalendarFigure from "../components/CompCalendarFigure";
+    import CompDeviceDetail from "../components/CompDeviceDetail";
+    import CompJobDetail from "../components/CompJobDetail";
     import utils from "../lib/utils";
 
     export default {
-        components:{ CompRdsCard, CompDynamicLoadingChart, CompStatisticPie, CompCalendarFigure, },
+        components:{ CompRdsCard, CompDynamicLoadingChart, CompStatisticPie, CompCalendarFigure, CompDeviceDetail, CompJobDetail },
         props:{
-            propDevices:{
-                type: Array,
-                default:()=>{ return []}
-            },
             propFilterDateRange:{
                 type: Array,
                 default:()=>{ return []}
+            },
+            propDeviceUrl:{
+                type:String,
             }
         },
         data(){
             return{
                 totalCount:{
-                    failureRate:"3.6%",
+                    failureRate:0.28,
                     total:15735,
                     fail:578,
                     pass:15132,
                     invalid:24
                 },
                 date:1,
-                filterDate:new Date("2020-4-11"),
+                filterDate:this.propFilterDateRange[1],
                 filterDateOne:[],
                 resultRange:[],
                 loadingMoreRdsData:false,
                 scrollMore:false,
                 noMoreData:false,
                 options: {},
+                monthOptions: {},
+                monthData: _.cloneDeep(this.propFilterDateRange[1]),
+                showDeviceDetail:false,
+                showJobDetail:false,
+                jobUrl:"",
+                deviceId:null,
+                deviceLabel:"",
+                jobId:null,
+                jobName:"",
+                pieData:[],
+                pieFailure:null,
+                showLoading:false,
 
             }
         },
@@ -148,6 +177,54 @@
             onCalendarClick(time){
                 this.date = 1
                 this.filterDate = new Date(time)
+            },
+            afterDeviceDataLoading(id,na,success,fail,total,na_ratio,fail_ratio,label){
+                this.deviceLabel = label
+                this.totalCount = {
+                    failureRate:fail_ratio,
+                    invalidRate:na_ratio,
+                    total:total,
+                    fail:fail,
+                    pass:success,
+                    invalid:na
+                },
+                this.pieData = []
+                this.deviceId = id
+                this.pieData.push(success,fail,na)
+                if(id)
+                    this.jobUrl = "api/v1/cedar/get_data_view/?device_id=" + id +
+                    "&group_by=job&page=0&ordering=-fail_ratio" +
+                    "&start_date="+ this.propFilterDateRange[0].format("yyyy-MM-dd") +
+                    "&end_date="+ this.propFilterDateRange[1].format("yyyy-MM-dd")
+                else
+                    this.jobUrl = ""
+                this.showLoading = false
+            },
+            onDeviceChartClick(id,na,success,fail,total,na_ratio,fail_ratio,label){
+                this.deviceLabel = label
+                this.totalCount = {
+                    failureRate:fail_ratio,
+                    invalidRate:na_ratio,
+                    total:total,
+                    fail:fail,
+                    pass:success,
+                    invalid:na
+                },
+                this.pieData = []
+                this.deviceId = id
+                this.pieData.push(success,fail,na)
+                this.jobUrl = "api/v1/cedar/get_data_view/?device_id=" + id +
+                    "&group_by=job&page=0&ordering=-fail_ratio" +
+                    "&start_date="+ this.propFilterDateRange[0].format("yyyy-MM-dd") +
+                    "&end_date="+ this.propFilterDateRange[1].format("yyyy-MM-dd")
+            },
+            afterJobDataLoading(id,na,success,fail,total,na_ratio,fail_ratio,label,name){
+                this.jobId = id
+                this.jobName = name
+            },
+            onJobChartClick(id,na,success,fail,total,na_ratio,fail_ratio,label,name){
+                this.jobId = id
+                this.jobName = name
             }
 
         },
@@ -160,12 +237,35 @@
                 },
                 immediate: true
             },
+            propFilterDateRange:{
+                handler: function(val){
+                    this.filterDate = val[1]
+                    this.monthData = val[1]
+                },
+                immediate: true
+            },
+            propDeviceUrl:{
+                handler: function(){
+                    this.showLoading = true
+                },
+                immediate: true
+            }
         },
         mounted(){
             this.options.disabledDate = (date)=> {
                 //判断面板上的时间是否在选定的时间范围（start-end）外，若结果返回true，则该时间点要被禁用，返回false，则该时间点可以被选择
                 return date&&( date.valueOf() >this.propFilterDateRange[1] || date.valueOf() < this.propFilterDateRange[0]);
             }
+
+            this.monthOptions.disabledDate = (date)=> {
+                let start = _.cloneDeep(this.propFilterDateRange[0]).format("yyyy-MM-dd")
+                let str = start.split('-')
+                str[2] = "01"
+                let startMonth = str.join("-")
+                //判断面板上的时间是否在选定的时间范围（start-end）外，若结果返回true，则该时间点要被禁用，返回false，则该时间点可以被选择
+                return date&&( date.valueOf() >this.propFilterDateRange[1] || date.valueOf() < new Date(startMonth)- 86400000);
+            }
+
         }
     }
 

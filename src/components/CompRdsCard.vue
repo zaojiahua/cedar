@@ -59,6 +59,10 @@
                 type: Number,
                 default: null
             },
+            propJobId: {
+                type: Number,
+                default: null
+            },
             propDefaultTboards: {  // tboard data with id and board_name
                 type: Array,
                 default: ()=>{return []}
@@ -138,12 +142,15 @@
                     this.dataOffset = 0
                 }
                 let jobCondition = ""
-                if(this.jobs.length !== 0) {
-                    let jobIds = []
-                    this.jobs.forEach(job=>{
-                        jobIds.push(job.id)
-                    })
-                    jobCondition = "&job__in=ReefList[" + jobIds.join("{%,%}") + "]"
+                // if(this.jobs.length !== 0) {
+                //     let jobIds = []
+                //     this.jobs.forEach(job=>{
+                //         jobIds.push(job.id)
+                //     })
+                //     jobCondition = "&job__in=ReefList[" + jobIds.join("{%,%}") + "]"
+                // }
+                if(this.propJobId){
+                    jobCondition = "&job=" + this.propJobId
                 }
                 let tboardCondition = ""
                 if(this.tboards.length !== 0) {
@@ -174,8 +181,6 @@
                             // this.rdsData = this.rdsData.concat(utils.validate(getRdsSerializer, response.data).rdss)
                             this.rdsDataList.push(utils.validate(getRdsSerializer, response.data).rdss)
                         }
-
-                        console.log(this.rdsDataList)
                         return this.$ajax
                             .get("api/v1/cedar/filter_rds_validity/?" +
                                 jobCondition +
@@ -273,6 +278,11 @@
                 }
             },
             propResultRange:{
+                handler: function(){
+                    this.loadMoreData(true)
+                }
+            },
+            propJobId:{
                 handler: function(){
                     this.loadMoreData(true)
                 }
