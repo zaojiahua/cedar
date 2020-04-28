@@ -1,12 +1,18 @@
 <template>
     <div>
         <!--   设备 统计 部分   -->
-        <Card :bordered="false">
-            <p style="text-align: center;font-size: 16px;font-weight: bold;padding-top: 20px;">设备统计情况</p>
-            <comp-dynamic-loading-chart :device-id="-1" :prop-url="propDeviceUrl"
-                                        @after-load-data="afterDeviceDataLoading"
-                                        @on-chart-click="onDeviceChartClick" >
-            </comp-dynamic-loading-chart>
+        <Card :bordered="false" >
+            <div v-show="deviceId!== null">
+                <p style="text-align: center;font-size: 16px;font-weight: bold;padding-top: 20px;">设备统计情况</p>
+                <comp-dynamic-loading-chart :device-id="-1" :prop-url="propDeviceUrl"
+                                            @after-load-data="afterDeviceDataLoading"
+                                            @on-chart-click="onDeviceChartClick" >
+                </comp-dynamic-loading-chart>
+            </div>
+            <div v-show="deviceId===null" style="font-size: 12px;text-align: center">
+                暂无数据信息！
+            </div>
+
         </Card>
         <!--   设备下的用例统计    -->
         <Card style="margin: 16px 0;" :bordered="false" v-if="jobUrl.length>0">
@@ -90,7 +96,12 @@
 
                 <div v-if="date===2">
                     <p style="text-align: center;font-size: 16px;font-weight: bold">{{ monthData.format("yyyy年MM月") }}数据日历</p>
-                    <comp-calendar-figure :prop-month="4" @on--click="onCalendarClick"></comp-calendar-figure>
+                    <comp-calendar-figure :prop-month="monthData"
+                                          :prop-id="1"
+                                          :prop-device-id="deviceId"
+                                          :prop-job-id="jobId"
+                                          @on--click="onCalendarClick">
+                    </comp-calendar-figure>
                 </div>
 
 
@@ -133,11 +144,11 @@
         data(){
             return{
                 totalCount:{
-                    failureRate:0.28,
-                    total:15735,
-                    fail:578,
-                    pass:15132,
-                    invalid:24
+                    failureRate:0,
+                    total:0,
+                    fail:0,
+                    pass:0,
+                    invalid:0
                 },
                 date:1,
                 filterDate:this.propFilterDateRange[1],
@@ -152,7 +163,7 @@
                 showDeviceDetail:false,
                 showJobDetail:false,
                 jobUrl:"",
-                deviceId:null,
+                deviceId:-1,
                 deviceLabel:"",
                 jobId:null,
                 jobName:"",

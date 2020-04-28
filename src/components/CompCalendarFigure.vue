@@ -1,5 +1,5 @@
 <template>
-    <div :id="'calendar'+propMonth" style="height:500px;"></div>
+    <div :id="'calendar'+propId" style="height:500px;"></div>
 </template>
 
 
@@ -8,44 +8,27 @@
 
     export default {
         props:{
+            propId:{
+                type:Number
+            },
             propMonth:{
+                type:Date
+            },
+            propDeviceId:{
+                type:Number
+            },
+            propJobId:{
                 type:Number
             }
         },
         data(){
             return{
                 histogram:null,
-                rdsDataCont:[
-                    ['2020-4-1',30],
-                    ['2020-4-2',520],
-                    ['2020-4-3',350],
-                    ['2020-4-4',450],
-                    ['2020-4-5',550],
-                    ['2020-4-6',650],
-                    ['2020-4-7',570],
-                    ['2020-4-8',509],
-                    ['2020-4-9',150],
-                    ['2020-4-10',20],
-                    ['2020-4-11',30],
-                    ['2020-4-12',40],
-                    ['2020-4-13',60],
-                    ['2020-4-14',250],
-                    ['2020-4-15',530],
-                    ['2020-4-16',500],
-                    ['2020-4-17',756],
-                    ['2020-4-18',50],
-                    ['2020-4-19',1150],
-                    ['2020-4-20',190],
-                    ['2020-4-21',200],
-                    ['2020-4-22',300],
-                    ['2020-4-23',240],
-                    ['2020-4-24',146],
-                    ['2020-4-25',914],
-                    ['2020-4-26',140],
-                    ['2020-4-27',40],
-                    ['2020-4-28',40],
-                    ['2020-4-29',10],
-                ]
+                rdsDataCont:[],
+                startTime:null,
+                endTime:null,
+                visualMapPieces:[],
+
 
             }
         },
@@ -62,8 +45,7 @@
                     visualMap: {     //数据的映射（条状指示）
                         type: "piecewise",
                         show: true,
-                        min: 0,
-                        max: 1000,
+                        pieces: this.visualMapPieces,
                         // calculable: true,   //拖拽手柄
                         seriesIndex: [1],
                         orient: 'horizontal',
@@ -93,14 +75,14 @@
                         monthLabel: {
                             show: false
                         },
-                        range: '2020-04'     //参数输入-----++++++++
+                        range:this.propMonth.format("yyyy-MM")     //参数输入-----++++++++
                     }],
 
                     series: [{
                         type: 'custom',
                         coordinateSystem: 'calendar',     //该系列使用的坐标系
                         renderItem:this.renderItem,
-                        data: this.getVirtulData(2020)      //   年份参数输入+++++
+                        data: this.getVirtulData(this.propMonth.getFullYear())      //   年份参数输入+++++
                     },
                     {
                         name: '失败数',
@@ -145,13 +127,73 @@
                 }
                 return data;
             },
+            applyDataIntoGraph(){
+                this.histogram.setOption(
+                    {
+                        visualMap: {
+                            pieces: this.visualMapPieces
+                        },
+                        calendar:[{
+                            range:this.propMonth.format("yyyy-MM")     //参数输入-----++++++++
+                        }],
+                        series: [
+                            {
+                                data: this.getVirtulData(this.propMonth.getFullYear())      //   年份参数输入+++++
+                            },
+                            {
+                                data: this.rdsDataCont
+                            }
+                        ]
+                    }
+                );
+            },
+            //一个月的最后一天
+            daysInMonth (month, year) {
+                return new Date(year, month, 0).format("yyyy-MM-dd");
+            },
+            //获取当月数据
+            getMonthData(){
+                this.$ajax.get("api/v1/cedar/get_data_view_calendar/?start_date="+ this.startTime +
+                    "&end_date=" + this.endTime +
+                    "&target=fail"+
+                    "&devices=" + this.propDeviceId +
+                    "&jobs="+ this.propJobId
+                ).then(response=>{
+                    console.log(response)
+                    this.rdsDataCont = response.data.data
+                    this.visualMapPieces = []
+                    response.data.intervals.forEach((item)=>{
+                        this.visualMapPieces.push({min: item[0], max: item[1]})
+                    })
+
+                    this.applyDataIntoGraph()
+                })
+            },
             onResize(){
                 this.histogram.resize()
             },
 
         },
+        watch:{
+            propMonth:{
+                handler: function(val){
+                    let year = val.getFullYear()
+                    let month = val.getMonth()+1
+                    this.startTime = val.format("yyyy-MM-dd")
+                    this.endTime = this.daysInMonth (month, year)
+                    this.getMonthData()
+                },
+                immediate: true
+            }
+        },
         mounted(){
-            this.histogram = echarts.init(document.getElementById("calendar"+this.propMonth));
+            let year = this.propMonth.getFullYear()
+            let month = this.propMonth.getMonth()+1
+            this.startTime = this.propMonth.format("yyyy-MM-dd")
+            this.endTime = this.daysInMonth (month, year)
+
+            this.histogram = echarts.init(document.getElementById("calendar"+this.propId));
+            this.getMonthData()
             this.setDefaultOption()
 
             //窗口大小监听

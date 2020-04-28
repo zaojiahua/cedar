@@ -2,11 +2,16 @@
     <div>
         <!--   用例 统计 部分   -->
         <Card :bordered="false">
-            <p style="text-align: center;font-size: 16px;font-weight: bold;padding-top: 20px;">用例统计情况</p>
-            <comp-dynamic-loading-chart :device-id="-11" :prop-url="propJobUrl"
-                                        @after-load-data="afterJobDataLoading"
-                                        @on-chart-click="onJobChartClick" >
-            </comp-dynamic-loading-chart>
+            <div v-show="jobId!== null ">
+                <p style="text-align: center;font-size: 16px;font-weight: bold;padding-top: 20px;">用例统计情况</p>
+                <comp-dynamic-loading-chart :device-id="-11" :prop-url="propJobUrl"
+                                            @after-load-data="afterJobDataLoading"
+                                            @on-chart-click="onJobChartClick" >
+                </comp-dynamic-loading-chart>
+            </div>
+            <div v-show="jobId===null" style="font-size: 12px;text-align: center">
+                暂无数据信息！
+            </div>
         </Card>
         <!--   用例下的设备统计    -->
         <Card style="margin: 16px 0;" :bordered="false" v-if="jobUrl.length>0">
@@ -90,7 +95,12 @@
 
                 <div v-if="date===2">
                     <p style="text-align: center;font-size: 16px;font-weight: bold">{{ monthData.format("yyyy年MM月") }}数据日历</p>
-                    <comp-calendar-figure :prop-month="4" @on--click="onCalendarClick"></comp-calendar-figure>
+                    <comp-calendar-figure :prop-month="monthData"
+                                          :prop-id="-1"
+                                          :prop-device-id="deviceId"
+                                          :prop-job-id="jobId"
+                                          @on--click="onCalendarClick">
+                    </comp-calendar-figure>
                 </div>
             </div>
         </Card>
@@ -127,6 +137,10 @@
             },
             propJobUrl:{
                 type:String,
+            },
+            propDeviceIds:{
+                type:String,
+                default:""
             }
         },
         data(){
@@ -153,7 +167,7 @@
                 jobUrl:"",
                 deviceId:null,
                 deviceLabel:"",
-                jobId:null,
+                jobId:-1,
                 jobName:"",
                 pieData:[],
                 pieFailure:null,
@@ -192,6 +206,7 @@
                 this.pieData.push(success,fail,na)
                 if(id)
                     this.jobUrl = "api/v1/cedar/get_data_view/?job_id=" + id +
+                        "&devices="+ this.propDeviceIds +
                         "&group_by=device&page=0&ordering=-fail_ratio" +
                         "&start_date="+ this.propFilterDateRange[0].format("yyyy-MM-dd") +
                         "&end_date="+ this.propFilterDateRange[1].format("yyyy-MM-dd")
@@ -213,6 +228,7 @@
                 this.pieData = []
                 this.pieData.push(success,fail,na)
                 this.jobUrl = "api/v1/cedar/get_data_view/?job_id=" + id +
+                    "&devices="+ this.propDeviceIds +
                     "&group_by=device&page=0&ordering=-fail_ratio" +
                     "&start_date="+ this.propFilterDateRange[0].format("yyyy-MM-dd") +
                     "&end_date="+ this.propFilterDateRange[1].format("yyyy-MM-dd")
