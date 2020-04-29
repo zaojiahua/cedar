@@ -94,7 +94,7 @@
                 </div>
 
                 <div v-if="date===2">
-                    <p style="text-align: center;font-size: 16px;font-weight: bold">{{ monthData.format("yyyy年MM月") }}数据日历</p>
+                    <p style="text-align: center;font-size: 16px;font-weight: bold">{{ monthData.format("yyyy年MM月") }}失败数据</p>
                     <comp-calendar-figure :prop-month="monthData"
                                           :prop-id="-1"
                                           :prop-device-id="deviceId"
@@ -152,7 +152,7 @@
                     pass:15132,
                     invalid:24
                 },
-                date:1,
+                date:2,
                 filterDate:this.propFilterDateRange[1],
                 filterDateOne:[],
                 resultRange:[],

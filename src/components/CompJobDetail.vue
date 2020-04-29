@@ -1,6 +1,6 @@
 <template>
     <Card title="用例详细信息" dis-hover>
-        <Form :label-width="80">
+        <Form :label-width="90">
             <FormItem v-model="jobInfo">
                 <b slot="label">ID:</b>
                 <Input v-model="jobInfo.id" disabled class="disabled-input"></Input>

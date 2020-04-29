@@ -1,6 +1,6 @@
 <template>
     <Card :title="device.device_name + ' (' + device.device_label + ')'" style="position: relative;" dis-hover>
-        <Form :model="device" :label-width="80">
+        <Form :model="device" :label-width="90">
             <FormItem>
                 <b slot="label">ID</b>
                 <Input v-model="device.id" :disabled="true" class="disabled-input"></Input>

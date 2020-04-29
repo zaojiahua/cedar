@@ -53,13 +53,8 @@
                         bottom: 20,
                         inRange: {    //表示 目标系列 的视觉样式 和 visualMap-piecewise 共有的视觉样式
                             color: ['#e0ffff', '#006edd'],
-                            opacity: 0.3
+                            colorAlpha: 0.5
                         },
-                        controller: {     //表示 visualMap-piecewise 本身的视觉样式，会覆盖共有的视觉样式。
-                            inRange: {
-                                opacity: 0.5
-                            }
-                        }
                     },
 
                     calendar: [{
@@ -110,8 +105,8 @@
                             x: cellPoint[0] - cellWidth / 2 + 15,
                             y: cellPoint[1] - cellHeight / 2 + 15,
                             text: echarts.format.formatTime('dd', api.value(0)),
-                            fill: '#666',
-                            textFont: api.font({fontSize: 14})
+                            fill: '#333',
+                            textFont: api.font({fontSize: 14}),
                         }
                     }]
                 };
@@ -181,6 +176,12 @@
                     let month = val.getMonth()+1
                     this.startTime = val.format("yyyy-MM-dd")
                     this.endTime = this.daysInMonth (month, year)
+                    this.getMonthData()
+                },
+                immediate: true
+            },
+            propJobId:{
+                handler: function(val){
                     this.getMonthData()
                 },
                 immediate: true

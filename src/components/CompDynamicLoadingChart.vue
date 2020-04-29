@@ -1,10 +1,11 @@
 <template>
     <div style="position: relative">
         <p style="position: absolute;top: 20px;left: 0;right: 0;text-align: center">
-            <Icon type="ios-git-commit" size="20" style="color: #D04B40"/><span style="margin-left: 5px">失败率</span>
-            <span style="display: inline-block;width: 25px;height: 14px;border-radius: 4px;background: #28d290;margin: 0 5px 0 50px"></span><span>失败数</span>
+            <Icon type="ios-git-commit" size="20" style="color: #2f83e4"/><span style="margin-left: 5px">失败率</span>
+            <span style="display: inline-block;width: 25px;height: 14px;border-radius: 4px;background: #81e1ff;margin: 0 5px 0 50px"></span><span>失败数</span>
         </p>
         <div :id="'device'+deviceId" :style="{ height: propWidth+'px'}"></div>
+        <p style="text-align: center;margin-top: 16px;font-size: 12px;color: #aaa">点击柱状图切换数据，左右拖拽加载更多数据</p>
     </div>
 </template>
 
@@ -111,15 +112,22 @@
                                 + '失败率：' + obj[0].value[1] + '%<br>'
                         }
                     },
-                    grid:{
-                        bottom:"120px",
-                    },
+                    // grid:{
+                    //     bottom:"50px",
+                    // },
                     xAxis: {
                         type: "category",
                         axisLabel: {
                             rotate: 50,
-                            interval: 0
-                        }
+                            interval: 0,
+                            formatter: function (value) {   //关键代码
+                                let res = value
+                                if (res.length > 10) {
+                                    res = res.substring(0, 9) + '..'
+                                }
+                                return res
+                            }
+                        },
                     },
                     yAxis: [
                         {
@@ -137,7 +145,7 @@
                             show: true
                         },
                     ],
-                    color:["#D04B40","#28d290"],
+                    color:["#2f83e4","#81e1ff"],
                     barMaxWidth: 40,
                     series:[
                         {
@@ -306,9 +314,9 @@
                                 normal:{
                                     color: param =>{
                                         if((this.prevIndex === param.dataIndex) ){
-                                            return '#ff9100';
+                                            return '#ffb381';
                                         }else{
-                                            return '#28d290';
+                                            return '#81e1ff';
                                         }
                                     }
                                 }
