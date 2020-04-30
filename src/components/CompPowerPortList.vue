@@ -3,7 +3,7 @@
         <Drawer width="50" v-model="showPowerPortDetail" :closable="false" :draggable="true">
             <comp-power-port-detail ref="detail"></comp-power-port-detail>
         </Drawer>
-        <Table :columns="powerPortColumns" :data="powerPorts" @on-row-click="onRowClick"></Table>
+        <Table :columns="powerPortColumns" :data="powerPorts" @on-row-click="onRowClick" border></Table>
     </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Table :columns="modelColumn" :data="data" @on-row-click="onRowClick"></Table>
+        <Table :columns="modelColumn" :data="data" @on-row-click="onRowClick" border></Table>
         <Drawer width="50" v-model="showModeDetail" :closable="false" :draggable="true">
             <comp-hard-ware-detail ref="detail" @after-remove-module="OnAfterRemoveModule"></comp-hard-ware-detail>
         </Drawer>
