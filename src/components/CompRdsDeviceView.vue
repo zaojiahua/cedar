@@ -69,15 +69,15 @@
                                                    @rds-mouse-leave="onRdsMouseLeave">
                         </comp-rds-device-statistic>
                     </TabPane>
-                    <TabPane label="用例统计" name="jobStatistic" tab="inside">
-                        <comp-rds-job-statistic ref="rdsJobStatistic"
-                                                   :prop-filter-date-range="filterDateRange"
-                                                   :prop-job-url="compJobUrl"
-                                                   :prop-device-ids="ids"
-                                                   @rds-mouse-enter="onRdsMouseEnter"
-                                                   @rds-mouse-leave="onRdsMouseLeave">
-                        </comp-rds-job-statistic>
-                    </TabPane>
+                    <!--<TabPane label="用例统计" name="jobStatistic" tab="inside">-->
+                        <!--<comp-rds-job-statistic ref="rdsJobStatistic"-->
+                                                   <!--:prop-filter-date-range="filterDateRange"-->
+                                                   <!--:prop-job-url="compJobUrl"-->
+                                                   <!--:prop-device-ids="ids"-->
+                                                   <!--@rds-mouse-enter="onRdsMouseEnter"-->
+                                                   <!--@rds-mouse-leave="onRdsMouseLeave">-->
+                        <!--</comp-rds-job-statistic>-->
+                    <!--</TabPane>-->
                 </Tabs>
             </div>
         </div>
