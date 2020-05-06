@@ -48,7 +48,7 @@
         </Card>
 
         <!--  RDS部分 -->
-        <Card :bordered="false" style="overflow:hidden;" v-if="jobUrl.length>0">
+        <Card :bordered="false" style="overflow:hidden;" v-if="deviceId!==null">
             <p style="margin-left: 20px;font-size: 14px;font-weight: bold;">数据日历</p>
             <p style="margin-left: 20px;font-size: 12px">用例：【{{ jobName }}】    设备：【{{ deviceLabel }}】<a href="javascript:" style="margin-left: 10px" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(deviceId)">设备详情</a></p>
             <div style="width: 280px;float: left;padding: 10px;">
