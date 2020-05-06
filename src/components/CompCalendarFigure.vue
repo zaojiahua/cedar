@@ -154,7 +154,6 @@
                     "&devices=" + this.propDeviceId +
                     "&jobs="+ this.propJobId
                 ).then(response=>{
-                    console.log(response)
                     this.rdsDataCont = response.data.data
                     this.visualMapPieces = []
                     response.data.intervals.forEach((item)=>{
@@ -174,7 +173,7 @@
                 handler: function(val){
                     let year = val.getFullYear()
                     let month = val.getMonth()+1
-                    this.startTime = val.format("yyyy-MM-dd")
+                    this.startTime = new Date(year,month-1,1).format("yyyy-MM-dd")
                     this.endTime = this.daysInMonth (month, year)
                     this.getMonthData()
                 },
@@ -183,6 +182,7 @@
             propJobId:{
                 handler: function(val){
                     this.getMonthData()
+                    this.getMonthData()
                 },
                 immediate: true
             }
@@ -190,7 +190,7 @@
         mounted(){
             let year = this.propMonth.getFullYear()
             let month = this.propMonth.getMonth()+1
-            this.startTime = this.propMonth.format("yyyy-MM-dd")
+            this.startTime = new Date(year,month-1,1).format("yyyy-MM-dd")
             this.endTime = this.daysInMonth (month, year)
 
             this.histogram = echarts.init(document.getElementById("calendar"+this.propId));
