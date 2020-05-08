@@ -269,7 +269,7 @@
         mounted(){
             this.options.disabledDate = (date)=> {
                 //判断面板上的时间是否在选定的时间范围（start-end）外，若结果返回true，则该时间点要被禁用，返回false，则该时间点可以被选择
-                return date&&( date.valueOf() >this.propFilterDateRange[1] || date.valueOf() < this.propFilterDateRange[0]- 86400000);
+                return date&&( date.valueOf() >this.propFilterDateRange[1] || date.valueOf() < this.propFilterDateRange[0]);
             }
 
             this.monthOptions.disabledDate = (date)=> {
