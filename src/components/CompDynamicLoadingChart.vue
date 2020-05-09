@@ -52,6 +52,10 @@
 
                 prevIndex:null, //当前点击的数据是哪一笔
                 nextUrl:null,
+                firstTimer: null,
+                lastTimer: null,
+                loadingTimer: null,
+                timerStep: 80
             }
         },
         methods:{
@@ -201,11 +205,21 @@
             },
             loadNextDataIntoGraph(){
                 if(this.nextUrl===null&&this.nextDataCache["xAxis"].length===0){
-                    this.$Message.info("已是最后一笔数据，没有更多了 ")
+                    if (this.lastTimer) {
+                        clearTimeout(this.lastTimer)
+                    }
+                    this.lastTimer = setTimeout(() => {
+                        this.$Message.info("已是最后一笔数据，没有更多了 ")
+                    }, this.timerStep)
                     return
                 }
                 if(this.dataLock&&this.nextDataCache["xAxis"].length===0){
-                    this.$Message.info("正在请求数据，请稍等！")
+                    if (this.loadingTimer) {
+                        clearTimeout(this.loadingTimer)
+                    }
+                    this.loadingTimer = setTimeout(() => {
+                        this.$Message.info("正在请求数据，请稍等！")
+                    }, this.timerStep)
                     return
                 }
                 let loadLen = this.batchSize
@@ -248,8 +262,13 @@
             loadPreDataIntoGraph(){
                 let loadLen = this.batchSize
                 if(this.preDataCache["xAxis"].length===0){
-                    this.$Message.info("已是第一笔数据")
-                    return
+                    if (this.firstTimer) {
+                        clearTimeout(this.firstTimer)
+                    }
+                    this.firstTimer = setTimeout(() => {
+                        this.$Message.info("已是第一笔数据")
+                        return
+                    }, this.timerStep)
                 }
                 if(this.preDataCache["xAxis"].length<this.batchSize){
                     loadLen = this.preDataCache["xAxis"].length

@@ -123,7 +123,7 @@
             return{
                 compDeviceUrl:"",
                 compJobUrl:"",
-                filterDateRange:[new Date(new Date().getTime()-1000*60*60*24*7), new Date()],
+                filterDateRange:[new Date(new Date(new Date().getTime()-24*60*60*1000*6).setHours(0,0,0,0)), new Date()],
                 devices: [],
                 showSelectDeviceModal:false,
                 deviceSelection:[],
