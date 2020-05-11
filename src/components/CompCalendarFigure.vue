@@ -77,7 +77,7 @@
                         type: 'custom',
                         coordinateSystem: 'calendar',     //该系列使用的坐标系
                         renderItem:this.renderItem,
-                        // data: this.getVirtulData(this.propMonth.getFullYear())      //   年份参数输入+++++
+                        data: this.getVirtulData(this.propMonth.getFullYear())      //   年份参数输入+++++
                     },
                     {
                         name: '失败数',
