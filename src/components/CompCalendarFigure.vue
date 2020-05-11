@@ -182,6 +182,11 @@
             propJobId:{
                 handler: function(val){
                     this.getMonthData()
+                },
+                immediate: true
+            },
+            propDeviceId:{
+                handler: function(val){
                     this.getMonthData()
                 },
                 immediate: true
