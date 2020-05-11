@@ -12,7 +12,7 @@
             </AutoComplete>
             <Button style="height: 32px;" @click="jobSearch(keyword)" type="primary">search</Button>
         </Row>
-        <Table ref="table" :columns="columns" :data="data" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
+        <Table ref="table" border :columns="columns" :data="data" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="counter">
                 <InputNumber :min="1" v-model="data[index].counter"></InputNumber>
             </template>

@@ -250,6 +250,7 @@
             },
             downloadLog(){
                 window.open(this.baseUrl+this.path)
+                // document.location.href = this.baseUrl+this.path
             },
             viewOriginalImg(imgId,index){
                 this.imgIndex = index

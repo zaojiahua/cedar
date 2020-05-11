@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import iView from 'iview'
+import iView from 'view-design'
 import './theme/classic.less'
 import axios from 'axios'
 import lodash from 'lodash'
