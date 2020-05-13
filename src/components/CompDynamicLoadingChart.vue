@@ -1,8 +1,8 @@
 <template>
     <div style="position: relative">
         <p style="position: absolute;top: 20px;left: 0;right: 0;text-align: center">
-            <Icon type="ios-git-commit" size="20" style="color: #2f83e4"/><span style="margin-left: 5px">失败率</span>
-            <span style="display: inline-block;width: 25px;height: 14px;border-radius: 4px;background: #81e1ff;margin: 0 5px 0 50px"></span><span>失败数</span>
+            <Icon type="ios-git-commit" size="20" style="color: #2f83e4"/><span style="margin-left: 5px">{{ propType===1 ? "失败率" : "无效率" }}</span>
+            <span style="display: inline-block;width: 25px;height: 14px;border-radius: 4px;background: #81e1ff;margin: 0 5px 0 50px"></span><span>{{ propType===1 ? "失败数" : "无效数" }}</span>
         </p>
         <div :id="'device'+deviceId" :style="{ height: propWidth+'px'}"></div>
         <p style="text-align: center;margin-top: 16px;font-size: 12px;color: #aaa">点击柱状图切换数据，左右拖拽加载更多数据</p>
@@ -25,6 +25,10 @@
             propUrl:{
                 type:String,
                 default:""
+            },
+            propType:{
+                type:Number,
+                default:1   //1：失败 2：无效
             }
 
         },
@@ -75,8 +79,13 @@
                     this.xAxis = [],this.data1=[],this.data2=[]
                     response.data.data.forEach(item=>{
                         this.xAxis.push(item[2])
-                        this.data1.push([item[2],item[5],item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
-                        this.data2.push([item[2],(item[8]*100).toFixed(0),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                        if(this.propType===1){
+                            this.data1.push([item[2],item[5],item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                            this.data2.push([item[2],(item[8]*100).toFixed(0),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                        }else if(this.propType===2){
+                            this.data1.push([item[2],item[3],item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                            this.data2.push([item[2],(item[7]*100).toFixed(0),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                        }
                     })
                     this.nextUrl = response.data.next
 
@@ -104,6 +113,10 @@
                 this.loadData()
             },
             setDefaultOption(){
+                let type = ["失败率","失败数"]
+                if(this.propType===2)
+                    type = ["无效率","无效数"]
+
                 // 指定图表的配置项和数据
                 let option = {
                     tooltip:{
@@ -112,8 +125,8 @@
                             return obj[1].value[0] + '<br>'
                                 + 'ID：' + obj[1].value[2] + '<br>'
                                 + '自定义名称：' + obj[1].value[3] + '<br>'
-                                + '失败数：' + obj[1].value[1] + '<br>'
-                                + '失败率：' + obj[0].value[1] + '%<br>'
+                                + type[1] + '：' + obj[1].value[1] + '<br>'
+                                + type[0] + '：' + obj[0].value[1] + '%<br>'
                         }
                     },
                     // grid:{
@@ -136,7 +149,7 @@
                     yAxis: [
                         {
                             type: 'value',
-                            name: '失败率',
+                            name: type[0],
                             // min: 0,
                             // max: 100,
                             axisLabel: {
@@ -145,7 +158,7 @@
                         },
                         {
                             type: "value",
-                            name: '失败数',
+                            name: type[1],
                             show: true
                         },
                     ],
@@ -153,11 +166,11 @@
                     barMaxWidth: 40,
                     series:[
                         {
-                            name:'失败率',
+                            name:type[0],
                             type:'line',
                         },
                         {
-                            name:'失败数',
+                            name:type[1],
                             yAxisIndex: 1,
                             type:'bar',
                         },
@@ -191,8 +204,14 @@
                     let xAxis=[],data1=[],data2=[]
                     response.data.data.forEach(item=>{
                         xAxis.push(item[2])
-                        data1.push([item[2],item[5],item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
-                        data2.push([item[2],(item[8]*100).toFixed(0),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                        if(this.propType===1){
+                            data1.push([item[2],item[5],item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                            data2.push([item[2],(item[8]*100).toFixed(0),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                        }else if(this.propType===2){
+                            data1.push([item[2],item[3],item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                            data2.push([item[2],(item[7]*100).toFixed(0),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                        }
+
                     })
                     this.nextDataCache['xAxis'] = this.nextDataCache['xAxis'].concat(xAxis);
                     this.nextDataCache['data1'] = this.nextDataCache['data1'].concat(data1);
@@ -201,6 +220,9 @@
                     this.nextUrl = response.data.next
 
                     this.dataLock = false;
+                }).catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                    this.$Message.warning("数据获取失败")
                 })
             },
             loadNextDataIntoGraph(){
@@ -348,7 +370,7 @@
         watch:{
             propUrl:{
                 handler: function(val){
-                    this.loadData()
+                    this.getDefaultData()
                 },
             }
         },

@@ -5,6 +5,7 @@
 
 <script>
     import echarts from "echarts"
+    import config from "../lib/config";
 
     export default {
         props:{
@@ -19,6 +20,10 @@
             },
             propJobId:{
                 type:Number
+            },
+            propType:{
+                type:Number,
+                default:1   //1：失败 2：无效
             }
         },
         data(){
@@ -34,12 +39,15 @@
         },
         methods:{
             setDefaultOption(){
+                let type = "失败数"
+                if(this.propType===2)
+                    type = "无效数"
                 // 指定图表的配置项和数据
                 let option = {
                     tooltip: {
                         formatter: function (params) {
                             if(params.seriesIndex===1)
-                                return '失败数: ' + params.value[1];
+                                return type + ": " + params.value[1];
                         }
                     },
                     visualMap: {     //数据的映射（条状指示）
@@ -77,10 +85,10 @@
                         type: 'custom',
                         coordinateSystem: 'calendar',     //该系列使用的坐标系
                         renderItem:this.renderItem,
-                        // data: this.getVirtulData(this.propMonth.getFullYear())      //   年份参数输入+++++
+                        data: this.getVirtulData(this.propMonth.getFullYear())      //   年份参数输入+++++
                     },
                     {
-                        name: '失败数',
+                        name: type,
                         type: 'heatmap',
                         coordinateSystem: 'calendar',
                         data: this.rdsDataCont
@@ -148,9 +156,13 @@
             },
             //获取当月数据
             getMonthData(){
+                this.histogram.showLoading();
+                let target= "fail"
+                if(this.propType===2)
+                    target= "na"
                 this.$ajax.get("api/v1/cedar/get_data_view_calendar/?start_date="+ this.startTime +
                     "&end_date=" + this.endTime +
-                    "&target=fail"+
+                    "&target="+ target +
                     "&devices=" + this.propDeviceId +
                     "&jobs="+ this.propJobId
                 ).then(response=>{
@@ -159,8 +171,12 @@
                     response.data.intervals.forEach((item)=>{
                         this.visualMapPieces.push({min: item[0], max: item[1]})
                     })
-
                     this.applyDataIntoGraph()
+                    this.histogram.hideLoading();
+                }).catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                    this.$Message.warning("月历数据获取失败")
+                    this.histogram.hideLoading();
                 })
             },
             onResize(){
@@ -177,19 +193,23 @@
                     this.endTime = this.daysInMonth (month, year)
                     this.getMonthData()
                 },
-                immediate: true
+                // immediate: true
             },
             propJobId:{
                 handler: function(val){
                     this.getMonthData()
                 },
-                immediate: true
             },
             propDeviceId:{
                 handler: function(val){
                     this.getMonthData()
                 },
-                immediate: true
+            },
+            propType:{
+                handler: function(val){
+                    this.getMonthData()
+                    this.setDefaultOption()
+                },
             }
         },
         mounted(){
@@ -199,6 +219,7 @@
             this.endTime = this.daysInMonth (month, year)
 
             this.histogram = echarts.init(document.getElementById("calendar"+this.propId));
+            this.histogram.showLoading();
             this.getMonthData()
             this.setDefaultOption()
 
@@ -206,7 +227,6 @@
             window.addEventListener('resize', this.onResize);
             //监听柱状图点击事件
             this.histogram.on('click',params=> {
-                console.log(params)
                 if(params.seriesIndex===1)
                     this.$emit("on--click",params.data[0])
             })
