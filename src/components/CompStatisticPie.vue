@@ -16,9 +16,16 @@
             propFailure:{
                 type:Number,
             },
+            propInvalidRate:{
+                type:Number,
+            },
             propId:{
                 type:Number,
                 default:0
+            },
+            propType:{
+                type:Number,
+                default:1   //1：失败 2：无效
             }
         },
         data() {
@@ -29,6 +36,9 @@
         },
         methods:{
             setDefaultOption(){
+                let str = "失败率"
+                if(this.propType===2)
+                    str = "无效率"
                 let option = {
                     color:[ "#1bbc9c","#FFAE25","#999"],   //通过>未通过>无效
                     series: [
@@ -50,7 +60,9 @@
                                     position: 'center',
                                     formatter: ()=>{
                                         let cont = (this.propFailure*100).toFixed(0);
-                                        return cont + '%\n失败率'
+                                        if(this.propType===2)
+                                            cont = (this.propInvalidRate*100).toFixed(0);
+                                        return cont + '%\n' + str
                                     },
                                     textStyle: {
                                         fontSize: '16',
@@ -76,6 +88,11 @@
                 handler:function () {
                     this.setDefaultOption();
                 }
+            },
+            propType:{
+                handler: function(val){
+                    this.setDefaultOption();
+                },
             }
         },
         mounted(){
