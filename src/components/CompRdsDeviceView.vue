@@ -9,7 +9,7 @@
 
         <Row v-show="devices.length === 0" style="margin-bottom: 16px;">
             <DatePicker v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
-            <p style="color: rgb(194, 194, 194);margin-top: 10px;">默认选择最近三天的数据 </p>
+            <p style="color: rgb(194, 194, 194);margin-top: 10px;">默认选择最近七天的数据 </p>
         </Row>
         <Row v-show="devices.length === 0" style="margin-top: 100px;text-align: center">
             <Button type="primary" @click="openDeviceList">选取设备</Button>
