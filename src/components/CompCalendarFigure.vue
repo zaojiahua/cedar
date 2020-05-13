@@ -24,7 +24,11 @@
             propType:{
                 type:Number,
                 default:1   //1：失败 2：无效
-            }
+            },
+            propFilterDateRange:{
+                type: Array,
+                default:()=>{ return []}
+            },
         },
         data(){
             return{
@@ -165,10 +169,14 @@
                     "&target="+ target +
                     "&devices=" + this.propDeviceId +
                     "&jobs="+ this.propJobId
-                ).then(response=>{
-                    this.rdsDataCont = response.data.data
+                ).then(({data: {data,intervals}})=>{
+                    this.rdsDataCont = data.filter((item) => {
+                        let startDate = new Date(this.propFilterDateRange[0]).format('yyyy-MM-dd')
+                        let endDate = new Date(this.propFilterDateRange[1]).format('yyyy-MM-dd')
+                        return item[0] >= startDate && item[0] <= endDate
+                    })
                     this.visualMapPieces = []
-                    response.data.intervals.forEach((item)=>{
+                    intervals.forEach((item)=>{
                         this.visualMapPieces.push({min: item[0], max: item[1]})
                     })
                     this.applyDataIntoGraph()

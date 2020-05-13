@@ -100,6 +100,7 @@
                                           :prop-type="propType"
                                           :prop-device-id="deviceId"
                                           :prop-job-id="jobId"
+                                          :prop-filter-date-range="propFilterDateRange"
                                           @on--click="onCalendarClick">
                     </comp-calendar-figure>
                 </div>
