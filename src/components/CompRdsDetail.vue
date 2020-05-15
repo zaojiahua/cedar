@@ -73,6 +73,11 @@
             <br>
             <img style="margin: 5px; cursor: pointer;" v-for="(img,index) in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name @click="viewOriginalImg(img.id,index)">
         </div>
+        <div style="color: #515a6e;padding-left: 48px;font-size: 12px;margin-top: 16px" v-show="isReferenceShow">
+            <b style="cursor: default">查看查参考图片：</b><b style="cursor: default">共 {{jobResFile.length}} 张</b>
+            <br>
+            <img style="margin: 5px; cursor: pointer;max-width: 200px" v-for="(img,index) in jobResFile" :key="index" :src=baseUrl+img.file :alt=img.name>
+        </div>
         <Spin size="large" fix v-if="showSpin"></Spin>
         <Modal v-model="showImgModal" :fullscreen="true" footer-hide style="text-align: center">
             <Icon type="ios-arrow-dropleft-circle" size="60"  style="position: fixed;top: 45%;left: 5%;cursor: pointer;opacity: 0.4" @click="prevBtn"/>
@@ -156,13 +161,16 @@
                 logName:"",
                 path:"",
                 imgIndex:null,
+                jobResFile:[],
+                isReferenceShow:false
             }
         },
         methods:{
-            refresh(rdsId){
+            refresh(rdsId,jobId){
                 this.showSpin=true;
                 this.showLogTip=false;
                 this.showScreenTip=false;
+                this.isReferenceShow = false;
                 this.$ajax
                     .get("api/v1/cedar/rds/"+rdsId+"/?fields="+
                         "id,"+
@@ -187,8 +195,10 @@
                             this.rdsInfo.result = "通过";
                         }else if(this.rdsInfo.job_assessment_value==="1"){
                             this.rdsInfo.result = "未通过";
+                            this.isReferenceShow = true
                         }else{
                             this.rdsInfo.result = "无效";
+                            this.isReferenceShow = true
                         }
                         if(this.rdsInfo.rdslog.length===0)
                             this.showLogTip=true;
@@ -205,6 +215,20 @@
                     })
                     .catch(error=>{
                         this.showSpin=false;
+                        if (config.DEBUG) console.log(error)
+                        let errorMsg = "";
+                        if (error.response.status >= 500) {
+                            errorMsg = "服务器错误！"
+                        } else {
+                            errorMsg = "数据读取失败！"
+                        }
+                        this.$Message.error(errorMsg)
+                    })
+                this.$ajax.get("api/v1/cedar/job_res_file/?type=png&job_id="+jobId)
+                    .then(response=>{
+                        this.jobResFile = response.data.res_file
+                    })
+                    .catch(error=>{
                         if (config.DEBUG) console.log(error)
                         let errorMsg = "";
                         if (error.response.status >= 500) {
