@@ -245,7 +245,7 @@
             },
             onRdsBoxClick(rds,cardIndex,rdsIndex){
                 this.showRdsDetail = true
-                this.$refs.rdsDetail.refresh(rds.id)
+                this.$refs.rdsDetail.refresh(rds.id,rds.job.id)
                 this.rdsIndex=rdsIndex;
                 this.cardIndex = cardIndex;
             },
