@@ -4,7 +4,7 @@
         <Card :bordered="false">
             <div v-show="jobId!== null ">
                 <p style="text-align: center;font-size: 16px;font-weight: bold;padding-top: 20px;">用例统计情况</p>
-                <comp-dynamic-loading-chart :device-id="-11" :prop-url="propJobUrl"
+                <comp-dynamic-loading-chart :device-id="-11" :prop-url="propJobUrl" :prop-type="propType"
                                             @after-load-data="afterJobDataLoading"
                                             @on-chart-click="onJobChartClick" >
                 </comp-dynamic-loading-chart>
@@ -18,7 +18,7 @@
             <p style="margin-left: 20px;font-size: 14px;font-weight: bold;">设备统计</p>
             <p style="margin-left: 20px;font-size: 12px">用例：{{ jobName }}<a href="javascript:" style="margin-left: 10px" @click="showJobDetail=true;$refs.jobDetail.refresh(jobId)">用例详情</a></p>
             <div style="width: 280px;float: left;padding: 10px;margin-top: 50px">
-                <comp-statistic-pie :prop-data="pieData" :prop-failure="totalCount.failureRate" :prop-id="-11"></comp-statistic-pie>
+                <comp-statistic-pie :prop-data="pieData" :prop-failure="totalCount.failureRate" :prop-id="-11" :prop-invalid-rate="totalCount.invalidRate" :prop-type="propType"></comp-statistic-pie>
                 <div style="font-size: 12px">
                     <Row>
                         <Col span="12">
@@ -40,7 +40,7 @@
             </div>
             <div style="margin-left: 280px">
                 <p style="text-align: center;font-size: 16px;font-weight: bold">{{ jobName }} 设备统计情况</p>
-                <comp-dynamic-loading-chart ref="jobChart" :prop-width="400" :prop-url="jobUrl" :device-id="-22"
+                <comp-dynamic-loading-chart ref="jobChart" :prop-width="400" :prop-url="jobUrl" :device-id="-22" :prop-type="propType"
                                             @after-load-data="afterDeviceDataLoading"
                                             @on-chart-click="onDeviceChartClick" ></comp-dynamic-loading-chart>
             </div>
@@ -94,11 +94,13 @@
                 </div>
 
                 <div v-if="date===2">
-                    <p style="text-align: center;font-size: 16px;font-weight: bold">{{ monthData.format("yyyy年MM月") }}失败数据</p>
+                    <p style="text-align: center;font-size: 16px;font-weight: bold">{{ propType===1 ? monthData.format("yyyy年MM月")+" 失败数据" : monthData.format("yyyy年MM月")+" 无效数据" }}</p>
                     <comp-calendar-figure :prop-month="monthData"
                                           :prop-id="-1"
+                                          :prop-type="propType"
                                           :prop-device-id="deviceId"
                                           :prop-job-id="jobId"
+                                          :prop-filter-date-range="propFilterDateRange"
                                           @on--click="onCalendarClick">
                     </comp-calendar-figure>
                 </div>
@@ -141,6 +143,10 @@
             propDeviceIds:{
                 type:String,
                 default:""
+            },
+            propType:{
+                type:Number,
+                default:1   //1：失败 2：无效
             }
         },
         data(){
@@ -204,10 +210,13 @@
                 }
                 this.pieData = []
                 this.pieData.push(success,fail,na)
+                let type = "fail_ratio"
+                if(this.propType===2)
+                    type = "na_ratio"
                 if(id)
                     this.jobUrl = "api/v1/cedar/get_data_view/?job_id=" + id +
                         "&devices="+ this.propDeviceIds +
-                        "&group_by=device&page=0&ordering=-fail_ratio" +
+                        "&group_by=device&page=0&ordering=-" + type +
                         "&start_date="+ this.propFilterDateRange[0].format("yyyy-MM-dd") +
                         "&end_date="+ this.propFilterDateRange[1].format("yyyy-MM-dd")
                 else
@@ -227,9 +236,12 @@
                 }
                 this.pieData = []
                 this.pieData.push(success,fail,na)
+                let type = "fail_ratio"
+                if(this.propType===2)
+                    type = "na_ratio"
                 this.jobUrl = "api/v1/cedar/get_data_view/?job_id=" + id +
                     "&devices="+ this.propDeviceIds +
-                    "&group_by=device&page=0&ordering=-fail_ratio" +
+                    "&group_by=device&page=0&ordering=-" + type +
                     "&start_date="+ this.propFilterDateRange[0].format("yyyy-MM-dd") +
                     "&end_date="+ this.propFilterDateRange[1].format("yyyy-MM-dd")
             },

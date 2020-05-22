@@ -331,14 +331,21 @@
                                 tboard_id:boardId
                             })
                         .then(response => {
-                            if (response.status === 204) {
+                            console.log(response)
+                            let str = ""
+                            if(response.data.fail_cabinet){
+                                response.data.fail_cabinet.forEach(item=>{
+                                    str = str + item+"服务器停止任务失败；"
+                                })
+                            }
+                            if (response.data.status === "success") {
                                 root.$Message.success("停止任务成功!")
                                 root.onConditionChange();
                             } else {
-                                root.$Message.error("停止任务失败!")
-                                if (response.data.description) {
-                                    root.$Message.error(response.data.description);
-                                }
+                                this.$Modal.warning({
+                                    title:"停止失败！",
+                                    content:str,
+                                })
                             }
                         }).catch(reason => {
                             if (config.DEBUG) console.log(reason)

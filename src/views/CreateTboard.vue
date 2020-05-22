@@ -223,16 +223,36 @@
                             owner_label:userId
                         })
                         .then(response=>{
-                            if(response.data.state){
+                            let str = ""
+                            if(response.data.fail_cabinet){
+
+                                response.data.fail_cabinet.forEach(item=>{
+                                    str = str + item+"服务器启动任务失败；"
+                                })
+                            }
+                            let root = this
+                            if(response.data.status==="fail"){
+                                this.$Modal.error({
+                                    title:"启动失败！",
+                                    content:str
+                                })
+                            }else if(response.data.status==="warning"){
+                                this.$Modal.warning({
+                                    title:"部分服务器启动失败！",
+                                    content:str,
+                                    onOk(){
+                                        root.$router.push({
+                                            name: "tboard-management",
+                                        })
+                                    }
+                                })
+                            }else if(response.data.status==="success"){
                                 this.$Message.success("任务启动成功！")
                                 this.$router.push({
                                     name: "tboard-management",
                                 })
-                                this.showLoading = false;
-                            }else {
-                                this.$Message.error("任务启动失败！")
-                                if(config.DEBUG) console.log(response.data);
                             }
+                            this.showLoading = false;
                         })
                         .catch(error=>{
                             if(config.DEBUG) console.log(error)
