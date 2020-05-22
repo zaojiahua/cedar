@@ -209,7 +209,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .user-head{
         margin-bottom: 16px;
     }
