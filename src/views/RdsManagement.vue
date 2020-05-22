@@ -15,9 +15,9 @@
         <!--<TabPane label="用例数据视图" name="rdsGroupByJob" tab="outer">-->
             <!--&lt;!&ndash;<comp-rds-device-view></comp-rds-device-view>&ndash;&gt;-->
         <!--</TabPane>-->
-        <!--<TabPane label="任务数据视图" name="rdsGroupByTboard" tab="outer">-->
-            <!--&lt;!&ndash;<comp-rds-device-view></comp-rds-device-view>&ndash;&gt;-->
-        <!--</TabPane>-->
+        <TabPane label="任务数据视图" name="rdsGroupByTboard" tab="outer">
+            <comp-rds-tboard-view></comp-rds-tboard-view>
+        </TabPane>
         <TabPane label="日志文件搜索" name="logSearch">
             <comp-rds-log-search></comp-rds-log-search>
         </TabPane>
@@ -32,11 +32,12 @@
     import CompRdsLogSearch from "../components/CompRdsLogSearch";
     import CompRdsList from "../components/CompRdsList";
     import CompRdsDeviceView from "../components/CompRdsDeviceView";
+    import CompRdsTboardView from "../components/CompRdsTboardView";
     import CompDynamicLoadingChart from "../components/CompDynamicLoadingChart";
 
 
     export default {
-        components: {CompRdsLogSearch, CompRdsList , CompRdsDeviceView, CompDynamicLoadingChart},
+        components: {CompRdsLogSearch, CompRdsList , CompRdsDeviceView, CompDynamicLoadingChart, CompRdsTboardView},
     }
 
 </script>

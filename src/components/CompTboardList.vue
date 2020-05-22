@@ -3,7 +3,7 @@
         <Row>
             <slot name="header-top"></slot>
         </Row>
-        <Row>
+        <Row v-show="propShowHeader">
             <RadioGroup v-model="filterCondition" type="button" @on-change="onConditionChange">
                 <Radio label="all">全部任务</Radio>
                 <Radio label="running">在测任务</Radio>
@@ -18,7 +18,7 @@
         <Row>
             <slot name="header-bottom"></slot>
         </Row>
-        <Table v-show="notHistory" :loading="showLoading" ref="table" :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
+        <Table v-show="notHistory" :loading="showLoading" :highlight-row="true" ref="table" :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="pauseOrDelete">
                 <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-square'"
                         @click="pauseOrDeleteTboard(index)">
@@ -81,6 +81,10 @@
             propDeleteMore:{
                 type: Boolean,
                 default:false
+            },
+            propShowHeader:{
+                type: Boolean,
+                default:true
             }
         },
         data() {
