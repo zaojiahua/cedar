@@ -21,6 +21,7 @@
             <br>
             <br>
             <b >机柜内已有设备数量: </b>
+            <b>  {{deviceNum}}</b>
             <Row type="flex" justify="center" style="margin-top: 16px">
                 <Button type="primary" @click="getDeviceInDoor">下一步</Button>
                 <!--<Button type="error" @click="addDeviceError('ip侦测失败', '侦测不到该装置的IP位置，请确认待添加设备已连接到系统TMach系统WLAN！')">错误DEMO</Button>-->
@@ -127,7 +128,7 @@
                 })
             },
             getDeviceInDoor() {
-                if (this.cabinetSelected === undefined ){
+                if (this.CabinetIpSelected === "" ){
                     this.$Message.error("请先选择机柜信息")
                 }
                 else{
