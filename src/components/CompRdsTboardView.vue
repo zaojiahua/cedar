@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="content" style="position: relative">
         <Modal v-model="showSelectTboardModal" :fullscreen="true" :closable="false"
                @on-ok="getTboardSelection">
             <comp-tboard-list ref="selectTboard" :prop-show-header="false"
@@ -29,8 +29,8 @@
                 </Row>
 
                 <div style="width: 200px;float: left;">
-                    <comp-statistic-pie v-show="groupType===1" :prop-data="pieData" :prop-failure="statistics.fail_rds_percentage" :prop-id="-1" :prop-type="1"></comp-statistic-pie>
-                    <comp-statistic-pie v-if="groupType===2" :prop-data="pieData" :prop-invalid-rate="statistics.invalid_rds_percentage" :prop-id="-2" :prop-type="2"></comp-statistic-pie>
+                    <comp-statistic-pie v-show="groupType===1" :prop-data="pieData" :prop-failure="statistics.fail_rds_percentage" :prop-id="-99" :prop-type="1"></comp-statistic-pie>
+                    <comp-statistic-pie v-if="groupType===2" :prop-data="pieData" :prop-invalid-rate="statistics.invalid_rds_percentage" :prop-id="-98" :prop-type="2"></comp-statistic-pie>
                 </div>
 
                 <div style="margin-left: 200px;height:170px;margin-top: 30px">
@@ -39,7 +39,7 @@
                 <Row  v-show="showMsg" >
                     <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 10px">测试用例</p>
                     <ButtonGroup>
-                        <Tooltip v-for="job in data.job" :content="job.job_label" :key="job.id" placement="bottom" transfer>
+                        <Tooltip v-for="(job,index) in data.job" :content="job.job_label" :key="index" placement="bottom" transfer>
                             <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">
                                 {{job.job_name}}
                             </Button>
@@ -49,7 +49,7 @@
                 <Row  v-show="showMsg" >
                     <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin: 10px 0">测试设备</p>
                     <ButtonGroup>
-                        <Tooltip v-for="device in data.device" :content="device.device_label" :key="device.id" placement="bottom" transfer>
+                        <Tooltip v-for="(device,index) in data.device" :content="device.device_label" :key="index" placement="bottom" transfer>
                             <Button @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
                                 {{device.device_name}}
                             </Button>
@@ -60,46 +60,71 @@
                     <span v-show="showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=false"><Icon type="ios-arrow-up" />收起</span>
                     <span v-show="!showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=true"><Icon type="ios-arrow-down" />展开</span>
                 </Row>
-
             </Card>
 
-
-            <!--          =========================                   -->
-
-
-
-
-            <!--     图表统计部份      -->
-
-            <!--<Tabs v-model="tabName" type="card" name="inside">-->
-                <!--<TabPane label="设备统计" name="deviceStatistic" tab="inside">-->
-                    <!--<comp-rds-device-statistic ref="rdsDeviceStatistic"-->
-                                               <!--:prop-filter-date-range="filterDateRange"-->
-                                               <!--:prop-device-url="compDeviceUrl"-->
-                                               <!--@rds-mouse-enter="onRdsMouseEnter"-->
-                                               <!--@rds-mouse-leave="onRdsMouseLeave">-->
-                    <!--</comp-rds-device-statistic>-->
-                <!--</TabPane>-->
-                <!--<TabPane label="用例统计" name="jobStatistic" tab="inside">-->
-                    <!--<comp-rds-job-statistic ref="rdsJobStatistic"-->
-                                            <!--:prop-filter-date-range="filterDateRange"-->
-                                            <!--:prop-job-url="compJobUrl"-->
-                                            <!--:prop-device-ids="ids"-->
-                                            <!--@rds-mouse-enter="onRdsMouseEnter"-->
-                                            <!--@rds-mouse-leave="onRdsMouseLeave">-->
-                    <!--</comp-rds-job-statistic>-->
-                <!--</TabPane>-->
-            <!--</Tabs>-->
-
-            <!--     图表统计部份      -->
-
-
-
-
-
-
+            <!--     图表统计部份    失败    -->
+            <div class="device-statistic" style="margin-top: 16px" v-if="showStatistic&&(groupType===1)">
+                <Tabs v-model="tabName" type="card" name="inside" v-if="groupType===1">
+                    <TabPane label="设备统计" name="deviceStatistic" tab="inside">
+                        <comp-rds-tboard-device-statistic ref="rdsDeviceStatistic"
+                                                          :prop-device-url="compDeviceUrl"
+                                                          :prop-tboard-id="tboardId"
+                                                          :prop-filter-date-range="filterDateRange"
+                                                          @rds-mouse-enter="onRdsMouseEnter"
+                                                          @rds-mouse-leave="onRdsMouseLeave">
+                        </comp-rds-tboard-device-statistic>
+                    </TabPane>
+                    <TabPane label="用例统计" name="jobStatistic" tab="inside">
+                        <comp-rds-tboard-job-statistic ref="rdsJobStatistic"
+                                                       :prop-job-url="compJobUrl"
+                                                       :prop-tboard-id="tboardId"
+                                                       :prop-filter-date-range="filterDateRange"
+                                                       @rds-mouse-enter="onRdsMouseEnter"
+                                                       @rds-mouse-leave="onRdsMouseLeave">
+                        </comp-rds-tboard-job-statistic>
+                    </TabPane>
+                </Tabs>
+            </div>
+            <!--     图表统计部份    无效    -->
+            <div class="device-statistic" style="margin-top: 16px" v-if="showStatistic&&(groupType===2)">
+                <Tabs v-model="tabName" type="card" name="inside" v-if="groupType===2">
+                    <TabPane label="设备统计" name="deviceStatistic" tab="inside">
+                        <comp-rds-tboard-device-statistic ref="rdsDeviceStatistic"
+                                                    :prop-device-url="compDeviceUrl"
+                                                    :prop-tboard-id="tboardId"
+                                                    :prop-type="2"
+                                                    :prop-filter-date-range="filterDateRange"
+                                                    @rds-mouse-enter="onRdsMouseEnter"
+                                                    @rds-mouse-leave="onRdsMouseLeave">
+                        </comp-rds-tboard-device-statistic>
+                    </TabPane>
+                    <TabPane label="用例统计" name="jobStatistic" tab="inside">
+                        <comp-rds-tboard-job-statistic ref="rdsJobStatistic"
+                                                    :prop-job-url="compJobUrl"
+                                                    :prop-tboard-id="tboardId"
+                                                    :prop-filter-date-range="filterDateRange"
+                                                    :prop-type="2"
+                                                    @rds-mouse-enter="onRdsMouseEnter"
+                                                    @rds-mouse-leave="onRdsMouseLeave">
+                        </comp-rds-tboard-job-statistic>
+                    </TabPane>
+                </Tabs>
+            </div>
         </div>
 
+        <div v-show="tipData.id"  style="float: right;margin-top: -100px; background-color: #434343; border-radius: 5px;opacity: 0.9; color: #ebf7ff; padding: 8px;">
+            <span>ID：</span>
+            <span>{{tipData.id}}</span>
+            <br>
+            <span>设备名称：</span>
+            <span>{{tipData.device.device_name}}</span>
+            <br>
+            <span>用例名称：</span>
+            <span>{{tipData.job.job_name}}</span>
+            <br>
+            <span>结果：</span>
+            <span>{{tipData.job_assessment_value}}</span>
+        </div>
 
         <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
             <comp-device-detail ref="deviceDetail"></comp-device-detail>
@@ -108,10 +133,6 @@
             <comp-job-detail ref="jobDetail" :prop-close-btn="false"></comp-job-detail>
         </Modal>
         <Spin size="large" fix v-if="showLoading"></Spin>
-
-
-
-
     </div>
 
 </template>
@@ -123,6 +144,8 @@
     import CompStatisticPie from "../components/CompStatisticPie";
     import CompJobDetail from "./CompJobDetail";
     import CompDeviceDetail from "./CompDeviceDetail";
+    import CompRdsTboardDeviceStatistic from "./CompRdsTboardDeviceStatistic";
+    import CompRdsTboardJobStatistic from "./CompRdsTboardJobStatistic";
 
     const getTboardSerializer = {
         id: "number",
@@ -145,11 +168,23 @@
             job_name: "string"
         }]
     }
+    const tipDataSerializer = {
+        id: "number",
+        device: {
+            device_name: "string"
+        },
+        job: {
+            job_name: "string"
+        },
+        job_assessment_value: "string"
+    }
 
     export default {
-        components:{ CompTboardList, CompStatisticPie,CompDeviceDetail,CompJobDetail, },
+        components:{ CompTboardList, CompStatisticPie,CompDeviceDetail,CompJobDetail,CompRdsTboardDeviceStatistic,CompRdsTboardJobStatistic },
         data(){
             return{
+                filterDateRange:[],
+                showStatistic:false,
                 groupType:1,
                 showSelectTboardModal:false,
                 tboardId:null,
@@ -165,7 +200,7 @@
                     invalid_rds_percentage:null,
                     rds_percentage:null,
                 },
-                pieData:[100,20,5],
+                pieData:[0,0,0],
                 columns: [
                     {
                         title: '通过',
@@ -188,7 +223,11 @@
                 showJobDetail:false,
                 showDeviceDetail:false,
                 showLoading:false,
-                showMsg:true
+                showMsg:true,
+                tabName:"deviceStatistic",
+                compDeviceUrl:"",
+                compJobUrl:"",
+                tipData:utils.validate(tipDataSerializer, null),
             }
         },
         methods:{
@@ -197,81 +236,71 @@
             },
             onSelectTboardModalRowClick(row, index){
                 this.tboardId = row.id
-                console.log(row)
             },
             getTboardSelection(){
                 this.showView = true
-                this.$ajax.post("api/v1/cedar/get_rds_statistics_data/",{ tboard:this.tboardId } )
-                    .then(response=>{
-                        console.log(response)
+                this.showStatistic = false
+                let requests = [
+                    this.$ajax.post("api/v1/cedar/get_rds_statistics_data/",{ tboard:this.tboardId } ),
+                    this.$ajax.get("/api/v1/cedar/tboard/"+ this.tboardId +"/?fields=id,board_name," +
+                        "job,job.id,job.job_name,job.job_label," +
+                        "device,device.id,device.device_name,device.device_label," +
+                        "repeat_time," +
+                        "author,author.id,author.username," +
+                        "board_stamp," +
+                        "end_time")
+                ]
+                this.$ajax.all(requests)
+                    .then(this.$ajax.spread((statistics_resp,tboard_resp) => {
+                        //    统计数据
                         this.pieData = []
-                        this.statistics = response.data
-                        this.pieData.push(response.data.pass_rds_count,response.data.fail_rds_count,response.data.invalid_rds_count)
+                        this.statistics = statistics_resp.data
+                        this.pieData.push(statistics_resp.data.pass_rds_count,statistics_resp.data.fail_rds_count,statistics_resp.data.invalid_rds_count)
                         this.tableData = [{
-                            pass:response.data.pass_rds_count,
-                            fail:response.data.fail_rds_count,
-                            na:response.data.invalid_rds_count,
-                            total:response.data.rds_count
+                            pass:statistics_resp.data.pass_rds_count,
+                            fail:statistics_resp.data.fail_rds_count,
+                            na:statistics_resp.data.invalid_rds_count,
+                            total:statistics_resp.data.rds_count
                         },{
-                            pass:(response.data.pass_rds_percentage*100).toFixed(0)+"%",
-                            fail:(response.data.fail_rds_percentage*100).toFixed(0)+"%",
-                            na:(response.data.invalid_rds_percentage*100).toFixed(0)+"%",
-                            total:response.data.rds_percentage + "%"
+                            pass:(statistics_resp.data.pass_rds_percentage*100).toFixed(0)+"%",
+                            fail:(statistics_resp.data.fail_rds_percentage*100).toFixed(0)+"%",
+                            na:(statistics_resp.data.invalid_rds_percentage*100).toFixed(0)+"%",
+                            total:statistics_resp.data.rds_percentage + "%"
                         }]
 
-                        console.log(this.pieData)
-                        console.log(this.tableData)
+                        if(statistics_resp.data.rds_count!==0)
+                            this.showStatistic = true
+                        //tboard信息
+                        this.filterDateRange = []
+                        this.data = tboard_resp.data
 
-                    })
-                    .catch(error=>{
-                        if(config.DEBUG) console.log(error)
-                        this.$Message.warning("获取任务统计数据失败")
-                    })
+                        let end = tboard_resp.data.end_time!==null?tboard_resp.data.end_time:new Date().format("yy-MM-dd hh:mm:ss")
+                        this.filterDateRange.push(this.data.board_stamp,end)
+                        // set  prop  url
+                        this.setRequestUrl()
 
-                this.$ajax.get("/api/v1/cedar/tboard/"+ this.tboardId +"?fields=id,board_name," +
-                    "job,job.id,job.job_name,job.job_label," +
-                    "device,device.id,device.device_name,device.device_label," +
-                    "repeat_time," +
-                    "author,author.id,author.username," +
-                    "board_stamp," +
-                    "end_time")
-                    .then(response=>{
-                        console.log(response)
-                        this.data = response.data
-
-                    })
-                    .catch(error=>{
-                        if(config.DEBUG) console.log(error)
-                        this.$Message.warning("获取任务信息失败")
-                    })
-
-
-
-
-                //
-                // this.$ajax.get("/api/v1/cedar/get_data_view/?tboard_id="+ this.tboardId + "&group_by=device&page=0")
-                //     .then(response=>{
-                //
-                //     })
-                //     .catch(error=>{
-                //         if(config.DEBUG) console.log(error)
-                //         this.$Message.warning("获取任务统计数据失败")
-                //     })
-
+                    })).catch(reason => {
+                        if (config.DEBUG) console.log(reason)
+                        this.$Message.error("获取任务信息失败！")
+                        this.showLoading = false;
+                })
+            },
+            setRequestUrl(){
+                let order = "fail_ratio"
+                if(this.groupType===1)
+                    order = "fail_ratio"
+                else if(this.groupType===2)
+                    order = "na_ratio"
+                this.compDeviceUrl = "api/v1/cedar/get_data_view/?tboard_id="+ this.tboardId +
+                    "&group_by=device&page=0&ordering=-" + order
+                this.compJobUrl = "api/v1/cedar/get_data_view/?tboard_id="+ this.tboardId +
+                    "&group_by=job&page=0&ordering=-" + order
             },
             diffTime(start,end){
                 if(end===null)
                     end = new Date()
                 let date = new Date(end).getTime() - new Date(start).getTime();   //时间差的毫秒数
-
-                // //------------------------------
-                //
-                // //计算出相差天数
-                // var days=Math.floor(date/(24*3600*1000))
-                //
                 // //计算出小时数
-                //
-                // var leave1=date%(24*3600*1000)    //计算天数后剩余的毫秒数
                 let hours=Math.floor(date/(3600*1000))
                 //计算相差分钟数
                 let leave=date%(3600*1000)        //计算小时数后剩余的毫秒数
@@ -281,10 +310,22 @@
                 let seconds=Math.round(leave2/1000)
                 return hours+" 小时 "+minutes+" 分钟"+seconds+" 秒"
             },
-
-
-
-
+            onRdsMouseEnter(rds) {
+                this.tipData = utils.validate(tipDataSerializer, rds)
+            },
+            onRdsMouseLeave() {
+                this.tipData = utils.validate(tipDataSerializer, null)
+            },
+        },
+        watch:{
+            groupType:{
+                handler: function(val){
+                    this.setRequestUrl()
+                },
+                immediate: true
+            }
+        },
+        mounted(){
 
         }
     }
@@ -305,5 +346,9 @@
         height: 8px;
         margin-right: 10px;
         border-radius: 50%
+    }
+    .device-statistic .ivu-tabs-bar{
+        margin-bottom: 0;
+        border-bottom: none;
     }
 </style>
