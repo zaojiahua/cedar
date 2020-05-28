@@ -20,8 +20,9 @@
             </i-select>
             <br>
             <br>
-            <b >机柜内已有设备数量: </b>
-            <b>  {{deviceNum}}</b>
+            <b >机柜内已有设备数量： </b>
+            <span style="color: #999999">  {{deviceNum}} 台 </span>
+            <p style="color: #999999;margin: 20px 0 40px 0">注：每个机柜建议注册不超过50台设备</p>
             <Row type="flex" justify="center" style="margin-top: 16px">
                 <Button type="primary" @click="getDeviceInDoor">下一步</Button>
                 <!--<Button type="error" @click="addDeviceError('ip侦测失败', '侦测不到该装置的IP位置，请确认待添加设备已连接到系统TMach系统WLAN！')">错误DEMO</Button>-->
