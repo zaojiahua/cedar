@@ -274,7 +274,7 @@
                         this.filterDateRange = []
                         this.data = tboard_resp.data
 
-                        let end = tboard_resp.data.end_time!==null?tboard_resp.data.end_time:new Date().format("yy-MM-dd hh:mm:ss")
+                        let end = tboard_resp.data.end_time!==null?tboard_resp.data.end_time:new Date().format("yyyy-MM-dd hh:mm:ss")
                         this.filterDateRange.push(this.data.board_stamp,end)
                         // set  prop  url
                         this.setRequestUrl()
