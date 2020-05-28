@@ -63,6 +63,10 @@
                 type: Number,
                 default: null
             },
+            propTboardId: {  // tboard data with id and board_name
+                type: Number,
+                default: null
+            },
             propDefaultTboards: {  // tboard data with id and board_name
                 type: Array,
                 default: ()=>{return []}
@@ -153,13 +157,16 @@
                     jobCondition = "&job=" + this.propJobId
                 }
                 let tboardCondition = ""
-                if(this.tboards.length !== 0) {
-                    let tboardIds = []
-                    this.tboards.forEach(tboard=>{
-                        tboardIds.push(tboard.id)
-                    })
-                    tboardCondition = "&tboard__in=ReefList[" + tboardIds.join("{%,%}") + "]"
+                if(this.propTboardId){
+                    tboardCondition =  "&tboard=" + this.propTboardId
                 }
+                // if(this.tboards.length !== 0) {
+                //     let tboardIds = []
+                //     this.tboards.forEach(tboard=>{
+                //         tboardIds.push(tboard.id)
+                //     })
+                //     tboardCondition = "&tboard__in=ReefList[" + tboardIds.join("{%,%}") + "]"
+                // }
                 this.$ajax.get("api/v1/cedar/filter_rds_validity/?" +
                     jobCondition +
                     tboardCondition +
@@ -283,6 +290,11 @@
                 }
             },
             propJobId:{
+                handler: function(){
+                    this.loadMoreData(true)
+                }
+            },
+            propDeviceId:{
                 handler: function(){
                     this.loadMoreData(true)
                 }

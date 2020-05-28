@@ -115,7 +115,6 @@
 <script>
     import CompDeviceList from "../components/CompDeviceList";
     import CompRdsDeviceStatistic from "../components/CompRdsDeviceStatistic";
-    import CompRdsJobStatistic from "../components/CompRdsJobStatistic";
     import utils from "../lib/utils";
     import config from "../lib/config";
 
@@ -131,7 +130,7 @@
     }
 
     export default {
-        components: {CompDeviceList, CompRdsDeviceStatistic, CompRdsJobStatistic },
+        components: {CompDeviceList, CompRdsDeviceStatistic },
         data(){
             return{
                 compDeviceUrl:"",
