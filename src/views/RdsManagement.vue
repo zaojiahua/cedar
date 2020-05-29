@@ -8,7 +8,7 @@
         <!--</TabPane>-->
     <!--</Tabs>-->
 
-    <Tabs value="rdsGroupByDevice" name="outer">
+    <Tabs v-model="tabName" name="outer">
         <TabPane label="设备数据视图" name="rdsGroupByDevice" tab="outer">
             <comp-rds-device-view></comp-rds-device-view>
         </TabPane>
@@ -38,6 +38,20 @@
 
     export default {
         components: {CompRdsLogSearch, CompRdsList , CompRdsDeviceView, CompDynamicLoadingChart, CompRdsTboardView},
+        data(){
+            return{
+                tabName:"rdsGroupByDevice"
+            }
+        },
+        mounted(){
+            let tboardId = NaN
+            if(this.$route.query.hasOwnProperty("tboard")) {
+                tboardId = _.parseInt(this.$route.query.tboard)
+            }
+            if(isNaN(tboardId)) return
+            this.tabName = "rdsGroupByTboard"
+
+        }
     }
 
 </script>

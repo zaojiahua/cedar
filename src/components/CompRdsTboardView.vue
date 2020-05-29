@@ -326,6 +326,13 @@
             }
         },
         mounted(){
+            let tboardId = NaN
+            if(this.$route.query.hasOwnProperty("tboard")) {
+                tboardId = _.parseInt(this.$route.query.tboard)
+            }
+            if(isNaN(tboardId)) return
+            this.tboardId = tboardId
+            this.getTboardSelection()
 
         }
     }
