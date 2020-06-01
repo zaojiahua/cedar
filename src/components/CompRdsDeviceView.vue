@@ -218,8 +218,8 @@
                     "&end_date="+ this.filterDateRange[1].format("yyyy-MM-dd")
                 ).then(response=>{
                     this.totalCount ={
-                        failureRate:(response.data.fail_ratio*100).toFixed(0)+ "%",
-                        invalidRate:(response.data.na_ratio*100).toFixed(0)+ "%",
+                        failureRate:(response.data.fail_ratio*100).toFixed(1)+ "%",
+                        invalidRate:(response.data.na_ratio*100).toFixed(1)+ "%",
                         total:response.data.total,
                         fail:response.data.fail,
                         pass:response.data.success,

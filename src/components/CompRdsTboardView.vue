@@ -262,9 +262,9 @@
                             na:statistics_resp.data.invalid_rds_count,
                             total:statistics_resp.data.rds_count
                         },{
-                            pass:(statistics_resp.data.pass_rds_percentage*100).toFixed(0)+"%",
-                            fail:(statistics_resp.data.fail_rds_percentage*100).toFixed(0)+"%",
-                            na:(statistics_resp.data.invalid_rds_percentage*100).toFixed(0)+"%",
+                            pass:(statistics_resp.data.pass_rds_percentage*100).toFixed(1)+"%",
+                            fail:(statistics_resp.data.fail_rds_percentage*100).toFixed(1)+"%",
+                            na:(statistics_resp.data.invalid_rds_percentage*100).toFixed(1)+"%",
                             total:statistics_resp.data.rds_percentage + "%"
                         }]
 

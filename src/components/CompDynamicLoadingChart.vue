@@ -81,10 +81,10 @@
                         this.xAxis.push(item[2])
                         if(this.propType===1){
                             this.data1.push([item[2],item[5],item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
-                            this.data2.push([item[2],(item[8]*100).toFixed(0),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                            this.data2.push([item[2],(item[8]*100).toFixed(1),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
                         }else if(this.propType===2){
                             this.data1.push([item[2],item[3],item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
-                            this.data2.push([item[2],(item[7]*100).toFixed(0),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                            this.data2.push([item[2],(item[7]*100).toFixed(1),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
                         }
                     })
                     this.nextUrl = response.data.next
@@ -206,10 +206,10 @@
                         xAxis.push(item[2])
                         if(this.propType===1){
                             data1.push([item[2],item[5],item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
-                            data2.push([item[2],(item[8]*100).toFixed(0),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                            data2.push([item[2],(item[8]*100).toFixed(1),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
                         }else if(this.propType===2){
                             data1.push([item[2],item[3],item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
-                            data2.push([item[2],(item[7]*100).toFixed(0),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
+                            data2.push([item[2],(item[7]*100).toFixed(1),item[0],item[1],item[3],item[4],item[5],item[6],item[7],item[8]])
                         }
 
                     })
