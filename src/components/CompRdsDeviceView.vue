@@ -8,7 +8,7 @@
         </Modal>
 
         <Row v-show="devices.length === 0" style="margin-bottom: 16px;">
-            <DatePicker v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
+            <DatePicker v-model="filterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
             <p style="color: rgb(194, 194, 194);margin-top: 10px;">默认选择最近七天的数据 </p>
         </Row>
         <Row v-show="devices.length === 0" style="margin-top: 100px;text-align: center">
@@ -22,7 +22,7 @@
                 <Radio style="width: 100px;text-align: center;margin-bottom: 12px" :label="2">无效数据</Radio>
             </RadioGroup>
             <Button type="primary" style="float: right;" @click="openDeviceList">选取设备( {{ devices.length }} )</Button>
-            <DatePicker style="float: right;margin-right: 20px;" v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
+            <DatePicker style="float: right;margin-right: 20px;" v-model="filterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
 
         </div>
 
@@ -229,6 +229,17 @@
                     if(config.DEBUG) console.log(error)
                     this.$Message.warning("统计模块信息获取失败")
                 })
+            },
+            onDateChange(date){
+                let sub = new Date(date[1])-  new Date(date[0])
+                if(sub>5*30*24*3600*1000){
+                    let root = this
+                    this.$Modal.info({
+                        title:"提示",
+                        content:"最多只能选取150天的数据，已自动调整日期！",
+                    })
+                    root.filterDateRange = [new Date(new Date(new Date(date[1]).getTime()-150*24*3600*1000).setHours(0,0,0,0)), new Date(date[1])]
+                }
             }
 
 
