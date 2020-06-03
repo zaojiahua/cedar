@@ -191,7 +191,7 @@
                         if (config.DEBUG) console.log(error);
                         this.$Message.error("获取设备数量出错")
                     });
-                for (var cabinet of this.cabinetList) {
+                for (let cabinet of this.cabinetList) {
                     if (cabinet.id === newId) {
                         this.CabinetIpSelected = cabinet.ip_address
                     }

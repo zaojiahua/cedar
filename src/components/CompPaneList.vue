@@ -14,21 +14,24 @@
             <p>添加Pane</p>
         </div>
 
-        <Modal v-model="showAddPane" :closable="false" :footer-hide="true" :mask-closable="false">
+        <Modal v-model="showAddPane" :closable="false" :footer-hide="true" :mask-closable="false" width="550">
             <Card>
-                <p slot="title">Pane信息</p>
+                <p slot="title">添加Pane</p>
                 <Icon slot="extra" @click.prevent="showAddPane=false;" type="md-close" />
                 <Form :model="pane" :label-width="100">
                     <FormItem>
-                        <b slot="label">项目名称：</b>
-                        <Input v-model="pane.pane_name" placeholder="请输入"></Input>
+                        <b slot="label">选择机柜：</b>
+                        <Select v-model="CabinetSelected" style="width:150px">
+                            <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name}}</Option>
+                        </Select>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">Pane名称：</b>
+                        <Input v-model="pane.pane_name" placeholder=" 例： pane001@2X3"></Input>
                         <Input v-show="false"></Input>
                         <p>
-                            注：  请按特定格式输入项目名称，不允许有空格<br/>
-                            名称由字母、数字或下划线组成，不允许输入特殊字符<br/>
-                            格式：名称  @  规格行  X  规格列<br/>
-                            如：  pane001@2X3<br/>
-                            最大规格不能超过 7 x 9<br/>
+                            注：名称由字母、数字或下划线组成，不允许输入特殊字符<br/>
+                            格式：名称 @ 规格行 X 规格列，最大规格不能超过 7 x 9
                         </p>
                     </FormItem>
                     <FormItem>
@@ -100,6 +103,8 @@
                 errorCount:0,
                 openErrorDevice:false,
                 showDeviceDetail:false,
+                cabinetList:"",
+                CabinetSelected:null,
             }
         },
         methods:{
@@ -129,6 +134,10 @@
                     alert('请输入项目名称！')
                     return
                 }
+                if(this.CabinetSelected===null){
+                    alert('请选择机柜！')
+                    return
+                }
                 //去除前后两端的空格
                 this.pane.pane_name = this.pane.pane_name.replace(/(^\s*)|(\s*$)/g, "");
                 if(!/^\w+@[1-7](x|X)[1-9]$/.test(this.pane.pane_name)){
@@ -141,7 +150,7 @@
                 this.$ajax.post("api/v1/cedar/create_paneview/",{
                     name:this.pane.pane_name,
                     type:this.paneType,
-                    cabinet:10000,
+                    cabinet:this.CabinetSelected,
                     width:parseInt(size[1]),
                     height:parseInt(size[0]),
                     ret_level:0
@@ -230,9 +239,20 @@
                         this.$Message.error("获取异常数据失败")
                     })
             },
+            getCabinet() {
+                this.$ajax.get("api/v1/cedar/cabinet/?fields=ip_address,cabinet_name,id")
+                    .then(response => {
+                        this.cabinetList = response.data.cabinets
+                    })
+                    .catch(error => {
+                        if (config.DEBUG) console.log(error)
+                        this.$Message.error("取得机柜信息出错")
+                    })
+            }
         },
         mounted(){
             this.refresh();
+            this.getCabinet()
         }
     }
 </script>
