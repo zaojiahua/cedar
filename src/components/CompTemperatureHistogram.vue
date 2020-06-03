@@ -157,11 +157,18 @@
 
                 // 使用刚指定的配置项和数据显示图表。
                 this.histogram.setOption(option)
-            }
+            },
+            onResize(){
+                this.histogram.resize()
+            },
         },
         mounted() {
             this.histogram = echarts.init(document.getElementById("main"+this.deviceId))
             this.setDefaultOption()
+            window.addEventListener('resize', this.onResize);
+        },
+        beforeDestroy(){
+            window.removeEventListener('resize',this.onResize)
         }
     }
 </script>

@@ -76,7 +76,7 @@
         <div style="color: #515a6e;padding-left: 48px;font-size: 12px;margin-top: 16px" v-show="isReferenceShow">
             <b style="cursor: default">查看查参考图片：</b><b style="cursor: default">共 {{jobResFile.length}} 张</b>
             <br>
-            <img style="margin: 5px; cursor: pointer;max-width: 200px" v-for="(img,index) in jobResFile" :key="index" :src=baseUrl+img.file :alt=img.name>
+            <img style="margin: 5px; cursor: pointer;max-width: 200px;border: 1px solid #ccc" v-for="(img,index) in jobResFile" :key="index" :src=baseUrl+img.file :alt=img.name>
         </div>
         <Spin size="large" fix v-if="showSpin"></Spin>
         <Modal v-model="showImgModal" :fullscreen="true" footer-hide style="text-align: center">

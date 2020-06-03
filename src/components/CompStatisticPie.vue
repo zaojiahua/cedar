@@ -59,9 +59,9 @@
                                     show: true,
                                     position: 'center',
                                     formatter: ()=>{
-                                        let cont = (this.propFailure*100).toFixed(0);
+                                        let cont = (this.propFailure*100).toFixed(1);
                                         if(this.propType===2)
-                                            cont = (this.propInvalidRate*100).toFixed(0);
+                                            cont = (this.propInvalidRate*100).toFixed(1);
                                         return cont + '%\n' + str
                                     },
                                     textStyle: {
