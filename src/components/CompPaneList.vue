@@ -224,22 +224,27 @@
                             this.$Message.error("项目添加失败,请检查后再重新添加！")
                     })
                 }else if(this.paneType==="test_box") {
-                    this.$ajax.post("api/v1/cedar/create_test_box_paneview/",{
+                    let paramObj = {
                         name:this.pane.pane_name,
                         type:this.paneType,
                         cabinet:this.CabinetSelected,
                         width:1,
                         height:1,
                         robot_arm:this.pane.robot_arm,
-                        camera:this.pane.camera,
-                    }).then(response=>{
-                        this.refresh()
-                        this.getCabinet()
-                        this.showAddPane = false
-                    }).catch(error=>{
-                        if(config.DEBUG) console.log(error)
-                        this.$Message.error("项目添加失败,请检查后再重新添加！")
-                    })
+                    }
+                    if(this.pane.camera!==null){
+                        paramObj["camera"] = this.pane.camera
+                    }
+
+                    this.$ajax.post("api/v1/cedar/create_test_box_paneview/",paramObj)
+                        .then(response=>{
+                            this.refresh()
+                            this.getCabinet()
+                            this.showAddPane = false
+                        }).catch(error=>{
+                            if(config.DEBUG) console.log(error)
+                            this.$Message.error("项目添加失败,请检查后再重新添加！")
+                        })
                 }
             },
             onOpenModal(){
