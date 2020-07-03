@@ -265,6 +265,7 @@
                 this.cabinetId = paneObj.cabinet
                 this.slotId = paneObj.paneslots[0].id
                 this.openDevice = true
+                this.slotKey = "1,1"
             },
             onSlotClick(row,col,id){
                 let key = row + "," + col
@@ -301,7 +302,8 @@
                     return
                 }
                 if(this.selectDevice!==null){
-                    this.sendRequest()
+                    let str = "添加设备成功，请继续添加或关闭弹窗！"
+                    this.sendRequest(str)
                 }
             },
             onConfirmDevice(){
@@ -309,9 +311,10 @@
                     this.$Message.warning("机型属性不能为空，请先设置再进行绑定")
                     return
                 }
-                this.sendRequest()
+                let str = "添加设备成功！"
+                this.sendRequest(str)
             },
-            sendRequest(){
+            sendRequest(str){
                 this.showSpin = true
                 let paneId = this.paneList[this.paneIndex].id
                 this.$ajax.post("api/v1/cedar/link_paneview_device/",{
@@ -324,7 +327,8 @@
                     this.$set(slotListItem,"device",response.data.device)
                     this.$set(slotListItem,"status",response.data.status)
                     this.showSpin = false
-                    this.$Message.success("添加设备成功，请继续添加或关闭弹窗！")
+                    this.showConfirmModal = false
+                    this.$Message.success(str)
                 }).catch(error=>{
                     if (config.DEBUG) console.log(error)
                     this.showSpin = false
