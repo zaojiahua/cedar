@@ -120,6 +120,10 @@
                 type: Boolean,
                 default: false
             },
+            propCabinet:{  //select device in cabinet
+                type: Number,
+                default:null
+            },
         },
         data() {
             return {
@@ -274,6 +278,9 @@
                 if(this.propDeviceSlotError){
                     deviceSlotErrorCondition = "&paneslot__isnull=False&status=error"
                 }
+                let cabinetCondition = ""
+                if(this.propCabinet!==null)
+                    cabinetCondition = "&cabinet=" + this.propCabinet
                 let phoneModelCondition = ""
                 if(this.phoneModelFilterList.length>0){
                     phoneModelCondition = "&phone_model__phone_model_name__in="+"ReefList["+this.phoneModelFilterList.join("{%,%}")+"]"
@@ -315,6 +322,7 @@
                         tboardCondition +
                         deviceSlotCondition +
                         deviceSlotErrorCondition +
+                        cabinetCondition +
                         "&ordering=id"
                     )
                     .then(response => {

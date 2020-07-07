@@ -29,26 +29,39 @@
             </Row>
         </Card>
         <Card dis-hover title="第三步: 添加设备" v-if="addDeviceStep === 3">
-            <Form :label-width="80">
-                <FormItem>
-                    <b slot="label">设备编号</b>
-                    <p>{{ deviceInfo.deviceID }}</p>
-                </FormItem>
-                <FormItem>
-                    <b slot="label">ROM版本</b>
-                    <p>{{ deviceInfo.buildInc }}</p>
-                </FormItem>
-                <FormItem>
-                    <b slot="label">安卓版本</b>
-                    <p>{{ deviceInfo.buildVer }}</p>
-                </FormItem>
-                <FormItem>
-                    <b slot="label">IP地址</b>
-                    <p>{{ deviceInfo.ipAddress }}</p>
-                </FormItem>
+            <Form :label-width="130">
                 <FormItem>
                     <b slot="label">自定义名称</b>
                     <Input v-model="addedDeviceName"></Input>
+                </FormItem>
+                <FormItem>
+                    <b slot="label">设备编号</b>
+                    <Input v-model="deviceInfo.deviceID" class="disabled-input" :disabled="true"></Input>
+                </FormItem>
+                <FormItem>
+                    <b slot="label">IP地址</b>
+                    <Input v-model="deviceInfo.ipAddress" class="disabled-input" :disabled="true"></Input>
+                </FormItem>
+                <Divider />
+                <FormItem>
+                    <b slot="label">手机型号</b>
+                    <Input v-model="deviceInfo.productName" class="disabled-input" :disabled="true"></Input>
+                </FormItem>
+                <FormItem>
+                    <b slot="label"><span class="need">*</span>Xdpi</b>
+                    <InputNumber style="width: 324px" v-model="deviceInfo.x_dpi"></InputNumber>
+                </FormItem>
+                <FormItem>
+                    <b slot="label"><span class="need">*</span>Ydpi</b>
+                    <InputNumber style="width: 324px" v-model="deviceInfo.y_dpi"></InputNumber>
+                </FormItem>
+                <FormItem>
+                    <b slot="label"><span class="need">*</span>X边框厚度</b>
+                    <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.x_border"  :min="0" placeholder="请输入手机顶部边框厚度"></InputNumber><span>毫米</span>
+                </FormItem>
+                <FormItem>
+                    <b slot="label"><span class="need">*</span>Y边框厚度</b>
+                    <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.y_border" placeholder="请输入手机左侧边框厚度"></InputNumber><span>毫米</span>
                 </FormItem>
             </Form>
             <Row type="flex" justify="center">
@@ -69,7 +82,12 @@
         buildInc: "string",
         buildVer: "string",
         deviceID: "string",
-        ipAddress: "string"
+        ipAddress: "string",
+        productName:"string",
+        x_border:"number",
+        x_dpi:"number",
+        y_border:"number",
+        y_dpi:"number"
     }
 
     export default {
@@ -101,12 +119,21 @@
                 });
             },
             addDevice() {
+                if(this.deviceInfo.x_border===null||this.deviceInfo.x_dpi===null||this.deviceInfo.y_border===null||this.deviceInfo.y_dpi===null){
+                    this.$Message.warning("带*项信息不能为空！")
+                    return
+                }
                 this.$Loading.start()
                 this.spinShow = true;
                 this.$ajax.post("http://" + this.CabinetIpSelected + ":5000" + "/door/set_device_in_door/",
                     {
                         deviceID: this.deviceInfo.deviceID,
-                        deviceName: this.addedDeviceName
+                        deviceName: this.addedDeviceName,
+                        x_border: this.deviceInfo.x_border,
+                        x_dpi:this.deviceInfo.x_dpi,
+                        y_border: this.deviceInfo.y_border,
+                        y_dpi: this.deviceInfo.y_dpi
+
                     }
                 ).then(response => {
                     if (response.data.state === "DONE") {
@@ -140,7 +167,6 @@
                     this.spinShow = true;
                     this.$Loading.start();
                     this.addedDeviceName = "";
-                    console.log(this.CabinetIpSelected);
                     this.$ajax
                         .get("http://" + this.CabinetIpSelected + ":5000" + "/door/get_device_in_door/")
                         .then(response => {
@@ -202,5 +228,14 @@
 </script>
 
 <style scoped>
-
+    .disabled-input >>> input {
+        background-color: #0000;
+        color: #515a6e;
+        border: #eee dotted 1px;
+    }
+    .need{
+        color: #ff0000;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
 </style>

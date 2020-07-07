@@ -26,10 +26,6 @@
                 <Input v-model="device.ip_address" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">手机模组</b>
-                <Input v-model="device.phone_model.phone_model_name" :disabled="true" class="disabled-input"></Input>
-            </FormItem>
-            <FormItem>
                 <b slot="label">ROM版本</b>
                 <Input v-model="device.rom_version.version" :disabled="true" class="disabled-input"></Input>
             </FormItem>
@@ -47,7 +43,33 @@
                 <Input v-model="device.device_name" :disabled="!editable"></Input>
             </FormItem>
         </Form>
-        <Collapse :value="[0,1,2,3]">
+        <Collapse :value="[0,1,2,3,4]">
+            <Panel>机型信息
+                <div  slot="content">
+                    <Form :model="device" :label-width="90">
+                        <FormItem>
+                            <b slot="label">手机型号</b>
+                            <Input v-model="device.phone_model.phone_model_name" :disabled="true" class="disabled-input"></Input>
+                        </FormItem>
+                        <FormItem>
+                            <b slot="label"><span class="need">*</span>Xdpi</b>
+                            <InputNumber style="width: 100%" v-model="device.phone_model.x_dpi"></InputNumber>
+                        </FormItem>
+                        <FormItem>
+                            <b slot="label"><span class="need">*</span>Ydpi</b>
+                            <InputNumber style="width: 100%" v-model="device.phone_model.y_dpi"></InputNumber>
+                        </FormItem>
+                        <FormItem>
+                            <b slot="label"><span class="need">*</span>X边框厚度</b>
+                            <InputNumber style="width: 100%" v-model="device.phone_model.x_border"></InputNumber>
+                        </FormItem>
+                        <FormItem>
+                            <b slot="label"><span class="need">*</span>Y边框厚度</b>
+                            <InputNumber style="width: 100%" v-model="device.phone_model.y_border"></InputNumber>
+                        </FormItem>
+                    </Form>
+                </div>
+            </Panel>
             <Panel>温度感应片配对
                 <CheckboxGroup slot="content" v-model="selectedTempPorts">
                     <Checkbox v-for="item in tempPorts" :label="item.port" :key="item.id" :disabled="isDisabled(item.port,disableTempPorts)">{{item.port}}</Checkbox>
@@ -107,7 +129,11 @@
                 ip_address: "string",
                 phone_model: {
                     id: "number",
-                    phone_model_name: "string"
+                    phone_model_name: "string",
+                    x_border: "number",
+                    y_border: "number",
+                    x_dpi: "number",
+                    y_dpi: "number",
                 },
                 rom_version: {
                     id: "number",
@@ -266,6 +292,7 @@
                             "cpu_id," +
                             "ip_address," +
                             "phone_model,phone_model.id,phone_model.phone_model_name," +
+                            "phone_model.x_border,phone_model.y_border,phone_model.x_dpi,phone_model.y_dpi," +
                             "rom_version,rom_version.id,rom_version.version," +
                             "start_time_key," +
                             "status," +
@@ -360,6 +387,10 @@
             },
             // Update device
             updateDevice(){
+                if(this.device.phone_model.x_border===null||this.device.phone_model.y_border===null||this.device.phone_model.x_dpi===null||this.device.phone_model.y_dpi===null){
+                    this.$Message.warning("机型信息不能为空！*为必填项");
+                    return
+                }
                 let temperDict = [];
                 //将当前设备要配置的温感片提取出来
                 let configPorts = this.selectedTempPorts.filter(selectedPort=> {
@@ -379,27 +410,44 @@
                 })
 
                 this.spinShow = true;
-                this.$ajax.post("api/v1/coral/set_device_config/",
-                    {
-                        device_label:this.device.device_label,
-                        device_name:this.device.device_name,
-                        tempport:temperDict,
-                        monitor_index:this.selectedMonitorPorts.length===0 ? null : parseInt(this.selectedMonitorPorts.join(",")),
-                        powerport:configPowerPorts.length===0 ? null : parseInt(configPowerPorts.join(",")),
-                        auto_test :this.openSwitch
-                    }
-                ).then(response => {
+                this.$ajax.all(
+                    [
+                        this.$ajax.post("api/v1/coral/set_device_config/",
+                            {
+                                device_label:this.device.device_label,
+                                device_name:this.device.device_name,
+                                tempport:temperDict,
+                                monitor_index:this.selectedMonitorPorts.length===0 ? null : parseInt(this.selectedMonitorPorts.join(",")),
+                                powerport:configPowerPorts.length===0 ? null : parseInt(configPowerPorts.join(",")),
+                                auto_test :this.openSwitch
+                            }
+                        ),
+                        this.$ajax.post("/api/v1/cedar/phone_model/"+ this.device.phone_model.id +"/",
+                            {
+                                x_border: this.device.phone_model.x_border,
+                                y_border: this.device.phone_model.y_border,
+                                x_dpi: this.device.phone_model.x_dpi,
+                                y_dpi: this.device.phone_model.y_dpi
+                            }
+                        )
+                    ]
+                ).then(this.$ajax.spread((configResponse, phoneModelResponse,)=>{
                     this.spinShow = false;
-                    if(config.DEBUG) console.log(response.data)
-                    if(response.status===200){
+                    if(config.DEBUG) console.log(configResponse.data)
+                    if(phoneModelResponse.status===200){
+                        this.$Message.error("机型信息保存成功!")
+                    }else {
+                        this.$Message.error("机型信息保存失败!")
+                    }
+                    if(configResponse.status===200){
                         this.$Message.success("配置成功")
                         this.$emit('after-device-update', response)
                     }else{
                         this.$Message.error("配置失败")
                     }
-                }).catch(reason => {
+                })).catch(reason => {
+                    if(config.DEBUG) console.log(reason)
                     this.spinShow = false;
-                    if(config.debug) console.log(reason)
                     this.$Message.error("配置失败")
                 })
             },
@@ -454,5 +502,10 @@
         color: #515a6e;
         border: #eee dotted 1px;
     }
+    .need{
+          color: #ff0000;
+          margin-right: 5px;
+          vertical-align: middle;
+      }
 
 </style>
