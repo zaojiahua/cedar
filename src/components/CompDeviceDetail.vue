@@ -422,7 +422,7 @@
                                 auto_test :this.openSwitch
                             }
                         ),
-                        this.$ajax.post("/api/v1/cedar/phone_model/"+ this.device.phone_model.id +"/",
+                        this.$ajax.patch("/api/v1/cedar/phone_model/"+ this.device.phone_model.id +"/",
                             {
                                 x_border: this.device.phone_model.x_border,
                                 y_border: this.device.phone_model.y_border,
@@ -435,13 +435,13 @@
                     this.spinShow = false;
                     if(config.DEBUG) console.log(configResponse.data)
                     if(phoneModelResponse.status===200){
-                        this.$Message.error("机型信息保存成功!")
+                        this.$Message.success("机型信息保存成功!")
                     }else {
                         this.$Message.error("机型信息保存失败!")
                     }
                     if(configResponse.status===200){
                         this.$Message.success("配置成功")
-                        this.$emit('after-device-update', response)
+                        this.$emit('after-device-update', configResponse)
                     }else{
                         this.$Message.error("配置失败")
                     }
