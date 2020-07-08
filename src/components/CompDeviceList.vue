@@ -15,6 +15,12 @@
                 <Button icon="md-add" type="primary" @click="onAddDeviceClick">添加装置</Button>
             </Col>
         </Row>
+        <Row style="margin-bottom: 16px" v-show="propShowCabinetSelect">
+            <span>机柜：</span>
+            <Select v-model="cabinetSelected"  style="width:200px;" clearable @on-change="onSelectedChange">
+                <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</Option>
+            </Select>
+        </Row>
 
         <Table ref="table" border :highlight-row="propHighLight" :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
         <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
@@ -123,6 +129,10 @@
             propCabinet:{  //select device in cabinet
                 type: Number,
                 default:null
+            },
+            propShowCabinetSelect:{  //select device in cabinet
+                type: Boolean,
+                default: true
             },
         },
         data() {
@@ -253,6 +263,8 @@
                 statusFilterList:[],
                 phoneModelFilterList:[],
                 tboard:[],
+                cabinetList:[],
+                cabinetSelected:null,
             }
         },
         methods: {
@@ -279,8 +291,13 @@
                     deviceSlotErrorCondition = "&paneslot__isnull=False&status=error"
                 }
                 let cabinetCondition = ""
-                if(this.propCabinet!==null)
-                    cabinetCondition = "&cabinet=" + this.propCabinet
+                if(this.propShowCabinetSelect){
+                    if(this.cabinetSelected!==null)
+                        cabinetCondition = "&cabinet=" + this.cabinetSelected
+                }else {
+                    if(this.propCabinet!==null)
+                        cabinetCondition = "&cabinet=" + this.propCabinet
+                }
                 let phoneModelCondition = ""
                 if(this.phoneModelFilterList.length>0){
                     phoneModelCondition = "&phone_model__phone_model_name__in="+"ReefList["+this.phoneModelFilterList.join("{%,%}")+"]"
@@ -455,6 +472,21 @@
             },
             setSelection(selection){
                 this.selection = selection;
+            },
+            getCabinetList() {
+                this.$ajax.get("api/v1/cedar/cabinet/?fields=cabinet_name,id")
+                    .then(response => {
+                        this.cabinetList = response.data.cabinets
+                    })
+                    .catch(error => {
+                        if (config.DEBUG) console.log(error)
+                        this.$Message.error("取得机柜信息出错")
+                    })
+            },
+            onSelectedChange(val){
+                if(val===undefined)
+                    this.cabinetSelected = null
+                this.onPageChange(1)
             }
         },
         watch:{
@@ -499,6 +531,7 @@
                     this.deviceColumnChecked.splice(this.deviceColumnChecked.indexOf("paneslot"),1);
             }
             this.onTableColumnChange()
+            this.getCabinetList()
         }
     }
 </script>
