@@ -63,7 +63,7 @@
 
         <Modal v-model="openDevice" fullscreen :mask-closable="false" :closable="false" @on-ok="setDevice">
             <comp-device-list v-if="openDevice" ref="selectDevice" :prop-device-slot="true" :prop-high-light="true" :prop-add-mode="false"
-                              :prop-device-status="true" :prop-cabinet="cabinetId"
+                              :prop-device-status="true" :prop-cabinet="cabinetId" :prop-show-cabinet-select="false"
                               @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
         </Modal>
 
