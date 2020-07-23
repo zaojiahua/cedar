@@ -82,6 +82,10 @@
             propResultRange:{
                 type: Array,
                 default: ()=>{return []}
+            },
+            propFullDate:{
+                type: Boolean,
+                default: true
             }
         },
         data: function () {
@@ -127,19 +131,23 @@
                 //时间参数选择
                 let dateRangeCondition = ""
                 if (this.propFilterDateRange && this.propFilterDateRange[0] && this.propFilterDateRange[1]) {
-                    dateRangeCondition = "&start_time__gte=" +
-                        this.propFilterDateRange[0].getFullYear() +
-                        "-" +
-                        (this.propFilterDateRange[0].getMonth() + 1) +
-                        "-" +
-                        this.propFilterDateRange[0].getDate() +
-                        " 00:00:00&end_time__lte=" +
-                        this.propFilterDateRange[1].getFullYear() +
-                        "-" +
-                        (this.propFilterDateRange[1].getMonth() + 1) +
-                        "-" +
-                        this.propFilterDateRange[1].getDate() +
-                        " 23:59:59"
+                    if(this.propFullDate)
+                        dateRangeCondition = "&start_time__gte=" +
+                            this.propFilterDateRange[0].getFullYear() +
+                            "-" +
+                            (this.propFilterDateRange[0].getMonth() + 1) +
+                            "-" +
+                            this.propFilterDateRange[0].getDate() +
+                            " 00:00:00&end_time__lte=" +
+                            this.propFilterDateRange[1].getFullYear() +
+                            "-" +
+                            (this.propFilterDateRange[1].getMonth() + 1) +
+                            "-" +
+                            this.propFilterDateRange[1].getDate() +
+                            " 23:59:59"
+                    else
+                        dateRangeCondition = "&start_time__gte=" + this.propFilterDateRange[0].format("yyyy-MM-dd hh:mm:ss") +
+                            "&end_time__lte=" + this.propFilterDateRange[1].format("yyyy-MM-dd hh:mm:ss")
                 }
                 this.loadingData = true
                 if(reset){

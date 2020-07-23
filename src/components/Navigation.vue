@@ -86,6 +86,12 @@
                             </Tooltip>
                             <span>清理中心</span>
                         </MenuItem>
+                        <MenuItem name="abnormal-statistics" :to="{name: 'abnormal-statistics'}">
+                            <Tooltip content="异常统计" placement="right" :disabled="!isCollapsed">
+                                <Icon type="ios-battery-charging" size="24"/>
+                            </Tooltip>
+                            <span>异常统计</span>
+                        </MenuItem>
                     </Menu>
                 </Sider>
                 <Content style="padding:16px;">
