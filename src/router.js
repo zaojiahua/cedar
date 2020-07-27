@@ -14,6 +14,7 @@ import RdsManagement from "./views/RdsManagement"
 import SystemUpgrade from "./views/SystemUpgrade"
 import Setting from "./views/Setting"
 import CleanCenter from "./views/CleanCenter"
+import AbnormalStatistics from "./views/AbnormalStatistics"
 
 
 Vue.use(Router)
@@ -81,6 +82,11 @@ let router = new Router({
                     path: "clean-center",
                     name: "clean-center",
                     component: CleanCenter
+                },
+                {
+                    path: "abnormal-statistics",
+                    name: "abnormal-statistics",
+                    component: AbnormalStatistics
                 }
             ]
         },

@@ -10,7 +10,7 @@
                 <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true" :prop-device-status="true"
                                   @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
             </Modal>
-            <comp-device-list ref="deviceList" :prop-add-mode="false" :prop-auto-load="false" :prop-filter-status="true"></comp-device-list>
+            <comp-device-list :prop-show-cabinet-select="false" ref="deviceList" :prop-add-mode="false" :prop-auto-load="false" :prop-filter-status="true"></comp-device-list>
             <Row type="flex" justify="center" style="margin-top: 16px;">
                 <Col>
                     <Button style="margin-right: 32px; width: 80px;" @click="showSelectDeviceModal=true">选择设备
