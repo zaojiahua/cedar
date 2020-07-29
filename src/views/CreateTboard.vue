@@ -124,13 +124,32 @@
             toPageChooseJob(){
                 this.selectedDevice = this.$refs.deviceList.getData()
                 if(this.selectedDevice.length>0){
-                    this.current = 1
-                    this.$nextTick(function () {
-                        if(this.selectedJob.length>0 ) {
-                            this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
-                            this.$refs.jobList.setSelection(this.jobSelection)
-                        }
+                    let ids = []
+                    this.selectedDevice.forEach(item=>{
+                        ids.push(item.id)
                     })
+                    this.$ajax.get("api/v1/cedar/checkout_device/?devices=" + ids.join(","))
+                        .then(response=>{
+                            if(response.data.length===0){
+                                this.current = 1
+                                this.$nextTick(function () {
+                                    if(this.selectedJob.length>0 ) {
+                                        this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
+                                        this.$refs.jobList.setSelection(this.jobSelection)
+                                    }
+                                })
+                            }else {
+                                let list = response.data.join(",")
+                                this.$Modal.confirm({
+                                    title: '设备校验',
+                                    content: '请将设备'+ list +'添加到testbox类型的pane上或取消勾选该设备',
+                                })
+                            }
+                        })
+                        .catch(error=>{
+                            if(config.DEBUG) console.log(error)
+                            this.$Message.error("设备校验出错")
+                        })
                 }else {
                     this.$Message.warning("请选择要进行测试的设备！");
                 }

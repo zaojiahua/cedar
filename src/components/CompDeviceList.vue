@@ -4,15 +4,19 @@
         <Modal v-if="propAddMode" v-model="showAddDevice" :closable="false" :footer-hide="true">
             <comp-add-device ref="addDevice" @afterDeviceAddSuccess="afterDeviceAddSuccess"></comp-add-device>
         </Modal>
+        <Modal v-if="propAddMode" v-model="showAddOtherDevice" :closable="false" :footer-hide="true">
+            <comp-add-other-device ref="addOtherDevice" @afterDeviceAddSuccess="afterDeviceAddSuccess"></comp-add-other-device>
+        </Modal>
         <Row type="flex" justify="space-between" style="margin-bottom: 8px;">
-            <Col span="20">
+            <Col span="18">
                 <CheckboxGroup v-model="deviceColumnChecked" style="padding-bottom: 16px;"
                                @on-change="onTableColumnChange">
                     <Checkbox v-for="item in deviceColumn" :label="item.key" :key="item.key">{{item.title}}</Checkbox>
                 </CheckboxGroup>
             </Col>
             <Col v-if="propAddMode">
-                <Button icon="md-add" type="primary" @click="onAddDeviceClick">添加装置</Button>
+                <Button icon="md-add" style="margin-right: 20px;border-color: #1bbc9c;color: #1bbc9c" @click="onAddOtherDeviceClick">其他设备</Button>
+                <Button icon="md-add" type="primary" @click="onAddDeviceClick">ADB设备</Button>
             </Col>
         </Row>
         <Row style="margin-bottom: 16px" v-show="propShowCabinetSelect">
@@ -30,6 +34,7 @@
 <script>
     import CompDeviceDetail from "./CompDeviceDetail";
     import CompAddDevice from "./CompAddDevice"
+    import CompAddOtherDevice from "./CompAddOtherDevice"
     import utils from "../lib/utils"
     import config from "../lib/config"
 
@@ -86,7 +91,7 @@
 
     export default {
         name: "CompDeviceManagement",
-        components: {CompDeviceDetail, CompAddDevice},
+        components: {CompDeviceDetail, CompAddDevice, CompAddOtherDevice},
         props:{
             propAddMode:{ // Show adding button
                 type: Boolean,
@@ -255,6 +260,7 @@
                 offset: 0,
                 // Add device
                 showAddDevice: false,
+                showAddOtherDevice:false,
                 // Multi Selection
                 selectedDevice: [],
                 currentPage:1,
@@ -265,6 +271,8 @@
                 tboard:[],
                 cabinetList:[],
                 cabinetSelected:null,
+
+                step:1
             }
         },
         methods: {
@@ -454,6 +462,10 @@
             onAddDeviceClick(){
                 this.$refs.addDevice.reset()
                 this.showAddDevice=true
+            },
+            onAddOtherDeviceClick(){
+                this.$refs.addOtherDevice.reset()
+                this.showAddOtherDevice=true
             },
             afterDeviceAddSuccess(device){
                 this.showAddDevice = false
