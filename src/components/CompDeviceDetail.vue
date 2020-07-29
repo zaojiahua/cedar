@@ -92,7 +92,7 @@
                 </p>
             </Panel>
         </Collapse>
-        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable">
+        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable" v-show="device.status!=='offline'">
             <Col>
                 <Button type="error" @click="deleteDevice">移除设备</Button>
             </Col>
