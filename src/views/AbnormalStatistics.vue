@@ -238,7 +238,7 @@
             },
             //  时间选择控件
             onDateChange(){
-
+                this.getAbnormalTypeList()
             },
             diffTime(start,end){
                 if(end===null)
