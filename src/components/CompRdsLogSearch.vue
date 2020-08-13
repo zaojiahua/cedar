@@ -19,7 +19,7 @@
                 </Row>
                 <Row>
                     <Col span="18">
-                        <span v-html="item.highlight[0]">item.highlight[0]</span>
+                        <span v-html="item.highlight">item.highlight</span>
                     </Col>
                     <Col span="6" style="float: right;text-align: right">
                         <span>{{ item.start_time }}</span>
