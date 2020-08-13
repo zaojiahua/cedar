@@ -13,9 +13,9 @@
             <comp-device-list :prop-show-cabinet-select="false" ref="deviceList" :prop-add-mode="false" :prop-auto-load="false" :prop-filter-status="true"></comp-device-list>
             <Row type="flex" justify="center" style="margin-top: 16px;">
                 <Col>
-                    <Button style="margin-right: 32px; width: 80px;" @click="showSelectDeviceModal=true">选择设备
+                    <Button style="margin-right: 32px; width: 90px;" @click="showSelectDeviceModal=true">选择设备
                     </Button>
-                    <Button type="primary" style="width: 80px;" @click="toPageChooseJob" :disabled="disableFlag">下一步</Button>
+                    <Button type="primary" style="width: 90px;" @click="toPageChooseJob" :disabled="disableFlag">下一步( {{selectedDevice.length}} )</Button>
                 </Col>
             </Row>
         </div>
@@ -43,8 +43,8 @@
                 </Col>
             </Row>
             <Row type="flex" justify="center" style="margin-top: 32px;">
-                <Button type="primary" style="width: 80px;" @click="backToPageChooseDevice">上一步</Button>
-                <Button type="primary" style="width: 80px; margin-left:32px;" @click="toPageFillInfo">下一步</Button>
+                <Button type="primary" style="width: 90px;" @click="backToPageChooseDevice">上一步</Button>
+                <Button type="primary" style="width: 90px; margin-left:32px;" @click="toPageFillInfo">下一步( {{selectedJob.length}} )</Button>
             </Row>
         </div>
 
@@ -59,6 +59,14 @@
                     <FormItem>
                         <b slot="label">运行轮次</b>
                         <InputNumber v-model="tboardRepeatTime" :min="1" :precision="0"></InputNumber>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">已选设备</b>
+                        <span> {{selectedDevice.length}} 台</span>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">已选用例</b>
+                        <span> {{selectedJob.length}} 个</span>
                     </FormItem>
                 </Form>
             </Card>
@@ -116,6 +124,8 @@
                     this.$refs.deviceList.refresh(this.$refs.selectDevice.getSelection())
                     this.disableFlag = false;
                     this.deviceSelection = this.$refs.selectDevice.getThisSelection()
+
+                    this.selectedDevice = this.$refs.deviceList.getData()
                 }
             },
             onSelectDeviceModalRowClick(data, index){
@@ -189,6 +199,7 @@
             },
             selectJob(){
                 this.$refs.jobSelectedList.refreshWithData(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection()))
+                this.selectedJob = this.$refs.jobSelectedList.getData()
             },
             toPageFillInfo(){
                 this.selectedJob = this.$refs.jobSelectedList.getData()
