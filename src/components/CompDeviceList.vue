@@ -348,7 +348,7 @@
                         deviceSlotCondition +
                         deviceSlotErrorCondition +
                         cabinetCondition +
-                        "&ordering=status"
+                        "&ordering=id"
                     )
                     .then(response => {
                         this._responseHandle(response);
