@@ -198,7 +198,7 @@
                 this.$refs.jobList.refreshWithParam("&" + this.selectedDetail(selected))
             },
             selectJob(){
-                this.$refs.jobSelectedList.refreshWithData(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection()))
+                this.$refs.jobSelectedList.refreshWithData(_.cloneDeep(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection())))
                 this.selectedJob = this.$refs.jobSelectedList.getData()
             },
             toPageFillInfo(){
