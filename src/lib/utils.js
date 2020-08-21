@@ -64,5 +64,14 @@ export default {
             }
             return format;
         };
+    },
+    blobToDataURL (blob) {
+        return new Promise((resolve, reject) => {
+            let reader = new FileReader()
+            reader.readAsDataURL(blob)
+            reader.onload = (e) => {
+                resolve(e.target.result)
+            }
+        })
     }
 }

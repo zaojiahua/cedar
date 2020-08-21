@@ -78,8 +78,8 @@
                 <Button type="primary" @click="openErrorDevice=false;showDeviceDetail=false;">返回</Button>
             </div>
         </Modal>
-        <Modal v-model="showConfirmModal" :closable="false" :footer-hide="true" :mask-closable="false">
-            <Card>
+        <Modal v-model="showConfirmModal" :closable="false" :footer-hide="true" :mask-closable="false" width="80">
+            <!-- <Card>
                 <p slot="title" style="font-weight: bold">确认机型属性</p>
                 <Icon slot="extra" @click.prevent="showConfirmModal=false" type="md-close" />
                 <Form :model="pane" :label-width="100">
@@ -109,7 +109,84 @@
                     <Button type="primary" @click="onConfirmDevice" style="width: 100px">确认</Button>
                 </p>
                 <Spin v-show="showSpin" fix size="large"></Spin>
-            </Card>
+            </Card> -->
+            
+            <div class="container">
+                <div class="panel">
+                    <h4 style="font-weight: bold; font-size: 2rem; margin-bottom: 20px;">确认机型属性</h4>
+                    <Form :model="pane" :label-width="100">
+                        <FormItem>
+                            <b slot="label">屏幕边框：</b>
+                            <div class="input-box">
+                                <Input disabled v-model="phoneModel.inner_top_left" class="disabled-input"></Input>&mdash;
+                                <Input disabled v-model="phoneModel.inner_bottom_right" class="disabled-input"></Input>
+                                <div v-show="phoneModel.inner_top_left && phoneModel.inner_bottom_right">
+                                    <Button icon="ios-eye-outline" v-show="showScreenArea" @click="showScreenArea=!showScreenArea"></Button>
+                                    <Button icon="ios-eye-off-outline" v-show="!showScreenArea" @click="showScreenArea=!showScreenArea"></Button>
+                                </div>
+                            </div>
+                        </FormItem>
+                        <FormItem>
+                            <b slot="label">手机边框：</b>
+                            <div class="input-box">
+                                <Input disabled v-model="phoneModel.outer_top_left" class="disabled-input"></Input>&mdash;
+                                <Input disabled v-model="phoneModel.outer_bottom_right" class="disabled-input"></Input>
+                                <div v-show="phoneModel.outer_top_left && phoneModel.outer_bottom_right">
+                                    <Button icon="ios-eye-outline" v-show="showPhoneArea" @click="showPhoneArea=!showPhoneArea"></Button>
+                                    <Button icon="ios-eye-off-outline" v-show="!showPhoneArea" @click="showPhoneArea=!showPhoneArea"></Button>
+                                </div>
+                            </div>
+                        </FormItem>
+                        <FormItem>
+                            <b slot="label">手机型号：</b>
+                            <Input disabled v-model="phoneModel.phone_model_name" class="disabled-input"></Input>
+                        </FormItem>
+                        <FormItem>
+                            <b slot="label">Xdpi：</b>
+                            <Input disabled v-model="phoneModel.x_dpi" class="disabled-input"></Input>
+                        </FormItem>
+                        <FormItem>
+                            <b slot="label">Ydpi：</b>
+                            <Input disabled v-model="phoneModel.y_dpi" class="disabled-input"></Input>
+                        </FormItem>
+                    </Form>
+                    <div class="panel__footer">
+                        <Button size="large" class="panel_btn" @click="showConfirmModal=false">取消</Button>
+                        <Button size="large" type="success" class="panel_btn" @click="saveAreaInfo">完成</Button>
+                    </div>
+                </div>
+                <div class="area-selector">
+                    <div class="area-selector__header">
+                        <h4 style="font-weight: bold; font-size: 2em;">请在图中框选手机边框与屏幕边框</h4>
+                        <p class="area-selector_desc">按下鼠标按键并拖动来框选区域，按下Ctrl可遮罩图片外的内容</p>
+                    </div>
+                    <div class="area-selector__main">
+                        <div class="area-selector__loading" v-if="!imgSrc">
+                            <h5 class="title">请打开柜门，确保光线充足</h5>
+                            <div class="loading">
+                                <div class="loading__item"></div>
+                                <div class="loading__item"></div>
+                                <div class="loading__item"></div>
+                                <div class="loading__desc">正在努力获取图像...</div>
+                            </div>
+                        </div>
+                        <AreaSelector
+                            v-else
+                            :imgSrc="imgSrc"
+                            @on-select="selectArea"
+                            @on-load="setImgInfo"
+                        ></AreaSelector>
+                    </div>
+                </div>
+                <div class="coordinate-confirm">
+                    <div class="top">
+                        <Button type="success" long @click="setBorder('screen')">屏幕边框</Button>
+                        <Button type="success" long @click="setBorder('phone')">手机边框</Button>
+                        <Button type="success" long @click="showAllAreas=!showAllAreas">{{showAllAreas ? "关闭所有区域" : "显示所有区域"}}</Button>
+                    </div>
+                    <Button type="success" long @click="getImg">重新获取图片</Button>
+                </div>
+            </div>
         </Modal>
 
 
@@ -124,11 +201,13 @@
     import CompDeviceList from "../components/CompDeviceList";
     import CompDeviceDetail from "../components/CompDeviceDetail"
     import CompMechanicalArmCard from "../components/CompMechanicalArmCard"
+    import AreaSelector from "../components/common/AreaSelector"
+    import Utils from "../lib/utils"
 
 
 
     export default {
-        components:{ CompPaneCard ,CompDeviceList,CompDeviceDetail, CompMechanicalArmCard },
+        components:{ CompPaneCard ,CompDeviceList,CompDeviceDetail, CompMechanicalArmCard, AreaSelector },
         data(){
             return{
                 paneList:[],
@@ -157,11 +236,97 @@
                 phoneModel:{
                     id: null,
                     phone_model_name: "",
-                    x_border: null,
-                    y_border: null,
                     x_dpi: null,
                     y_dpi: null,
+                    outer_top_left: "",
+                    outer_bottom_right: "",
+                    inner_top_left: "",
+                    inner_bottom_right: ""
+                },
+                areaInfo: {
+                    pane_view: 0,
+                    phone_model: 0,
+                    outside_upper_left_x: 0,
+                    outside_upper_left_y: 0,
+                    outside_under_right_x: 0,
+                    outside_under_right_y: 0,
+                    inside_upper_left_x: 0,
+                    inside_upper_left_y: 0,
+                    inside_under_right_x: 0,
+                    inside_under_right_y: 0
+                },
+                coordinate: null,
+                cabinetIP: null,
+                imgSrc: null,
+                imgInfo: null,
+                showScreenArea: false,
+                showPhoneArea: false,
+                showAllAreas: false,
+                cameraId: null
+            }
+        },
+        watch: {
+            areaInfo: {
+                handler: function(val) {
+                    if (this.showScreenArea) {
+                        this.showSelectedArea("ScreenArea", val.inside_upper_left_x, val.inside_upper_left_y, val.inside_under_right_x, val.inside_under_right_y)
+                    }
+                    if (this.showPhoneArea) {
+                        this.showSelectedArea("PhoneArea", val.outside_upper_left_x, val.outside_upper_left_y, val.outside_under_right_x, val.outside_under_right_y)
+                    }
+                    if (this.areaInfo.outside_upper_left_x !== 0 && this.areaInfo.inside_under_right_x !== 0) {
+                        this.phoneModel.outer_top_left = `${val.outside_upper_left_x},${val.outside_upper_left_y}`
+                        this.phoneModel.outer_bottom_right = `${val.outside_under_right_x},${val.outside_under_right_y}`
+                        this.phoneModel.inner_top_left = `${val.inside_upper_left_x},${val.inside_upper_left_y}`
+                        this.phoneModel.inner_bottom_right = `${val.inside_under_right_x},${val.inside_under_right_y}`
+                    }
+                    
+                },
+                deep: true,
+                immediate: true
+            },
+            showScreenArea(val) {
+                if (val) {
+                    if (this.showPhoneArea) this.showAllAreas = val
+                    if (this.areaInfo.inside_upper_left_x !== this.areaInfo.inside_under_right_x) {
+                        this.showSelectedArea("ScreenArea", this.areaInfo.inside_upper_left_x, this.areaInfo.inside_upper_left_y, this.areaInfo.inside_under_right_x, this.areaInfo.inside_under_right_y)
+                    }
+                } else {
+                    if (!this.showPhoneArea) this.showAllAreas = val
+                    let selector = document.querySelector('.selector')
+                    let area = document.querySelector('.screenarea')
+                    if (area) selector.removeChild(area)
                 }
+            },
+            showPhoneArea(val) {
+                if (val) {
+                    if (this.showScreenArea) this.showAllAreas = val
+                    if (this.areaInfo.outside_upper_left_x !== this.areaInfo.outside_under_right_x) {
+                        this.showSelectedArea("PhoneArea", this.areaInfo.outside_upper_left_x, this.areaInfo.outside_upper_left_y, this.areaInfo.outside_under_right_x, this.areaInfo.outside_under_right_y)
+                    }
+                } else {
+                    if (!this.showScreenArea) this.showAllAreas = val
+                    let selector = document.querySelector('.selector')
+                    let area = document.querySelector('.phonearea')
+                    if (area) selector.removeChild(area)
+                }
+            },
+            showAllAreas(val) {
+                this.showScreenArea = val
+                this.showPhoneArea = val
+            },
+            phoneModel: {
+                handler: function(newVal, oldVal) {
+                    if (this.areaInfo.outside_upper_left_x === this.areaInfo.outside_under_right_x) {
+                         this.$ajax.get(`/api/v1/cedar/control_device_cut_coordinate/?pane_view=${this.paneList[this.paneIndex].id}&phone_model=${newVal.id}`)
+                        .then(res => {
+                            Object.assign(this.areaInfo, res.data[0])
+                        }).catch(err => {
+                            console.log(err)
+                        })
+                    }
+                },
+                deep: true
             }
         },
         methods:{
@@ -233,6 +398,7 @@
                         robot_arm:this.pane.robot_arm,
                     }
                     if(this.pane.camera!==null){
+                        // todo pass throuth "pane.camera" to coral when request for picture
                         paramObj["camera"] = this.pane.camera
                     }
 
@@ -292,14 +458,21 @@
                     }
                 })
             },
-            setDevice(){
+            async setDevice(){
                 if(this.paneList[this.paneIndex].type==="test_box"){
+                    await this.$ajax.get("api/v1/cedar/paneview?id=" + this.paneList[this.paneIndex].id)
+                    .then(res => {
+                        this.cameraId = res.data.paneview[0].camera
+                    })
+
                     this.showConfirmModal = true
                     this.$ajax.get("api/v1/cedar/device/"+ this.selectDevice +"/?fields=" +
-                        "phone_model,phone_model.id,phone_model.phone_model_name," +
+                        "cabinet,cabinet.ip_address,phone_model,phone_model.id,phone_model.phone_model_name," +
                         "phone_model.x_border,phone_model.y_border,phone_model.x_dpi,phone_model.y_dpi"
                     ).then(response=>{
-                        this.phoneModel = response.data.phone_model
+                        Object.assign(this.phoneModel, response.data.phone_model)
+                        this.cabinetIP = response.data.cabinet.ip_address
+                        this.getImg()
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
                         this.$Message.error("获取机型信息失败")
@@ -369,6 +542,110 @@
                         if (config.DEBUG) console.log(error)
                         this.$Message.error("取得机柜信息出错")
                     })
+            },
+            selectArea(coordinate) {
+                this.coordinate = coordinate
+            },
+            getImg() {
+                this.imgSrc = ''
+                this.showAllAreas = false
+                let url = `http://${this.cabinetIP}:5000/pane/original_picture/?camera_id=${this.cameraId}`
+                let xhr = new XMLHttpRequest()
+                xhr.open('GET', url, true)
+                xhr.responseType = 'blob'
+                xhr.send()
+                xhr.onload = () => {
+                    Utils.blobToDataURL(xhr.response).then(res => {
+                        this.imgSrc = res
+                    })
+                }
+                xhr.onerror = (err) => {
+                    console.log(err)
+                }
+            },
+            setBorder(type) {
+                if (!this.coordinate || !this.coordinate.absoluteCoordinate) return
+                let { absoluteCoordinate: { topLeft, bottomRight } } = this.coordinate
+                topLeft = {
+                    x: topLeft.x.toFixed(2),
+                    y: topLeft.y.toFixed(2)
+                }
+                bottomRight = {
+                    x: bottomRight.x.toFixed(2),
+                    y: bottomRight.y.toFixed(2)
+                }
+                switch (type) {
+                    case "screen":
+                        this.phoneModel.inner_top_left = `${topLeft.x},${topLeft.y}`
+                        this.phoneModel.inner_bottom_right = `${bottomRight.x},${bottomRight.y}`
+                        this.areaInfo.inside_upper_left_x = topLeft.x
+                        this.areaInfo.inside_upper_left_y = topLeft.y
+                        this.areaInfo.inside_under_right_x = bottomRight.x
+                        this.areaInfo.inside_under_right_y = bottomRight.y
+                        break
+                    case "phone":
+                        this.phoneModel.outer_top_left = `${topLeft.x},${topLeft.y}`
+                        this.phoneModel.outer_bottom_right = `${bottomRight.x},${bottomRight.y}`
+                        this.areaInfo.outside_upper_left_x = topLeft.x
+                        this.areaInfo.outside_upper_left_y = topLeft.y
+                        this.areaInfo.outside_under_right_x = bottomRight.x
+                        this.areaInfo.outside_under_right_y = bottomRight.y
+                        break
+                }
+            },
+            setImgInfo (val) {
+                this.imgInfo = val
+                this.showAllAreas = true
+            },
+            showSelectedArea(text, tlx, tly, brx, bry) {
+                let selector = document.querySelector('.selector')
+                let selectorRect = selector.getBoundingClientRect()
+                let selectorImgRect = document.querySelector('.selector__img').getBoundingClientRect()
+                let offsetX = (selectorRect.width - selectorImgRect.width) / 2
+                let offsetY = (selectorRect.height - selectorImgRect.height) / 2
+                let left = offsetX + tlx / this.imgInfo.width * selectorImgRect.width
+                let top = offsetY + tly / this.imgInfo.height * selectorImgRect.height
+                let width = (brx - tlx) / this.imgInfo.width * selectorImgRect.width
+                let height = (bry - tly) / this.imgInfo.height * selectorImgRect.height
+                let area = document.createElement('div')
+                area.classList.add('area')
+                area.classList.add(text.toLowerCase())
+                area.style.display = 'flex'
+                area.style.fontSize = '24px'
+                area.style.fontWeight = 'bolder'
+                area.style.position = 'absolute'
+                area.style.left = `${left}px`
+                area.style.top = `${top}px`
+                area.style.width = `${width}px`
+                area.style.height = `${height}px`
+                area.style.overflow = 'hidden'
+                area.style.textIndent = '0.4em'
+                if (text.toLowerCase() === 'screenarea') {
+                    area.style.zIndex = 900
+                    area.style.background = 'rgba(87, 250, 0, .4)'
+                    area.style.justifyContent = 'flex-start'
+                    area.style.alignItems = 'flex-end'
+                }
+                if (text.toLowerCase() === 'phonearea') {
+                    area.style.zIndex = 800
+                    area.style.background = 'rgba(87, 250, 255, .4)'
+                    area.style.justifyContent = 'flex-start'
+                    area.style.alignItems = 'flex-start'
+                }
+                area.innerText = text
+                selector.appendChild(area)
+            },
+            saveAreaInfo() {
+                this.areaInfo.pane_view = this.paneList[this.paneIndex].id
+                this.areaInfo.phone_model = this.phoneModel.id
+                this.$ajax.post("/api/v1/cedar/control_device_cut_coordinate/", this.areaInfo)
+                .then(res => {
+                    this.$Message.success("参数保存成功")
+                }).catch(err => {
+                    console.log(err)
+                    this.$Message.error("参数保存失败")
+                })
+                this.onConfirmDevice()
             }
         },
         mounted(){
@@ -405,6 +682,130 @@
         background-color: #0000;
         color: #515a6e;
         border: #eee dotted 1px;
+    }
+    .container {
+        display: flex;
+        flex-direction: row;
+    }
+    .panel {
+        flex: 1;
+        padding: 10px;
+        position: relative;
+    }
+    .panel__footer {
+        position: absolute;
+        bottom: 10px;
+        width: calc(100% - 20px);
+        display: flex;
+        justify-content: space-around;
+    }
+    .panel_btn {
+        width: 46%;
+    }
+    .input-box {
+        display: flex;
+        justify-content: space-between;
+    }
+    .input-box Button {
+        border: none;
+        font-size: 2em;
+        margin-top: -14px;
+    }
+    .input-box Button:focus {
+        outline: none;
+        border: none;
+    }
+
+    .area-selector {
+        flex: 3;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 10px;
+        background-color: #eeeeee;
+    }
+    .area-selector__main {
+        display: flex;
+        flex: 1;
+        max-height: 755px;
+        justify-content: center;
+        padding: 10px;
+    }
+    .area-selector__loading {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+    .title {
+        font-size: 1.4rem;
+        margin-bottom: 1.6em;
+    }
+    .coordinate-confirm {
+        flex: .5;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+    }
+    .top {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .top > Button + Button {
+        margin-top: 10px;
+    }
+
+    .loading {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        z-index: 5;
+    }
+    .loading__item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        transform-origin: 48% 48%;
+        mix-blend-mode: screen;
+    }
+    .loading__item:nth-child(1) {
+        background-color: #0000ff;
+        animation: turn 3s linear 0s infinite;
+    }
+    .loading__item:nth-child(2) {
+        background-color: #00ff00;
+        animation: turn 3s linear -1s infinite;
+    }
+    .loading__item:nth-child(3) {
+        background-color: #ff0000;
+        animation: turn 3s linear -2s infinite;
+    }
+    .loading__desc {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        padding: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        line-height: 1.4;
+        border-radius: 50%;
+    }
+    @keyframes turn {
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>
 
