@@ -203,6 +203,7 @@
     import CompMechanicalArmCard from "../components/CompMechanicalArmCard"
     import AreaSelector from "../components/common/AreaSelector"
     import Utils from "../lib/utils"
+import JobManagementVue from '../views/JobManagement.vue';
 
 
 
@@ -262,7 +263,8 @@
                 showScreenArea: false,
                 showPhoneArea: false,
                 showAllAreas: false,
-                cameraId: null
+                cameraId: null,
+                deviceLabel: null
             }
         },
         watch: {
@@ -515,6 +517,7 @@
             },
             onSelectDeviceModalRowClick(row){
                 this.selectDevice = row.id
+                this.deviceLabel = row.device_label
             },
             afterRemovePaneSlot(){
                 this.refresh()
@@ -645,7 +648,25 @@
                     console.log(err)
                     this.$Message.error("参数保存失败")
                 })
-                this.onConfirmDevice()
+                
+                let _this = this
+                let url = `http://${this.cabinetIP}:5000/pane/device_border/`
+                let xhr = new XMLHttpRequest()
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            _this.onConfirmDevice()
+                        }
+                        if (xhr.status === 400) {
+                            console.error(xhr)
+                        }
+                    }
+                }
+                let areaInfo = JSON.stringify(Object.assign({device_label: this.deviceLabel}, this.areaInfo), null, 2)
+                console.log(areaInfo)
+                xhr.open('POST', url, true)
+                xhr.setRequestHeader('content-type', 'application/json');
+                xhr.send(areaInfo)
             }
         },
         mounted(){
