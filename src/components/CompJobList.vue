@@ -242,7 +242,7 @@
                 this.selection[this.currentPage] = selection
             },
             getJobNameList(){
-                this.$ajax.get("api/v1/cedar/job/?fields=job_name"+this.urlParam)
+                this.$ajax.get("api/v1/cedar/job/?fields=job_name&job_deleted=False"+this.urlParam)
                     .then(response=>{
                         let jobNameList = [];
                         response.data.jobs.forEach(job=>{
@@ -338,5 +338,8 @@
 </script>
 
 <style scoped>
+    /deep/.ivu-auto-complete.ivu-select-dropdown{
+        max-height: 500px
+    }
 
 </style>
