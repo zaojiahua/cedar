@@ -45,6 +45,7 @@
             device_label: "string",
             device_name: "string",
             phone_model: {
+                id:"number",
                 phone_model_name: "string",
                 cpu_name: "string"
             },
@@ -138,6 +139,10 @@
             propShowCabinetSelect:{  //select device in cabinet
                 type: Boolean,
                 default: true
+            },
+            propPaneviewType:{
+                type: Boolean,
+                default: false
             },
         },
         data() {
@@ -298,6 +303,9 @@
                 if(this.propDeviceSlotError){
                     deviceSlotErrorCondition = "&paneslot__isnull=False&status=error"
                 }
+                let paneviewTypeCondition = ""
+                if(this.propPaneviewType)
+                    paneviewTypeCondition = "&paneslot__paneview__type=test_box"
                 let cabinetCondition = ""
                 if(this.propShowCabinetSelect){
                     if(this.cabinetSelected!==null)
@@ -319,6 +327,7 @@
                         'device_label,' +
                         'phone_model,' +
                         'phone_model.phone_model_name,' +
+                        'phone_model.id,' +
                         'rom_version,' +
                         'rom_version.version,' +
                         'device_name,' +
@@ -348,6 +357,7 @@
                         deviceSlotCondition +
                         deviceSlotErrorCondition +
                         cabinetCondition +
+                        paneviewTypeCondition +
                         "&ordering=id"
                     )
                     .then(response => {
@@ -362,6 +372,7 @@
                 this.data = utils.validate(getDeviceListSerializer, response.data['devices'])
                 let deviceList = [];
                 this.data.forEach(device=>{
+                    device.phone_model_id = device.phone_model.id
                     device.cpu_name = device.phone_model.cpu_name
                     device.phone_model = device.phone_model.phone_model_name
                     device.rom_version = device.rom_version.version
