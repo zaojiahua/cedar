@@ -276,6 +276,7 @@
                     "test_area.description," +
                     "custom_tag," +
                     "custom_tag.id," +
+                    "updated_time," +
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
                     "&ordering=-updated_time" +
