@@ -70,6 +70,31 @@
                     </Form>
                 </div>
             </Panel>
+            <Panel>僚机设备信息
+                <div slot="content">
+                    <Form :model="device" :label-width="90">
+                        <div v-for="(item,index) in device.subsidiarydevice">
+                            <Divider>僚机{{ index+1 }}</Divider>
+                            <FormItem>
+                                <b slot="label">串号</b>
+                                <Input v-model="item.serial_number" style="width: 80%" :disabled="true" class="disabled-input"></Input>
+                                <Icon v-show="propSubsidiaryDevice&&(index+1===device.subsidiarydevice.length)" type="md-remove-circle"
+                                      @click="deleteSubsidiary(item.id,index)" style="margin-left: 5px" size="20" color="red"/>
+                            </FormItem>
+                            <FormItem>
+                                <b slot="label">IP</b>
+                                <Input v-model="item.ip_address" style="width: 80%" :disabled="true" class="disabled-input"></Input>
+                            </FormItem>
+                        </div>
+                        <div v-if="device.subsidiarydevice.length<3">
+                            <Divider>僚机{{ device.subsidiarydevice.length+1 }}</Divider>
+                            <Button :disabled="!propSubsidiaryDevice" type="primary" style="width: 80%;margin-left: 10%;" @click="addSubsidiary(device.subsidiarydevice.length+1)">
+                                <Icon type="ios-add-circle-outline" size="20" />
+                            </Button>
+                        </div>
+                    </Form>
+                </div>
+            </Panel>
             <Panel>温度感应片配对
                 <CheckboxGroup slot="content" v-model="selectedTempPorts">
                     <Checkbox v-for="item in tempPorts" :label="item.port" :key="item.id" :disabled="isDisabled(item.port,disableTempPorts)">{{item.port}}</Checkbox>
@@ -105,12 +130,18 @@
             <Button type="error" @click="releaseDeviceSlot">解除设备关联</Button>
         </Row>
         <Spin size="large" fix v-if="spinShow"></Spin>
+        <Modal class="closeBtn" v-model="showAddModal"  :mask-closable="false" footer-hide>
+            <Comp-add-subsidiary-device ref="addDevice" :prop-device-id="device.id" :prop-index="addDeviceIndex" :prop-ip="device.cabinet.ip_address"
+                                        @onClose="showAddModal=false" @afterDeviceAddSuccess="onDeviceAddSuccess"></Comp-add-subsidiary-device>
+        </Modal>
+
     </Card>
 </template>
 
 <script>
     import utils from "../lib/utils"
     import config from "../lib/config"
+    import CompAddSubsidiaryDevice from "./CompAddSubsidiaryDevice";
 
     const serializer = {
             deviceSerializer: {
@@ -123,7 +154,8 @@
                 },
                 cabinet: {
                     id: "number",
-                    cabinet_name: "string"
+                    cabinet_name: "string",
+                    ip_address: "string"
                 },
                 cpu_id: "string",
                 ip_address: "string",
@@ -158,6 +190,14 @@
                     {
                         id: "number",
                         port: "string"
+                    }
+                ],
+                subsidiarydevice:[
+                    {
+                        id: "number",
+                        serial_number: "string",
+                        ip_address: "string",
+                        order: "number"
                     }
                 ]
             },
@@ -198,12 +238,17 @@
         }
     export default {
         name: "CompDeviceDetail",
+        components:{ CompAddSubsidiaryDevice },
         props:{
             editable:{
                 type: Boolean,
                 default: false
             },
             propDeviceSlot:{
+                type: Boolean,
+                default: false
+            },
+            propSubsidiaryDevice:{   //是否可对僚机进行操作
                 type: Boolean,
                 default: false
             }
@@ -226,6 +271,8 @@
                 deviceMonitorPorts:"",
                 spinShow:false,
                 openSwitch:true,
+                showAddModal:false,
+                addDeviceIndex:null,
             }
         },
         methods: {
@@ -288,7 +335,7 @@
                             "id," +
                             "device_label," +
                             "android_version,android_version.id,android_version.version," +
-                            "cabinet,cabinet.id,cabinet.cabinet_name," +
+                            "cabinet,cabinet.id,cabinet.cabinet_name,cabinet.ip_address," +
                             "cpu_id," +
                             "ip_address," +
                             "phone_model,phone_model.id,phone_model.phone_model_name," +
@@ -300,7 +347,9 @@
                             "tempport,tempport.id,tempport.port,tempport.description," +
                             "powerport,powerport.id,powerport.port," +
                             "monitor_index,monitor_index.id,monitor_index.port," +
-                            "auto_test"
+                            "auto_test," +
+                            "subsidiarydevice,subsidiarydevice.id,subsidiarydevice.serial_number,subsidiarydevice.ip_address,subsidiarydevice.order"+
+                            "&ordering=subsidiarydevice.order"
                         ),
                         ajax.get("api/v1/cedar/temp_port/?fields=" +
                             "id," +
@@ -366,6 +415,9 @@
                          this.deviceMonitorPorts = port.id;
                     })
                     this.selectedMonitorPorts_copy = this.selectedMonitorPorts
+
+                    //对取回的僚机数据按照order进行排序
+                    this.device.subsidiarydevice.sort(this.orderSort)
 
                     //aiTester
                     this.openSwitch = this.device.auto_test
@@ -490,6 +542,56 @@
                     if(config.DEBUG) console.log(error)
                     this.$Message.error("设备解除关联失败，请确认后重试！")
                 })
+            },
+            //对数组中的对象的某个属性排序  根据order排序
+            orderSort(obj1,obj2){
+                let a=obj1.order;
+                let b=obj2.order;
+                if(a>b){
+                    return 1
+                }else if(a<b){
+                    return -1
+                }else{
+                    return 0
+                }
+            },
+            //移除僚机
+            deleteSubsidiary(id,index){
+                let remove = this
+                this.$Modal.confirm({
+                    title: "警告！",
+                    content: "您确定要移除僚机"+ (index+1) +"吗？",
+                    onOk(){
+                        remove.spinShow = true
+                        remove.$ajax.delete("api/v1/cedar/subsidiary_device/"+ id +"/")
+                            .then(response=>{
+                                remove.device.subsidiarydevice.splice(index,1)
+                                remove.$Message.success("僚机移除成功")
+                                remove.spinShow = false
+                            }).catch(error=>{
+                                if(config.DEBUG) console.log(error)
+                                remove.$Message.error("僚机移除失败")
+                                remove.spinShow = false
+                        })
+                    }
+                })
+            },
+            //添加僚机
+            addSubsidiary(index){
+                this.showAddModal = true
+                this.addDeviceIndex = index
+                this.$refs.addDevice.reset()
+            },
+            //僚机添加成功以后的操作(在device详情页展示出来)
+            onDeviceAddSuccess(){
+                this.showAddModal = false
+                this.$ajax.get("/api/v1/cedar/subsidiary_device/?fields=id,order,serial_number,ip_address&devices="+this.device.id)
+                    .then(response=>{
+                        this.device.subsidiarydevice = response.data.subsidiarydevice
+                    }).catch(error=>{
+                        if(config.DEBUG) console.log(error)
+                        this.$Message.error("僚机信息获取失败")
+                })
             }
 
         },
@@ -497,6 +599,10 @@
 </script>
 
 <style scoped>
+     .closeBtn>>>.ivu-modal-close{
+        right: 24px;
+        top: 24px;
+    }
     .disabled-input >>> input {
         background-color: #0000;
         color: #515a6e;
