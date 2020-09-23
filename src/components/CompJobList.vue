@@ -278,7 +278,7 @@
                     "custom_tag.id," +
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
-                    "&ordering=id" +
+                    "&ordering=-updated_time" +
                     "&job_name__icontains=" +  value +
                     this.urlParam
 
