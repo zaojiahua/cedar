@@ -81,8 +81,9 @@
         <Spin size="large" fix v-if="showSpin"></Spin>
         <Modal v-model="showImgModal" :fullscreen="true" footer-hide style="text-align: center">
             <Icon type="ios-arrow-dropleft-circle" size="60"  style="position: fixed;top: 45%;left: 5%;cursor: pointer;opacity: 0.4" @click="prevBtn"/>
-            <img :src=baseUrl+imgInfo.img_file :alt="imgInfo.file_name" style="max-height: 98%;max-width: 100%;">
+            <img :src=baseUrl+imgInfo.img_file :alt="imgInfo.file_name" style="max-height: 92%;max-width: 100%;">
             <Icon type="ios-arrow-dropright-circle" size="60" style="position: fixed;top: 45%;right: 5%;cursor: pointer;opacity: 0.4" @click="nextBtn"/>
+            <p style="font-size: 20px"> {{ imgInfo.file_name }} </p>
             <p style="font-size: 20px"> {{ imgIndex+1 }} / {{ rdsInfo.rdsscreenshot.length }} </p>
         </Modal>
         <Modal v-model="showRdsLogModal" :fullscreen="true" :title="logName" ok-text="下载" @on-ok="downloadLog">
