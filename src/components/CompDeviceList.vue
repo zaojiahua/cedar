@@ -19,11 +19,19 @@
                 <Button icon="md-add" type="primary" @click="onAddDeviceClick">ADB设备</Button>
             </Col>
         </Row>
-        <Row style="margin-bottom: 16px" v-show="propShowCabinetSelect">
-            <span>机柜：</span>
-            <Select v-model="cabinetSelected"  style="width:200px;" clearable @on-change="onSelectedChange">
-                <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</Option>
-            </Select>
+        <Row style="margin-bottom: 16px">
+            <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
+                <span>机柜：</span>
+                <Select v-model="cabinetSelected"  style="width:200px;" clearable @on-change="onSelectedChange">
+                    <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</Option>
+                </Select>
+            </div>
+            <div v-show="propShowSelectNumber">
+                <span>僚机数量：</span>
+                <Select v-model="subsidiaryDeviceSelected"  style="width:200px;" clearable @on-change="onSubsidiaryDeviceSelect">
+                    <Option v-for="item in subsidiaryDeviceNum" :value="item">{{ item }}</Option>
+                </Select>
+            </div>
         </Row>
 
         <Table ref="table" border :highlight-row="propHighLight" :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
@@ -137,6 +145,10 @@
                 default:null
             },
             propShowCabinetSelect:{  //select device in cabinet
+                type: Boolean,
+                default: true
+            },
+            propShowSelectNumber:{
                 type: Boolean,
                 default: true
             },
@@ -276,6 +288,8 @@
                 tboard:[],
                 cabinetList:[],
                 cabinetSelected:null,
+                subsidiaryDeviceSelected:null,
+                subsidiaryDeviceNum:[],
 
                 step:1
             }
@@ -314,6 +328,9 @@
                     if(this.propCabinet!==null)
                         cabinetCondition = "&cabinet=" + this.propCabinet
                 }
+                let deviceNumCondition = ""
+                if(this.subsidiaryDeviceSelected)
+                    deviceNumCondition = "&subsidiary_device_count=" +this.subsidiaryDeviceSelected
                 let phoneModelCondition = ""
                 if(this.phoneModelFilterList.length>0){
                     phoneModelCondition = "&phone_model__phone_model_name__in="+"ReefList["+this.phoneModelFilterList.join("{%,%}")+"]"
@@ -348,7 +365,8 @@
                         'paneslot.row,' +
                         'paneslot.col,' +
                         'paneslot.paneview,' +
-                        'paneslot.paneview.name' +
+                        'paneslot.paneview.name,' +
+                        'subsidiary_device_count' +
                         '&limit=' + this.pageSize +
                         "&offset=" + this.offset +
                         deviceStatusCondition +
@@ -358,6 +376,7 @@
                         deviceSlotErrorCondition +
                         cabinetCondition +
                         paneviewTypeCondition +
+                        deviceNumCondition +
                         "&ordering=id"
                     )
                     .then(response => {
@@ -510,6 +529,20 @@
                 if(val===undefined)
                     this.cabinetSelected = null
                 this.onPageChange(1)
+            },
+            getSubsidiaryDeviceNum(){
+                this.$ajax.get("api/v1/cedar/filter_subsidiary_device_count/")
+                    .then(response=>{
+                        this.subsidiaryDeviceNum = response.data
+                    }).catch(error=>{
+                    if (config.DEBUG) console.log(error)
+                    this.$Message.error("获取僚机数量失败")
+                })
+            },
+            onSubsidiaryDeviceSelect(val){
+                if(val===undefined)
+                    this.subsidiaryDeviceSelected = null
+                this.onPageChange(1)
             }
         },
         watch:{
@@ -555,6 +588,7 @@
             }
             this.onTableColumnChange()
             this.getCabinetList()
+            this.getSubsidiaryDeviceNum()
         }
     }
 </script>
