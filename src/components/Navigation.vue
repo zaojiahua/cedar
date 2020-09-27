@@ -74,6 +74,12 @@
                             </Tooltip>
                             <span>测试数据</span>
                         </MenuItem>
+                        <MenuItem name="perf-data-management" :to="{name: 'perf-data-management'}">
+                            <Tooltip content="性能分析" placement="right" :disabled="!isCollapsed">
+                                <Icon type="ios-pulse" size="24"/>
+                            </Tooltip>
+                            <span>性能分析</span>
+                        </MenuItem>
                         <MenuItem name="device-management" :to="{name: 'device-management'}">
                             <Tooltip content="设备管理" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-phone-portrait" size="24"/>

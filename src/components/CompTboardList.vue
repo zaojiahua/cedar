@@ -11,7 +11,7 @@
             </RadioGroup>
             <Button v-show="!notHistory" type="error" style="float: right;" @click="onDelete">批量删除</Button>
         </Row>
-        <Row style="margin-top: 16px;">
+        <Row style="margin-top: 16px;" v-show="!propIsPerf">
             <DatePicker v-model="filterDateRange" type="daterange" placeholder="选择创建日期范围" :transfer="true"
                         @on-change="onConditionChange"></DatePicker>
         </Row>
@@ -85,6 +85,14 @@
             propShowHeader:{
                 type: Boolean,
                 default:true
+            },
+            propIsPerf:{
+                type: Boolean,
+                default:false
+            },
+            propFilterDateRange:{
+                type: Array,
+                default:()=>{ return []}
             }
         },
         data() {
@@ -204,8 +212,15 @@
                 if(this.tboard.length>0)
                     tboardCondition = "&id=" + this.tboard[0].id;
 
+                let perfCondition = ""
+                if(this.propIsPerf)
+                    perfCondition = "&tboard_type=PerfJob&tboard_second_type=TimeJob";
+
                 let dateRangeCondition = ""
-                if (this.filterDateRange && this.filterDateRange[0] && this.filterDateRange[1]) {
+                if(this.propFilterDateRange && this.propFilterDateRange[0] && this.propFilterDateRange[1])
+                    dateRangeCondition = "&board_stamp__gte="+ this.propFilterDateRange[0].format("yyyy-MM-dd") + " 00:00:00&board_stamp__lte="+
+                        this.propFilterDateRange[1].format("yyyy-MM-dd") + " 23:59:59"
+                else if (this.filterDateRange && this.filterDateRange[0] && this.filterDateRange[1]) {
                     dateRangeCondition = "&board_stamp__gte=" +
                         this.filterDateRange[0].getFullYear() +
                         "-" +
@@ -235,6 +250,7 @@
                     "&offset=" + this.offset +
                     finishedCondition +
                     dateRangeCondition +
+                    perfCondition +
                     tboardCondition
                 ).then(response => {
                     this.tboardIdList=[];

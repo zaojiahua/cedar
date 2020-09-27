@@ -15,6 +15,7 @@ import SystemUpgrade from "./views/SystemUpgrade"
 import Setting from "./views/Setting"
 import CleanCenter from "./views/CleanCenter"
 import AbnormalStatistics from "./views/AbnormalStatistics"
+import PerfDataManagement from "./views/PerfDataManagement"
 
 
 Vue.use(Router)
@@ -87,6 +88,11 @@ let router = new Router({
                     path: "abnormal-statistics",
                     name: "abnormal-statistics",
                     component: AbnormalStatistics
+                },
+                {
+                    path: "perf-data-management",
+                    name: "perf-data-management",
+                    component: PerfDataManagement
                 }
             ]
         },
