@@ -6,9 +6,7 @@
             <Step title="填写信息"></Step>
         </Steps>
         <div v-if="current===0">
-
-            <!--<comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-device-status="true" :prop-paneview-type="true" :prop-high-light="true" @on-row-click="onSelectDeviceClick"></comp-device-list>-->
-            <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-device-status="true" :prop-high-light="true" @on-row-click="onSelectDeviceClick"></comp-device-list>
+            <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-device-status="true" :prop-paneview-type="true" :prop-high-light="true" @on-row-click="onSelectDeviceClick"></comp-device-list>
             <Row type="flex" justify="center" style="margin-top: 16px;">
                 <Col>
                     <Button style="margin-right: 32px; width: 90px;" @click="onBackClick">返回</Button>
