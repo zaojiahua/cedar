@@ -60,7 +60,7 @@
             rom_version: {
                 version: "string"
             },
-
+            subsidiary_device_count:"number",
             android_version: {
                 version: "string"
             },
@@ -266,6 +266,11 @@
                     "monitorport": {
                         title: "相机",
                         key: "monitorport",
+                        sortable: true
+                    },
+                    "subsidiary_device_count":{
+                        title: "僚机数量",
+                        key: "subsidiary_device_count",
                         sortable: true
                     }
                 },
