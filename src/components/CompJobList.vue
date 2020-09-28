@@ -85,6 +85,9 @@
                 default: ()=>{
                     return []
                 }
+            },
+            propSubsidiaryDeviceCount:{
+                type: Number,
             }
         },
         data() {
@@ -176,6 +179,9 @@
                 let tboardCondition = ""
                 if(this.tboard.length>0)
                     tboardCondition = "&tboard=" + this.tboard[0].id;
+                let deviceCountCondition = ""
+                if(this.propSubsidiaryDeviceCount)
+                    deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
                 let url =
                     "api/v1/cedar/job/?fields=" +
                     "id," +
@@ -191,6 +197,7 @@
                     "&job_deleted=False" +
                     "&ordering=-updated_time" +
                     tboardCondition +
+                    deviceCountCondition +
                     this.urlParam
 
                 if(this.propShowPage){
@@ -242,7 +249,10 @@
                 this.selection[this.currentPage] = selection
             },
             getJobNameList(){
-                this.$ajax.get("api/v1/cedar/job/?fields=job_name"+this.urlParam)
+                let deviceCountCondition = ""
+                if(this.propSubsidiaryDeviceCount)
+                    deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
+                this.$ajax.get("api/v1/cedar/job/?fields=job_name&job_deleted=False"+this.urlParam + deviceCountCondition)
                     .then(response=>{
                         let jobNameList = [];
                         response.data.jobs.forEach(job=>{
@@ -266,6 +276,9 @@
                 if(value.indexOf("&")!==-1){
                     value = value.replace(/\&/g,"%26")
                 }
+                let deviceCountCondition = ""
+                if(this.propSubsidiaryDeviceCount)
+                    deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
                 let url =
                     "api/v1/cedar/job/?fields=" +
                     "id," +
@@ -276,10 +289,12 @@
                     "test_area.description," +
                     "custom_tag," +
                     "custom_tag.id," +
+                    "updated_time," +
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
-                    "&ordering=id" +
+                    "&ordering=-updated_time" +
                     "&job_name__icontains=" +  value +
+                    deviceCountCondition +
                     this.urlParam
 
                 if(this.propShowPage){
@@ -338,5 +353,8 @@
 </script>
 
 <style scoped>
+    /deep/.ivu-auto-complete.ivu-select-dropdown{
+        max-height: 500px
+    }
 
 </style>

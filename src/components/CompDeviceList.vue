@@ -19,11 +19,19 @@
                 <Button icon="md-add" type="primary" @click="onAddDeviceClick">ADB设备</Button>
             </Col>
         </Row>
-        <Row style="margin-bottom: 16px" v-show="propShowCabinetSelect">
-            <span>机柜：</span>
-            <Select v-model="cabinetSelected"  style="width:200px;" clearable @on-change="onSelectedChange">
-                <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</Option>
-            </Select>
+        <Row style="margin-bottom: 16px">
+            <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
+                <span>机柜：</span>
+                <Select v-model="cabinetSelected"  style="width:200px;" clearable @on-change="onSelectedChange">
+                    <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</Option>
+                </Select>
+            </div>
+            <div v-show="propShowSelectNumber">
+                <span>僚机数量：</span>
+                <Select v-model="subsidiaryDeviceSelected"  style="width:200px;" clearable @on-change="onSubsidiaryDeviceSelect">
+                    <Option v-for="item in subsidiaryDeviceNum" :value="item">{{ item }}</Option>
+                </Select>
+            </div>
         </Row>
 
         <Table ref="table" border :highlight-row="propHighLight" :columns="tableDeviceColumn" :data="data" @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
@@ -45,13 +53,14 @@
             device_label: "string",
             device_name: "string",
             phone_model: {
+                id:"number",
                 phone_model_name: "string",
                 cpu_name: "string"
             },
             rom_version: {
                 version: "string"
             },
-
+            subsidiary_device_count:"number",
             android_version: {
                 version: "string"
             },
@@ -138,6 +147,14 @@
             propShowCabinetSelect:{  //select device in cabinet
                 type: Boolean,
                 default: true
+            },
+            propShowSelectNumber:{
+                type: Boolean,
+                default: true
+            },
+            propPaneviewType:{
+                type: Boolean,
+                default: false
             },
         },
         data() {
@@ -250,6 +267,11 @@
                         title: "相机",
                         key: "monitorport",
                         sortable: true
+                    },
+                    "subsidiary_device_count":{
+                        title: "僚机数量",
+                        key: "subsidiary_device_count",
+                        sortable: true
                     }
                 },
                 deviceColumnChecked: [],
@@ -271,6 +293,8 @@
                 tboard:[],
                 cabinetList:[],
                 cabinetSelected:null,
+                subsidiaryDeviceSelected:null,
+                subsidiaryDeviceNum:[],
 
                 step:1
             }
@@ -298,6 +322,9 @@
                 if(this.propDeviceSlotError){
                     deviceSlotErrorCondition = "&paneslot__isnull=False&status=error"
                 }
+                let paneviewTypeCondition = ""
+                if(this.propPaneviewType)
+                    paneviewTypeCondition = "&paneslot__paneview__type=test_box"
                 let cabinetCondition = ""
                 if(this.propShowCabinetSelect){
                     if(this.cabinetSelected!==null)
@@ -306,6 +333,9 @@
                     if(this.propCabinet!==null)
                         cabinetCondition = "&cabinet=" + this.propCabinet
                 }
+                let deviceNumCondition = ""
+                if(this.subsidiaryDeviceSelected)
+                    deviceNumCondition = "&subsidiary_device_count=" +this.subsidiaryDeviceSelected
                 let phoneModelCondition = ""
                 if(this.phoneModelFilterList.length>0){
                     phoneModelCondition = "&phone_model__phone_model_name__in="+"ReefList["+this.phoneModelFilterList.join("{%,%}")+"]"
@@ -319,6 +349,7 @@
                         'device_label,' +
                         'phone_model,' +
                         'phone_model.phone_model_name,' +
+                        'phone_model.id,' +
                         'rom_version,' +
                         'rom_version.version,' +
                         'device_name,' +
@@ -339,7 +370,8 @@
                         'paneslot.row,' +
                         'paneslot.col,' +
                         'paneslot.paneview,' +
-                        'paneslot.paneview.name' +
+                        'paneslot.paneview.name,' +
+                        'subsidiary_device_count' +
                         '&limit=' + this.pageSize +
                         "&offset=" + this.offset +
                         deviceStatusCondition +
@@ -348,6 +380,8 @@
                         deviceSlotCondition +
                         deviceSlotErrorCondition +
                         cabinetCondition +
+                        paneviewTypeCondition +
+                        deviceNumCondition +
                         "&ordering=id"
                     )
                     .then(response => {
@@ -362,6 +396,7 @@
                 this.data = utils.validate(getDeviceListSerializer, response.data['devices'])
                 let deviceList = [];
                 this.data.forEach(device=>{
+                    device.phone_model_id = device.phone_model.id
                     device.cpu_name = device.phone_model.cpu_name
                     device.phone_model = device.phone_model.phone_model_name
                     device.rom_version = device.rom_version.version
@@ -499,6 +534,20 @@
                 if(val===undefined)
                     this.cabinetSelected = null
                 this.onPageChange(1)
+            },
+            getSubsidiaryDeviceNum(){
+                this.$ajax.get("api/v1/cedar/filter_subsidiary_device_count/")
+                    .then(response=>{
+                        this.subsidiaryDeviceNum = response.data
+                    }).catch(error=>{
+                    if (config.DEBUG) console.log(error)
+                    this.$Message.error("获取僚机数量失败")
+                })
+            },
+            onSubsidiaryDeviceSelect(val){
+                if(val===undefined)
+                    this.subsidiaryDeviceSelected = null
+                this.onPageChange(1)
             }
         },
         watch:{
@@ -544,6 +593,7 @@
             }
             this.onTableColumnChange()
             this.getCabinetList()
+            this.getSubsidiaryDeviceNum()
         }
     }
 </script>

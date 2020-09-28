@@ -1,0 +1,110 @@
+<template>
+    <div style="padding: 16px;background-color: #fff;">
+        <Divider orientation="left">启动时间分布</Divider>
+        <Table border :columns="column" :data="tableData"></Table>
+        <comp-perf-histogram style="margin-top: 20px;" ref="histogram" :job-id="propJobId" :prop-phone-models="propPhoneModelList" :prop-canvas-id="1"
+                             @on-chart-click="onChartClick" @after-load-data="afterLoadData"
+        ></comp-perf-histogram>
+
+        <comp-perf-rds-list ref="perfRdsList" v-if="timeRange" :prop-job-id="propJobId" :prop-time-range="timeRange"></comp-perf-rds-list>
+    </div>
+
+</template>
+
+<script>
+    import CompPerfHistogram from "../components/CompPerfHistogram";
+    import CompPerfRdsList from "../components/CompPerfRdsList";
+    import config from "../lib/config";
+
+    export default {
+        components: {CompPerfHistogram, CompPerfRdsList},
+        props:{
+            propJobId:{
+                type: Number,
+                default:null
+            },
+            propTboardIdList:{   //tboard 列表  id
+                type: Array,
+                default: ()=>{return []}
+            },
+            propPhoneModelList:{
+                type: Array,
+                default: ()=>{return []}
+            }
+        },
+        data(){
+            return{
+                column:[
+                    {
+                        title: '平均值[s]',
+                        key: 'avg',
+                        align: 'center',
+                        className: 'avgColumn'
+                    },
+                    {
+                        title: '最大值[s]',
+                        key: 'max',
+                        align: 'center'
+                    },
+                    {
+                        title: '中位数[s]',
+                        key: 'median',
+                        align: 'center'
+                    },
+                    {
+                        title: '启动成功/次',
+                        key: 'success_num',
+                        align: 'center'
+                    },
+                    {
+                        title: '启动失败/次',
+                        key: 'failed_num',
+                        align: 'center'
+                    },
+                ],
+                tableData:[],
+                timeRange:"",
+            }
+        },
+        methods:{
+            getTableData(){
+                let phone_model = []
+                let rom = []
+                this.propPhoneModelList.forEach(item=>{
+                    phone_model.push(item[0])
+                    rom.push(item[1])
+                })
+                this.$ajax.get("api/v1/cedar/get_single_device_table_data/?" +
+                    "tboard="+ this.propTboardIdList.join(",") +
+                    "&job="+ this.propJobId +
+                    "&phone_model_obj="+ phone_model.join(",") +
+                    "&rom_version_obj="+ rom.join(","))
+                    .then(response=>{
+                        this.tableData = [].concat(response.data)
+                    }).catch(error=>{
+                        if(config.DEBUG) console.log(error)
+                        this.$Message.error("表格数据加载失败!")
+                })
+            },
+            //图表的点击操作  echarts click
+            afterLoadData(item){
+                this.timeRange = item
+            },
+            onChartClick(item){
+                this.timeRange = item
+            },
+        },
+        mounted(){
+            this.getTableData()
+            this.$refs.histogram.refresh(this.propTboardIdList.join(","))
+        }
+    }
+
+</script>
+
+<style scoped>
+    /deep/ .ivu-table td.avgColumn{
+        background-color: #FFAE25;
+    }
+
+</style>
