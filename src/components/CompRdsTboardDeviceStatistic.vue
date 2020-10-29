@@ -16,6 +16,54 @@
 
         <!--   设备下的用例统计    -->
         <Tabs v-model="tabName"  name="failStatics" style="margin-top: 16px;background: #fff">
+            <TabPane label="测试轨迹" name="testInfo" tab="failStatics">
+                <Card :dis-hover="true" :bordered="false">
+                    <p style="font-size: 12px">设备：{{ deviceLabel }}<a href="javascript:" style="margin-left: 10px" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(deviceId)">设备详情</a></p>
+                    <p class="b_tip">温度曲线</p>
+                    <Row>
+                        <comp-temperature-histogram :device-id="deviceId" ref="tempHistogram"></comp-temperature-histogram>
+                    </Row>
+                    <p class="b_tip">电量曲线</p>
+                    <Row>
+                        <comp-battery-level-histogram :device-id="deviceId" ref="powerHistogram"></comp-battery-level-histogram>
+                    </Row>
+                    <p class="b_tip">测试结果</p>
+                    <!--  RDS部分 -->
+                    <div style="overflow:hidden;">
+                        <div>
+                            <div style="margin: 5px 0 20px 0">
+                                <Select v-model="resultRange" multiple style="width:230px" placeholder="请选择测试结果类型">
+                                    <Option value="0"> 通过 </Option>
+                                    <Option value="1"> 未通过 </Option>
+                                    <Option value="-1"> 无效 </Option>
+                                </Select>
+                                <p style="float: right">
+                                    <Tag type="dot" color="#1bbc9c">通过</Tag>
+                                    <Tag type="dot" color="#FFAE25">未通过</Tag>
+                                    <Tag type="dot" color="#BDC3C7">无效</Tag>
+                                </p>
+                            </div>
+                            <comp-rds-card ref="rdsCard1"
+                                           :prop-device-id="deviceId"
+                                           :prop-tboard-id="propTboardId"
+                                           :prop-result-range="resultRange"
+                                           @after-load-data="afterLoadData1"
+                                           @rds-mouse-enter="onRdsMouseEnter"
+                                           @rds-mouse-leave="onRdsMouseLeave">
+                            </comp-rds-card>
+                            <div v-show="scrollMore1" style="position: relative;height: 50px;">
+                                <Spin fix>
+                                    <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+                                    <div>Loading</div>
+                                </Spin>
+                            </div>
+                            <p v-show="!noMoreData1" style="text-align: center" @click="onClickLoadMore1"><Button>点击加载更多</Button></p>
+                            <p v-show="noMoreData1" style="text-align: center">暂无更多数据</p>
+                        </div>
+                    </div>
+
+                </Card>
+            </TabPane>
             <TabPane label="设备运行结果" name="deviceResult" tab="failStatics">
                 <Card :dis-hover="true" :bordered="false" v-if="jobUrl.length>0">
                     <p style="font-size: 12px">设备：{{ deviceLabel }}<a href="javascript:" style="margin-left: 10px" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(deviceId)">设备详情</a></p>
@@ -86,54 +134,6 @@
                     </div>
                 </Card>
             </TabPane>
-            <TabPane label="测试轨迹" name="testInfo" tab="failStatics">
-                <Card :dis-hover="true" :bordered="false">
-                    <p style="font-size: 12px">设备：{{ deviceLabel }}<a href="javascript:" style="margin-left: 10px" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(deviceId)">设备详情</a></p>
-                    <p class="b_tip">温度曲线</p>
-                    <Row>
-                        <comp-temperature-histogram :device-id="deviceId" ref="tempHistogram"></comp-temperature-histogram>
-                    </Row>
-                    <p class="b_tip">电量曲线</p>
-                    <Row>
-                        <comp-battery-level-histogram :device-id="deviceId" ref="powerHistogram"></comp-battery-level-histogram>
-                    </Row>
-                    <p class="b_tip">测试结果</p>
-                    <!--  RDS部分 -->
-                    <div style="overflow:hidden;">
-                        <div>
-                            <div style="margin: 5px 0 20px 0">
-                                <Select v-model="resultRange" multiple style="width:230px" placeholder="请选择测试结果类型">
-                                    <Option value="0"> 通过 </Option>
-                                    <Option value="1"> 未通过 </Option>
-                                    <Option value="-1"> 无效 </Option>
-                                </Select>
-                                <p style="float: right">
-                                    <Tag type="dot" color="#1bbc9c">通过</Tag>
-                                    <Tag type="dot" color="#FFAE25">未通过</Tag>
-                                    <Tag type="dot" color="#BDC3C7">无效</Tag>
-                                </p>
-                            </div>
-                            <comp-rds-card ref="rdsCard1"
-                                           :prop-device-id="deviceId"
-                                           :prop-tboard-id="propTboardId"
-                                           :prop-result-range="resultRange"
-                                           @after-load-data="afterLoadData1"
-                                           @rds-mouse-enter="onRdsMouseEnter"
-                                           @rds-mouse-leave="onRdsMouseLeave">
-                            </comp-rds-card>
-                            <div v-show="scrollMore1" style="position: relative;height: 50px;">
-                                <Spin fix>
-                                    <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
-                                    <div>Loading</div>
-                                </Spin>
-                            </div>
-                            <p v-show="!noMoreData1" style="text-align: center" @click="onClickLoadMore1"><Button>点击加载更多</Button></p>
-                            <p v-show="noMoreData1" style="text-align: center">暂无更多数据</p>
-                        </div>
-                    </div>
-
-                </Card>
-            </TabPane>
         </Tabs>
 
         <Spin size="large" fix v-if="showLoading"></Spin>
@@ -201,7 +201,7 @@
                 pieData:[],
                 pieFailure:null,
                 showLoading:false,
-                tabName:"deviceResult",
+                tabName:"testInfo",
 
             }
         },
