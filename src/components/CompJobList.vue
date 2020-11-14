@@ -120,6 +120,7 @@
                         filteredValue: [ this.jobType ],
                         filterRemote (value) {
                             this.jobType = value[0] || ''
+                            localStorage.setItem('COMPJOBLIST:FILTER_JOB_TYPE', this.jobType)
                             this.filterJob()
                         }
                     },
@@ -148,7 +149,7 @@
                 filterJobNameList: [],
                 pageSize:config.DEFAULT_PAGE_SIZE,
                 tboard:[],
-                jobType: undefined
+                jobType: localStorage.getItem('COMPJOBLIST:FILTER_JOB_TYPE') || ''
             }
         },
         methods: {
@@ -208,6 +209,7 @@
                 let deviceCountCondition = ""
                 if(this.propSubsidiaryDeviceCount)
                     deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
+                let filterUrlParam = `${this.jobType ? `&job_type=${this.jobType}` : ''}`
                 let url =
                     "api/v1/cedar/job/?fields=" +
                     "id," +
@@ -222,6 +224,7 @@
                     "custom_tag.custom_tag_name," +
                     "updated_time" +
                     "&job_deleted=False" +
+                    filterUrlParam +
                     "&ordering=-updated_time" +
                     tboardCondition +
                     deviceCountCondition +
@@ -303,6 +306,7 @@
                 if(value.indexOf("&")!==-1){
                     value = value.replace(/\&/g,"%26")
                 }
+                let filterUrlParam = `${this.jobType ? `&job_type=${this.jobType}` : ''}`
                 let deviceCountCondition = ""
                 if(this.propSubsidiaryDeviceCount)
                     deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
@@ -321,6 +325,7 @@
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
                     "&ordering=-updated_time" +
+                    filterUrlParam +
                     "&job_name__icontains=" +  value +
                     deviceCountCondition +
                     this.urlParam
@@ -366,7 +371,8 @@
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
                     "&ordering=-updated_time" +
-                    "&job_name__icontains=" +  filterUrlParam +
+                    filterUrlParam +
+                    "&job_name__icontains=" +
                     deviceCountCondition +
                     this.urlParam
 
@@ -410,6 +416,9 @@
                     title: "删除",
                     slot: "delete"
                 })
+        },
+        mounted () {
+            this.jobType = localStorage.getItem('COMPJOBLIST:FILTER_JOB_TYPE');
         }
     }
 </script>
