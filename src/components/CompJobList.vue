@@ -88,6 +88,10 @@
             },
             propSubsidiaryDeviceCount:{
                 type: Number,
+            },
+            propShowJobType: {
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -98,7 +102,7 @@
                         key: "job_name",
                         sortable: true
                     },
-                    {
+                    this.propShowJobType ? {
                         title: "用例类型",
                         key: "job_type",
                         sortable: true,
@@ -123,6 +127,10 @@
                             localStorage.setItem('COMPJOBLIST:FILTER_JOB_TYPE', this.jobType)
                             this.filterJob()
                         }
+                    } : {
+                        title: "用例类型",
+                        key: "job_type",
+                        sortable: true
                     },
                     {
                         title: "测试用途",
