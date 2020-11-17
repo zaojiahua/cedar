@@ -192,7 +192,7 @@
                             if (config.DEBUG) console.log(error)
                             this.spinShow = false;
                             this.$Loading.error();
-                            this.$Message.error("获取设备信息失败！"+error.response.data.description)
+                            this.$Message.error({content:error.response.data.description,duration: 10})
                         })}
             },
             getCabinetInfo() {

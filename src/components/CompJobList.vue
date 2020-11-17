@@ -2,12 +2,12 @@
     <div>
         <Row style="margin-bottom: 18px;" v-if="propShowSearch">
             <AutoComplete  style="width: calc(100% - 75px)"
-                v-model="keyword"
-                :clearable="true"
-                @on-select="jobSearch"
-                @on-search="handleSearch"
-                @on-clear="clearSearch"
-                placeholder="Enter something...">
+                           v-model="keyword"
+                           :clearable="true"
+                           @on-select="jobSearch"
+                           @on-search="handleSearch"
+                           @on-clear="clearSearch"
+                           placeholder="Enter something...">
                 <Option v-for="(item,index) in filterJobNameList" :value="item" :key="index">{{ item }}</Option>
             </AutoComplete>
             <Button style="height: 32px;" @click="jobSearch(keyword)" type="primary">search</Button>
@@ -88,6 +88,10 @@
             },
             propSubsidiaryDeviceCount:{
                 type: Number,
+            },
+            propShowJobType: {
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -96,6 +100,36 @@
                     {
                         title: "用例名称",
                         key: "job_name",
+                        sortable: true
+                    },
+                    this.propShowJobType ? {
+                        title: "用例类型",
+                        key: "job_type",
+                        sortable: true,
+                        filters: [
+                            {
+                                label: '功能测试',
+                                value: 'Joblib'
+                            },
+                            {
+                                label: '性能测试',
+                                value: 'PerfJob'
+                            },
+                            {
+                                label: '内嵌用例',
+                                value: 'InnerJob'
+                            }
+                        ],
+                        filterMultiple: false,
+                        filteredValue: [ this.jobType ],
+                        filterRemote (value) {
+                            this.jobType = value[0] || ''
+                            localStorage.setItem('COMPJOBLIST:FILTER_JOB_TYPE', this.jobType)
+                            this.filterJob()
+                        }
+                    } : {
+                        title: "用例类型",
+                        key: "job_type",
                         sortable: true
                     },
                     {
@@ -122,7 +156,8 @@
                 keyword: '',
                 filterJobNameList: [],
                 pageSize:config.DEFAULT_PAGE_SIZE,
-                tboard:[]
+                tboard:[],
+                jobType: localStorage.getItem('COMPJOBLIST:FILTER_JOB_TYPE') || ''
             }
         },
         methods: {
@@ -187,6 +222,7 @@
                     "id," +
                     "job_label," +
                     "job_name," +
+                    "job_type," +
                     "test_area," +
                     "test_area.id," +
                     "test_area.description," +
@@ -195,6 +231,7 @@
                     "custom_tag.custom_tag_name," +
                     "updated_time" +
                     "&job_deleted=False" +
+                    this.filterUrlParam +
                     "&ordering=-updated_time" +
                     tboardCondition +
                     deviceCountCondition +
@@ -284,6 +321,7 @@
                     "id," +
                     "job_label," +
                     "job_name," +
+                    "job_type," +
                     "test_area," +
                     "test_area.id," +
                     "test_area.description," +
@@ -293,6 +331,7 @@
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
                     "&ordering=-updated_time" +
+                    this.filterUrlParam +
                     "&job_name__icontains=" +  value +
                     deviceCountCondition +
                     this.urlParam
@@ -317,8 +356,47 @@
             },
             setSelection(selection){
                 this.selection = selection;
+            },
+            filterJob () {
+                let deviceCountCondition = ""
+                if(this.propSubsidiaryDeviceCount)
+                    deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
+                let url =
+                    "api/v1/cedar/job/?fields=" +
+                    "id," +
+                    "job_label," +
+                    "job_name," +
+                    "job_type," +
+                    "test_area," +
+                    "test_area.id," +
+                    "test_area.description," +
+                    "custom_tag," +
+                    "custom_tag.id," +
+                    "updated_time," +
+                    "custom_tag.custom_tag_name" +
+                    "&job_deleted=False" +
+                    "&ordering=-updated_time" +
+                    this.filterUrlParam +
+                    "&job_name__icontains=" +
+                    deviceCountCondition +
+                    this.urlParam
+
+                if(this.propShowPage){
+                    this.currentPage = 1;
+                    url = url +
+                        "&limit=" + config.DEFAULT_PAGE_SIZE +
+                        "&offset=0"
+                }
+                this.$ajax.get(url)
+                    .then(this._responseHandle)
+                    .catch(this._requestErrorHandle)
             }
 
+        },
+        computed:{
+            filterUrlParam(){
+                return `${this.jobType ? `&job_type=${this.jobType}` : ''}`
+            }
         },
         watch:{
             propTboard:{
@@ -348,6 +426,9 @@
                     title: "删除",
                     slot: "delete"
                 })
+        },
+        mounted () {
+            this.jobType = localStorage.getItem('COMPJOBLIST:FILTER_JOB_TYPE');
         }
     }
 </script>
