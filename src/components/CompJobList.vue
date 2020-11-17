@@ -217,7 +217,6 @@
                 let deviceCountCondition = ""
                 if(this.propSubsidiaryDeviceCount)
                     deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
-                let filterUrlParam = `${this.jobType ? `&job_type=${this.jobType}` : ''}`
                 let url =
                     "api/v1/cedar/job/?fields=" +
                     "id," +
@@ -232,7 +231,7 @@
                     "custom_tag.custom_tag_name," +
                     "updated_time" +
                     "&job_deleted=False" +
-                    filterUrlParam +
+                    this.filterUrlParam +
                     "&ordering=-updated_time" +
                     tboardCondition +
                     deviceCountCondition +
@@ -314,7 +313,6 @@
                 if(value.indexOf("&")!==-1){
                     value = value.replace(/\&/g,"%26")
                 }
-                let filterUrlParam = `${this.jobType ? `&job_type=${this.jobType}` : ''}`
                 let deviceCountCondition = ""
                 if(this.propSubsidiaryDeviceCount)
                     deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
@@ -333,7 +331,7 @@
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
                     "&ordering=-updated_time" +
-                    filterUrlParam +
+                    this.filterUrlParam +
                     "&job_name__icontains=" +  value +
                     deviceCountCondition +
                     this.urlParam
@@ -360,7 +358,6 @@
                 this.selection = selection;
             },
             filterJob () {
-                let filterUrlParam = `${this.jobType ? `&job_type=${this.jobType}` : ''}`
                 let deviceCountCondition = ""
                 if(this.propSubsidiaryDeviceCount)
                     deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
@@ -379,7 +376,7 @@
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
                     "&ordering=-updated_time" +
-                    filterUrlParam +
+                    this.filterUrlParam +
                     "&job_name__icontains=" +
                     deviceCountCondition +
                     this.urlParam
@@ -395,6 +392,11 @@
                     .catch(this._requestErrorHandle)
             }
 
+        },
+        computed:{
+            filterUrlParam(){
+                return `${this.jobType ? `&job_type=${this.jobType}` : ''}`
+            }
         },
         watch:{
             propTboard:{
