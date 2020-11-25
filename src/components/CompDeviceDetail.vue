@@ -119,7 +119,8 @@
         </Collapse>
         <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable" v-show="device.status!=='offline'">
             <Col>
-                <Button type="error" @click="deleteDevice">移除设备</Button>
+                <Button type="error" style="margin-right: 16px;" @click="deleteDevice">移除设备</Button>
+                <Button type="primary" @click="reconnectDevice">重新连接</Button>
             </Col>
             <Col>
                 <Button type="primary" style="margin-right: 16px;" @click="updateDevice">保存</Button>
@@ -299,6 +300,22 @@
                     });
                 }
             },
+            reconnectDevice(){
+                if (this.device.status==="offline"){
+                    this.$Message.error("离线设备请直接走注册流程")
+                }
+                else{
+                this.$ajax.post("http://" + this.device.cabinet.ip_address + ":5000"+"/door/wifi_port/",
+                    {cpu_id:this.device.device_label}
+                    ).then(response=>{
+                    if(response.data.state==="DONE"){
+                        this.$Message.success("重连成功")}
+                    else{
+                        this.$Message.error({content:error.response.data.description,duration: 6})
+                    }
+                }).catch(error=>{
+                    this.$Message.error("重连失败")
+            })}},
             deleteAjax(device_id,device_status){
                 this.spinShow = true;
                 this.$ajax.post("api/v1/coral/release_device/",{
