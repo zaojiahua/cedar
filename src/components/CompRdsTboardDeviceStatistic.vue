@@ -17,7 +17,7 @@
         <!--   设备下的用例统计    -->
         <Tabs v-model="tabName"  name="failStatics" style="margin-top: 16px;background: #fff">
             <TabPane label="测试轨迹" name="testInfo" tab="failStatics">
-                <Card :dis-hover="true" :bordered="false">
+                <Card v-if="tabName==='testInfo'" :dis-hover="true" :bordered="false">
                     <p style="font-size: 12px">设备：{{ deviceLabel }}<a href="javascript:" style="margin-left: 10px" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(deviceId)">设备详情</a></p>
                     <p class="b_tip">温度曲线</p>
                     <Row>
