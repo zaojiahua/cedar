@@ -148,6 +148,8 @@
                 ],
                 data: [],
                 selection: [],
+                currentPageSelection:{},
+                selectionJob:{},
                 dataTotal: 0,
                 offset: 0,
                 urlParam: "",
@@ -166,6 +168,7 @@
                 this.$Message.error("载入失败")
             },
             _responseHandle(response) {
+                this.currentPageSelection = {}
                 this.dataTotal = parseInt(response.headers["total-count"])
                 this.data = utils.validate(getJobSerializer, response.data).jobs
                 this.data.forEach(job => {
@@ -181,21 +184,13 @@
 
                     job.display_job_test_area = job_test_areas.join(', ')
                     job.display_custom_tag = custom_tags.join(', ')
-                })
 
-                /* 将之前已经选中的选项重新勾选 */
-                if(this.selection[this.currentPage] !== undefined){
-                    let ids = []
-                    this.selection[this.currentPage].forEach(item=>{
-                        ids.push(item.id)
+                    /* 将之前已经选中的选项重新勾选 */
+                    this.selection.forEach(selected=>{
+                        if (job.id === selected.id)
+                            job._checked = true
                     })
-
-                    for(let i=0; i<this.data.length; ++i){
-                        if(ids.includes(this.data[i].id)){
-                            this.data[i]._checked = true
-                        }
-                    }
-                }
+                })
             },
             _setUrlParam(param){
                 this.urlParam = param
@@ -258,12 +253,8 @@
             getData() {
                 return this.data
             },
-            getSelection() {
-                let selection = []
-                this.selection.forEach(items=>{
-                    selection = selection.concat(items)
-                })
-                return selection
+            getSelection() {                   //转换成id对比以后可以不用forEach
+                return this.selection
             },
             toggleSelect(_index) {
                 this.$refs.table.toggleSelect(_index)
@@ -283,7 +274,31 @@
                 this.$refs.table.selectAll(false)
             },
             onSelectionChange(selection){
-                this.selection[this.currentPage] = selection
+                selection.forEach((value) => {
+                    if (this.selectionJob[value.id] === undefined ) {
+                        //console.log('勾选了id为' + value.id + '的job')
+                        this.$set(this.selectionJob, value.id, value)    //所有的已选择job  包括新选择的job
+                        this.$set(this.currentPageSelection, value.id, 'exist')    //currentPageSelectedJobs  当前页已选择job
+                    }
+                })
+                //用上个步骤得到的当前页已选择的job-id 和 实际表格返回的 selection做比对，如果对上，则不做任何操作
+                // 如果对不上，则表示多了一个，即用户点击了一次取消，就用$delete方法将多出来的这条数据删除this.$delete(obj,key);
+                for (let item in this.currentPageSelection) {
+                    let i = 0
+                    for (i; i < selection.length; i++) {
+                        if (parseInt(item) === selection[i].id) {
+                            break
+                        }
+                    }
+                    if (i === selection.length) {
+                        //console.log('不再勾选id为' + item + '的job')
+                        this.$delete(this.selectionJob, item)
+                        this.$delete(this.currentPageSelection, item)
+                    }
+                }
+                //对象提取所有的value
+                this.selection = _.values(this.selectionJob)
+                this.$emit("get-job-count",this.selection.length)
             },
             getJobNameList(){
                 let deviceCountCondition = ""
@@ -390,6 +405,15 @@
                 this.$ajax.get(url)
                     .then(this._responseHandle)
                     .catch(this._requestErrorHandle)
+            },
+            resetJobList(){
+                this.selectionJob = {}
+                this.currentPageSelection = {}
+                this.selection = []
+                this.$emit("get-job-count",this.selection.length)
+                this.data.forEach(job=>{
+                    this.$set(job,"_checked",false)
+                })
             }
 
         },

@@ -4,20 +4,21 @@
             <comp-filter ref="jobFilter" @on-change="onJobFilterChange"></comp-filter>
         </Row>
         <Row style="height: 50px;">
-            <Col span="12">
+            <Col span="8">
                 <Upload ref="upload" :action="uploadUrl" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
                     <Button icon="ios-cloud-upload-outline">导入用例</Button>
                 </Upload>
             </Col>
-            <Col span="12" style="text-align: right">
+            <Col span="16" style="text-align: right">
                 <Button type="primary" class="job-btn" @click="exportCase">导出用例</Button>
+                <Button type="warning" class="job-btn" @click="cancelJobList">取消选择（{{jobNumbers}}）</Button>
                 <Button type="error" class="job-btn" @click="delJobList">批量删除</Button>
             </Col>
 
         </Row>
         <Divider></Divider>
         <Row>
-            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
+            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" @get-job-count="getJobNumbers"></comp-job-list>
         </Row>
         <Drawer v-model="showDetail" :draggable="true" :closable="false" width="50">
             <comp-job-detail ref="jobDetail" :prop-del-job="true" @closeDrawer="closeDrawer" @delJobOne="delJobOne"></comp-job-detail>
@@ -41,9 +42,18 @@
                 selectedJob:[],
                 rowIndex:null,
                 uploadUrl:"",
+                jobNumbers:0,
             }
         },
         methods:{
+            //获取当前选择的job的数量
+            getJobNumbers(count){
+                this.jobNumbers = count
+            },
+            //取消全选
+            cancelJobList(){
+                this.$refs.jobList.resetJobList()
+            },
             selectedDetail(selected){
                 let conditions = []
                 Object.keys(selected).forEach(key=>{
