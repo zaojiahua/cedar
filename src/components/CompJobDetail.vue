@@ -7,19 +7,19 @@
             </FormItem>
             <FormItem>
                 <b slot="label">用例名称:</b>
-                <Input v-model="jobInfo.job_name" disabled class="disabled-input"></Input>
+                <Input v-model="jobInfo.job_name" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">用例说明:</b>
-                <Input v-model="jobInfo.description" disabled class="disabled-input"></Input>
+                <Input v-model="jobInfo.description" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">测试用途:</b>
-                <Input v-model="testArea" disabled class="disabled-input"></Input>
+                <Input v-model="testArea" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">适配机型:</b>
-                <Input v-model="phoneModels" disabled class="disabled-input"></Input>
+                <Input v-model="phoneModels" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">安卓版本:</b>
@@ -27,15 +27,15 @@
             </FormItem>
             <FormItem>
                 <b slot="label">ROM版本:</b>
-                <Input v-model="romVersion" disabled class="disabled-input"></Input>
+                <Input v-model="romVersion" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">自定义标签:</b>
-                <Input v-model="customTag" disabled class="disabled-input"></Input>
+                <Input v-model="customTag" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">编写人员:</b>
-                <Input v-model="jobInfo.author.username" disabled class="disabled-input"></Input>
+                <Input v-model="jobInfo.author.username" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">更新时间:</b>
@@ -198,6 +198,11 @@
 
 <style scoped>
     .disabled-input >>> input {
+        background-color: #0000;
+        color: #515a6e;
+        border: #eee dotted 1px;
+    }
+    .disabled-input >>> textarea {
         background-color: #0000;
         color: #515a6e;
         border: #eee dotted 1px;
