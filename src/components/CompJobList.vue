@@ -197,8 +197,10 @@
 
                     /* 将之前已经选中的选项重新勾选 */
                     this.selection.forEach(selected=>{
-                        if (job.id === selected.id)
+                        if (job.id === selected.id){
                             job._checked = true
+                            this.$set(this.currentPageSelection, job.id, 'exist')
+                        }
                     })
                 })
             },
