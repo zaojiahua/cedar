@@ -10,6 +10,14 @@
                 <Input v-model="jobInfo.job_name" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
+                <b slot="label">caseNo:</b>
+                <Input v-model="jobInfo.case_number" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
+            </FormItem>
+            <FormItem>
+                <b slot="label">priority:</b>
+                <Input v-model="jobInfo.priority" disabled class="disabled-input"></Input>
+            </FormItem>
+            <FormItem>
                 <b slot="label">用例说明:</b>
                 <Input v-model="jobInfo.description" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
@@ -66,6 +74,8 @@
             id: "number",
             custom_tag_name: "string"
         }],
+        priority:"string",
+        case_number:"string",
         description:"string",
         id:"number",
         job_label:"string",
@@ -118,6 +128,8 @@
                         "rom_version,rom_version.version,"+
                         "description,"+
                         "updated_time,"+
+                        "case_number," +
+                        "priority," +
                         "custom_tag,custom_tag.custom_tag_name,"+
                         "phone_models,phone_models.phone_model_name,"+
                         "test_area,test_area.description,"+

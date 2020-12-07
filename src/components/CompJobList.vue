@@ -102,6 +102,11 @@
                         key: "job_name",
                         sortable: true
                     },
+                    {
+                        title: "caseNo",
+                        key: "case_number",
+                        sortable: true
+                    },
                     this.propShowJobType ? {
                         title: "用例类型",
                         key: "job_type",
@@ -139,6 +144,11 @@
                     {
                         title: "自定义标签",
                         key: "display_custom_tag"
+                    },
+                    {
+                        title: "priority",
+                        key: "priority",
+                        sortable: true
                     },
                     {
                         title: "更新时间",
@@ -218,6 +228,8 @@
                     "job_label," +
                     "job_name," +
                     "job_type," +
+                    "case_number," +
+                    "priority," +
                     "test_area," +
                     "test_area.id," +
                     "test_area.description," +
