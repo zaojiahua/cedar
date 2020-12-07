@@ -499,7 +499,6 @@
                             "arm_id": this.armId,
                             "device_label": this.deviceLabel
                         })
-                        this.showConfirmModal = true
 
                     } else {
                         this.showConfirmModal = true
