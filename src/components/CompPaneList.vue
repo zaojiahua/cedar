@@ -32,7 +32,7 @@
                         <Input v-model="pane.pane_name" placeholder="请输入pane名称" v-show="paneType==='test_box'"></Input>
                         <p v-show="paneType==='matrix'">
                             注：名称由字母、数字或下划线组成，不允许输入特殊字符<br/>
-                            格式：名称 @ 规格行 X 规格列，最大规格不能超过 7 x 9
+                            格式：名称 @ 规格行 X 规格列，最大规格不能超过 9 x 9
                         </p>
                     </FormItem>
                     <FormItem v-show="paneType==='test_box'">
@@ -365,7 +365,7 @@ import JobManagementVue from '../views/JobManagement.vue';
                 if(this.paneType==="matrix"){
                     //去除前后两端的空格
                     this.pane.pane_name = this.pane.pane_name.replace(/(^\s*)|(\s*$)/g, "");
-                    if(!/^\w+@[1-7](x|X)[1-9]$/.test(this.pane.pane_name)){
+                    if(!/^\w+@[1-9](x|X)[1-9]$/.test(this.pane.pane_name)){
                         this.$Message.error('格式错误')
                         return
                     }
@@ -682,13 +682,13 @@ import JobManagementVue from '../views/JobManagement.vue';
         position:relative;
         float:left;
         width: 420px;
-        height: 400px;
+        height: 480px;
         margin:0 20px 20px 0;
     }
     .add-pane{
         float: left;
         width: 420px;
-        height: 350px;
+        height: 430px;
         text-align: center;
         padding-top: 30px;
         margin-left: 2px;

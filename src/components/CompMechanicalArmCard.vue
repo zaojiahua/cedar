@@ -108,7 +108,7 @@
     }
     .pane-box{
         width: 420px;
-        height: 350px;
+        height: 430px;
         display: flex;
         align-items: center;
         border:1px solid #dcdcdc;
