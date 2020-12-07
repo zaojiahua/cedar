@@ -24,6 +24,7 @@
             <FormItem>
                 <b slot="label">rdsDict：</b>
                 <Input v-model="rdsInfo.rds_dict" class="disabled-input" disabled></input>
+                <Button size="small" style="float: right;margin-top: 10px;" type="primary" @click="openRdsDict">查看详情</Button>
             </FormItem>
             <Divider>用例信息</Divider>
             <FormItem>
@@ -314,6 +315,16 @@
                         }
                         this.$Message.error(errorMsg)
                 })
+            },
+            openRdsDict(){
+                let route = this.$router.resolve({
+                    name: "rds-dict-view",
+                    params: {content: JSON.parse(this.rdsInfo.rds_dict)},
+                    query: {
+                        id: this.rdsInfo.id
+                    }
+                })
+                window.open(route.href, "_blank")
             }
         },
     }
