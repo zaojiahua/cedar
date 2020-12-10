@@ -213,9 +213,6 @@
     .user-head{
         margin-bottom: 16px;
     }
-    .drawer-footer{
-        text-align: right;
-    }
     .ivu-icon{
         font-size: 16px;
     }
