@@ -8,7 +8,7 @@
             <Table ref="table" stripe :columns="userColumns" :data="userData"></Table>
         </Card>
         <Drawer v-model="showUserDetail" :draggable="true" width="50" title="用户信息">
-            <comp-user-detail :propStatus="componentStatus" ref="userDetail" @onCancelClick="closeDrawer" @afterSendRequest="afterSendRequest"></comp-user-detail>
+            <comp-user-detail :propStatus="componentStatus"  :prop-edit="isEdit" ref="userDetail" @onCancelClick="closeDrawer" @afterSendRequest="afterSendRequest"></comp-user-detail>
         </Drawer>
         <Modal v-model="showModal" :closable="false" :mask-closable="false"  width="360">
             <p slot="header" style="color:#f60;text-align:center">
@@ -93,6 +93,7 @@
                 showModal:false,
                 delIndex:null,
                 componentStatus:false,
+                isEdit:false,
             }
         },
         methods:{
@@ -102,11 +103,13 @@
             showUserInfo(index){
                 this.showUserDetail = true;
                 this.componentStatus = true;
+                this.isEdit = true;
                 this.$refs.userDetail.showUserInfoBtn(this.userData[index]);
             },
             addUser(){
                 this.showUserDetail = true;
                 this.componentStatus = false;
+                this.isEdit = false;
                 this.$refs.userDetail.addUserBtn();
             },
             removeUserOne (index) {
