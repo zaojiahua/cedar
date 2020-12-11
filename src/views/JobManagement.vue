@@ -5,7 +5,7 @@
         </Row>
         <Row style="height: 50px;">
             <Col span="8">
-                <Upload ref="upload" :action="uploadUrl" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
+                <Upload ref="upload" :action="uploadUrl" :data="userMsg" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
                     <Button icon="ios-cloud-upload-outline">导入用例</Button>
                 </Upload>
             </Col>
@@ -43,6 +43,7 @@
                 rowIndex:null,
                 uploadUrl:"",
                 jobNumbers:0,
+                userMsg:{ user_id: parseInt(localStorage.getItem("id"))},
             }
         },
         methods:{
@@ -135,9 +136,9 @@
                 this.$refs.jobList.deleteRow(this.rowIndex);
                 this.showDetail = flag;
             },
-            handleUploadError(error){
+            handleUploadError( error, file){
                 if (config.DEBUG) console.log(error);
-                this.$Message.error("文件上传失败！")
+                this.$Message.error({content:"文件上传失败! " + file.error,duration: 3})
             },
             handleUploadSuccess(response, file, fileList){
                 this.$Message.success("文件上传成功！")
@@ -148,6 +149,7 @@
             exportCase(){
                 let root = this;
                 let jobList = this.getJobList();
+                let userId = localStorage.getItem('id')
                 if(jobList.length===0){
                     this.$Modal.confirm({
                         title: "提示",
@@ -156,22 +158,26 @@
                 }else{
                     this.$Modal.confirm({
                         title: "提示",
-                        content: "您确定要导出这些用例吗?",
+                        content: "您确定要导出这些用例吗?<p>普通用户只能导出自己的用例，管理员可以导出全部用例。</p>",
                         onOk(){
                             this.$ajax
                                 .post("api/v1/cedar/job_export/",{
-                                    id: jobList
+                                    job_ids: jobList,
+                                    user_id:parseInt(userId)
                                 })
                                 .then(response=>{
-                                    if(response.data){
-                                        window.location.href=root.baseUrl + response.data;
+                                    if(response.data.success){
+                                        window.location.href=root.baseUrl + response.data.success;
+                                        root.cancelJobList()
+                                        this.$Message.success({content:"正在导出用例...",duration: 3})
+
                                     }else {
                                         this.$Message.error("导出用例失败!")
                                     }
                                 })
                                 .catch(error=>{
                                     if (config.DEBUG) console.log(error)
-                                    this.$Message.error("导出用例失败!")
+                                    this.$Message.error({content:"导出用例失败! " + error.response.data.error,duration: 3})
                                 })
                         }
                     });
