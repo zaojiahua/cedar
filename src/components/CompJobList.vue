@@ -427,6 +427,7 @@
                 this.$emit("get-job-count",this.selection.length)
                 this.data.forEach(job=>{
                     this.$set(job,"_checked",false)
+                    this.$delete(job, "_checked")
                 })
             }
 
