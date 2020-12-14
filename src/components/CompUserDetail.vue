@@ -122,14 +122,14 @@
                 let ajaxParamObj={};
                 if(this.showPassword===true){
                     ajaxParamObj = {
-                        // username:this.userInfo.username,
+                        username:this.userInfo.username,
                         last_name:this.userInfo.firstname,
                         groups:this.userInfo.role,
                         password:this.userInfo.password
                     }
                 }else {
                     ajaxParamObj = {
-                        // username:this.userInfo.username,
+                        username:this.userInfo.username,
                         last_name:this.userInfo.firstname,
                         groups:this.userInfo.role
                     }
