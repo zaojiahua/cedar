@@ -3,7 +3,8 @@
         <Row>
             <comp-filter ref="jobFilter" @on-change="onJobFilterChange"></comp-filter>
         </Row>
-        <Row style="height: 50px;">
+        <!-- 普通用户权限  -->
+        <Row style="height: 50px;"  v-if="!roles.includes('Admin')">
             <Col span="8">
                 <Upload ref="upload" :action="uploadUrl" :data="userMsg" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
                     <Button icon="ios-cloud-upload-outline">导入用例</Button>
@@ -14,8 +15,30 @@
                 <Button type="warning" class="job-btn" @click="cancelJobList">取消选择（{{jobNumbers}}）</Button>
                 <Button type="error" class="job-btn" @click="delJobList">批量删除</Button>
             </Col>
-
         </Row>
+        <!-- 超级用户权限  -->
+        <Row style="height: 50px;" v-if="roles.includes('Admin')">
+            <Col span="12">
+                <Upload ref="upload" :action="uploadUrl" :data="userMsg" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
+                    <Button icon="ios-cloud-upload-outline" class="job-btn">导入用例</Button>
+                </Upload>
+                <Button type="primary" class="job-btn" @click="exportCase">导出用例</Button>
+            </Col>
+            <Col span="12" style="text-align: right">
+                <Button type="warning" class="job-btn" @click="cancelJobList">取消选择（{{jobNumbers}}）</Button>
+                <Dropdown trigger="click" class="job-btn">
+                    <Button>
+                        更多操作
+                        <Icon type="ios-arrow-down"></Icon>
+                    </Button>
+                    <DropdownMenu slot="list" style="text-align: left">
+                        <span @click="delJobList"><DropdownItem>批量删除</DropdownItem></span>
+                        <span @click="onOpenModal"><DropdownItem>变更归属账号</DropdownItem></span>
+                    </DropdownMenu>
+                </Dropdown>
+            </Col>
+        </Row>
+
         <Divider></Divider>
         <Row>
             <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" @get-job-count="getJobNumbers"></comp-job-list>
@@ -23,6 +46,22 @@
         <Drawer v-model="showDetail" :draggable="true" :closable="false" width="50">
             <comp-job-detail ref="jobDetail" :prop-del-job="true" @closeDrawer="closeDrawer" @delJobOne="delJobOne"></comp-job-detail>
         </Drawer>
+
+        <Modal v-model="showUserModal" :closable="false" :footer-hide="true" :mask-closable="false" width="550">
+            <Card>
+                <p style="text-align: center;font-size: 18px;margin-bottom: 30px;"><b>请选择目标账号</b></p>
+                <div class="scroll-modal">
+                    <Row v-for="(item,index) in userList" style="margin-bottom: 16px;">
+                        <p v-model="item.username" class="p-c" :class="{ active: isActive===index }" @click="isActive=index;targetUserId = item.id">{{ item.username }}</p>
+                    </Row>
+                </div>
+
+                <p style="text-align: center;margin-top: 30px;">
+                    <Button style="margin-right: 30px;width: 100px"  @click="showUserModal=false">取消</Button>
+                    <Button style="width: 100px" type="primary" @click="onChangeOwner">确认</Button>
+                </p>
+            </Card>
+        </Modal>
     </Card>
 </template>
 
@@ -44,6 +83,12 @@
                 uploadUrl:"",
                 jobNumbers:0,
                 userMsg:{ user_id: parseInt(localStorage.getItem("id"))},
+                roles:"",
+                userId:null,
+                showUserModal:false,
+                userList:[],
+                isActive:null,
+                targetUserId:null,
             }
         },
         methods:{
@@ -182,10 +227,66 @@
                         }
                     });
                 }
+            },
+            onOpenModal(){
+                this.isActive = null;
+                this.targetUserId = null;
+                let jobList = this.getJobList();
+                if(jobList.length===0){
+                    this.$Modal.confirm({
+                        title: "提示",
+                        content: "请先选择用例！"
+                    });
+                    return
+                }
+                this.showUserModal = true;
+                this.getUserList()
+            },
+            getUserList(){
+                this.$ajax
+                    .get('api/v1/cedar/reefuser/?fields=id,username&ordering=username')
+                    .then(response => {
+                        this.userList = response.data.reefusers
+                    })
+                    .catch(error => {
+                        this.$Message.error("获取目标用户失败")
+                    })
+            },
+            onChangeOwner(){
+                if(this.targetUserId===null){
+                    this.$Message.warning({content:'请先选择用例归属目标！',duration:3})
+                    return
+                }
+                let jobList = this.getJobList();
+                this.$ajax .post("api/v1/cedar/job_change_owner/",{
+                        operate_user_id: this.userId,
+                        transfer_user_id: this.targetUserId,
+                        job_ids: jobList
+                    }).then(response=>{
+                        this.$Message.success({content:'用例变更归属成功',duration:3})
+                        this.showUserModal = false
+                    }).catch(error=>{
+                        this.$Message.error({content:"变更归属账号失败！ " + error.response.data.error,duration:5 })
+                })
             }
         },
         created(){
             this.uploadUrl =this.baseUrl + "/api/v1/cedar/job_import/";
+
+            this.userId = parseInt(localStorage.getItem('id'));
+            this.$ajax
+                .get("api/v1/cedar/reefuser/?fields=id,username," +
+                    "groups,groups.id,groups.name" +
+                    "&id="+ this.userId)
+                .then(response=>{
+                    let groups = [];
+                    for(let i=0;i<response.data.reefusers[0].groups.length;i++){
+                        groups.push(response.data.reefusers[0].groups[i].name)
+                    }
+                    this.roles = groups.join(",");
+                }).catch(error=>{
+                    this.$Message.error("获取用户权限信息失败")
+            })
         }
     }
 </script>
@@ -196,5 +297,27 @@
     }
     .ivu-upload .ivu-btn{
         height: 33px;
+    }
+    .disabled-input >>> input {
+        background-color: #0000;
+        color: #515a6e;
+        border: #ccc dotted 1px;
+        cursor: pointer!important;
+    }
+    .p-c{
+        height: 32px;
+        line-height: 1.5;
+        padding: 4px 7px;
+        font-size: 14px;
+        border-radius: 4px;
+        border: #ccc dotted 1px;
+        cursor: pointer;
+    }
+    .active{
+        background-color: #f2f2f2;
+    }
+    .scroll-modal{
+        max-height: 370px;
+        overflow-y: auto;
     }
 </style>
