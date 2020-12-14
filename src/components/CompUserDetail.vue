@@ -120,16 +120,23 @@
                     return;
                 // get url params
                 let ajaxParamObj={};
-                if(this.showPassword===true){
-                    ajaxParamObj = {
-                        username:this.userInfo.username,
-                        last_name:this.userInfo.firstname,
-                        groups:this.userInfo.role,
-                        password:this.userInfo.password
+                if(this.showPassword===true){   //need  password
+                    if(this.propStatus){   //update user
+                        ajaxParamObj = {
+                            last_name:this.userInfo.firstname,
+                            groups:this.userInfo.role,
+                            password:this.userInfo.password
+                        }
+                    }else {     //  add user
+                        ajaxParamObj = {
+                            username:this.userInfo.username,
+                            last_name:this.userInfo.firstname,
+                            groups:this.userInfo.role,
+                            password:this.userInfo.password
+                        }
                     }
                 }else {
                     ajaxParamObj = {
-                        username:this.userInfo.username,
                         last_name:this.userInfo.firstname,
                         groups:this.userInfo.role
                     }
