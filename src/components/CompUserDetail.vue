@@ -2,7 +2,7 @@
     <Card>
         <Form  v-model="userInfo" :label-width="80">
             <FormItem label="登录名：">
-                <Input v-model="userInfo.username" placeholder="Enter username..." @on-keyup="usernameVerifyFeedback"></Input>
+                <Input v-model="userInfo.username" :disabled="propEdit" placeholder="Enter username..." @on-keyup="usernameVerifyFeedback" :class="{'disabled-input':propEdit}"></Input>
                 <p v-show="showNameTip" style="color: red;">{{ nameTipMsg }}</p>
             </FormItem>
             <FormItem label="真实姓名：">
@@ -35,6 +35,10 @@
         name:"CompUserDetail",
         props:{
             propStatus:{
+                type: Boolean,
+                default: false
+            },
+            propEdit:{
                 type: Boolean,
                 default: false
             }
@@ -116,16 +120,23 @@
                     return;
                 // get url params
                 let ajaxParamObj={};
-                if(this.showPassword===true){
-                    ajaxParamObj = {
-                        username:this.userInfo.username,
-                        last_name:this.userInfo.firstname,
-                        groups:this.userInfo.role,
-                        password:this.userInfo.password
+                if(this.showPassword===true){   //need  password
+                    if(this.propStatus){   //update user
+                        ajaxParamObj = {
+                            last_name:this.userInfo.firstname,
+                            groups:this.userInfo.role,
+                            password:this.userInfo.password
+                        }
+                    }else {     //  add user
+                        ajaxParamObj = {
+                            username:this.userInfo.username,
+                            last_name:this.userInfo.firstname,
+                            groups:this.userInfo.role,
+                            password:this.userInfo.password
+                        }
                     }
                 }else {
                     ajaxParamObj = {
-                        username:this.userInfo.username,
                         last_name:this.userInfo.firstname,
                         groups:this.userInfo.role
                     }
@@ -181,10 +192,10 @@
             usernameVerify(){
                 if(this.userInfo.username.trim()===""){
                    return "登录名不能为空！"
-                }else if (this.userInfo.username.trim().length<5||this.userInfo.username.trim().length>30) {
-                    return "登录名的长度应在5-30个字符之内！"
-                } else if (!/^[a-zA-Z0-9_]+$/.test(this.userInfo.username)) {
-                    return "请输入字母数字下划线，不能输入特殊字符！"
+                }else if (this.userInfo.username.trim().length<5||this.userInfo.username.trim().length>50) {
+                    return "登录名的长度应在5-50个字符之内！"
+                } else if (!/^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/.test(this.userInfo.username)) {
+                    return "请输入正确的邮箱格式！"
                 } else {
                     return  "";
                 }
@@ -238,5 +249,12 @@
 </script>
 
 <style scoped>
-
+    .drawer-footer{
+        text-align: right;
+    }
+    .disabled-input >>> input {
+        background-color: #0000;
+        color: #515a6e;
+        border: #eee dotted 1px;
+    }
 </style>

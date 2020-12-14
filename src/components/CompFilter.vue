@@ -201,33 +201,39 @@
                 this.$ajax.get(
                     "api/v1/cedar/phone_model/?fields=" +
                     "id," +
-                    "phone_model_name"
+                    "phone_model_name" +
+                    "&ordering=phone_model_name"
                 ),
                 this.$ajax.get(
                     "api/v1/cedar/job_test_area/?fields=" +
                     "id," +
-                    "description"
+                    "description" +
+                    "&ordering=description"
                 ),
                 this.$ajax.get(
                     "api/v1/cedar/android_version/?fields=" +
                     "id," +
-                    "version"
+                    "version" +
+                    "&ordering=version"
                 ),
                 this.$ajax.get(
                     "api/v1/cedar/rom_version/?fields=" +
                     "id," +
-                    "version"
+                    "version" +
+                    "&ordering=version"
                 ),
                 this.$ajax.get(
                     "api/v1/cedar/reefuser/?fields=" +
                     "id," +
                     "username," +
-                    "last_name"
+                    "last_name" +
+                    "&ordering=username"
                 ),
                 this.$ajax.get(
                     "api/v1/cedar/custom_tag/?fields=" +
                     "id," +
-                    "custom_tag_name"
+                    "custom_tag_name" +
+                    "&ordering=custom_tag_name"
                 )
             ]
 

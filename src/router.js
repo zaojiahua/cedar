@@ -16,6 +16,7 @@ import Setting from "./views/Setting"
 import CleanCenter from "./views/CleanCenter"
 import AbnormalStatistics from "./views/AbnormalStatistics"
 import PerfDataManagement from "./views/PerfDataManagement"
+import RdsDictView from "./views/RdsDictView"
 
 
 Vue.use(Router)
@@ -100,6 +101,11 @@ let router = new Router({
             path: '/login',
             name: 'login',
             component: Login
+        },
+        {
+            path: "/rds-dict-view",
+            name: "rds-dict-view",
+            component: RdsDictView
         },
         {
             path: '*',
