@@ -264,6 +264,7 @@ import JobManagementVue from '../views/JobManagement.vue';
                 showPhoneArea: false,
                 showAllAreas: false,
                 cameraId: null,
+                armId: null,
                 deviceLabel: null
             }
         },
@@ -460,28 +461,41 @@ import JobManagementVue from '../views/JobManagement.vue';
                     }
                 })
             },
-            async setDevice(){
-                if(this.paneList[this.paneIndex].type==="test_box"){
+            async setDevice() {
+                if (this.paneList[this.paneIndex].type === "test_box")
+                {
                     await this.$ajax.get("api/v1/cedar/paneview?id=" + this.paneList[this.paneIndex].id)
-                    .then(res => {
-                        this.cameraId = res.data.paneview[0].camera
-                    })
-
-                    this.showConfirmModal = true
-                    this.$ajax.get("api/v1/cedar/device/"+ this.selectDevice +"/?fields=" +
+                        .then(res => {
+                            this.cameraId = res.data.paneview[0].camera
+                            this.armId = res.data.paneview[0].robot_arm
+                        })
+                    await this.$ajax.get("api/v1/cedar/device/" + this.selectDevice + "/?fields=" +
                         "cabinet,cabinet.ip_address,phone_model,phone_model.id,phone_model.phone_model_name," +
                         "phone_model.x_border,phone_model.y_border,phone_model.x_dpi,phone_model.y_dpi"
-                    ).then(response=>{
+                    ).then(response => {
                         Object.assign(this.phoneModel, response.data.phone_model)
                         this.cabinetIP = response.data.cabinet.ip_address
-                        this.getImg()
-                    }).catch(error=>{
-                        if(config.DEBUG) console.log(error)
-                        this.$Message.error("获取机型信息失败")
+                    }).catch(error => {
+                        if (config.DEBUG) console.log(error)
+                        this.$Message.error("获取机柜ip失败")
                     })
-                    return
+                    if (this.cameraId === null) {
+                        this.$ajax.post(`http://${this.cabinetIP}:5000/pane/device_arm_camera/`, {
+                            "arm_id": this.armId,
+                            "device_label": this.deviceLabel
+                        })
+                        // this.showConfirmModal = true
+
+                    } else {
+                        this.showConfirmModal = true
+                        this.getImg()
+                        return
+                    }
+
                 }
-                if(this.selectDevice!==null){
+
+                console.log(this.selectDevice)
+                if (this.selectDevice !== null) {
                     let str = "添加设备成功，请继续添加或关闭弹窗！"
                     this.sendRequest(str)
                 }
