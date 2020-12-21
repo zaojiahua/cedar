@@ -309,12 +309,13 @@
                     {cpu_id:this.device.device_label}
                     ).then(response=>{
                     if(response.data.state==="DONE"){
-                        this.$Message.success("重连成功")}
-                    else{
-                        this.$Message.error({content:error.response.data.description,duration: 6})
+                        this.$Message.success("重连成功")
+                        this.$emit('after-device-delete')
+                    }else{
+                        this.$Message.error({content:response.data.description,duration: 6})
                     }
                 }).catch(error=>{
-                    this.$Message.error("重连失败")
+                    this.$Message.error({content:error.response.data.description,duration: 6})
             })}},
             deleteAjax(device_id,device_status){
                 this.spinShow = true;
