@@ -466,7 +466,7 @@
                     slot: "delete"
                 })
         },
-        mounted () {
+        beforeCreate(){
             this.jobType = localStorage.getItem('COMPJOBLIST:FILTER_JOB_TYPE');
         }
     }
