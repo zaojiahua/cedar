@@ -66,12 +66,14 @@
                     .catch(error => {
                         let errorMsg = "";
                         if (error.response.status === 400) {
-                            errorMsg = "错误的 使用者名称 或 密码 ！"
-                        }
+                            errorMsg = "该用户已被冻结！"
+                        }else if (error.response.status === 401) {
+                            errorMsg = "密码错误！"
+                        }else if (error.response.status === 404)
+                            errorMsg = "用户名错误！"
                         else if(error.response.status >= 500) {
                             errorMsg = "服务器错误！"
-                        }
-                        else {
+                        } else {
                             errorMsg = error.toString()
                         }
                         this.$Message.error(errorMsg)

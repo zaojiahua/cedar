@@ -66,7 +66,7 @@
                                 }, '修改'),
                                 h('Button', {
                                     props: {
-                                        type: 'error',
+                                        type:  params.row.action ? 'error' : "normal",
                                         size: 'small'
                                     },
                                     on: {
