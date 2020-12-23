@@ -244,7 +244,7 @@
             },
             getUserList(){
                 this.$ajax
-                    .get('api/v1/cedar/reefuser/?fields=id,username&ordering=username')
+                    .get('api/v1/cedar/reefuser/?fields=id,username&ordering=username&is_active=True')
                     .then(response => {
                         this.userList = response.data.reefusers
                     })
