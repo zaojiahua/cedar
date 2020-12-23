@@ -126,7 +126,7 @@
                             }
                         ],
                         filterMultiple: false,
-                        filteredValue: [ this.jobType ],
+                        filteredValue: this.jobType ? [ this.jobType ] : [],
                         filterRemote (value) {
                             this.jobType = value[0] || ''
                             localStorage.setItem('COMPJOBLIST:FILTER_JOB_TYPE', this.jobType)
