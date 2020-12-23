@@ -3,30 +3,22 @@
         <Card>
             <p class="user-head">
                 <Button icon="md-add" style="margin-right: 20px" type="primary" @click="addUser">添加用户</Button>
-                <Button icon="ios-trash-outline" type="error" @click="delUserList">批量删除</Button>
+                <!--<Button icon="ios-trash-outline" type="error" @click="delUserList">批量删除</Button>-->
             </p>
             <Table ref="table" stripe :columns="userColumns" :data="userData"></Table>
+            <Page :current="currentPage" :total="dataTotal" :page-size="pageSize" simple @on-change="onPageChange"
+                  style="margin-top:20px;text-align: center "/>
         </Card>
         <Drawer v-model="showUserDetail" :draggable="true" width="50" title="用户信息">
             <comp-user-detail :propStatus="componentStatus"  :prop-edit="isEdit" ref="userDetail" @onCancelClick="closeDrawer" @afterSendRequest="afterSendRequest"></comp-user-detail>
         </Drawer>
-        <Modal v-model="showModal" :closable="false" :mask-closable="false"  width="360">
-            <p slot="header" style="color:#f60;text-align:center">
-                <Icon type="ios-information-circle"></Icon>
-                <span>删除确认</span>
-            </p>
-            <p style="text-align: center;font-size: 16px;">你确定要删除该用户吗？</p>
-            <p slot="footer" style="text-align: center">
-                <Button type="primary" style="margin-right: 100px;" @click="removeUserOne(delIndex)">确定</Button>
-                <Button @click="showModal = false">取消</Button>
-            </p>
-        </Modal>
     </div>
 </template>
 
 <script>
     import CompUserDetail from "../components/CompUserDetail"
     import config from "../lib/config"
+    import utils from "../lib/utils";
 
     export default {
         name: "UserManagement",
@@ -79,21 +71,22 @@
                                     },
                                     on: {
                                         click: () => {
-                                            this.showModal = true;
-                                            this.delIndex = params.index;
+                                            this.onFrozenAccount(params.row)
                                         }
                                     }
-                                }, '删除')
+                                }, params.row.action ? '冻结账户' : "解冻账户")
                             ]);
                         }
                     }
                 ],
                 userData:[],
                 showUserDetail:false,
-                showModal:false,
-                delIndex:null,
                 componentStatus:false,
                 isEdit:false,
+                currentPage:1,
+                dataTotal:0,
+                pageSize:config.DEFAULT_PAGE_SIZE,
+                offset:0,
             }
         },
         methods:{
@@ -141,8 +134,11 @@
             getUserData(){
                 this.$Loading.start();
                 this.$ajax
-                    .get('api/v1/cedar/reefuser/?fields=id,username,last_name,groups,groups.name')
+                    .get('api/v1/cedar/reefuser/?fields=id,username,last_name,groups,groups.name,is_active,is_superuser' +
+                            '&limit=' + this.pageSize +
+                            '&offset=' + this.offset )
                     .then(response => {
+                        this.dataTotal = parseInt(response.headers["total-count"])
                         let userList = [];
                         for (let i=0;i<response.data.reefusers.length;i++) {
                             let group=[];
@@ -154,7 +150,9 @@
                                 id:response.data.reefusers[i].id,
                                 username:response.data.reefusers[i].username,
                                 firstname:response.data.reefusers[i].last_name,
-                                role:group
+                                role:group,
+                                action:response.data.reefusers[i].is_active,
+                                is_superuser:response.data.reefusers[i].is_superuser,
                             })
                         }
                         this.userData = userList;
@@ -171,6 +169,7 @@
                         this.$Loading.error()
                     })
             },
+            //  批量删除用户
             delUserList(){
                 let userList = this.$refs.table.getSelection();
                 if(userList.length>0){
@@ -204,9 +203,45 @@
                         content: "请选择要删除的数据！"
                     });
                 }
+            },
+            onPageChange(page) {
+                this.offset = this.pageSize * (page-1)
+                this.currentPage = page
+                this.getUserData()
+            },
+            onFrozenAccount(row){
+                let _this = this
+                if(row.is_superuser){
+                    this.$Message.warning("不能对该账户进行此操作！")
+                    return
+                }
+
+                let content = "您确定要冻结该账户吗?"
+                let successMsg = "冻结账户成功！"
+                let errorMsg = "冻结账户失败！"
+                if(!row.action){
+                    content = "您确定要恢复该账户吗?"
+                    successMsg = "解冻账户成功！"
+                    errorMsg = "解冻账户失败！"
+                }
+                this.$Modal.confirm({
+                    title:'提示',
+                    content: content,
+                    onOk(){
+                        this.$ajax.patch("api/v1/cedar/reefuser/"+ row.id +"/",{
+                            is_active: !row.action
+                        }).then(response=>{
+                            this.$Message.success(successMsg)
+                            _this.onPageChange(_this.currentPage)
+                        }).catch(error=>{
+                            this.$Message.error(errorMsg)
+                        })
+                    }
+                })
             }
         },
         created(){
+            this.pageSize = utils.getPageSize();
             this.getUserData();
         }
     }
