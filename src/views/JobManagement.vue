@@ -46,6 +46,7 @@
         <Drawer v-model="showDetail" :draggable="true" :closable="false" width="50">
             <comp-job-detail ref="jobDetail" :prop-del-job="true" @closeDrawer="closeDrawer" @delJobOne="delJobOne"></comp-job-detail>
         </Drawer>
+        <Spin size="large" fix v-if="showLoading"></Spin>
 
         <Modal v-model="showUserModal" :closable="false" :footer-hide="true" :mask-closable="false" width="550">
             <Card>
@@ -89,6 +90,7 @@
                 userList:[],
                 isActive:null,
                 targetUserId:null,
+                showLoading:false,
             }
         },
         methods:{
@@ -205,6 +207,7 @@
                         title: "提示",
                         content: "您确定要导出这些用例吗?<p>普通用户只能导出自己的用例，管理员可以导出全部用例。</p>",
                         onOk(){
+                            root.showLoading = true
                             this.$ajax
                                 .post("api/v1/cedar/job_export/",{
                                     job_ids: jobList,
@@ -215,14 +218,16 @@
                                         window.location.href=root.baseUrl + response.data.success;
                                         root.cancelJobList()
                                         this.$Message.success({content:"正在导出用例...",duration: 3})
-
+                                        root.showLoading = false
                                     }else {
                                         this.$Message.error("导出用例失败!")
+                                        root.showLoading = false
                                     }
                                 })
                                 .catch(error=>{
                                     if (config.DEBUG) console.log(error)
                                     this.$Message.error({content:"导出用例失败! " + error.response.data.error,duration: 3})
+                                    root.showLoading = false
                                 })
                         }
                     });
@@ -265,6 +270,9 @@
                     }).then(response=>{
                         this.$Message.success({content:'用例变更归属成功',duration:3})
                         this.showUserModal = false
+                        setTimeout(function (){
+                            location.reload()
+                        },500)
                     }).catch(error=>{
                         this.$Message.error({content:"变更归属账号失败！ " + error.response.data.error,duration:5 })
                 })
