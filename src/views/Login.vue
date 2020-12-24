@@ -46,6 +46,14 @@
         },
         methods: {
             login() {
+                if(this.username===""){
+                    this.$Message.warning("请输入用户名！")
+                    return
+                }
+                if(this.password.length===0){
+                    this.$Message.warning("请输入密码！")
+                    return
+                }
                 this.$Loading.start()
                 this.$ajax
                     .post('api/v1/login/', {
