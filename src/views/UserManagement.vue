@@ -66,7 +66,7 @@
                                 }, '修改'),
                                 h('Button', {
                                     props: {
-                                        type:  params.row.action ? 'error' : "normal",
+                                        type:  params.row.action ? 'error' : "default",
                                         size: 'small'
                                     },
                                     on: {
@@ -134,7 +134,7 @@
             getUserData(){
                 this.$Loading.start();
                 this.$ajax
-                    .get('api/v1/cedar/reefuser/?fields=id,username,last_name,groups,groups.name,is_active,is_superuser' +
+                    .get('api/v1/cedar/reefuser/?fields=id,username,last_name,groups,groups.name,is_active,is_superuser&ordering=username' +
                             '&limit=' + this.pageSize +
                             '&offset=' + this.offset )
                     .then(response => {
@@ -234,7 +234,7 @@
                             this.$Message.success(successMsg)
                             _this.onPageChange(_this.currentPage)
                         }).catch(error=>{
-                            this.$Message.error(errorMsg)
+                            this.$Message.error({content:errorMsg + error.response.data.non_field_errors[0],duration:3})
                         })
                     }
                 })
