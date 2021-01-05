@@ -1,27 +1,17 @@
 <template>
     <Card dis-hover>
         <Steps :current="current" style="margin-bottom: 16px;">
-            <Step title="选择设备"></Step>
             <Step title="选择用例"></Step>
             <Step title="填写信息"></Step>
         </Steps>
-        <div v-if="current===0">
-            <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-device-status="true" :prop-paneview-type="true" :prop-high-light="true" @on-row-click="onSelectDeviceClick"></comp-device-list>
-            <Row type="flex" justify="center" style="margin-top: 16px;">
-                <Col>
-                    <Button style="margin-right: 32px; width: 90px;" @click="onBackClick">返回</Button>
-                    <Button type="primary" style="width: 90px;" @click="toPageChooseJob" :disabled="disableFlag">下一步</Button>
-                </Col>
-            </Row>
-        </div>
 
-        <div v-if="current===1">
-            <!--<Tabs type="card">-->
-                <!--<TabPane label="启动时间"></TabPane>-->
-            <!--</Tabs>-->
+        <div v-if="current===0">
+            <Row>
+                <comp-filter ref="jobFilter"  @on-change="onJobFilterChange"></comp-filter>
+            </Row>
             <Row type="flex">
                 <Col span="11">
-                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-subsidiary-device-count="subsidiaryDeviceCount"></comp-job-list>
+                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true"></comp-job-list>
                 </Col>
                 <Col span="2">
                     <Row type="flex" justify="center" style="margin-top: 48px;">
@@ -33,16 +23,16 @@
                 </Col>
                 <Col span="11">
                     <comp-job-list style="margin-top: 48px" ref="jobSelectedList" :prop-auto-load="false" :prop-show-search="false"
-                                   :prop-show-counter="true" :prop-deletable="true" :prop-show-page="false"></comp-job-list>
+                                   :prop-deletable="true" :prop-show-page="false"></comp-job-list>
                 </Col>
             </Row>
             <Row type="flex" justify="center" style="margin-top: 32px;">
-                <Button type="primary" style="width: 90px;" @click="backToPageChooseDevice">上一步</Button>
+                <Button style="width: 90px;" @click="onBackClick">返回</Button>
                 <Button type="primary" style="width: 90px; margin-left:32px;" @click="toPageFillInfo">下一步( {{selectedJob.length}} )</Button>
             </Row>
         </div>
 
-        <div v-if="current===2">
+        <div v-if="current===1">
             <Card title="填写任务讯息" dis-hover>
                 <Form :label-width="80">
                     <FormItem>
@@ -51,16 +41,9 @@
                     </FormItem>
                     <FormItem>
                         <b slot="label">运行轮次</b>
-                        <InputNumber v-model="tboardRepeatTime" :min="1" :precision="0"></InputNumber>
+                        <InputNumber v-model="tboardRepeatTime" :min="1" :precision="0" :disabled="true"></InputNumber>
                     </FormItem>
-                    <FormItem>
-                        <b slot="label">已选设备</b>
-                        <span> {{selectedDevice.device_label}} ( {{selectedDevice.device_name}} ) </span>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">已选用例</b>
-                        <span> {{selectedJob.length}} 个</span>
-                    </FormItem>
+                    <Table border :columns="tableColumn" :data="tableData"></Table>
                 </Form>
             </Card>
             <Row type="flex" justify="center" style="margin-top: 32px;">
@@ -77,91 +60,112 @@
 </template>
 
 <script>
-    import CompDeviceList from "../components/CompDeviceList";
+    import CompFilter from "../components/CompFilter";
     import CompJobList from "../components/CompJobList";
     import CompJobDetail from  "../components/CompJobDetail"
     import config from "../lib/config";
     import utils from "../lib/utils";
 
+
     export default {
-        components: {CompJobList, CompDeviceList,CompJobDetail},
+        components: {CompJobList, CompFilter,CompJobDetail},
         data() {
             return {
                 current: 0,
-                // Page "Choose device"
-                selectedDevice:{},
                 // Page "Choose job"
                 selectedJob: [],
                 // Page "Fill info"
                 tboardName: "",
                 tboardRepeatTime: 1,
                 showJobDetail:false,
-                disableFlag:true,
                 jobSelection:[],
                 showLoading:false,
-                subsidiaryDeviceCount:null,
+                tableColumn:[
+                    {
+                        title: "用例名称",
+                        key: "job_name",
+                    },
+                    {
+                        title: "设备名称",
+                        key: "device_name",
+                    },
+                    {
+                        title: "设备编号",
+                        key: "device_label",
+                    },
+                ],
+                tableData:[],
             }
         },
         methods: {
-            onBackClick(){
-                this.$emit("on-back-click")
-            },
-            //select Device
-            onSelectDeviceClick(data, index){
-                this.selectedDevice = data
-                this.disableFlag = false
-            },
-            //next step to select job
-            toPageChooseJob(){
-                let count = []
-                this.selectedDevice.forEach(item=>{
-                    count.push(item.subsidiary_device_count)
+            // Page "Choose job"
+            selectedDetail(selected){
+                let conditions = []
+                Object.keys(selected).forEach(key=>{
+                    let condition = []  // store id data like [1,2,3]
+                    selected[key].forEach(item=>{
+                        condition.push(item.id)
+                    })
+
+                    // 不统一的命名额外处理
+                    if(key==="job_test_area") key = "test_area"
+                    else if(key==="phone_model") key = "phone_models"
+                    else if(key==="reefuser") key = "author"
+
+                    condition.forEach(item=>{
+                        item = key+"__id="+item
+                    })
+
+                    let conditionStr = key+"__id__in="+"ReefList["+condition.join("{%,%}")+"]"
+                    conditions.push(conditionStr)
                 })
-                this.subsidiaryDeviceCount = Math.max.apply(null,count)
-                this.current = 1
-                this.$nextTick(()=>{
-                    this.$refs.jobList.refreshWithParam("&job_second_type=TimeJob&phone_models__id=" + this.selectedDevice.phone_model_id)
-                })
+
+                let param = conditions.join("&")
+                return param
             },
-            // back step to select Device
-            backToPageChooseDevice(){
-                this.current = 0
-                this.disableFlag = true;
-                this.selectedJob = []
+            onJobFilterChange(selected){
+                this.$refs.jobList.refreshWithParam("&" + this.selectedDetail(selected))
             },
-            // next step to create Tboard
+            selectJob(){
+                if(this.$refs.jobList.getSelection().length>1 || this.selectedJob.length===1){
+                    this.$Message.warning("只允许选择一个用例！")
+                    return
+                }
+                this.$refs.jobSelectedList.refreshWithData(_.cloneDeep(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection())))
+                this.selectedJob = this.$refs.jobSelectedList.getData()
+            },
             toPageFillInfo(){
                 this.selectedJob = this.$refs.jobSelectedList.getData()
                 this.jobSelection = this.$refs.jobList.getThisSelection();
                 if(this.selectedJob.length>0){
-                    this.current = 2
+                    this.$ajax.get("api/v1/cedar/get_job_prior_tboard/?jobs_id=" + this.selectedJob[0].id)
+                        .then(response=>{
+                            if (Object.keys(response.data).length === 0){
+                                this.$Message.error({content:"该用例暂时没有找到符合条件的设备",duration:3})
+                                return
+                            }
+                            this.current = 1
+                            this.tableData = [].concat(response.data)
+                        }).catch(error=>{
+                            if (config.DEBUG) console.log(error)
+                            this.$Message.error("设备匹配失败")
+                    })
                 }else {
                     this.$Message.warning("请选择要进行测试的用例！");
                 }
             },
-            // select Job
-            selectJob(){
-                this.$refs.jobSelectedList.refreshWithData(_.cloneDeep(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection())))
-                this.selectedJob = this.$refs.jobSelectedList.getData()
-            },
             // Page "Fill info"
             complete(){
-                if(config.DEBUG){
-                    console.log(this.selectedDevice)
-                    console.log(this.selectedJob)
-                    console.log(this.tboardName)
-                    console.log(this.tboardRepeatTime)
-                }
                 if(this.tboardRepeatTime===null){
                     this.$Message.warning("请输入运行轮次！")
                 }else{
                     let deviceList = [];
-                    deviceList.push(this.selectedDevice.device_label);
+                    this.tableData.forEach(device=>{
+                        deviceList.push(device.device_label);
+                    })
                     let jobList = [];
-                    this.selectedJob.forEach(job=>{
-                        for (let i=0;i<job.counter;i++){
-                            jobList.push(job.job_label);
-                        }
+                    this.tableData.forEach(job=>{
+                        jobList.push(job.job_label);
                     })
                     this.showLoading = true;
                     utils._initDate();
@@ -172,9 +176,7 @@
                             job_label_list:jobList,
                             repeat_time:this.tboardRepeatTime,
                             board_name:this.tboardName,
-                            owner_label:userId,
-                            tboard_type:"PerfJob",
-                            tboard_second_type:"TimeJob"
+                            owner_label:userId
                         })
                         .then(response=>{
                             let str = ""
@@ -215,7 +217,7 @@
                 }
             },
             backToPageChooseJob(){
-                this.current = 1
+                this.current = 0
                 this.$nextTick(function () {
                     this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
                     this.$refs.jobList.setSelection(this.jobSelection);
@@ -227,6 +229,9 @@
             },
             closeDrawer(flag){
                 this.showJobDetail = flag;
+            },
+            onBackClick(){
+                this.$emit("on-back-click")
             }
         }
     }
