@@ -305,18 +305,23 @@
                     this.$Message.error("离线设备请直接走注册流程")
                 }
                 else{
-                this.$ajax.post("http://" + this.device.cabinet.ip_address + ":5000"+"/door/wifi_port/",
-                    {cpu_id:this.device.device_label}
+                    this.spinShow = true
+                    this.$ajax.post("http://" + this.device.cabinet.ip_address + ":5000"+"/door/wifi_port/",
+                        {cpu_id:this.device.device_label}
                     ).then(response=>{
-                    if(response.data.state==="DONE"){
-                        this.$Message.success("重连成功")
-                        this.$emit('after-device-delete')
-                    }else{
-                        this.$Message.error({content:response.data.description,duration: 6})
-                    }
-                }).catch(error=>{
-                    this.$Message.error({content:error.response.data.description,duration: 6})
-            })}},
+                        this.spinShow = false
+                        if(response.data.state==="DONE"){
+                            this.$Message.success("重连成功")
+                            this.$emit('after-device-delete')
+                        }else{
+                            this.$Message.error({content:response.data.description,duration: 6})
+                        }
+                    }).catch(error=>{
+                        this.spinShow = false
+                        this.$Message.error({content:error.response.data.description,duration: 6})
+                    })
+                }
+            },
             deleteAjax(device_id,device_status){
                 this.spinShow = true;
                 this.$ajax.post("api/v1/coral/release_device/",{
