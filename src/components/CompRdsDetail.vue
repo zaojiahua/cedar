@@ -228,7 +228,7 @@
                     })
                 this.$ajax.get("api/v1/cedar/job_res_file/?type=png&job_id="+jobId)
                     .then(response=>{
-                        this.jobResFile = response.data.job_res_files
+                        this.jobResFile = response.data.res_file
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
