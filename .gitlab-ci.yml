@@ -18,11 +18,13 @@ before_script:
 build:
   stage: build
   script:
-    - docker build -t $docker_storage_url/wavecut/$module_name:$DATE-$docker_images_tag .
+    - echo $deploy_ip
+    - echo $branch_name
+    - echo $CI_COMMIT_SHA
+    - echo `pwd`
+    - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip $CI_COMMIT_SHA $branch_name
   only:
-    - k8s-develop
-  tags:
-    - build
+    - 15num-k8s-develop
 
 push:
   stage: push
@@ -33,9 +35,9 @@ push:
     - docker tag $docker_storage_url/wavecut/$module_name:$DATE-$docker_images_tag $docker_storage_url/wavecut/$module_name:latest
     - docker push $docker_storage_url/wavecut/$module_name:$DATE-$docker_images_tag
     - docker push $docker_storage_url/wavecut/$module_name:latest
-    - ssh $ssh_remote_username@$ssh_remote_ip "pwd ; bash deploy.sh $module_name $docker_storage_url/wavecut/$module_name:$DATE-$docker_images_tag"
+#    - ssh $ssh_remote_username@$ssh_remote_ip "pwd ; bash deploy.sh $module_name $docker_storage_url/wavecut/$module_name:$DATE-$docker_images_tag"
   only:
-    - k8s-develop
+    - 15num-k8s-develop
   tags:
     - push
 
@@ -62,3 +64,4 @@ push:
 #    - devp
 #  tags:
 #    - deploy
+

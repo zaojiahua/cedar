@@ -434,7 +434,7 @@
         },
         computed:{
             filterUrlParam(){
-                return `${this.jobType ? `&job_type=${this.jobType}` : ''}`
+                return this.propShowJobType ? `${this.jobType ? `&job_type=${this.jobType}` : ''}` : ""
             }
         },
         watch:{

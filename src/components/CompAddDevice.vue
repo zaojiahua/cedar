@@ -209,7 +209,7 @@
         },
         watch: {
             CabinetSelected: function (newId, oldId) {
-                this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected)
+                this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected + "&status__in=ReefList[idle{%,%}busy]")
                     .then(response => {
                         this.deviceNum = response.data.devices.length
                     })

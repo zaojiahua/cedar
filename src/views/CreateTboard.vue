@@ -7,15 +7,21 @@
                     <Icon type="ios-photos-outline" size="50" />
                     <p>功能测试任务</p>
                 </div>
-                <div class="sel-grey-box" @click="testIndex=2">
+                <div class="sel-grey-box" style="margin-right: 30px;" @click="testIndex=2">
                     <Icon type="ios-speedometer-outline" size="50" />
                     <p>性能测试任务</p>
+                </div>
+                <div class="sel-grey-box" @click="testIndex=3">
+                    <Icon type="ios-paper-outline" size="50" />
+                    <p>用例测试任务</p>
                 </div>
             </div>
         </div>
         <comp-creat-functional-test v-if="testIndex===1" @on-back-click="onSelectTestBack"></comp-creat-functional-test>
 
-        <comp-creat-performance-test v-if="testIndex===2" @on-back-click = onSelectTestBack></comp-creat-performance-test>
+        <comp-creat-performance-test v-if="testIndex===2" @on-back-click=onSelectTestBack></comp-creat-performance-test>
+
+        <comp-creat-case-test v-if="testIndex===3" @on-back-click=onSelectTestBack></comp-creat-case-test>
     </div>
 
 </template>
@@ -23,6 +29,7 @@
 <script>
     import CompCreatFunctionalTest from  "../components/CompCreatFunctionalTest"
     import CompCreatPerformanceTest from  "../components/CompCreatPerformanceTest"
+    import CompCreatCaseTest from  "../components/CompCreatCaseTest"
 
 
 
@@ -38,7 +45,7 @@
 
 
     export default {
-        components: {CompCreatFunctionalTest, CompCreatPerformanceTest, CompJobList, CompDeviceList, CompFilter,CompJobDetail},
+        components: {CompCreatFunctionalTest, CompCreatPerformanceTest, CompJobList, CompDeviceList, CompFilter,CompJobDetail,CompCreatCaseTest},
         data() {
             return {
               testIndex:0,

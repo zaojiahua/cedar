@@ -206,7 +206,7 @@
                 if(this.selectedJob.length>0){
                     this.current = 2
                 }else {
-                    this.$Message.warning("请选择用例要进行测试的用例！");
+                    this.$Message.warning("请选择要进行测试的用例！");
                 }
             },
             backToPageChooseDevice(){

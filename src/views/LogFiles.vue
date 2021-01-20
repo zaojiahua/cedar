@@ -85,6 +85,7 @@
             showLogContent(row){
                 this.showLoading = true;
                 this.fileContent = ""
+                this.atLast = false
                 let coralUrl = utils.getCoralUrl(5000)+"/log/content/"+row.filename + "/?limit=1&offset=0 ";
                 //    0：接着读     1：从头读
                 this.$ajax
@@ -96,14 +97,19 @@
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("读取数据失败！")
                         this.showLoading = false;
+                        if(error.response.data==="file read to end"){
+                            this.flieName = row.filename;
+                            this.atLast = true;
+                            return
+                        }
+                        this.$Message.error("读取数据失败！")
                     })
             },
             getNextContent(){
                 this.contentOffset++
                 this.showLoading = true;
-                let coralUrl = utils.getCoralUrl(5000)+"/log/content/"+this.flieName + "/?limit=1&offset= " + this.contentOffset;
+                let coralUrl = utils.getCoralUrl(5000)+"/log/content/"+this.flieName + "/?limit=1&offset=" + this.contentOffset;
                 this.$ajax
                     .get(coralUrl)
                     .then(response=>{
