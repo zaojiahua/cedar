@@ -18,11 +18,7 @@ before_script:
 build:
   stage: build
   script:
-    - echo $deploy_ip
-    - echo $branch_name
-    - echo $CI_COMMIT_SHA
-    - echo `pwd`
-    - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip $CI_COMMIT_SHA $branch_name
+    - docker build -t $docker_storage_url/wavecut/$module_name:$DATE-$docker_images_tag .
   only:
     - 15num-k8s-develop
   tags:
