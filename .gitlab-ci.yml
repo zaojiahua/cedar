@@ -25,6 +25,8 @@ build:
     - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip $CI_COMMIT_SHA $branch_name
   only:
     - 15num-k8s-develop
+  tags:
+    - push
 
 push:
   stage: push
