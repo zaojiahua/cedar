@@ -103,7 +103,7 @@
                 this.$ajax.get("api/v1/cedar/get_perf_data_chart/?tboard="+ this.propTboardIdList.join(",") +
                     "&job="+ this.propJobId +
                     "&model_rom_version="+ phone_models.join(",") +
-                    "&table_char"
+                    "&sizer=table_chart"
                 ).then(response=>{
                     this.tableData = response.data
                 }).catch(error=>{
