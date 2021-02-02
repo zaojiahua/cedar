@@ -32,8 +32,8 @@
                         <Icon type="ios-arrow-down"></Icon>
                     </Button>
                     <DropdownMenu slot="list" style="text-align: left">
-                        <span @click="delJobList"><DropdownItem>批量删除</DropdownItem></span>
                         <span @click="onOpenModal"><DropdownItem>变更归属账号</DropdownItem></span>
+                        <span @click="delJobList"><DropdownItem>批量删除</DropdownItem></span>
                     </DropdownMenu>
                 </Dropdown>
             </Col>
