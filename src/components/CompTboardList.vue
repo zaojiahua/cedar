@@ -23,6 +23,9 @@
                 <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-square'"
                         @click="pauseOrDeleteTboard(index)">
                 </Button>
+                <Button v-show="showRepeatTboard(index)" shape="circle" type="default" icon="md-add" style="margin-left: 16px;"
+                        @click="repeatTboard(row)">
+                </Button>
             </template>
         </Table>
         <Table v-show="!notHistory" :loading="showLoading" ref="table" :columns="columns1" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
@@ -33,6 +36,17 @@
             </template>
         </Table>
         <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
+
+        <Modal v-model="showTestAgain" :closable="false" title="启动失败" width="450">
+            <div style="height: 30px;">
+                <div style="height: 24px;display: inline-block;line-height: 24px">
+                    <Icon type="md-close-circle" size="20" color="red" />
+                </div>
+                <span style="font-size: 15px;margin-left: 2px;font-weight: 500">{{ errorModalMessage }}</span>
+            </div>
+
+        </Modal>
+
     </Card>
 </template>
 
@@ -167,13 +181,7 @@
                         sortable: true
                     }
                 ],
-                data: [
-                    {
-                        board_stamp: "2018-01-01 20:20:20",
-                        board_name: "board_name",
-                        success_ratio: 0
-                    }
-                ],
+                data: [],
                 filterCondition: "all",
                 filterDateRange: null,
                 dataTotal:0,
@@ -190,6 +198,8 @@
                 notHistory:true,
                 socket:null,
                 path:"ws://"+config.REEF_HOST+":"+config.WEBSOCKET+"/ws/tboard_delete/",
+                showTestAgain:false,
+                errorModalMessage:"",
             }
         },
         methods: {
@@ -241,6 +251,7 @@
                     "id," +
                     "board_stamp," +
                     "board_name," +
+                    "device,job,repeat_time," +
                     "finished_flag," +
                     "success_ratio" +
                     "&author__id=" + userId +
@@ -259,6 +270,9 @@
                     this.data.forEach(item=>{
                         item.success_ratio = (item.success_ratio *100).toFixed(1) + "%";
                         this.tboardIdList.push(item.id)
+                        // //判断是否可以重来一次
+                        // let isRepeat = (item.device.length === 1) && (item.job.length === 1) && (item.repeat_time === 1) && (new Date()-new Date(item.board_stamp)<=24*60*60*1000)
+                        // this.$set(item,"is_repeat",isRepeat)
                     })
                     this.showLoading = false;
                     /* 将之前已经选中的选项重新勾选 */
@@ -314,7 +328,7 @@
                 let row = this.data[index]
                 let root = this
                 this.$Modal.confirm({
-                    title: "您确认要删除任务 " + row.board_name + " 吗?",
+                    title: "确认删除任务 " + row.board_name + "吗?",
                     onOk() {
                         let id = []
                         id.push(row.id)
@@ -344,7 +358,7 @@
                 let root = this
                 let boardId = row.id
                 this.$Modal.confirm({
-                    title: "您确认要停止任务 " + row.board_name + " 吗?",
+                    title: "确认停止任务 " + row.board_name + "吗?",
                     onOk() {
                         root.$ajax.post("api/v1/coral/remove_tboard/",
                             {
@@ -371,6 +385,41 @@
                             if (config.DEBUG) console.log(reason)
                             root.$Message.error("停止任务失败!")
                         })
+                    }
+                })
+            },
+            showRepeatTboard(index){
+                let row = this.data[index]
+                return row.finished_flag && (row.device.length === 1) && (row.job.length === 1) && (row.repeat_time === 1) && (new Date()-new Date(row.board_stamp)<=24*60*60*1000);
+            },
+            repeatTboard(row){
+                //再来一次 API
+                event.stopPropagation();
+                let root = this
+                this.$Modal.confirm({
+                    title: "确认再来一次任务 " + row.board_name + "吗?",
+                    onOk() {
+                        root.showLoading = true
+                        root.$ajax.post("api/v1/cedar/repeat_execute_tboard/",
+                            {
+                                id:row.id
+                            })
+                            .then(response => {
+                                root.showLoading = false
+                                this.$Message.success("任务启动成功")
+                                root.refresh()
+                            }).catch(error => {
+                                root.showLoading = false
+                                if (config.DEBUG) console.log(error)
+                                root.showTestAgain = true
+                                if(error.response.data.custom_code==="204001")
+                                    root.errorModalMessage = "当前设备非idle状态，请检查设备状态"
+                                else if(error.response.data.custom_code==="203001")
+                                    root.errorModalMessage = "未找到所选用例，请检查用例状态"
+                                else
+                                    root.errorModalMessage = "该任务无法再来一次"
+
+                            })
                     }
                 })
             },
@@ -504,9 +553,9 @@
             this.pageSize = utils.getPageSize();
             if (this.propShowActionColumn)
                 this.columns.push({
-                    width: 100,
+                    width: 180,
                     align: "center",
-                    title: "停止 / 删除",
+                    title: "停止 / 删除 / 再来一次",
                     slot: "pauseOrDelete"
                 })
             if (this.propMultiSelect)

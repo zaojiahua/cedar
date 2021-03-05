@@ -32,8 +32,8 @@
                         <Icon type="ios-arrow-down"></Icon>
                     </Button>
                     <DropdownMenu slot="list" style="text-align: left">
-                        <span @click="delJobList"><DropdownItem>批量删除</DropdownItem></span>
                         <span @click="onOpenModal"><DropdownItem>变更归属账号</DropdownItem></span>
+                        <span @click="delJobList"><DropdownItem>批量删除</DropdownItem></span>
                     </DropdownMenu>
                 </Dropdown>
             </Col>
@@ -185,7 +185,7 @@
             },
             handleUploadError( error, file){
                 if (config.DEBUG) console.log(error);
-                this.$Message.error({content:"文件上传失败! " + file.error,duration: 3})
+                this.$Message.error({content:"文件上传失败! " + file.error,duration: 6})
             },
             handleUploadSuccess(response, file, fileList){
                 this.$Message.success("文件上传成功！")
@@ -226,7 +226,7 @@
                                 })
                                 .catch(error=>{
                                     if (config.DEBUG) console.log(error)
-                                    this.$Message.error({content:"导出用例失败! " + error.response.data.error,duration: 3})
+                                    this.$Message.error({content:"导出用例失败! " + error.response.data.error,duration: 6})
                                     root.showLoading = false
                                 })
                         }

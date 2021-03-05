@@ -36,17 +36,21 @@
                 </FormItem>
                 <FormItem>
                     <b slot="label">设备编号</b>
-                    <Input v-model="deviceInfo.deviceID" class="disabled-input" :disabled="true"></Input>
+                    <Input v-model="deviceInfo.device_label" class="disabled-input" :disabled="true"></Input>
                 </FormItem>
                 <FormItem>
                     <b slot="label">IP地址</b>
-                    <Input v-model="deviceInfo.ipAddress" class="disabled-input" :disabled="true"></Input>
+                    <Input v-model="deviceInfo.ip_address" class="disabled-input" :disabled="true"></Input>
                 </FormItem>
                 <Divider />
                 <FormItem>
                     <b slot="label">手机型号</b>
-                    <Input v-model="deviceInfo.productName" class="disabled-input" :disabled="true"></Input>
+                    <Input v-model="deviceInfo.phone_model_name" class="disabled-input" :disabled="true"></Input>
                 </FormItem>
+              <FormItem>
+                  <b slot="label">Rom版本</b>
+                <Input v-model="deviceInfo.rom_version"></Input>
+              </FormItem>
                 <FormItem>
                     <b slot="label"><span class="need">*</span>Xdpi</b>
                     <InputNumber style="width: 324px" v-model="deviceInfo.x_dpi"></InputNumber>
@@ -79,11 +83,12 @@
     import config from "../lib/config"
 
     const addDeviceSerializer = {
-        buildInc: "string",
-        buildVer: "string",
-        deviceID: "string",
-        ipAddress: "string",
-        productName:"string",
+        cpu_name: "string",
+        cpu_id: "string",
+        rom_version: "string",
+        device_label: "string",
+        ip_address: "string",
+        phone_model_name:"string",
         x_border:"number",
         x_dpi:"number",
         y_border:"number",
@@ -125,16 +130,10 @@
                 }
                 this.$Loading.start()
                 this.spinShow = true;
+                let deviceInfoDict = this.deviceInfo
+                deviceInfoDict["deviceName"] = this.addedDeviceName
                 this.$ajax.post("http://" + this.CabinetIpSelected + ":5000" + "/door/set_device_in_door/",
-                    {
-                        deviceID: this.deviceInfo.deviceID,
-                        deviceName: this.addedDeviceName,
-                        x_border: this.deviceInfo.x_border,
-                        x_dpi:this.deviceInfo.x_dpi,
-                        y_border: this.deviceInfo.y_border,
-                        y_dpi: this.deviceInfo.y_dpi
-
-                    }
+                    deviceInfoDict
                 ).then(response => {
                     if (response.data.state === "DONE") {
                         this.$Message.success("添加成功")
@@ -170,12 +169,12 @@
                     this.$ajax
                         .get("http://" + this.CabinetIpSelected + ":5000" + "/door/get_device_in_door/")
                         .then(response => {
-                            if (utils.validate(addDeviceSerializer, response.data).ipAddress === null) {
+                            if (utils.validate(addDeviceSerializer, response.data).ip_address === null) {
                                 this.addDeviceError('添加设备失败', response.data.description);
                                 this.addBtn = false;
                                 this.backStepOne = true;
                                 this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
-                            } else if (utils.validate(addDeviceSerializer, response.data).ipAddress === "") {
+                            } else if (utils.validate(addDeviceSerializer, response.data).ip_address === "") {
                                 this.addBtn = false;
                                 this.rescan = true;
                                 this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
@@ -209,7 +208,7 @@
         },
         watch: {
             CabinetSelected: function (newId, oldId) {
-                this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected)
+                this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected + "&status__in=ReefList[idle{%,%}busy]")
                     .then(response => {
                         this.deviceNum = response.data.devices.length
                     })

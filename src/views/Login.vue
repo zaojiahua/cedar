@@ -46,7 +46,7 @@
         },
         methods: {
             login() {
-                if(this.username===""){
+                if(this.username.trim().length===0){
                     this.$Message.warning("请输入用户名！")
                     return
                 }

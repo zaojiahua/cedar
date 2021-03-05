@@ -129,7 +129,7 @@
                         }
                     }else {     //  add user
                         ajaxParamObj = {
-                            username:this.userInfo.username,
+                            username:this.userInfo.username.trim(),
                             last_name:this.userInfo.firstname,
                             groups:this.userInfo.role,
                             password:this.userInfo.password
@@ -194,7 +194,7 @@
                    return "登录名不能为空！"
                 }else if (this.userInfo.username.trim().length<5||this.userInfo.username.trim().length>50) {
                     return "登录名的长度应在5-50个字符之内！"
-                } else if (!/^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/.test(this.userInfo.username)) {
+                } else if (!/^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/.test(this.userInfo.username.trim())) {
                     return "请输入正确的邮箱格式！"
                 } else {
                     return  "";

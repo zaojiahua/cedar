@@ -159,7 +159,7 @@
                             item.rom_version_data.forEach(rom=>{
                                 childList.push({
                                     value: rom.rom_version_id,
-                                    label: rom.version,
+                                    label: rom.rom_version__version,
                                 })
                             })
                             list.push({
