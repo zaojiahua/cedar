@@ -5,12 +5,12 @@
             <comp-tboard-list ref="selectTboard" :prop-show-header="false"
                               @on-row-click="onSelectTboardModalRowClick"></comp-tboard-list>
         </Modal>
-        <Row v-show="!showView" style="margin-top: 100px;text-align: center">
+        <Row v-show="showView===0" style="margin-top: 100px;text-align: center">
             <Button type="primary" @click="openTboardList">选取任务</Button>
             <p style="color: rgb(194, 194, 194); font-size: larger; font-weight: bold;margin-top: 16px;">您还没有选择任何任务!</p>
         </Row>
 
-        <div v-if="showView">
+        <div v-if="showView===1">
             <RadioGroup v-model="groupType" type="button">
                 <Radio style="width: 100px;text-align: center;" :label="1">失败数据</Radio>
                 <Radio style="width: 100px;text-align: center;" :label="2">无效数据</Radio>
@@ -112,6 +112,10 @@
             </div>
         </div>
 
+        <div v-if="showView===2">
+            <comp-assess-rds-view :prop-tboard-id="tboardId"></comp-assess-rds-view>
+        </div>
+
         <div v-show="tipData.id"  style="float: right;margin-top: -100px; background-color: #434343; border-radius: 5px;opacity: 0.9; color: #ebf7ff; padding: 8px;">
             <span>ID：</span>
             <span>{{tipData.id}}</span>
@@ -146,6 +150,7 @@
     import CompDeviceDetail from "./CompDeviceDetail";
     import CompRdsTboardDeviceStatistic from "./CompRdsTboardDeviceStatistic";
     import CompRdsTboardJobStatistic from "./CompRdsTboardJobStatistic";
+    import CompAssessRdsView from "./CompAssesRdsView";
 
     const getTboardSerializer = {
         id: "number",
@@ -180,7 +185,7 @@
     }
 
     export default {
-        components:{ CompTboardList, CompStatisticPie,CompDeviceDetail,CompJobDetail,CompRdsTboardDeviceStatistic,CompRdsTboardJobStatistic },
+        components:{ CompTboardList, CompStatisticPie,CompDeviceDetail,CompJobDetail,CompRdsTboardDeviceStatistic,CompRdsTboardJobStatistic,CompAssessRdsView  },
         data(){
             return{
                 filterDateRange:[],
@@ -188,7 +193,7 @@
                 groupType:1,
                 showSelectTboardModal:false,
                 tboardId:null,
-                showView:false,
+                showView:0,
                 data:utils.validate(getTboardSerializer, {}),
                 statistics:{
                     pass_rds_count:null,
@@ -238,7 +243,7 @@
                 this.tboardId = row.id
             },
             getTboardSelection(){
-                this.showView = true
+                // this.showView = true
                 this.showStatistic = false
                 let requests = [
                     this.$ajax.post("api/v1/cedar/get_rds_statistics_data/",{ tboard:this.tboardId } ),
@@ -273,6 +278,8 @@
                         //tboard信息
                         this.filterDateRange = []
                         this.data = tboard_resp.data
+
+                        this.showView = 2                                     ////////////////////=====================   接收参数看进入哪个页面    ============================
 
                         let end = tboard_resp.data.end_time!==null?tboard_resp.data.end_time:new Date().format("yyyy-MM-dd hh:mm:ss")
                         this.filterDateRange.push(this.data.board_stamp,end)

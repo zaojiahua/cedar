@@ -79,6 +79,54 @@
             <br>
             <img style="margin: 5px; cursor: pointer;max-width: 200px;border: 1px solid #ccc" v-for="(img,index) in jobResFile" :key="index" :src=baseUrl+img.file :alt=img.name>
         </div>
+
+
+        <!--==========================    评定标准    ===========================-->
+        <div v-show="propAsses">
+            <Divider>人工评定信息</Divider>
+            <Form :label-width="120">
+                <FormItem v-for="index in 2">
+                    <b slot="label">评定标准{{ index }}：</b>
+                    <Input v-model="rdsInfo.rds_dict" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
+                    <div v-for="i in 2" style="display: inline-block;margin-right: 10px;margin-top: 10px;text-align: center">
+                        <div style="width: 100px;height: 150px;background: yellow;cursor: pointer" @click="showAssesModal=true">
+
+                        </div>
+                        <p>第 {{ i }} 张</p>
+                    </div>
+                </FormItem>
+                <FormItem>
+                    <b slot="label">评定标准：</b>
+                    <Input v-model="rdsInfo.rds_dict" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
+                    <div v-for="i in 2"  style="display: inline-block;margin-right: 10px;margin-top: 10px;text-align: center">
+                        <div style="width: 100px;height: 150px;background: #f5a623;cursor: pointer" @click="showAssesModal=true">
+
+                        </div>
+                        <p>第 {{ i }} 张</p>
+                    </div>
+                </FormItem>
+
+                <FormItem>
+                    <b slot="label">评定结果：</b>
+                    <RadioGroup v-model="assesResult">
+                        <Radio label="0" border>成功</Radio>
+                        <Radio label="1" border>失败</Radio>
+                        <Radio label="2" border>无效</Radio>
+                    </RadioGroup>
+
+                    <Row style="margin-top: 20px">
+                        <Button type="primary">保存评定</Button><span style="margin-left: 16px;">剩余 3 次</span>
+                    </Row>
+                </FormItem>
+            </Form>
+        </div>
+
+        <!--      ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++       -->
+
+
+
+
+
         <Spin size="large" fix v-if="showSpin"></Spin>
         <Modal v-model="showImgModal" :fullscreen="true" footer-hide style="text-align: center">
             <Icon type="ios-arrow-dropleft-circle" size="60"  style="position: fixed;top: 45%;left: 5%;cursor: pointer;opacity: 0.4" @click="prevBtn"/>
@@ -90,6 +138,31 @@
         <Modal v-model="showRdsLogModal" :fullscreen="true" :title="logName" ok-text="下载" @on-ok="downloadLog">
             <comp-view-log-file ref="viewLogFile"></comp-view-log-file>
         </Modal>
+
+
+
+        <!--   评定详情   -->
+        <Modal v-model="showAssesModal" :fullscreen="true" footer-hide>
+           <Row>
+               <Col span="16">
+                   <Form :label-width="120">
+                       <FormItem>
+                           <b slot="label">评定标准：</b>
+                           <Input v-model="rdsInfo.rds_dict" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
+                           <div  style="width: 100px;height: 150px;background: yellow;margin: 0 auto"></div>
+                           <div  style="width: 100px;height: 150px;background: yellow;margin: 0 auto"></div>
+                           <div  style="width: 100px;height: 150px;background: yellow;margin: 0 auto"></div>
+                       </FormItem>
+                   </Form>
+               </Col>
+               <Col span="8">
+                   <div  style="width: 100px;height: 150px;background: yellow;margin: 0 auto"></div>
+               </Col>
+           </Row>
+        </Modal>
+
+        <!--                           -->
+
     </Card>
 </template>
 
@@ -148,6 +221,12 @@
 
 
     export default {
+        props:{
+            propAsses:{
+                type:Boolean,
+                default:false
+            }
+        },
         components:{ CompTemperatureHistogram, CompViewLogFile },
         data(){
             return{
@@ -164,7 +243,9 @@
                 path:"",
                 imgIndex:null,
                 jobResFile:[],
-                isReferenceShow:false
+                isReferenceShow:false,
+                assesResult:"0",
+                showAssesModal:false,
             }
         },
         methods:{
@@ -331,12 +412,15 @@
 </script>
 
 <style scoped>
-    .disabled-input >>> input {
+    .disabled-input >>> input, .disabled-input >>> textarea  {
         background-color: #0000;
         color: #515a6e;
         border: #eee dotted 1px;
     }
     .ivu-icon-ios-arrow-dropleft-circle:hover,.ivu-icon-ios-arrow-dropright-circle:hover{
         opacity: 1 !important;
+    }
+    .ivu-radio-border{
+        padding: 0 15px;
     }
 </style>
