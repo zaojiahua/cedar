@@ -35,14 +35,14 @@
                             格式：名称 @ 规格行 X 规格列，最大规格不能超过 9 x 9
                         </p>
                     </FormItem>
-                    <FormItem v-show="paneType==='test_box'">
-                        <b slot="label">机械臂：</b>
-                        <Input v-model="pane.robot_arm" placeholder="请输入机械臂的串口号"></Input>
-                    </FormItem>
-                    <FormItem v-show="paneType==='test_box'">
-                        <b slot="label">相机：</b>
-                        <InputNumber :min="0" v-model="pane.camera" style="width: 100%" placeholder="请输入相机的串口号"></InputNumber>
-                    </FormItem>
+<!--                    <FormItem v-show="paneType==='test_box'">-->
+<!--                        <b slot="label">机械臂：</b>-->
+<!--                        <Input v-model="pane.robot_arm" placeholder="请输入机械臂的串口号"></Input>-->
+<!--                    </FormItem>-->
+<!--                    <FormItem v-show="paneType==='test_box'">-->
+<!--                        <b slot="label">相机：</b>-->
+<!--                        <InputNumber :min="0" v-model="pane.camera" style="width: 100%" placeholder="请输入相机的串口号"></InputNumber>-->
+<!--                    </FormItem>-->
                     <FormItem>
                         <b slot="label">类型：</b>
                         <RadioGroup v-model="paneType" type="button">
@@ -263,8 +263,8 @@ import JobManagementVue from '../views/JobManagement.vue';
                 showScreenArea: false,
                 showPhoneArea: false,
                 showAllAreas: false,
-                cameraId: null,
-                armId: null,
+                // cameraId: null,
+                // armId: null,
                 deviceLabel: null
             }
         },
@@ -398,12 +398,12 @@ import JobManagementVue from '../views/JobManagement.vue';
                         cabinet:this.CabinetSelected,
                         width:1,
                         height:1,
-                        robot_arm:this.pane.robot_arm,
+                        // robot_arm:this.pane.robot_arm,
                     }
-                    if(this.pane.camera!==null){
-                        // todo pass throuth "pane.camera" to coral when request for picture
-                        paramObj["camera"] = this.pane.camera
-                    }
+                    // if(this.pane.camera!==null){
+                    //     // todo pass throuth "pane.camera" to coral when request for picture
+                    //     paramObj["camera"] = this.pane.camera
+                    // }
 
                     this.$ajax.post("api/v1/cedar/create_test_box_paneview/",paramObj)
                         .then(response=>{
@@ -464,11 +464,11 @@ import JobManagementVue from '../views/JobManagement.vue';
             async setDevice() {
                 if (this.paneList[this.paneIndex].type === "test_box")
                 {
-                    await this.$ajax.get("api/v1/cedar/paneview?id=" + this.paneList[this.paneIndex].id)
-                        .then(res => {
-                            this.cameraId = res.data.paneview[0].camera
-                            this.armId = res.data.paneview[0].robot_arm
-                        })
+                    // await this.$ajax.get("api/v1/cedar/paneview?id=" + this.paneList[this.paneIndex].id)
+                    //     .then(res => {
+                    //         this.cameraId = res.data.paneview[0].camera
+                    //         this.armId = res.data.paneview[0].robot_arm
+                    //     })
                     await this.$ajax.get("api/v1/cedar/device/" + this.selectDevice + "/?fields=" +
                         "cabinet,cabinet.ip_address,phone_model,phone_model.id,phone_model.phone_model_name," +
                         "phone_model.x_border,phone_model.y_border,phone_model.x_dpi,phone_model.y_dpi"
@@ -479,22 +479,18 @@ import JobManagementVue from '../views/JobManagement.vue';
                         if (config.DEBUG) console.log(error)
                         this.$Message.error("获取机柜ip失败")
                     })
-                    if (this.cameraId === null) {
-                        this.$ajax.post(`http://${this.cabinetIP}:5000/pane/device_arm_camera/`, {
-                            "arm_id": this.armId,
-                            "device_label": this.deviceLabel
-                        })
-                        // this.showConfirmModal = true
-
-                    } else {
-                        this.showConfirmModal = true
-                        this.getImg()
-                        return
-                    }
-
+                    // if (this.cameraId === null) {
+                    //     this.$ajax.post(`http://${this.cabinetIP}:5000/pane/device_arm_camera/`, {
+                    //         "arm_id": this.armId,
+                    //         "device_label": this.deviceLabel
+                    //     })
+                    //     // this.showConfirmModal = true
+                    //
+                    // } else
+                    this.showConfirmModal = true
+                    this.getImg()
+                    return
                 }
-
-                console.log(this.selectDevice)
                 if (this.selectDevice !== null) {
                     let str = "添加设备成功，请继续添加或关闭弹窗！"
                     this.sendRequest(str)
@@ -566,7 +562,7 @@ import JobManagementVue from '../views/JobManagement.vue';
             getImg() {
                 this.imgSrc = ''
                 this.showAllAreas = false
-                let url = `http://${this.cabinetIP}:5000/pane/original_picture/?camera_id=${this.cameraId}`
+                let url = `http://${this.cabinetIP}:5000/pane/original_picture/?device_label=${this.deviceLabel}`
                 let xhr = new XMLHttpRequest()
                 xhr.open('GET', url, true)
                 xhr.responseType = 'blob'
@@ -662,7 +658,6 @@ import JobManagementVue from '../views/JobManagement.vue';
                     console.log(err)
                     this.$Message.error("参数保存失败")
                 })
-
                 let _this = this
                 let url = `http://${this.cabinetIP}:5000/pane/device_border/`
                 let xhr = new XMLHttpRequest()
