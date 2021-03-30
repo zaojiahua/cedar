@@ -85,7 +85,7 @@
                 })
             },
             getCabinet(){
-                this.$ajax.get("api/v1/cedar/cabinet/?fields=id,cabinet_name")
+                this.$ajax.get("api/v1/cedar/cabinet/?fields=id,cabinet_name&is_delete=False")
                     .then(response=>{
                         this.cabinetList = response.data.cabinets
                     })

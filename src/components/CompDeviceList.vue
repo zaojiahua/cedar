@@ -521,7 +521,7 @@
                 this.selection = selection;
             },
             getCabinetList() {
-                this.$ajax.get("api/v1/cedar/cabinet/?fields=cabinet_name,id")
+                this.$ajax.get("api/v1/cedar/cabinet/?fields=cabinet_name,id&is_delete=False")
                     .then(response => {
                         this.cabinetList = response.data.cabinets
                     })

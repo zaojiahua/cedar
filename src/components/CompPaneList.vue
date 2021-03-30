@@ -547,7 +547,7 @@ import JobManagementVue from '../views/JobManagement.vue';
                     })
             },
             getCabinet() {
-                this.$ajax.get("api/v1/cedar/cabinet/?fields=ip_address,cabinet_name,id&paneview__isnull=True")
+                this.$ajax.get("api/v1/cedar/cabinet/?fields=ip_address,cabinet_name,id&paneview__isnull=True&is_delete=False")
                     .then(response => {
                         this.cabinetList = response.data.cabinets
                     })
