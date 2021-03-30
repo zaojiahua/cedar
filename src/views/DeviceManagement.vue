@@ -12,8 +12,14 @@
             <TabPane label="硬件设备列表" name="hardWare">
                 <Comp-hard-ware-list ref="hardWareList"></Comp-hard-ware-list>
             </TabPane>
+            <TabPane label="附加资源列表" name="resources">
+                <comp-additional-resources-list></comp-additional-resources-list>
+            </TabPane>
             <TabPane label="设备地图" name="paneList">
                 <comp-pane-list ref="paneViewList"></comp-pane-list>
+            </TabPane>
+            <TabPane label="僚机列表" name="subsidiary">
+
             </TabPane>
 
         </Tabs>
@@ -25,6 +31,7 @@
     import CompDeviceDetail from "../components/CompDeviceDetail"
     import CompPaneList from "../components/CompPaneList";
     import CompHardWareList from "../components/CompHardWareList";
+    import CompAdditionalResourcesList from "../components/CompAdditionalResourcesList";
 
     export default {
         components: {
@@ -32,6 +39,7 @@
             CompDeviceDetail,
             CompPaneList,
             CompHardWareList,
+            CompAdditionalResourcesList,
         },
         data() {
             return {
