@@ -196,7 +196,7 @@
             },
             getCabinetInfo() {
                 this.addDeviceStep = 2;
-                this.$ajax.get("api/v1/cedar/cabinet/?fields=ip_address,cabinet_name,id")
+                this.$ajax.get("api/v1/cedar/cabinet/?fields=ip_address,cabinet_name,id&is_delete=False")
                     .then(response => {
                         this.cabinetList = response.data.cabinets
                     })

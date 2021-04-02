@@ -41,7 +41,7 @@
 
         <Divider></Divider>
         <Row>
-            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" @get-job-count="getJobNumbers"></comp-job-list>
+            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true" @get-job-count="getJobNumbers"></comp-job-list>
         </Row>
         <Drawer v-model="showDetail" :draggable="true" :closable="false" width="50">
             <comp-job-detail ref="jobDetail" :prop-del-job="true" @closeDrawer="closeDrawer" @delJobOne="delJobOne"></comp-job-detail>
@@ -150,21 +150,21 @@
                         title: "警告！",
                         content: "您确定要删除这些用例吗?",
                         onOk(){
-                            let delUrlList = [];
-                            for (let i=0;i<jobList.length;i++){
-                                delUrlList.push(this.$ajax.patch("api/v1/cedar/job/"+jobList[i]+"/",{job_deleted:true}));
-                                //push进去之后，会自动执行patch操作,返回promise
-                            }
-                            console.log(delUrlList)
-                            this.$ajax.all(delUrlList)
+                            this.$ajax.post("api/v1/cedar/job_deleted/", { job_ids:jobList } )
                                 .then(response=>{
-                                    // 上面两个请求都完成后，才执行这个回调方法
                                     this.$Message.success("用例删除成功！")
                                     that.onJobFilterChange(that.$refs.jobFilter._jobRender())
                                 })
                                 .catch(error=>{
+                                    let errorMsg = ""
                                     if (config.DEBUG) console.log(error)
-                                    this.$Message.error("用例删除失败！")
+                                    if(error.response.data.custom_code==="203001"){
+                                        errorMsg = error.response.data.description.join(",") + "job不存在"
+                                    }else if (error.response.data.custom_code === "203002") {
+                                        errorMsg = error.response.data.description.join(",") + "关联了其他用例，无法完成删除操作"
+                                    }
+                                    this.$Message.error({content:errorMsg,duration:8})
+                                    that.onJobFilterChange(that.$refs.jobFilter._jobRender())
                                 })
 
                         }

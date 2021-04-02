@@ -184,22 +184,27 @@
                     content: "您确定要删除该用例吗？",
                     onOk(){
                         this.$ajax
-                            .patch("api/v1/cedar/job/"+root.jobInfo.id+"/",{
-                                job_deleted:true
+                            .post("api/v1/cedar/job_deleted/",{
+                                job_ids:[].concat(root.jobInfo.id)
                             })
                             .then(response=>{
                                 this.$Message.success("用例删除成功！");
                                 root.$emit("delJobOne",false);
                             })
                             .catch(error=>{
+                                console.log(error.response)
                                 if (config.DEBUG) console.log(error)
                                 let errorMsg = "";
                                 if (error.response.status >= 500) {
                                     errorMsg = "服务器错误！"
                                 } else {
-                                    errorMsg = "用例删除失败！"
+                                    if(error.response.data.custom_code==="203001"){
+                                        errorMsg = "job不存在"
+                                    }else if (error.response.data.custom_code === "203002") {
+                                        errorMsg = "该inner job关联了其他用例，无法完成删除操作"
+                                    }
                                 }
-                                this.$Message.error(errorMsg)
+                                this.$Message.error({content:errorMsg,duration:5})
                             })
                     }
                 });

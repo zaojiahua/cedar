@@ -100,7 +100,8 @@
                     {
                         title: "用例名称",
                         key: "job_name",
-                        sortable: true
+                        sortable: true,
+                        width:200
                     },
                     {
                         title: "caseNo",
@@ -148,13 +149,14 @@
                     {
                         title: "priority",
                         key: "priority",
-                        sortable: true
+                        sortable: true,
+                        width:105
                     },
-                    {
-                        title: "更新时间",
-                        key: "updated_time",
-                        sortable: true
-                    }
+                    // {
+                    //     title: "更新时间",
+                    //     key: "updated_time",
+                    //     sortable: true
+                    // }
                 ],
                 data: [],
                 selection: [],
@@ -459,12 +461,14 @@
                     width: 60,
                     align: 'center'
                 })
-            if (this.propDeletable)
+            if (this.propDeletable){
                 this.columns.push({
                     align: "center",
                     title: "删除",
                     slot: "delete"
                 })
+                this.columns.splice(3, 4)
+            }
         },
         beforeCreate(){
             this.jobType = localStorage.getItem('COMPJOBLIST:FILTER_JOB_TYPE');
