@@ -152,11 +152,11 @@
                         sortable: true,
                         width:105
                     },
-                    // {
-                    //     title: "更新时间",
-                    //     key: "updated_time",
-                    //     sortable: true
-                    // }
+                    {
+                        title: "更新时间",
+                        key: "updated_time",
+                        sortable: true
+                    }
                 ],
                 data: [],
                 selection: [],
@@ -467,7 +467,7 @@
                     title: "删除",
                     slot: "delete"
                 })
-                this.columns.splice(3, 4)
+                this.columns.splice(3, 5)
             }
         },
         beforeCreate(){
