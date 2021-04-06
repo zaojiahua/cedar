@@ -7,6 +7,7 @@
                            @on-select="jobSearch"
                            @on-search="handleSearch"
                            @on-clear="clearSearch"
+                           @keyup.enter.native="jobSearch(keyword)"
                            placeholder="Enter something...">
                 <Option v-for="(item,index) in filterJobNameList" :value="item" :key="index">{{ item }}</Option>
             </AutoComplete>
@@ -131,7 +132,7 @@
                         filterRemote (value) {
                             this.jobType = value[0] || ''
                             localStorage.setItem('COMPJOBLIST:FILTER_JOB_TYPE', this.jobType)
-                            this.filterJob()
+                            this.jobSearch(this.keyword)
                         }
                     } : {
                         title: "用例类型",
