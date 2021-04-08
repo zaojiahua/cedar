@@ -295,7 +295,7 @@
                         this.$refs.powerHistogram.refresh(this.propFilterDateRange[0],this.propFilterDateRange[1])
                     })
                 },
-                immediate: true
+                // immediate: true
             },
             deviceId:{
                 handler: function(){
