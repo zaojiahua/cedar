@@ -7,6 +7,7 @@
                            @on-select="jobSearch"
                            @on-search="handleSearch"
                            @on-clear="clearSearch"
+                           @keyup.enter.native="jobSearch(keyword)"
                            placeholder="Enter something...">
                 <Option v-for="(item,index) in filterJobNameList" :value="item" :key="index">{{ item }}</Option>
             </AutoComplete>
@@ -17,7 +18,7 @@
                 <InputNumber :min="1" v-model="data[index].counter"></InputNumber>
             </template>
             <template slot-scope="{row, index}" slot="delete">
-                <Button shape="circle" type="default" icon="md-trash" size="large" @click="deleteRow(index)">
+                <Button shape="circle" type="default" icon="md-trash" @click="deleteRow(index)">
                 </Button>
             </template>
         </Table>
@@ -131,7 +132,7 @@
                         filterRemote (value) {
                             this.jobType = value[0] || ''
                             localStorage.setItem('COMPJOBLIST:FILTER_JOB_TYPE', this.jobType)
-                            this.filterJob()
+                            this.jobSearch(this.keyword)
                         }
                     } : {
                         title: "用例类型",
