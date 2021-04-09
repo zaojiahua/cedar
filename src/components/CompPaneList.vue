@@ -580,12 +580,12 @@ import JobManagementVue from '../views/JobManagement.vue';
                 if (!this.coordinate || !this.coordinate.absoluteCoordinate) return
                 let { absoluteCoordinate: { topLeft, bottomRight } } = this.coordinate
                 topLeft = {
-                    x: topLeft.x.toFixed(2),
-                    y: topLeft.y.toFixed(2)
+                    x: topLeft.x.toFixed(0),
+                    y: topLeft.y.toFixed(0)
                 }
                 bottomRight = {
-                    x: bottomRight.x.toFixed(2),
-                    y: bottomRight.y.toFixed(2)
+                    x: bottomRight.x.toFixed(0),
+                    y: bottomRight.y.toFixed(0)
                 }
                 switch (type) {
                     case "screen":
