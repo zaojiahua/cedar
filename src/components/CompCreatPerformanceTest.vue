@@ -113,11 +113,7 @@
             },
             //next step to select job
             toPageChooseJob(){
-                let count = []
-                this.selectedDevice.forEach(item=>{
-                    count.push(item.subsidiary_device_count)
-                })
-                this.subsidiaryDeviceCount = Math.max.apply(null,count)
+              this.subsidiaryDeviceCount = this.selectedDevice.subsidiary_device_count
                 this.current = 1
                 this.$nextTick(()=>{
                     this.$refs.jobList.refreshWithParam("&job_second_type=TimeJob&phone_models__id=" + this.selectedDevice.phone_model_id)
