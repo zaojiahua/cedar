@@ -42,6 +42,8 @@ Vue.use(iView)
 if(sessionStorage.token === undefined
     && localStorage.token !== undefined){
         sessionStorage.setItem('token', localStorage.getItem('token'))
+        sessionStorage.setItem('id', localStorage.getItem('id'))
+        sessionStorage.setItem('username', localStorage.getItem('username'))
 }
 
 

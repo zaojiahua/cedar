@@ -243,7 +243,7 @@
                     })
                     this.showLoading = true;
                     utils._initDate();
-                    let userId = localStorage.getItem('id');
+                    let userId = sessionStorage.getItem('id');
                     this.$ajax
                         .post("api/v1/coral/insert_tboard/ ",{
                             device_label_list:deviceList,
