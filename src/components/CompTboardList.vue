@@ -244,7 +244,7 @@
                         "-" +
                         this.filterDateRange[1].getDate()
                 }
-                let userId = localStorage.getItem('id');
+                let userId = sessionStorage.getItem('id');
                 this.showLoading = true;
                 this.$ajax.get(
                     "api/v1/cedar/tboard/?fields=" +
