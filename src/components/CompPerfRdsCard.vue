@@ -214,6 +214,16 @@
                     this.loadMoreData(true)
                 },
             },
+          propTboardId:{
+            handler: function(val){
+              this.loadMoreData(true)
+            },
+          },
+          propJobId:{
+            handler: function(val){
+              this.loadMoreData(true)
+            },
+          }
         },
         created() {
             this.loadMoreData(true)
