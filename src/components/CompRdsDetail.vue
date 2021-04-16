@@ -96,7 +96,7 @@
             <comp-view-log-file ref="viewLogFile"></comp-view-log-file>
         </Modal>
         <Modal v-model="showRdsPhotosModal" :fullscreen="true" :closable="false">
-            <comp-perf-rds-photos ref="rdsPhotos"></comp-perf-rds-photos>
+            <comp-perf-rds-photos v-if="showRdsPhotosModal" ref="rdsPhotos"></comp-perf-rds-photos>
             <div slot="footer">
                 <Button type="text" @click="showRdsPhotosModal=false">取消</Button>
                 <Button type="primary" @click="savePoint">确定</Button>
@@ -350,7 +350,9 @@
             },
             goRdsPhotos(){
                 this.showRdsPhotosModal = true
-                this.$refs.rdsPhotos.refresh(this.rdsInfo.id)
+                this.$nextTick(function () {
+                    this.$refs.rdsPhotos.refresh(this.rdsInfo.id)
+                })
             },
             //    保存起始结束点
             savePoint(){

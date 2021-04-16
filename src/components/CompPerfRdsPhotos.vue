@@ -129,6 +129,24 @@
                     job_duration:this.job_duration
                 }
             },
+            //按键控制上下切换
+            onKeyUpList(event){
+                if(event.keyCode===38){
+                    if(this.selectedIndex===1) return
+                    this.selectedIndex--;
+                    this.selectedUrl = this.rdsPhotosData.url_prefix + this.selectedIndex + ".jpg"
+                }else if(event.keyCode===40){
+                    if(this.selectedIndex===this.rdsPhotosData.picture_count) return
+                    this.selectedIndex++;
+                    this.selectedUrl = this.rdsPhotosData.url_prefix + this.selectedIndex + ".jpg"
+                }
+            }
+        },
+        created(){
+            window.addEventListener('keyup',this.onKeyUpList)
+        },
+        beforeDestroy(){
+            window.removeEventListener('keyup',this.onKeyUpList)
         }
     }
 </script>
