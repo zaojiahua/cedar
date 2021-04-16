@@ -2,6 +2,7 @@
     <Card dis-hover>
         <p>
             <Button type="error" @click="delRds()">删除</Button>
+            <Button v-if="propPerfRds&&rdsInfo.job_duration!==null" type="primary" @click="goRdsPhotos" style="margin-left: 24px;">测试图集</Button>
         </p>
         <Form :label-width="120">
             <Divider>RDS信息</Divider>
@@ -10,7 +11,7 @@
                 <Input v-model="rdsInfo.id" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">启动时间：</b>
+                <b slot="label">开始时间：</b>
                 <Input v-model="rdsInfo.start_time" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
@@ -20,6 +21,10 @@
             <FormItem>
                 <b slot="label">测试结果：</b>
                 <Input v-model="rdsInfo.result" class="disabled-input" disabled></input>
+            </FormItem>
+            <FormItem v-if="propPerfRds">
+                <b slot="label">结果时间：</b>
+                <Input v-model="rdsInfo.job_duration+'s'" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
                 <b slot="label">rdsDict：</b>
@@ -90,6 +95,13 @@
         <Modal v-model="showRdsLogModal" :fullscreen="true" :title="logName" ok-text="下载" @on-ok="downloadLog">
             <comp-view-log-file ref="viewLogFile"></comp-view-log-file>
         </Modal>
+        <Modal v-model="showRdsPhotosModal" :fullscreen="true" :closable="false">
+            <comp-perf-rds-photos ref="rdsPhotos"></comp-perf-rds-photos>
+            <div slot="footer">
+                <Button type="text" @click="showRdsPhotosModal=false">取消</Button>
+                <Button type="primary" @click="savePoint">确定</Button>
+            </div>
+        </Modal>
     </Card>
 </template>
 
@@ -98,6 +110,7 @@
     import utils from "../lib/utils";
     import CompTemperatureHistogram from "./CompTemperatureHistogram";
     import CompViewLogFile from "./CompViewLogFile";
+    import CompPerfRdsPhotos from "./CompPerfRdsPhotos";
 
     const rdsSerializer = {
         device: {
@@ -134,6 +147,7 @@
             thumbs_file:"string",
             file_name:"string"
         }],
+        job_duration:"string",
         start_time: "string",
         tboard: {
             id: "number",
@@ -148,7 +162,13 @@
 
 
     export default {
-        components:{ CompTemperatureHistogram, CompViewLogFile },
+        components:{ CompTemperatureHistogram, CompViewLogFile, CompPerfRdsPhotos },
+        props:{
+            propPerfRds:{
+                type:Boolean,
+                default:false
+            }
+        },
         data(){
             return{
                 baseUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT,
@@ -164,7 +184,8 @@
                 path:"",
                 imgIndex:null,
                 jobResFile:[],
-                isReferenceShow:false
+                isReferenceShow:false,
+                showRdsPhotosModal:false,
             }
         },
         methods:{
@@ -186,6 +207,7 @@
                         "tboard,tboard.id,tboard.board_name,"+
                         "start_time,"+
                         "end_time,"+
+                        "job_duration," +
                         "job_assessment_value," +
                         "rds_dict")
                     .then(response=>{
@@ -325,7 +347,31 @@
                     }
                 })
                 window.open(route.href, "_blank")
-            }
+            },
+            goRdsPhotos(){
+                this.showRdsPhotosModal = true
+                this.$refs.rdsPhotos.refresh(this.rdsInfo.id)
+            },
+            //    保存起始结束点
+            savePoint(){
+                let Obj = this.$refs.rdsPhotos.getPointMsg()
+                this.$refs.rdsPhotos.showLoading = true
+                console.log(Obj)
+                this.$ajax.patch("api/v1/cedar/rds/" + this.rdsInfo.id + "/",{
+                    job_duration: Obj.job_duration,
+                    start_point: Obj.startPoint,
+                    end_point: Obj.endPoint,
+                }).then(response=>{
+                    this.rdsInfo.job_duration = Obj.job_duration
+                    this.$Message.success("数据保存成功")
+                    this.$refs.rdsPhotos.showLoading = false
+                    this.showRdsPhotosModal = false
+
+                }).catch(error=>{
+                    if (config.DEBUG) console.log(error)
+                    this.$Message.error("数据保存失败")
+                })
+            },
         },
     }
 </script>
