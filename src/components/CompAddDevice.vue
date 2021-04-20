@@ -149,7 +149,7 @@
 
                 }).catch(reason => {
                     this.spinShow = false;
-                    this.$Message.error("添加失败")
+                    this.$Message.error({content:"添加失败"+ reason.response.data.description,duration: 5})
                     this.$Loading.error()
                     this.$emit('afterDeviceAddFailed', reason)
                 })
