@@ -196,9 +196,9 @@ export default {
         }
       }
     },
-    phoneModel(item) {
-      if (item.length >1) {
-        this.$ajax.get(
+    async phoneModel(item) {
+      if (this.phoneModelList.indexOf(item) !== -1) {
+        await this.$ajax.get(
             `api/v1/cedar/device/?phone_model__phone_model_name=${item}&fields=device_width,device_height`
         ).then(response => {
           if (response.data.devices.length > 0) {
@@ -213,6 +213,8 @@ export default {
             this.deviceInfo.x_border = response.data.phonemodels[0].x_border
             this.deviceInfo.y_border = response.data.phonemodels[0].y_border
             let length = Math.sqrt(Math.pow(this.deviceInfo.device_height, 2) + Math.pow(this.deviceInfo.device_width, 2))
+            console.log(length)
+            console.log(length / response.data.phonemodels[0].x_dpi)
             this.deviceInfo.screen_size = (length / response.data.phonemodels[0].x_dpi).toFixed(2)
           }
         })
