@@ -504,6 +504,7 @@
             },
             afterDeviceAddSuccess(device){
                 this.showAddDevice = false
+                this.showAddOtherDevice = false
                 this.refresh()
             },
             onPageChange(page){
