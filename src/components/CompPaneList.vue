@@ -8,7 +8,8 @@
         </Row>
         <div v-for="(item,index) in paneList" :key="index" class="pane-list">
             <comp-pane-card v-if="item.type==='matrix'" :prop-pane="item" :prop-index="index" @remove-pane="onRemovePane"  @on-add-device="onAddDevice" @after-remove-pane-slot="afterRemovePaneSlot"></comp-pane-card>
-            <CompMechanicalArmCard v-if="item.type==='test_box'"  :prop-pane="item" :prop-index="index" @remove-pane="onRemovePane"  @on-mechanical-arm-add-device="onMechanicalArmAddDevice" @after-remove-pane-slot="afterRemovePaneSlot"></CompMechanicalArmCard>
+            <CompMechanicalArmCard v-if="item.type==='test_box'"  :prop-pane="item" :prop-index="index" @remove-pane="onRemovePane"  @on-mechanical-arm-add-device="onMechanicalArmAddDevice"
+                                   @after-remove-pane-slot="afterRemovePaneSlot" @on-config-click="onConfigClick"></CompMechanicalArmCard>
         </div>
         <div class="add-pane">
             <Icon type="ios-add" size="180" style="cursor: pointer;margin: 35px auto;" @click="onOpenModal"/>
@@ -61,10 +62,14 @@
             <comp-pane-card :prop-pane="propPane" :prop-show-remove-btn="false" @on-slot-click="onSlotClick"></comp-pane-card>
         </Modal>
 
-        <Modal v-model="openDevice" fullscreen :mask-closable="false" :closable="false" @on-ok="setDevice">
+        <Modal v-model="openDevice" fullscreen :mask-closable="false" :closable="false">
             <comp-device-list v-if="openDevice" ref="selectDevice" :prop-device-slot="true" :prop-high-light="true" :prop-add-mode="false"
                               :prop-device-status="true" :prop-cabinet="cabinetId" :prop-show-cabinet-select="false"
                               @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
+            <div slot="footer">
+                <Button type="text" @click="openDevice=false">取消</Button>
+                <Button type="primary" @click="setDevice">确定</Button>
+            </div>
         </Modal>
 
         <Modal v-model="openErrorDevice" v-if="openErrorDevice" fullscreen :mask-closable="false" :closable="false">
@@ -79,75 +84,62 @@
             </div>
         </Modal>
         <Modal v-model="showConfirmModal" :closable="false" :footer-hide="true" :mask-closable="false" width="80">
-            <!-- <Card>
-                <p slot="title" style="font-weight: bold">确认机型属性</p>
-                <Icon slot="extra" @click.prevent="showConfirmModal=false" type="md-close" />
-                <Form :model="pane" :label-width="100">
-                    <FormItem>
-                        <b slot="label">手机型号：</b>
-                        <Input disabled v-model="phoneModel.phone_model_name" class="disabled-input"></Input>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">Xdpi：</b>
-                        <Input disabled v-model="phoneModel.x_dpi" class="disabled-input"></Input>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">Ydpi：</b>
-                        <Input disabled v-model="phoneModel.y_dpi" class="disabled-input"></Input>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">X边框厚度：</b>
-                        <Input disabled v-model="phoneModel.x_border" class="disabled-input"></Input>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">Y边框厚度：</b>
-                        <Input disabled v-model="phoneModel.y_border" class="disabled-input"></Input>
-                    </FormItem>
-                </Form>
-                <p style="text-align: center">
-                    <Button @click="showConfirmModal=false" style="margin-right: 50px;width: 100px">取消</Button>
-                    <Button type="primary" @click="onConfirmDevice" style="width: 100px">确认</Button>
-                </p>
-                <Spin v-show="showSpin" fix size="large"></Spin>
-            </Card> -->
-
             <div class="container">
                 <div class="panel">
-                    <h4 style="font-weight: bold; font-size: 2rem; margin-bottom: 20px;">确认机型属性</h4>
-                    <Form :model="pane" :label-width="100">
+                    <Row>
+                        <h4 style="font-weight: bold; font-size: 2rem; margin-bottom: 20px;">确认机型属性</h4>
+                        <Button style="border: none;font-size: 2em;margin-top: -65px;float: right; box-shadow:none;"
+                                :icon="showAllAreas ? 'ios-eye-outline':'ios-eye-off-outline'"
+                                @click="showAllAreas=!showAllAreas"></Button>
+                    </Row>
+                    <Form :model="pane" :label-width="90">
                         <FormItem>
-                            <b slot="label">屏幕边框：</b>
+                            <b slot="label">屏幕边框:</b>
                             <div class="input-box">
-                                <Input disabled v-model="phoneModel.inner_top_left" class="disabled-input"></Input>&mdash;
-                                <Input disabled v-model="phoneModel.inner_bottom_right" class="disabled-input"></Input>
-                                <div v-show="phoneModel.inner_top_left && phoneModel.inner_bottom_right">
-                                    <Button icon="ios-eye-outline" v-show="showScreenArea" @click="showScreenArea=!showScreenArea"></Button>
-                                    <Button icon="ios-eye-off-outline" v-show="!showScreenArea" @click="showScreenArea=!showScreenArea"></Button>
-                                </div>
+                                <Input disabled v-model="pointTopLeft" class="disabled-input"></Input>&mdash;
+                                <Input disabled v-model="pointBottomRight" class="disabled-input"></Input>
+                                <Icon type="md-add-circle"size="22" style="margin-top: 5px" @click="setBorder('screen')" color="#1bbc9c" />
+                                <Button :icon="showScreenArea?'ios-eye-outline':'ios-eye-off-outline'" @click="showScreenArea=!showScreenArea"></Button>
+                            </div>
+                        </FormItem>
+                        <FormItem style="margin-top: 40px;">
+                            <b slot="label">菜单坐标:</b>
+                            <div class="input-box">
+                                <Input disabled v-model="deviceCutCoordinate.menu_x" class="disabled-input"></Input>，
+                                <Input disabled v-model="deviceCutCoordinate.menu_y" class="disabled-input"></Input>
+                                <Icon type="md-add-circle"size="22" style="margin-top: 5px" @click="setBorder('menu')" color="#1bbc9c" />
+                                <Button :icon="showMenuArea?'ios-eye-outline':'ios-eye-off-outline'" @click="showMenuArea=!showMenuArea"></Button>
                             </div>
                         </FormItem>
                         <FormItem>
-                            <b slot="label">手机边框：</b>
+                            <b slot="label">桌面坐标:</b>
                             <div class="input-box">
-                                <Input disabled v-model="phoneModel.outer_top_left" class="disabled-input"></Input>&mdash;
-                                <Input disabled v-model="phoneModel.outer_bottom_right" class="disabled-input"></Input>
-                                <div v-show="phoneModel.outer_top_left && phoneModel.outer_bottom_right">
-                                    <Button icon="ios-eye-outline" v-show="showPhoneArea" @click="showPhoneArea=!showPhoneArea"></Button>
-                                    <Button icon="ios-eye-off-outline" v-show="!showPhoneArea" @click="showPhoneArea=!showPhoneArea"></Button>
-                                </div>
+                                <Input disabled v-model="deviceCutCoordinate.desktop_x" class="disabled-input"></Input>，
+                                <Input disabled v-model="deviceCutCoordinate.desktop_y" class="disabled-input"></Input>
+                                <Icon type="md-add-circle"size="22" style="margin-top: 5px" @click="setBorder('desktop')" color="#1bbc9c" />
+                                <Button :icon="showDesktopArea?'ios-eye-outline':'ios-eye-off-outline'" @click="showDesktopArea=!showDesktopArea"></Button>
                             </div>
                         </FormItem>
                         <FormItem>
-                            <b slot="label">手机型号：</b>
-                            <Input disabled v-model="phoneModel.phone_model_name" class="disabled-input"></Input>
+                            <b slot="label">返回坐标:</b>
+                            <div class="input-box">
+                                <Input disabled v-model="deviceCutCoordinate.return_x" class="disabled-input"></Input>，
+                                <Input disabled v-model="deviceCutCoordinate.return_y" class="disabled-input"></Input>
+                                <Icon type="md-add-circle"size="22" style="margin-top: 5px" @click="setBorder('return')" color="#1bbc9c" />
+                                <Button :icon="showBackArea?'ios-eye-outline':'ios-eye-off-outline'" @click="showBackArea=!showBackArea"></Button>
+                            </div>
+                        </FormItem>
+                        <FormItem style="margin-top: 40px;">
+                            <b slot="label">手机型号:</b>
+                            <Input disabled v-model="deviceCutCoordinate.phone_model.phone_model_name" class="disabled-input"></Input>
                         </FormItem>
                         <FormItem>
-                            <b slot="label">Xdpi：</b>
-                            <Input disabled v-model="phoneModel.x_dpi" class="disabled-input"></Input>
+                            <b slot="label">Xdpi:</b>
+                            <Input disabled v-model="deviceCutCoordinate.phone_model.x_dpi" class="disabled-input"></Input>
                         </FormItem>
                         <FormItem>
-                            <b slot="label">Ydpi：</b>
-                            <Input disabled v-model="phoneModel.y_dpi" class="disabled-input"></Input>
+                            <b slot="label">Ydpi:</b>
+                            <Input disabled v-model="deviceCutCoordinate.phone_model.y_dpi" class="disabled-input"></Input>
                         </FormItem>
                     </Form>
                     <div class="panel__footer">
@@ -157,12 +149,18 @@
                 </div>
                 <div class="area-selector">
                     <div class="area-selector__header">
-                        <h4 style="font-weight: bold; font-size: 2em;">请在图中框选手机边框与屏幕边框</h4>
+                        <Row>
+                            <h4 style="font-weight: bold; font-size: 2em;">请在图中框选屏幕边框或选取坐标点</h4>
+                            <div style="float: right;margin-top: -40px;">
+                                <!--<Button type="info" @click="setBorder" style="margin-right: 16px;">自动获取边框</Button>-->
+                                <Button type="success" @click="getImg">重新获取图片</Button>
+                            </div>
+                        </Row>
                         <p class="area-selector_desc">按下鼠标按键并拖动来框选区域，按下Ctrl可遮罩图片外的内容</p>
                     </div>
                     <div class="area-selector__main">
                         <div class="area-selector__loading" v-if="!imgSrc">
-                            <h5 class="title">请打开柜门，确保光线充足</h5>
+                            <h5 class="title">请将手机屏幕调至较亮画面，并摆正手机</h5>
                             <div class="loading">
                                 <div class="loading__item"></div>
                                 <div class="loading__item"></div>
@@ -177,14 +175,6 @@
                             @on-load="setImgInfo"
                         ></AreaSelector>
                     </div>
-                </div>
-                <div class="coordinate-confirm">
-                    <div class="top">
-                        <Button type="success" long @click="setBorder('screen')">屏幕边框</Button>
-                        <Button type="success" long @click="setBorder('phone')">手机边框</Button>
-                        <Button type="success" long @click="showAllAreas=!showAllAreas">{{showAllAreas ? "关闭所有区域" : "显示所有区域"}}</Button>
-                    </div>
-                    <Button type="success" long @click="getImg">重新获取图片</Button>
                 </div>
             </div>
         </Modal>
@@ -234,38 +224,63 @@ import JobManagementVue from '../views/JobManagement.vue';
                 cabinetId:null,
                 showSpin:false,
                 showConfirmModal:false,
-                phoneModel:{
+                deviceCutCoordinate:{
                     id: null,
-                    phone_model_name: "",
-                    x_dpi: null,
-                    y_dpi: null,
-                    outer_top_left: "",
-                    outer_bottom_right: "",
-                    inner_top_left: "",
-                    inner_bottom_right: ""
+                    phone_model:{
+                        phone_model_name: "",
+                        x_dpi: null,
+                        y_dpi: null
+                    },
+                    desktop_x: null,
+                    desktop_y: null,
+                    inside_under_right_x: null,
+                    inside_under_right_y: null,
+                    inside_upper_left_x: null,
+                    inside_upper_left_y: null,
+                    menu_x: null,
+                    menu_y: null,
+                    return_x: null,
+                    return_y: null,
                 },
                 areaInfo: {
-                    pane_view: 0,
-                    phone_model: 0,
-                    outside_upper_left_x: 0,
-                    outside_upper_left_y: 0,
-                    outside_under_right_x: 0,
-                    outside_under_right_y: 0,
-                    inside_upper_left_x: 0,
-                    inside_upper_left_y: 0,
-                    inside_under_right_x: 0,
-                    inside_under_right_y: 0
+                    desktop_x: null,
+                    desktop_y: null,
+                    inside_under_right_x: null,
+                    inside_under_right_y: null,
+                    inside_upper_left_x: null,
+                    inside_upper_left_y: null,
+                    menu_x: null,
+                    menu_y: null,
+                    return_x: null,
+                    return_y: null,
                 },
                 coordinate: null,
                 cabinetIP: null,
                 imgSrc: null,
                 imgInfo: null,
                 showScreenArea: false,
-                showPhoneArea: false,
                 showAllAreas: false,
+                showMenuArea: false,
+                showDesktopArea: false,
+                showBackArea: false,
+                // showPowerArea: false,
+                // showVolumeUp: false,
+                // showVolumeDown: false,
+                paneId: null,
+                isSendReq:true,
                 // cameraId: null,
                 // armId: null,
                 deviceLabel: null
+            }
+        },
+        computed: {
+            pointTopLeft: function () {
+                if(this.deviceCutCoordinate.inside_upper_left_x&&this.deviceCutCoordinate.inside_upper_left_y)
+                    return this.deviceCutCoordinate.inside_upper_left_x + ','+ this.deviceCutCoordinate.inside_upper_left_y
+            },
+            pointBottomRight(){
+                if(this.deviceCutCoordinate.inside_under_right_x && this.deviceCutCoordinate.inside_under_right_y)
+                return this.deviceCutCoordinate.inside_under_right_x + ','+ this.deviceCutCoordinate.inside_under_right_y
             }
         },
         watch: {
@@ -274,14 +289,23 @@ import JobManagementVue from '../views/JobManagement.vue';
                     if (this.showScreenArea) {
                         this.showSelectedArea("ScreenArea", val.inside_upper_left_x, val.inside_upper_left_y, val.inside_under_right_x, val.inside_under_right_y)
                     }
-                    if (this.showPhoneArea) {
-                        this.showSelectedArea("PhoneArea", val.outside_upper_left_x, val.outside_upper_left_y, val.outside_under_right_x, val.outside_under_right_y)
+                    if (this.areaInfo.inside_upper_left_x !== 0 && this.areaInfo.inside_under_right_x !== 0  && this.areaInfo.inside_upper_left_x !== null) {
+                        this.deviceCutCoordinate.inside_upper_left_x = val.inside_upper_left_x
+                        this.deviceCutCoordinate.inside_upper_left_y = val.inside_upper_left_y
+                        this.deviceCutCoordinate.inside_under_right_x = val.inside_under_right_x
+                        this.deviceCutCoordinate.inside_under_right_y = val.inside_under_right_y
                     }
-                    if (this.areaInfo.outside_upper_left_x !== 0 && this.areaInfo.inside_under_right_x !== 0) {
-                        this.phoneModel.outer_top_left = `${val.outside_upper_left_x},${val.outside_upper_left_y}`
-                        this.phoneModel.outer_bottom_right = `${val.outside_under_right_x},${val.outside_under_right_y}`
-                        this.phoneModel.inner_top_left = `${val.inside_upper_left_x},${val.inside_upper_left_y}`
-                        this.phoneModel.inner_bottom_right = `${val.inside_under_right_x},${val.inside_under_right_y}`
+                    if(this.areaInfo.menu_x !== null){
+                        this.deviceCutCoordinate.menu_x = val.menu_x
+                        this.deviceCutCoordinate.menu_y = val.menu_y
+                    }
+                    if(this.areaInfo.return_x !== null){
+                        this.deviceCutCoordinate.return_x = val.return_x
+                        this.deviceCutCoordinate.return_y = val.return_y
+                    }
+                    if(this.areaInfo.desktop_x !== null){
+                        this.deviceCutCoordinate.desktop_x = val.desktop_x
+                        this.deviceCutCoordinate.desktop_y = val.desktop_y
                     }
 
                 },
@@ -290,47 +314,65 @@ import JobManagementVue from '../views/JobManagement.vue';
             },
             showScreenArea(val) {
                 if (val) {
-                    if (this.showPhoneArea) this.showAllAreas = val
-                    if (this.areaInfo.inside_upper_left_x !== this.areaInfo.inside_under_right_x) {
-                        this.showSelectedArea("ScreenArea", this.areaInfo.inside_upper_left_x, this.areaInfo.inside_upper_left_y, this.areaInfo.inside_under_right_x, this.areaInfo.inside_under_right_y)
+                    if (this.showMenuArea&&this.showBackArea&&this.showDesktopArea) this.showAllAreas = val
+                    if (this.deviceCutCoordinate.inside_upper_left_x !== this.deviceCutCoordinate.inside_under_right_x) {
+                        this.showSelectedArea("ScreenArea", this.deviceCutCoordinate.inside_upper_left_x, this.deviceCutCoordinate.inside_upper_left_y, this.deviceCutCoordinate.inside_under_right_x, this.deviceCutCoordinate.inside_under_right_y)
                     }
                 } else {
-                    if (!this.showPhoneArea) this.showAllAreas = val
+                    if (!this.showMenuArea&&!this.showBackArea&&!this.showDesktopArea) this.showAllAreas = val
                     let selector = document.querySelector('.selector')
                     let area = document.querySelector('.screenarea')
                     if (area) selector.removeChild(area)
                 }
             },
-            showPhoneArea(val) {
+            showMenuArea(val){
                 if (val) {
-                    if (this.showScreenArea) this.showAllAreas = val
-                    if (this.areaInfo.outside_upper_left_x !== this.areaInfo.outside_under_right_x) {
-                        this.showSelectedArea("PhoneArea", this.areaInfo.outside_upper_left_x, this.areaInfo.outside_upper_left_y, this.areaInfo.outside_under_right_x, this.areaInfo.outside_under_right_y)
+                    if (this.showScreenArea&&this.showBackArea&&this.showDesktopArea) this.showAllAreas = val
+                    if (this.deviceCutCoordinate.menu_x) {
+                        this.showSelectedPoint("MenuArea", this.deviceCutCoordinate.menu_x, this.deviceCutCoordinate.menu_y)
                     }
                 } else {
-                    if (!this.showScreenArea) this.showAllAreas = val
+                    if (!this.showScreenArea&&!this.showBackArea&&!this.showDesktopArea) this.showAllAreas = val
                     let selector = document.querySelector('.selector')
-                    let area = document.querySelector('.phonearea')
+                    let area = document.querySelector('.menuarea')
+                    if (area) selector.removeChild(area)
+                }
+            },
+            showBackArea(val){
+                if (val) {
+                    if (this.showScreenArea&&this.showMenuArea&&this.showDesktopArea) this.showAllAreas = val
+                    if (this.deviceCutCoordinate.return_x) {
+                        this.showSelectedPoint("BackArea", this.deviceCutCoordinate.return_x,this.deviceCutCoordinate.return_y)
+                    }
+                } else {
+                    if (!this.showScreenArea&&!this.showMenuArea&&!this.showDesktopArea) this.showAllAreas = val
+                    let selector = document.querySelector('.selector')
+                    let area = document.querySelector('.backarea')
+                    if (area) selector.removeChild(area)
+                }
+            },
+            showDesktopArea(val){
+                if (val) {
+                    if (this.showScreenArea&&this.showMenuArea&&this.showBackArea) this.showAllAreas = val
+                    if (this.deviceCutCoordinate.desktop_x) {
+                        this.showSelectedPoint("DesktopArea", this.deviceCutCoordinate.desktop_x, this.deviceCutCoordinate.desktop_y)
+                    }
+                } else {
+                    if (!this.showScreenArea&&!this.showMenuArea&&!this.showBackArea) this.showAllAreas = val
+                    let selector = document.querySelector('.selector')
+                    let area = document.querySelector('.desktoparea')
                     if (area) selector.removeChild(area)
                 }
             },
             showAllAreas(val) {
                 this.showScreenArea = val
-                this.showPhoneArea = val
+                this.showMenuArea = val
+                this.showBackArea = val
+                this.showDesktopArea = val
+                // this.showPowerArea = val
+                // this.showVolumeUp = val
+                // this.showVolumeDown = val
             },
-            phoneModel: {
-                handler: function(newVal, oldVal) {
-                    if (this.areaInfo.outside_upper_left_x === this.areaInfo.outside_under_right_x) {
-                         this.$ajax.get(`/api/v1/cedar/control_device_cut_coordinate/?pane_view=${this.paneList[this.paneIndex].id}&phone_model=${newVal.id}`)
-                        .then(res => {
-                            Object.assign(this.areaInfo, res.data[0])
-                        }).catch(err => {
-                            console.log(err)
-                        })
-                    }
-                },
-                deep: true
-            }
         },
         methods:{
             refresh(){
@@ -461,24 +503,77 @@ import JobManagementVue from '../views/JobManagement.vue';
                     }
                 })
             },
+            //从机型详情页进入到机型配置页面
+            onConfigClick(device,index){
+                this.deviceCutCoordinate = this.resetCoordinateInfo()
+                this.showConfirmModal = true
+                this.selectDevice = device.id
+                this.paneIndex = index
+                this.paneId = this.paneList[this.paneIndex].id
+                this.cabinetIP = device.cabinet.ip_address
+                this.deviceLabel = device.device_label
+                this.isSendReq = false
+
+                this.getCoordinateInfo()
+                this.getImg()
+            },
+            //取回机型和坐标点信息
+            getCoordinateInfo(){
+                this.$ajax.get("api/v1/cedar/devicecutcoordinate/" +
+                    "?phone_model__device=" + this.selectDevice +
+                    "&pane_view=" + this.paneId +
+                    "&fields=phone_model.x_dpi,phone_model.y_dpi,phone_model.phone_model_name," +
+                    "menu_x,menu_y,desktop_x,desktop_y,return_x,return_y," +
+                    "inside_upper_left_x,inside_upper_left_y," +
+                    "inside_under_right_x,inside_under_right_y,id"
+                ).then(response => {
+                    // Object.assign(this.deviceCutCoordinate, response.data.devicecutcoordinate)
+
+                    this.deviceCutCoordinate = response.data.devicecutcoordinate[0]
+                }).catch(error => {
+                    if (config.DEBUG) console.log(error)
+                    this.$Message.error("设备屏幕信息获取失败")
+                })
+            },
+            //初始化机型坐标点信息
+            resetCoordinateInfo(){
+                return{
+                    id: null,
+                    phone_model:{
+                        phone_model_name: "",
+                        x_dpi: null,
+                        y_dpi: null
+                    },
+                    desktop_x: null,
+                    desktop_y: null,
+                    inside_under_right_x: null,
+                    inside_under_right_y: null,
+                    inside_upper_left_x: null,
+                    inside_upper_left_y: null,
+                    menu_x: null,
+                    menu_y: null,
+                    return_x: null,
+                    return_y: null,
+                }
+            },
+            //基于matrix 和 text-box 两种不同的情况选取device
             async setDevice() {
+                this.deviceCutCoordinate = this.resetCoordinateInfo()
+                this.isSendReq = true
+                this.paneId = this.paneList[this.paneIndex].id
                 if (this.paneList[this.paneIndex].type === "test_box")
                 {
+                    if(this.selectDevice===null){
+                        this.$Message.warning("请先选择一台设备")
+                        return
+                    }
+                    this.getCoordinateInfo()
+
                     // await this.$ajax.get("api/v1/cedar/paneview?id=" + this.paneList[this.paneIndex].id)
                     //     .then(res => {
                     //         this.cameraId = res.data.paneview[0].camera
                     //         this.armId = res.data.paneview[0].robot_arm
                     //     })
-                    await this.$ajax.get("api/v1/cedar/device/" + this.selectDevice + "/?fields=" +
-                        "cabinet,cabinet.ip_address,phone_model,phone_model.id,phone_model.phone_model_name," +
-                        "phone_model.x_border,phone_model.y_border,phone_model.x_dpi,phone_model.y_dpi"
-                    ).then(response => {
-                        Object.assign(this.phoneModel, response.data.phone_model)
-                        this.cabinetIP = response.data.cabinet.ip_address
-                    }).catch(error => {
-                        if (config.DEBUG) console.log(error)
-                        this.$Message.error("获取机柜ip失败")
-                    })
                     // if (this.cameraId === null) {
                     //     this.$ajax.post(`http://${this.cabinetIP}:5000/pane/device_arm_camera/`, {
                     //         "arm_id": this.armId,
@@ -487,6 +582,7 @@ import JobManagementVue from '../views/JobManagement.vue';
                     //     // this.showConfirmModal = true
                     //
                     // } else
+                    this.openDevice = false
                     this.showConfirmModal = true
                     this.getImg()
                     return
@@ -497,7 +593,7 @@ import JobManagementVue from '../views/JobManagement.vue';
                 }
             },
             onConfirmDevice(){
-                if(this.phoneModel.x_border===null||this.phoneModel.y_border===null||this.phoneModel.x_dpi===null||this.phoneModel.y_dpi===null){
+                if(this.deviceCutCoordinate.phone_model.x_dpi===null||this.deviceCutCoordinate.phone_model.y_dpi===null){
                     this.$Message.warning("机型属性不能为空，请先设置再进行绑定")
                     return
                 }
@@ -528,6 +624,7 @@ import JobManagementVue from '../views/JobManagement.vue';
             onSelectDeviceModalRowClick(row){
                 this.selectDevice = row.id
                 this.deviceLabel = row.device_label
+                this.cabinetIP = row.cabinet.ip_address
             },
             afterRemovePaneSlot(){
                 this.refresh()
@@ -580,29 +677,42 @@ import JobManagementVue from '../views/JobManagement.vue';
                 if (!this.coordinate || !this.coordinate.absoluteCoordinate) return
                 let { absoluteCoordinate: { topLeft, bottomRight } } = this.coordinate
                 topLeft = {
-                    x: topLeft.x.toFixed(0),
-                    y: topLeft.y.toFixed(0)
-                }
+                    x: parseInt(topLeft.x.toFixed(0)),
+                    y: parseInt(topLeft.y.toFixed(0))
+            }
                 bottomRight = {
-                    x: bottomRight.x.toFixed(0),
-                    y: bottomRight.y.toFixed(0)
+                    x: parseInt(bottomRight.x.toFixed(0)),
+                    y: parseInt(bottomRight.y.toFixed(0))
+                }
+                if(type==="screen"){
+                    if(topLeft.x===bottomRight.x||topLeft.y===bottomRight.y){
+                        this.$Message.warning("屏幕边框必须是一个区域")
+                        return
+                    }
+                } else{
+                    if(topLeft.x!==bottomRight.x||topLeft.y!==bottomRight.y){
+                        this.$Message.warning("该项只能选取一个点，不能选取区域")
+                        return
+                    }
                 }
                 switch (type) {
                     case "screen":
-                        this.phoneModel.inner_top_left = `${topLeft.x},${topLeft.y}`
-                        this.phoneModel.inner_bottom_right = `${bottomRight.x},${bottomRight.y}`
                         this.areaInfo.inside_upper_left_x = topLeft.x
                         this.areaInfo.inside_upper_left_y = topLeft.y
                         this.areaInfo.inside_under_right_x = bottomRight.x
                         this.areaInfo.inside_under_right_y = bottomRight.y
                         break
-                    case "phone":
-                        this.phoneModel.outer_top_left = `${topLeft.x},${topLeft.y}`
-                        this.phoneModel.outer_bottom_right = `${bottomRight.x},${bottomRight.y}`
-                        this.areaInfo.outside_upper_left_x = topLeft.x
-                        this.areaInfo.outside_upper_left_y = topLeft.y
-                        this.areaInfo.outside_under_right_x = bottomRight.x
-                        this.areaInfo.outside_under_right_y = bottomRight.y
+                    case "menu":
+                        this.areaInfo.menu_x = topLeft.x
+                        this.areaInfo.menu_y = topLeft.y
+                        break
+                    case "desktop":
+                        this.areaInfo.desktop_x = topLeft.x
+                        this.areaInfo.desktop_y = topLeft.y
+                        break
+                    case "return":
+                        this.areaInfo.return_x = topLeft.x
+                        this.areaInfo.return_y = topLeft.y
                         break
                 }
             },
@@ -648,34 +758,82 @@ import JobManagementVue from '../views/JobManagement.vue';
                 area.innerText = text
                 selector.appendChild(area)
             },
+            showSelectedPoint(text, tlx, tly,) {
+                let selector = document.querySelector('.selector')
+                let selectorRect = selector.getBoundingClientRect()
+                let selectorImgRect = document.querySelector('.selector__img').getBoundingClientRect()
+                // 计算图片和div之间的空白偏移量，从而正确计算点的位置
+                // imgInfo： 图片原本的大小
+                // selectorImgRect：当前页面显示的图片的大小
+                let offsetX = (selectorRect.width - selectorImgRect.width) / 2
+                let offsetY = (selectorRect.height - selectorImgRect.height) / 2
+                let left = offsetX + tlx / this.imgInfo.width * selectorImgRect.width
+                let top = offsetY + tly / this.imgInfo.height * selectorImgRect.height
+                let point = document.createElement('div')
+                point.classList.add('point')
+                point.classList.add(text.toLowerCase())
+                point.style.display = 'flex'
+                point.style.position = 'absolute'
+                point.style.left = `${left-5}px`
+                point.style.top = `${top-5}px`
+                point.style.width = `10px`
+                point.style.height = `10px`
+                point.style.borderRadius = `50%`
+                point.style.background = 'red'
+                point.style.zIndex = 1000
+                // point.innerText = text
+                selector.appendChild(point)
+            },
             saveAreaInfo() {
-                this.areaInfo.pane_view = this.paneList[this.paneIndex].id
-                this.areaInfo.phone_model = this.phoneModel.id
-                this.$ajax.post("/api/v1/cedar/control_device_cut_coordinate/", this.areaInfo)
-                .then(res => {
-                    this.$Message.success("参数保存成功")
-                }).catch(err => {
-                    console.log(err)
-                    this.$Message.error("参数保存失败")
+                let paramsObj = {
+                    desktop_x: this.deviceCutCoordinate.desktop_x,
+                    desktop_y: this.deviceCutCoordinate.desktop_y,
+                    inside_under_right_x: this.deviceCutCoordinate.inside_under_right_x,
+                    inside_under_right_y: this.deviceCutCoordinate.inside_under_right_y,
+                    inside_upper_left_x: this.deviceCutCoordinate.inside_upper_left_x,
+                    inside_upper_left_y: this.deviceCutCoordinate.inside_upper_left_y,
+                    menu_x: this.deviceCutCoordinate.menu_x,
+                    menu_y: this.deviceCutCoordinate.menu_y,
+                    return_x: this.deviceCutCoordinate.return_x,
+                    return_y: this.deviceCutCoordinate.return_y,
+                }
+                if(!paramsObj.inside_under_right_x || !paramsObj.inside_under_right_y
+                    || !paramsObj.inside_upper_left_x || !paramsObj.inside_upper_left_y
+                    || !paramsObj.desktop_x || !paramsObj.desktop_y
+                    || !paramsObj.menu_x || !paramsObj.menu_y
+                    || !paramsObj.return_x || !paramsObj.return_y){
+                    this.$Message.warning({content:"请将机型属性填写完整！",duration:3})
+                    return
+                }
+                this.$ajax.patch("api/v1/cedar/devicecutcoordinate/"+ this.deviceCutCoordinate.id+"/",{ paramsObj })
+                    .then(res => {
+                        this.$Message.success("参数保存成功")
+                    }).catch(err => {
+                        if(config.DEBUG) console.log(err)
+                        this.$Message.error("参数保存失败")
                 })
+
                 let _this = this
                 let url = `http://${this.cabinetIP}:5000/pane/device_border/`
                 let xhr = new XMLHttpRequest()
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
                         if (xhr.status === 200) {
-                            _this.onConfirmDevice()
+                            if(_this.isSendReq)
+                                _this.onConfirmDevice()
+                            else
+                                _this.showConfirmModal = false
                         }
                         if (xhr.status === 400) {
                             console.error(xhr)
                         }
                     }
                 }
-                let areaInfo = JSON.stringify(Object.assign({device_label: this.deviceLabel}, this.areaInfo), null, 2)
-                console.log(areaInfo)
+
+                let Obj = JSON.stringify(Object.assign({device_label: this.deviceLabel}, paramsObj), null, 2)
                 xhr.open('POST', url, true)
                 xhr.setRequestHeader('content-type', 'application/json');
-                xhr.send(areaInfo)
+                xhr.send(Obj)
             }
         },
         mounted(){
@@ -738,16 +896,13 @@ import JobManagementVue from '../views/JobManagement.vue';
     }
     .input-box Button {
         border: none;
+        box-shadow:none;
         font-size: 2em;
-        margin-top: -14px;
-    }
-    .input-box Button:focus {
-        outline: none;
-        border: none;
+        margin-top: -6px;
     }
 
     .area-selector {
-        flex: 3;
+        flex: 2.5;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -772,24 +927,6 @@ import JobManagementVue from '../views/JobManagement.vue';
     .title {
         font-size: 1.4rem;
         margin-bottom: 1.6em;
-    }
-    .coordinate-confirm {
-        flex: .5;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px;
-    }
-    .top {
-        display: flex;
-        width: 100%;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .top > Button + Button {
-        margin-top: 10px;
     }
 
     .loading {

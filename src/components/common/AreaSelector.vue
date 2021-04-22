@@ -165,6 +165,7 @@ export default {
           this.expandBottom = false
           this.expandLeft = false
           this.curAreaRect = this.curArea.getBoundingClientRect()
+          //以图片的左上角为原点，做计算，当前所选择的区域的两个点的坐标  //相对、绝对
           let coordinate = {}
           coordinate.relativeCoordinate = {
             topLeft: {
