@@ -157,6 +157,7 @@
                             </div>
                         </Row>
                         <p class="area-selector_desc">按下鼠标按键并拖动来框选区域，按下Ctrl可遮罩图片外的内容</p>
+                        <p class="area-selector_desc">请点击空白处隐藏边框后，再按下鼠标左键选点</p>
                     </div>
                     <div class="area-selector__main">
                         <div class="area-selector__loading" v-if="!imgSrc">
@@ -718,7 +719,7 @@ import JobManagementVue from '../views/JobManagement.vue';
             },
             setImgInfo (val) {
                 this.imgInfo = val
-                this.showAllAreas = true
+                // this.showAllAreas = true
             },
             showSelectedArea(text, tlx, tly, brx, bry) {
                 let selector = document.querySelector('.selector')
@@ -745,15 +746,9 @@ import JobManagementVue from '../views/JobManagement.vue';
                 area.style.textIndent = '0.4em'
                 if (text.toLowerCase() === 'screenarea') {
                     area.style.zIndex = 900
-                    area.style.background = 'rgba(87, 250, 0, .4)'
+                    area.style.background = 'rgba(250,231,76,0.4)'
                     area.style.justifyContent = 'flex-start'
                     area.style.alignItems = 'flex-end'
-                }
-                if (text.toLowerCase() === 'phonearea') {
-                    area.style.zIndex = 800
-                    area.style.background = 'rgba(87, 250, 255, .4)'
-                    area.style.justifyContent = 'flex-start'
-                    area.style.alignItems = 'flex-start'
                 }
                 area.innerText = text
                 selector.appendChild(area)
@@ -774,12 +769,12 @@ import JobManagementVue from '../views/JobManagement.vue';
                 point.classList.add(text.toLowerCase())
                 point.style.display = 'flex'
                 point.style.position = 'absolute'
-                point.style.left = `${left-5}px`
-                point.style.top = `${top-5}px`
-                point.style.width = `10px`
-                point.style.height = `10px`
+                point.style.left = `${left-8}px`
+                point.style.top = `${top-8}px`
+                point.style.width = `16px`
+                point.style.height = `16px`
                 point.style.borderRadius = `50%`
-                point.style.background = 'red'
+                point.style.background = 'rgb(3,107,234)'
                 point.style.zIndex = 1000
                 // point.innerText = text
                 selector.appendChild(point)
@@ -805,7 +800,7 @@ import JobManagementVue from '../views/JobManagement.vue';
                     this.$Message.warning({content:"请将机型属性填写完整！",duration:3})
                     return
                 }
-                this.$ajax.patch("api/v1/cedar/devicecutcoordinate/"+ this.deviceCutCoordinate.id+"/",{ paramsObj })
+                this.$ajax.patch("api/v1/cedar/devicecutcoordinate/"+ this.deviceCutCoordinate.id+"/",paramsObj )
                     .then(res => {
                         this.$Message.success("参数保存成功")
                     }).catch(err => {

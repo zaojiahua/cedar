@@ -213,8 +213,6 @@ export default {
             this.deviceInfo.x_border = response.data.phonemodels[0].x_border
             this.deviceInfo.y_border = response.data.phonemodels[0].y_border
             let length = Math.sqrt(Math.pow(this.deviceInfo.device_height, 2) + Math.pow(this.deviceInfo.device_width, 2))
-            console.log(length)
-            console.log(length / response.data.phonemodels[0].x_dpi)
             this.deviceInfo.screen_size = (length / response.data.phonemodels[0].x_dpi).toFixed(2)
           }
         })
