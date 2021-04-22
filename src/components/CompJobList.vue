@@ -59,7 +59,7 @@
         props: {
             propAutoLoad: {
                 type: Boolean,
-                default: true
+                default: false
             },
             propShowCounter: {
                 type: Boolean,

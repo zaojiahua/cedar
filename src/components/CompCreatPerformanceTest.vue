@@ -116,7 +116,7 @@
               this.subsidiaryDeviceCount = this.selectedDevice.subsidiary_device_count
                 this.current = 1
                 this.$nextTick(()=>{
-                    this.$refs.jobList.refreshWithParam("&job_second_type=TimeJob&phone_models__id=" + this.selectedDevice.phone_model_id)
+                    this.$refs.jobList.refreshWithParam("&job_type=PerfJob")
                 })
             },
             // back step to select Device
