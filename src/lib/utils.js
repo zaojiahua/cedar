@@ -73,5 +73,16 @@ export default {
                 resolve(e.target.result)
             }
         })
+    },
+    dataURLtoFile (dataurl, filename) {
+    var arr = dataurl.split(',')
+    var mime = arr[0].match(/:(.*?);/)[1]
+    var dec = atob(arr[1]) // window atob() 方法用于解码使用 base-64 编码的字符串，base-64 编码使用的是 btoa，该方法使用 "A-Z", "a-z", "0-9", "+", "/" 和 "=" 字符来编码字符串。
+    var n = dec.length
+    var u8arr = new Uint8Array(n) // 8位无符号整数数组 0~255
+    while (n--) {
+      u8arr[n] = dec.charCodeAt(n) // charCodeAt() 方法可返回指定位置的字符的 Unicode 编码
     }
+    return new File([u8arr], filename, { type: mime })
+  }
 }

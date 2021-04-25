@@ -109,6 +109,7 @@
                 <Button :icon="showScreenArea?'ios-eye-outline':'ios-eye-off-outline'"
                         @click="showScreenArea=!showScreenArea"></Button>
               </div>
+              <Button type="primary" size="small" icon="ios-search" @click="getScreenArea">自动获取</Button>
             </FormItem>
             <FormItem style="margin-top: 40px;">
               <b slot="label">菜单坐标:</b>
@@ -238,8 +239,8 @@ export default {
       cabinetId: null,
       showSpin: false,
       showConfirmModal: false,
-      phone_model:{
-        id:null,
+      phone_model: {
+        id: null,
         phone_model_name: "",
         x_dpi: null,
         y_dpi: null
@@ -541,11 +542,11 @@ export default {
     getCoordinateInfo() {
       this.$ajax.get(`api/v1/cedar/device/${this.selectDevice}/` +
           '?fields=phone_model.id,phone_model.x_dpi,phone_model.y_dpi,phone_model.phone_model_name').then(
-              response =>{
-                this.phone_model = response.data.phone_model
-              }
-      ).catch(error=>{
-          this.$Message.warning("机型信息湖获取失败")
+          response => {
+            this.phone_model = response.data.phone_model
+          }
+      ).catch(error => {
+        this.$Message.warning("机型信息湖获取失败")
       })
       this.$ajax.get("api/v1/cedar/devicecutcoordinate/" +
           "?phone_model__device=" + this.selectDevice +
@@ -701,6 +702,26 @@ export default {
         console.log(err)
       }
     },
+    async getScreenArea() {
+      if (this.imgSrc === ''){
+        this.$Message.warning("请等待获取图片")
+        return
+      }
+      let data = new FormData()
+      data.append('rawImage', Utils.dataURLtoFile(this.imgSrc,"rawImage.jpg"))
+      let url = `http://${this.cabinetIP}:5000/pane/get_roi/`
+      await this.$ajax.post(url, data)
+          .then(response => {
+        console.log(response.data);
+        this.areaInfo.inside_upper_left_x = response.data.upper_left_x
+        this.areaInfo.inside_upper_left_y = response.data.upper_left_y
+        this.areaInfo.inside_under_right_x = response.data.under_right_x
+        this.areaInfo.inside_under_right_y = response.data.under_right_y
+        this.showScreenArea = false
+      })
+
+
+    },
     setBorder(type) {
       if (!this.coordinate || !this.coordinate.absoluteCoordinate) return
       let {absoluteCoordinate: {topLeft, bottomRight}} = this.coordinate
@@ -729,6 +750,7 @@ export default {
           this.areaInfo.inside_upper_left_y = topLeft.y
           this.areaInfo.inside_under_right_x = bottomRight.x
           this.areaInfo.inside_under_right_y = bottomRight.y
+          this.showScreenArea = false
           break
         case "menu":
           this.areaInfo.menu_x = topLeft.x
@@ -801,8 +823,8 @@ export default {
       point.style.width = `16px`
       point.style.height = `16px`
       point.style.borderRadius = `50%`
-        point.style.background = 'rgb(3,107,234)'
-        point.style.border = '1px solid white'
+      point.style.background = 'rgb(3,107,234)'
+      point.style.border = '1px solid white'
       point.style.zIndex = 1000
       // point.innerText = text
       selector.appendChild(point)
@@ -830,7 +852,10 @@ export default {
         this.$Message.warning({content: "请将机型属性填写完整！", duration: 3})
         return
       }
-      this.$ajax.post("api/v1/cedar/control_device_cut_coordinate/", Object.assign({pane_view: pane_view,phone_model:phone_model_id}, paramsObj))
+      this.$ajax.post("api/v1/cedar/control_device_cut_coordinate/", Object.assign({
+        pane_view: pane_view,
+        phone_model: phone_model_id
+      }, paramsObj))
           .then(res => {
             this.$Message.success("参数保存成功")
           }).catch(err => {
