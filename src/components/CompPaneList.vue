@@ -239,6 +239,7 @@ export default {
       showSpin: false,
       showConfirmModal: false,
       phone_model:{
+        id:null,
         phone_model_name: "",
         x_dpi: null,
         y_dpi: null
@@ -539,11 +540,13 @@ export default {
     //取回机型和坐标点信息
     getCoordinateInfo() {
       this.$ajax.get(`api/v1/cedar/device/${this.selectDevice}/` +
-          '?fields=phone_model.x_dpi,phone_model.y_dpi,phone_model.phone_model_name').then(
+          '?fields=phone_model.id,phone_model.x_dpi,phone_model.y_dpi,phone_model.phone_model_name').then(
               response =>{
                 this.phone_model = response.data.phone_model
               }
-      )
+      ).catch(error=>{
+          this.$Message.warning("机型信息湖获取失败")
+      })
       this.$ajax.get("api/v1/cedar/devicecutcoordinate/" +
           "?phone_model__device=" + this.selectDevice +
           "&pane_view=" + this.paneId +
@@ -618,7 +621,7 @@ export default {
       }
     },
     onConfirmDevice() {
-      if (this.deviceCutCoordinate.phone_model.x_dpi === null || this.deviceCutCoordinate.phone_model.y_dpi === null) {
+      if (this.phone_model.x_dpi === null || this.phone_model.y_dpi === null) {
         this.$Message.warning("机型属性不能为空，请先设置再进行绑定")
         return
       }
@@ -798,7 +801,8 @@ export default {
       point.style.width = `16px`
       point.style.height = `16px`
       point.style.borderRadius = `50%`
-      point.style.background = 'rgb(3,107,234)'
+        point.style.background = 'rgb(3,107,234)'
+        point.style.border = '1px solid white'
       point.style.zIndex = 1000
       // point.innerText = text
       selector.appendChild(point)
@@ -816,6 +820,8 @@ export default {
         return_x: this.deviceCutCoordinate.return_x,
         return_y: this.deviceCutCoordinate.return_y,
       }
+      let pane_view = this.paneList[this.paneIndex].id
+      let phone_model_id = this.phone_model.id
       if (!paramsObj.inside_under_right_x || !paramsObj.inside_under_right_y
           || !paramsObj.inside_upper_left_x || !paramsObj.inside_upper_left_y
           || !paramsObj.desktop_x || !paramsObj.desktop_y
@@ -824,7 +830,7 @@ export default {
         this.$Message.warning({content: "请将机型属性填写完整！", duration: 3})
         return
       }
-      this.$ajax.patch("api/v1/cedar/devicecutcoordinate/" + this.deviceCutCoordinate.id + "/", paramsObj)
+      this.$ajax.post("api/v1/cedar/control_device_cut_coordinate/", Object.assign({pane_view: pane_view,phone_model:phone_model_id}, paramsObj))
           .then(res => {
             this.$Message.success("参数保存成功")
           }).catch(err => {
