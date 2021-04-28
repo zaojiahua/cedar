@@ -344,7 +344,7 @@
                                 root.getProgress(tboardIdStr)
                                 root.getSuccessRatio(tboardIdStr)
                             }
-                            root.$Message.success("正在删除...该操作可能需要点时间，如需查看进度可进入清理中心页面！")
+                            root.$Message.success({content:"正在删除...该操作可能需要点时间，如需查看进度可进入清理中心页面！",duration:5})
                         }).catch(reason => {
                             if (config.DEBUG) console.log(reason)
                             root.$Message.error("删除失败")

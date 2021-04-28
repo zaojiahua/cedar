@@ -480,7 +480,7 @@
 
 <style scoped>
     /deep/.ivu-auto-complete.ivu-select-dropdown{
-        max-height: 500px
+        max-height: 350px
     }
 
 </style>
