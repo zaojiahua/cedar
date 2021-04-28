@@ -4,7 +4,7 @@
             <Header class="header" style="padding-left:0px;">
                 <Menu mode="horizontal" theme="dark" active-name="0" style="background-color: transparent">
                     <div class="layout-logo">
-                        <b>ANGELREEF</b>
+                        <b>TMach</b>
                         <span>®</span>
                     </div>
 
@@ -245,7 +245,7 @@
     }
     .layout-logo{
         height: 64px;
-        width: 200px;
+        width: 150px;
         float: left;
         position: relative;
         top: 0px;
@@ -270,7 +270,7 @@
         font-size: 20px;
         font-weight: 900;
         top:-10px;
-        right:0px;
+        right:10px;
     }
     .menu-item span{
         display: inline-block;
