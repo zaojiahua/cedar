@@ -27,7 +27,7 @@
             </Row>
             <Row type="flex">
                 <Col span="11">
-                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-subsidiary-device-count="subsidiaryDeviceCount" :prop-show-job-type="true"></comp-job-list>
+                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true"></comp-job-list>
                 </Col>
                 <Col span="2">
                     <Row type="flex" justify="center" style="margin-top: 48px;">
@@ -112,7 +112,6 @@
                 deviceSelection:[],
                 jobSelection:[],
                 showLoading:false,
-                subsidiaryDeviceCount:null,
             }
         },
         methods: {
@@ -133,12 +132,9 @@
                 this.selectedDevice = this.$refs.deviceList.getData()
                 if(this.selectedDevice.length>0){
                     let ids = []
-                    let count = []
                     this.selectedDevice.forEach(item=>{
                         ids.push(item.id)
-                        count.push(item.subsidiary_device_count)
                     })
-                    this.subsidiaryDeviceCount = Math.max.apply(null,count)
                     this.$ajax.get("api/v1/cedar/checkout_device/?devices=" + ids.join(","))
                         .then(response=>{
                             if(response.data.length===0){

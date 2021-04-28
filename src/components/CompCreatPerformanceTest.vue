@@ -21,7 +21,7 @@
             <!--</Tabs>-->
             <Row type="flex">
                 <Col span="11">
-                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-subsidiary-device-count="subsidiaryDeviceCount"></comp-job-list>
+                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
                 </Col>
                 <Col span="2">
                     <Row type="flex" justify="center" style="margin-top: 48px;">
@@ -99,7 +99,6 @@
                 disableFlag:true,
                 jobSelection:[],
                 showLoading:false,
-                subsidiaryDeviceCount:null,
             }
         },
         methods: {
@@ -113,11 +112,6 @@
             },
             //next step to select job
             toPageChooseJob(){
-                let count = []
-                this.selectedDevice.forEach(item=>{
-                    count.push(item.subsidiary_device_count)
-                })
-                this.subsidiaryDeviceCount = Math.max.apply(null,count)
                 this.current = 1
                 this.$nextTick(()=>{
                     this.$refs.jobList.refreshWithParam("&job_second_type=TimeJob&phone_models__id=" + this.selectedDevice.phone_model_id)
