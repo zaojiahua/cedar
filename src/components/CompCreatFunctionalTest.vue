@@ -112,7 +112,6 @@
                 showJobDetail:false,
                 disableFlag:true,
                 deviceSelection:[],
-                jobSelection:[],
                 showLoading:false,
                 subsidiaryDeviceCount:null,
             }
@@ -148,7 +147,6 @@
                                 this.$nextTick(function () {
                                     if(this.selectedJob.length>0 ) {
                                         this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
-                                        this.$refs.jobList.setSelection(this.jobSelection)
                                     }
                                 })
                             }else {
@@ -201,10 +199,10 @@
             selectJob(){
                 this.$refs.jobSelectedList.refreshWithData(_.cloneDeep(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection())))
                 this.selectedJob = this.$refs.jobSelectedList.getData()
+                this.$refs.jobList.clearSelection()
             },
             toPageFillInfo(){
                 this.selectedJob = this.$refs.jobSelectedList.getData()
-                this.jobSelection = this.$refs.jobList.getThisSelection();
                 if(this.selectedJob.length>0){
                     this.current = 2
                 }else {
@@ -295,7 +293,6 @@
                 this.current = 1
                 this.$nextTick(function () {
                     this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
-                    this.$refs.jobList.setSelection(this.jobSelection);
                 })
             },
             JobOnRowClick(row){
