@@ -4,7 +4,7 @@
                              @on-chart-click="onChartClick" @after-load-data="afterLoadData"
         ></comp-perf-histogram>
 
-        <comp-perf-rds-list ref="perfRdsList" v-if="timeRange" :prop-job-id="job.job_id" :prop-tboard-id="tboardId" :prop-time-range="timeRange"></comp-perf-rds-list>
+        <comp-perf-rds-list ref="perfRdsList" :prop-job-id="job.job_id" :prop-tboard-id="tboardId" :prop-time-range="timeRange"></comp-perf-rds-list>
     </div>
 </template>
 
