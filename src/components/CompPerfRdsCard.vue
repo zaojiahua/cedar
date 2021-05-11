@@ -81,7 +81,10 @@
                 type: Array,
                 default: ()=>{return []}
             },
-
+            isMin:{
+                type: Boolean,
+                default: false
+            }
         },
         data: function () {
             return {
@@ -147,7 +150,10 @@
 
                 let durationCondition = ""
                 if(this.propTimeRange)
-                    durationCondition = "&job_duration__gte="+ this.propTimeRange.split("-")[0]+"&job_duration__lte=" + this.propTimeRange.split("-")[1]
+                    if(this.isMin)
+                        durationCondition = "&job_duration__gte="+ this.propTimeRange.split("-")[0]+"&job_duration__lte=" + this.propTimeRange.split("-")[1]
+                    else
+                        durationCondition = "&job_duration__gt="+ this.propTimeRange.split("-")[0]+"&job_duration__lte=" + this.propTimeRange.split("-")[1]
 
                 this.$ajax.get("api/v1/cedar/rds/?" +
                     jobCondition +

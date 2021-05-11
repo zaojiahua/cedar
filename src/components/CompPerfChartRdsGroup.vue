@@ -4,7 +4,7 @@
                              @on-chart-click="onChartClick" @after-load-data="afterLoadData"
         ></comp-perf-histogram>
 
-        <comp-perf-rds-list ref="perfRdsList" :prop-job-id="job.job_id" :prop-tboard-id="tboardId" :prop-time-range="timeRange"></comp-perf-rds-list>
+        <comp-perf-rds-list ref="perfRdsList" :is-min="isMin" :prop-job-id="job.job_id" :prop-tboard-id="tboardId" :prop-time-range="timeRange"></comp-perf-rds-list>
     </div>
 </template>
 
@@ -29,15 +29,23 @@
         },
         data(){
             return{
-                timeRange:""
+                timeRange:"",
+                isMin:false,
+                minTime:null,
             }
         },
         methods:{
             afterLoadData(item){
                 this.timeRange = item
+                if(this.timeRange){
+                    this.minTime = parseFloat(this.timeRange.split("-")[0])
+                    this.isMin = true
+                }
             },
             onChartClick(item){
                 this.timeRange = item
+                let min = parseFloat(this.timeRange.split("-")[0])
+                this.isMin = this.minTime===min
             },
         }
     }
