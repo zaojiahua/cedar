@@ -546,7 +546,7 @@ export default {
             this.phone_model = response.data.phone_model
           }
       ).catch(error => {
-        this.$Message.warning("机型信息湖获取失败")
+        this.$Message.warning("机型信息获取失败")
       })
       this.$ajax.get("api/v1/cedar/devicecutcoordinate/" +
           "?phone_model__device=" + this.selectDevice +

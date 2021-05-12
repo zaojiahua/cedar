@@ -23,6 +23,13 @@
             <b >机柜内已有设备数量： </b>
             <span style="color: #999999">  {{deviceNum}} 台 </span>
             <p style="color: #999999;margin: 20px 0 40px 0">注：每个机柜建议注册不超过50台设备</p>
+            <Row>
+                <b>设备类型：</b>
+                <RadioGroup v-model="deviceType" style="margin-top: -3px;">
+                    <Radio :label="1" style="margin-right: 20px;">主机</Radio>
+                    <Radio :label="2">僚机</Radio>
+                </RadioGroup>
+            </Row>
             <Row type="flex" justify="center" style="margin-top: 16px">
                 <Button type="primary" @click="getDeviceInDoor">下一步</Button>
                 <!--<Button type="error" @click="addDeviceError('ip侦测失败', '侦测不到该装置的IP位置，请确认待添加设备已连接到系统TMach系统WLAN！')">错误DEMO</Button>-->
@@ -31,7 +38,7 @@
         <Card dis-hover title="第三步: 添加设备" v-if="addDeviceStep === 3">
             <Form :label-width="130">
                 <FormItem>
-                    <b slot="label">自定义名称</b>
+                    <b slot="label"><span class="need">*</span>自定义名称</b>
                     <Input v-model="addedDeviceName"></Input>
                 </FormItem>
                 <FormItem>
@@ -47,10 +54,10 @@
                     <b slot="label">手机型号</b>
                     <Input v-model="deviceInfo.phone_model_name" class="disabled-input" :disabled="true"></Input>
                 </FormItem>
-              <FormItem>
-                  <b slot="label">Rom版本</b>
-                <Input v-model="deviceInfo.rom_version"></Input>
-              </FormItem>
+                <FormItem v-if="deviceType===1">
+                    <b slot="label">Rom版本</b>
+                    <Input v-model="deviceInfo.rom_version"></Input>
+                </FormItem>
                 <FormItem>
                     <b slot="label"><span class="need">*</span>Xdpi</b>
                     <InputNumber style="width: 324px" v-model="deviceInfo.x_dpi"></InputNumber>
@@ -70,8 +77,8 @@
             </Form>
             <Row type="flex" justify="center">
                 <Button type="primary" v-if="addBtn" @click="addDevice()">添加</Button>
-                <Button type="primary" v-if="rescan" @click="getDeviceInDoor()">重新扫描</Button>
-                <Button type="primary" v-if="backStepOne" @click="addDeviceStep=1 ">返回第一步</Button>
+                <Button type="primary" v-if="rescan" @click="getDeviceInDoor()" style="margin-right: 20px;">重新扫描</Button>
+                <Button type="primary" v-if="backStepOne" @click="addDeviceStep=2 ">返回上一步</Button>
             </Row>
             <Spin size="large" fix v-if="spinShow"></Spin>
         </Card>
@@ -108,8 +115,10 @@
                 backStepOne: false,
                 cabinetList: [],
                 CabinetSelected: '',
+                CabinetId:null,
                 deviceNum: 0,
-                CabinetIpSelected: ''
+                CabinetIpSelected: '',
+                deviceType:1,
             }
         },
         methods: {
@@ -124,41 +133,66 @@
                 });
             },
             addDevice() {
-                if(this.deviceInfo.x_border===null||this.deviceInfo.x_dpi===null||this.deviceInfo.y_border===null||this.deviceInfo.y_dpi===null){
+                if(this.addedDeviceName.trim().length===0||this.deviceInfo.x_border===null||this.deviceInfo.x_dpi===null||this.deviceInfo.y_border===null||this.deviceInfo.y_dpi===null){
                     this.$Message.warning("带*项信息不能为空！")
                     return
                 }
                 this.$Loading.start()
                 this.spinShow = true;
                 let deviceInfoDict = this.deviceInfo
-                deviceInfoDict["deviceName"] = this.addedDeviceName
-                this.$ajax.post("http://" + this.CabinetIpSelected + ":5000" + "/door/set_device_in_door/",
-                    deviceInfoDict
-                ).then(response => {
-                    if (response.data.state === "DONE") {
-                        this.$Message.success("添加成功")
-                        this.$Notice.success({
-                            title: '设备即将重启,请稍侯...'
-                        });
-                        this.$emit('afterDeviceAddSuccess', response.data)
-                    } else {
-                        this.$Message.error("添加失败" + response.data.description)
-                    }
-                    this.spinShow = false;
-                    this.$Loading.finish()
+                deviceInfoDict["deviceName"] = this.addedDeviceName.trim()
+                if(this.deviceType===1) {
+                    this.$ajax.post("http://" + this.CabinetIpSelected + ":5000" + "/door/set_device_in_door/",
+                        deviceInfoDict
+                    ).then(response => {
+                        if (response.data.state === "DONE") {
+                            this.$Message.success("添加成功")
+                            this.$Notice.success({
+                                title: '设备即将重启,请稍侯...'
+                            });
+                            this.$emit('afterDeviceAddSuccess', response.data)
+                        } else {
+                            this.$Message.error("添加失败" + response.data.description)
+                        }
+                        this.spinShow = false;
+                        this.$Loading.finish()
 
-                }).catch(reason => {
-                    this.spinShow = false;
-                    this.$Message.error({content:"添加失败"+ reason.response.data.description,duration: 5})
-                    this.$Loading.error()
-                    this.$emit('afterDeviceAddFailed', reason)
-                })
+                    }).catch(reason => {
+                        this.spinShow = false;
+                        this.$Message.error("添加失败")
+                        this.$Loading.error()
+                        this.$emit('afterDeviceAddFailed', reason)
+                    })
+                }else if(this.deviceType===2){
+                    this.$ajax.post("api/v1/coral/register_subsidiary_device/",{
+                        serial_number: deviceInfoDict.device_label,
+                        ip_address: deviceInfoDict.ip_address,
+                        custom_name: deviceInfoDict.deviceName,
+                        manufacturer: deviceInfoDict.manufacturer,
+                        phone_model: {
+                            phone_model_name: deviceInfoDict.phone_model_name,
+                            x_border: deviceInfoDict.x_border,
+                            y_border: deviceInfoDict.y_border,
+                            x_dpi: deviceInfoDict.x_dpi,
+                            y_dpi: deviceInfoDict.y_dpi,
+                        },
+                        cabinet:this.CabinetId
+                    }).then(response=>{
+                        this.$Message.success("添加成功")
+                        this.$emit('afterDeviceAddSuccess', response.data)
+                    }).catch(error=>{
+                        if(config.DEBUG) console.log(error)
+                        this.$Message.error({content:"僚机添加失败"+error.response.data.message,duration:6})
+                    })
+                }
             },
             getDeviceInDoor() {
                 if (this.CabinetIpSelected === "" ){
                     this.$Message.error("请先选择机柜信息")
+                    return
                 }
-                else{
+                this.deviceInfo = utils.validate(addDeviceSerializer, {});
+                // else{
                     this.addDeviceStep = 3;
                     this.addBtn = true;
                     this.rescan = false;
@@ -166,11 +200,13 @@
                     this.spinShow = true;
                     this.$Loading.start();
                     this.addedDeviceName = "";
-                    this.$ajax
+                    //分主机和僚机请求不同的接口获取不同的信息
+                    if(this.deviceType===1){
+                        this.$ajax
                         .get("http://" + this.CabinetIpSelected + ":5000" + "/door/get_device_in_door/")
                         .then(response => {
                             if (utils.validate(addDeviceSerializer, response.data).ip_address === null) {
-                                this.addDeviceError('添加设备失败', response.data.description);
+                                this.addDeviceError('扫描设备失败', response.data.description);
                                 this.addBtn = false;
                                 this.backStepOne = true;
                                 this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
@@ -192,7 +228,29 @@
                             this.spinShow = false;
                             this.$Loading.error();
                             this.$Message.error({content:error.response.data.description,duration: 10})
-                        })}
+                        })
+                    }else if(this.deviceType=== 2){
+                        this.$ajax.get("http://" + this.CabinetIpSelected + ":5000" + "/door/get_assistance_device_in_door/")
+                            .then(response => {
+                                this.deviceInfo = utils.validate(addDeviceSerializer, response.data)
+                                this.spinShow = false;
+                            })
+                            .catch(error => {
+                                if (config.DEBUG) console.log(error)
+                                this.addBtn = false;
+                                this.backStepOne = true;
+                                this.rescan = true;
+                                this.spinShow = false;
+                                if(error.response.data.error_code===1001){
+                                    this.addDeviceError('僚机信息获取失败', '请确认当前设备是否连接到TMach系统中')
+                                }else if(error.response.data.error_code===1000){
+                                    this.addDeviceError('僚机信息获取失败', '请确认当前系统中是否连接了多个僚机设备')
+                                }else if(error.response.data.error_code===1007){
+                                    this.addDeviceError('僚机信息获取失败','该设备已被注册，请先将其移除，再进行操作')
+                                }else
+                                    this.addDeviceError('僚机信息获取失败 ',+error.response.data.description)
+                            })
+                    }
             },
             getCabinetInfo() {
                 this.addDeviceStep = 2;
@@ -219,6 +277,7 @@
                 for (let cabinet of this.cabinetList) {
                     if (cabinet.id === newId) {
                         this.CabinetIpSelected = cabinet.ip_address
+                        this.CabinetId = cabinet.id
                     }
                 }
             }

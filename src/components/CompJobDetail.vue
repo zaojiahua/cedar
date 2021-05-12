@@ -192,7 +192,6 @@
                                 root.$emit("delJobOne",false);
                             })
                             .catch(error=>{
-                                console.log(error.response)
                                 if (config.DEBUG) console.log(error)
                                 let errorMsg = "";
                                 if (error.response.status >= 500) {
