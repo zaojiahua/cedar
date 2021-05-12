@@ -62,7 +62,7 @@
             }
         },
         mounted(){
-            this.username = localStorage.getItem('username');
+            this.username = sessionStorage.getItem('username');
         }
     }
 </script>
