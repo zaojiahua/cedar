@@ -216,7 +216,7 @@
             },
         },
         created(){
-            let username = localStorage.getItem('username');
+            let username = sessionStorage.getItem('username');
             this.getAppNameList()
             if (username==="admin" && this.propAction) {
                 this.appColumn.push({

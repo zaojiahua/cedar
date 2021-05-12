@@ -207,7 +207,7 @@
             }
         },
         created(){
-            let username = localStorage.getItem('username');
+            let username = sessionStorage.getItem('username');
             if (username==="admin" && this.propAction) {
                 this.modelColumn.push(  {
                     title: "操作",
