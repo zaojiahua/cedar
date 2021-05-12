@@ -1,7 +1,7 @@
 <template>
     <div>
         <Drawer v-model="showRdsDetail" :closable="false" width="50" transfer>
-            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne"></comp-rds-detail>
+            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne" :prop-perf-rds="true"></comp-rds-detail>
         </Drawer>
         <Card style="margin-bottom: 16px;" dis-hover v-if="rdsData.length>0">
             <Row type="flex">
@@ -81,7 +81,10 @@
                 type: Array,
                 default: ()=>{return []}
             },
-
+            isMin:{
+                type: Boolean,
+                default: false
+            }
         },
         data: function () {
             return {
@@ -147,7 +150,10 @@
 
                 let durationCondition = ""
                 if(this.propTimeRange)
-                    durationCondition = "&job_duration__gte="+ this.propTimeRange.split("-")[0]+"&job_duration__lte=" + this.propTimeRange.split("-")[1]
+                    if(this.isMin)
+                        durationCondition = "&job_duration__gte="+ this.propTimeRange.split("-")[0]+"&job_duration__lte=" + this.propTimeRange.split("-")[1]
+                    else
+                        durationCondition = "&job_duration__gt="+ this.propTimeRange.split("-")[0]+"&job_duration__lte=" + this.propTimeRange.split("-")[1]
 
                 this.$ajax.get("api/v1/cedar/rds/?" +
                     jobCondition +
@@ -161,6 +167,7 @@
                     .then(response=>{
                         this.dataOffset += pageSize
                         if(reset) { // 数据加载完成才清空原有数据，以免画面闪烁。
+                            this.rdsData = []
                             if(response.data.rdss.length>0)
                                 this.rdsData = utils.validate(getRdsSerializer, response.data).rdss
                         }
@@ -214,6 +221,16 @@
                     this.loadMoreData(true)
                 },
             },
+          propTboardId:{
+            handler: function(val){
+              this.loadMoreData(true)
+            },
+          },
+          propJobId:{
+            handler: function(val){
+              this.loadMoreData(true)
+            },
+          }
         },
         created() {
             this.loadMoreData(true)

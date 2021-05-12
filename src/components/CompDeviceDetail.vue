@@ -182,8 +182,9 @@
                 <Button @click="cancelConfig">取消</Button>
             </Col>
         </Row>
-        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="propDeviceSlot">
+        <Row align="middle" type="flex" style="margin-top: 32px;" v-if="propDeviceSlot">
             <Button type="error" @click="releaseDeviceSlot">解除设备关联</Button>
+            <Button type="primary" v-show="propShowConfig" style="margin-left: 20px;" @click="onConfigClick">配置机型信息</Button>
         </Row>
         <Spin size="large" fix v-if="spinShow"></Spin>
         <Modal v-model="openOrderModal" :closable="false" :mask-closable="false" footer-hide width="450">
@@ -374,6 +375,10 @@
                 default: false
             },
             propSubsidiaryDevice:{   //是否可对僚机进行操作
+                type: Boolean,
+                default: false
+            },
+            propShowConfig:{    //是否显示配置机型信息
                 type: Boolean,
                 default: false
             }
@@ -900,7 +905,10 @@
                     }
                 })
             },
-
+            //机械臂配置机型信息（选点选区）
+            onConfigClick(){
+                this.$emit('on-config-click',this.device)
+            }
         },
     }
 </script>

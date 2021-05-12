@@ -114,7 +114,7 @@
             toPageChooseJob(){
                 this.current = 1
                 this.$nextTick(()=>{
-                    this.$refs.jobList.refreshWithParam("&job_second_type=TimeJob&phone_models__id=" + this.selectedDevice.phone_model_id)
+                    this.$refs.jobList.refreshWithParam("&job_type=PerfJob")
                 })
             },
             // back step to select Device
@@ -159,7 +159,7 @@
                     })
                     this.showLoading = true;
                     utils._initDate();
-                    let userId = localStorage.getItem('id');
+                    let userId = sessionStorage.getItem('id');
                     this.$ajax
                         .post("api/v1/coral/insert_tboard/ ",{
                             device_label_list:deviceList,

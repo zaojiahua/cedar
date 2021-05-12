@@ -8,7 +8,7 @@
             <FormItem>
                 <b slot="label">测试用例:</b>
                 <ButtonGroup>
-                    <Tooltip v-for="job in data.job" :content="job.job_label" :key="job.id" placement="top" transfer>
+                    <Tooltip v-for="(job,index) in data.job" :content="job.job_label" :key="index" placement="top" transfer>
                         <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">{{job.job_name}}</Button>
                     </Tooltip>
                 </ButtonGroup>
@@ -78,7 +78,7 @@
                 </Row>
             </Card>
             <Divider orientation="left">用例运行结果</Divider>
-            <Card v-for="statistic in jobStatisticData" :key="statistic.id" @click.native="onJobCellClick(statistic)"
+            <Card v-for="(statistic,index) in jobStatisticData" :key="index" @click.native="onJobCellClick(statistic)"
                   style="padding: 7px 16px; margin-bottom: 8px; cursor: pointer;">
                 <Row type="flex" align="middle" style="margin: 16px 0">
                     <Col>

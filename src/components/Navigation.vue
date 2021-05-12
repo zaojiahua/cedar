@@ -162,7 +162,7 @@
                 versionInfo:utils.validate(versionSerializer,{}),
                 permissions:  sessionStorage.permissions === undefined ? "" : sessionStorage.permissions,
                 showVersionLoading:false,
-                username:localStorage.username,
+                username:sessionStorage.username,
                 capacity:{
                     free: 0,
                     total: 0,

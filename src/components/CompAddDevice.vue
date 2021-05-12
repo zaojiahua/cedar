@@ -182,7 +182,7 @@
                         this.$emit('afterDeviceAddSuccess', response.data)
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error("僚机添加失败")
+                        this.$Message.error({content:"僚机添加失败"+error.response.data.message,duration:6})
                     })
                 }
             },
@@ -254,7 +254,7 @@
             },
             getCabinetInfo() {
                 this.addDeviceStep = 2;
-                this.$ajax.get("api/v1/cedar/cabinet/?fields=ip_address,cabinet_name,id")
+                this.$ajax.get("api/v1/cedar/cabinet/?fields=ip_address,cabinet_name,id&is_delete=False")
                     .then(response => {
                         this.cabinetList = response.data.cabinets
                     })

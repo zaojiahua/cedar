@@ -37,15 +37,17 @@
                         </Button>
                     </Row>
                 </Col>
-                <Col span="11">
+                <Col span="8">
                     <comp-job-list style="margin-top: 48px" ref="jobSelectedList" :prop-auto-load="false" :prop-show-search="false"
                                    :prop-show-counter="true" :prop-deletable="true" :prop-show-page="false"></comp-job-list>
+
+                    <Row type="flex" justify="center" style="margin-top: 32px;">
+                        <Button type="primary" style="width: 90px;" @click="backToPageChooseDevice">上一步</Button>
+                        <Button type="primary" style="width: 90px; margin-left:32px;" @click="toPageFillInfo">下一步( {{selectedJob.length}} )</Button>
+                    </Row>
                 </Col>
             </Row>
-            <Row type="flex" justify="center" style="margin-top: 32px;">
-                <Button type="primary" style="width: 90px;" @click="backToPageChooseDevice">上一步</Button>
-                <Button type="primary" style="width: 90px; margin-left:32px;" @click="toPageFillInfo">下一步( {{selectedJob.length}} )</Button>
-            </Row>
+
         </div>
 
         <div v-if="current===2">
@@ -110,7 +112,6 @@
                 showJobDetail:false,
                 disableFlag:true,
                 deviceSelection:[],
-                jobSelection:[],
                 showLoading:false,
             }
         },
@@ -142,7 +143,6 @@
                                 this.$nextTick(function () {
                                     if(this.selectedJob.length>0 ) {
                                         this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
-                                        this.$refs.jobList.setSelection(this.jobSelection)
                                     }
                                 })
                             }else {
@@ -195,10 +195,10 @@
             selectJob(){
                 this.$refs.jobSelectedList.refreshWithData(_.cloneDeep(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection())))
                 this.selectedJob = this.$refs.jobSelectedList.getData()
+                this.$refs.jobList.clearSelection()
             },
             toPageFillInfo(){
                 this.selectedJob = this.$refs.jobSelectedList.getData()
-                this.jobSelection = this.$refs.jobList.getThisSelection();
                 if(this.selectedJob.length>0){
                     this.current = 2
                 }else {
@@ -237,7 +237,7 @@
                     })
                     this.showLoading = true;
                     utils._initDate();
-                    let userId = localStorage.getItem('id');
+                    let userId = sessionStorage.getItem('id');
                     this.$ajax
                         .post("api/v1/coral/insert_tboard/ ",{
                             device_label_list:deviceList,
@@ -289,7 +289,6 @@
                 this.current = 1
                 this.$nextTick(function () {
                     this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
-                    this.$refs.jobList.setSelection(this.jobSelection);
                 })
             },
             JobOnRowClick(row){

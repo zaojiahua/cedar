@@ -7,6 +7,7 @@
                            @on-select="jobSearch"
                            @on-search="handleSearch"
                            @on-clear="clearSearch"
+                           @keyup.enter.native="jobSearch(keyword)"
                            placeholder="Enter something...">
                 <Option v-for="(item,index) in filterJobNameList" :value="item" :key="index">{{ item }}</Option>
             </AutoComplete>
@@ -14,10 +15,10 @@
         </Row>
         <Table ref="table" border :columns="columns" :data="data" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="counter">
-                <InputNumber :min="1" v-model="data[index].counter"></InputNumber>
+                <InputNumber style="width: 65px" :min="1" v-model="data[index].counter"></InputNumber>
             </template>
             <template slot-scope="{row, index}" slot="delete">
-                <Button shape="circle" type="default" icon="md-trash" size="large" @click="deleteRow(index)">
+                <Button shape="circle" type="default" icon="md-trash" @click="deleteRow(index)">
                 </Button>
             </template>
         </Table>
@@ -58,7 +59,7 @@
         props: {
             propAutoLoad: {
                 type: Boolean,
-                default: true
+                default: false
             },
             propShowCounter: {
                 type: Boolean,
@@ -100,7 +101,8 @@
                     {
                         title: "用例名称",
                         key: "job_name",
-                        sortable: true
+                        sortable: true,
+                        width:200
                     },
                     {
                         title: "caseNo",
@@ -130,7 +132,7 @@
                         filterRemote (value) {
                             this.jobType = value[0] || ''
                             localStorage.setItem('COMPJOBLIST:FILTER_JOB_TYPE', this.jobType)
-                            this.filterJob()
+                            this.jobSearch(this.keyword)
                         }
                     } : {
                         title: "用例类型",
@@ -148,7 +150,8 @@
                     {
                         title: "priority",
                         key: "priority",
-                        sortable: true
+                        sortable: true,
+                        width:105
                     },
                     {
                         title: "更新时间",
@@ -452,6 +455,7 @@
                 this.columns.splice(0, 0, {
                     title: "运行次数",
                     slot: "counter",
+                    width:93
                 })
             if (this.propMultiSelect)
                 this.columns.splice(0, 0, {
@@ -459,12 +463,14 @@
                     width: 60,
                     align: 'center'
                 })
-            if (this.propDeletable)
+            if (this.propDeletable){
                 this.columns.push({
                     align: "center",
                     title: "删除",
                     slot: "delete"
                 })
+                this.columns.splice(3, 5)
+            }
         },
         beforeCreate(){
             this.jobType = localStorage.getItem('COMPJOBLIST:FILTER_JOB_TYPE');
@@ -474,7 +480,7 @@
 
 <style scoped>
     /deep/.ivu-auto-complete.ivu-select-dropdown{
-        max-height: 500px
+        max-height: 350px
     }
 
 </style>
