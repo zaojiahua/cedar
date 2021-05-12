@@ -63,6 +63,8 @@ if(localStorage.firstUse === undefined){
     localStorage.setItem("firstUse", "no")
     localStorage.setItem("device-management:DEFAULT_DEVICE_COLUMN",
         "device_label,device_name,phone_model,status")
+    localStorage.setItem("subsidiary-device-list:DEFAULT_DEVICE_COLUMN",
+        "serial_number,custom_name,phone_model,status")
 }
 
 export default main

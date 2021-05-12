@@ -70,27 +70,82 @@
                     </Form>
                 </div>
             </Panel>
-            <Panel>僚机设备信息
+            <Panel v-show="device.status!=='offline'&&device.status!=='error'">僚机设备信息
                 <div slot="content">
                     <Form :model="device" :label-width="90">
-                        <div v-for="(item,index) in device.subsidiarydevice">
-                            <Divider>僚机{{ index+1 }}</Divider>
+                        <div v-for="(deviceItem,index) in device.subsidiary_device_info">
+                            <Divider>僚机{{ deviceItem.subsidiary_device_order }}</Divider>
                             <FormItem>
-                                <b slot="label">串号</b>
-                                <Input v-model="item.serial_number" style="width: 80%" :disabled="true" class="disabled-input"></Input>
-                                <Icon v-show="propSubsidiaryDevice&&(index+1===device.subsidiarydevice.length)" type="md-remove-circle"
-                                      @click="deleteSubsidiary(item.id,index)" style="margin-left: 5px" size="20" color="red"/>
+                                <b slot="label">自定义名称</b>
+                                <Input v-model="deviceItem.subsidiary_device_custom_name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
+                                <Icon v-show="propSubsidiaryDevice" type="md-remove-circle" style="cursor:pointer;margin-left: 5px" size="20" color="red"
+                                      @click="deleteSubsidiary(deviceItem.subsidiary_device_id,deviceItem.subsidiary_device_order)"/>
                             </FormItem>
-                            <FormItem>
-                                <b slot="label">IP</b>
-                                <Input v-model="item.ip_address" style="width: 80%" :disabled="true" class="disabled-input"></Input>
+                            <FormItem v-for="sim in deviceItem.SIMCard_info">
+                                <b slot="label">SIM卡{{ sim.order }}</b>
+                                <Input v-model="sim.operator + '_' + sim.phone_number" style="width: 80%" :disabled="true" class="disabled-input"></Input>
+                            </FormItem>
+                            <FormItem v-for="app in deviceItem.account_info">
+                                <b slot="label">账号</b>
+                                <Input v-model="app.app_name + ' / ' + app.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
                             </FormItem>
                         </div>
-                        <div v-if="device.subsidiarydevice.length<3">
-                            <Divider>僚机{{ device.subsidiarydevice.length+1 }}</Divider>
-                            <Button :disabled="!propSubsidiaryDevice" type="primary" style="width: 80%;margin-left: 10%;" @click="addSubsidiary(device.subsidiarydevice.length+1)">
+                        <div v-if="device.subsidiary_device_info.length<3">
+                            <Divider></Divider>
+                            <Button :disabled="!propSubsidiaryDevice" type="primary" style="width: 80%;margin-left: 10%;" @click="openOrderModal=true;subsidiaryNumber=null">
                                 <Icon type="ios-add-circle-outline" size="20" />
                             </Button>
+                        </div>
+                    </Form>
+                </div>
+            </Panel>
+            <Panel v-show="device.status!=='offline'&&device.status!=='error'">SIM卡信息
+                <div slot="content">
+                    <Form :model="device" :label-width="90">
+                        <div>
+                            <FormItem>
+                                <b slot="label">SIM卡1</b>
+                                <Row>
+                                    <Input v-model="device.sim1.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
+                                    <Icon v-show="propSubsidiaryDevice&& !device.sim1.id" type="ios-add-circle"
+                                          @click="showAddSimModal=true;simOrder=1" style="margin-left: 5px;cursor: pointer;" size="20" color="#1bbc9c"/>
+                                    <Icon v-show="propSubsidiaryDevice&&device.sim1.id" type="md-remove-circle"
+                                          @click="removeSimCard(device.sim1.id)" style="margin-left: 5px;cursor: pointer;" size="20" color="red"/>
+                                </Row>
+                            </FormItem>
+                            <FormItem>
+                                <b slot="label">SIM卡2</b>
+                                <Row>
+                                    <Input v-model="device.sim2.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
+                                    <Icon v-show="propSubsidiaryDevice&& !device.sim2.id" type="ios-add-circle"
+                                          @click="showAddSimModal=true;simOrder=2" style="margin-left: 5px;cursor: pointer;" size="20" color="#1bbc9c"/>
+                                    <Icon v-show="propSubsidiaryDevice&&device.sim2.id" type="md-remove-circle"
+                                          @click="removeSimCard(device.sim2.id)" style="margin-left: 5px;cursor: pointer;" size="20" color="red"/>
+                                </Row>
+                            </FormItem>
+                        </div>
+                    </Form>
+                </div>
+            </Panel>
+            <Panel v-show="device.status!=='offline'&&device.status!=='error'">账号信息
+                <div slot="content">
+                    <Form :model="device" :label-width="90">
+                        <div>
+                            <FormItem v-for="item in device.account">
+                                <b slot="label">账号</b>
+                                <Row>
+                                    <Input v-model="item.app_name+ ' / '+item.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
+                                    <Icon v-show="propSubsidiaryDevice" type="md-remove-circle" style="margin-left: 5px;cursor: pointer;" size="20" color="red"
+                                          @click="removeAppSource(item.id)"/>
+                                </Row>
+                            </FormItem>
+                            <FormItem v-show="propSubsidiaryDevice">
+                                <b slot="label">账号</b>
+                                <Row>
+                                    <Input style="width: 80%" :disabled="true" class="disabled-input"></Input>
+                                    <Icon type="ios-add-circle" style="margin-left: 5px;cursor: pointer;" size="20" color="#1bbc9c" @click="showAddAppModal=true"/>
+                                </Row>
+                            </FormItem>
                         </div>
                     </Form>
                 </div>
@@ -117,7 +172,7 @@
                 </p>
             </Panel>
         </Collapse>
-        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable" v-show="device.status!=='offline'">
+        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable" v-show="device.status!=='offline'&&device.status!=='error'">
             <Col>
                 <Button type="error" style="margin-right: 16px;" @click="deleteDevice">移除设备</Button>
                 <Button type="primary" @click="reconnectDevice">重新连接</Button>
@@ -131,9 +186,48 @@
             <Button type="error" @click="releaseDeviceSlot">解除设备关联</Button>
         </Row>
         <Spin size="large" fix v-if="spinShow"></Spin>
-        <Modal class="closeBtn" v-model="showAddModal"  :mask-closable="false" footer-hide>
-            <Comp-add-subsidiary-device ref="addDevice" :prop-device-id="device.id" :prop-index="addDeviceIndex" :prop-ip="device.cabinet.ip_address"
-                                        @onClose="showAddModal=false" @afterDeviceAddSuccess="onDeviceAddSuccess"></Comp-add-subsidiary-device>
+        <Modal v-model="openOrderModal" :closable="false" :mask-closable="false" footer-hide width="450">
+            <Card>
+                <p slot="title">请选择僚机位置</p>
+                <div style="margin-bottom: 50px">
+                    <span>僚机位置：</span>
+                    <RadioGroup v-model="subsidiaryNumber" >
+                        <Radio v-for="index in 3" :disabled="subsidiaryOrderList.includes(index)" border :label="index">僚机{{ index }}</Radio>
+                    </RadioGroup>
+                </div>
+                <Row style="text-align: right">
+                    <Button @click="openOrderModal=false" style="margin-right: 20px;">取消</Button>
+                    <Button type="primary" @click="onOpenSubsidiaryList">确定</Button>
+                </Row>
+            </Card>
+
+        </Modal>
+        <Modal v-model="showAddModal" :fullscreen="true" :transfer="false" :closable="false">
+            <comp-subsidiary-device-list ref="addDevice" :prop-show-cabinet-select="false"
+                                         :prop-phone-model="device.phone_model.phone_model_name"
+                                         :prop-cabinet-id="device.cabinet.id"
+                                         :prop-status="true"
+                                         @on-row-click="onSubsidiaryRowClick"
+            ></comp-subsidiary-device-list>
+            <div slot="footer">
+                <Button type="text" @click="showAddModal=false">取消</Button>
+                <Button type="primary" @click="addSubsidiary">确定</Button>
+            </div>
+        </Modal>
+        <!-- 资源信息 -->
+        <Modal v-model="showAddSimModal"  :fullscreen="true" :transfer="false" :closable="false">
+            <comp-sim-list v-if="showAddSimModal" :prop-status="true" :prop-action="false" @on-row-click="onSimRowClick"></comp-sim-list>
+            <div slot="footer">
+                <Button type="text" @click="showAddSimModal=false">取消</Button>
+                <Button type="primary" @click="addSimCard">确定</Button>
+            </div>
+        </Modal>
+        <Modal v-model="showAddAppModal"  :fullscreen="true" :transfer="false" :closable="false">
+            <comp-app-table v-if="showAddAppModal" :prop-status="true" :prop-action="false" @on-row-click="onAppRowClick"></comp-app-table>
+            <div slot="footer">
+                <Button type="text" @click="showAddAppModal=false">取消</Button>
+                <Button type="primary" @click="addAppSource">确定</Button>
+            </div>
         </Modal>
 
     </Card>
@@ -142,7 +236,9 @@
 <script>
     import utils from "../lib/utils"
     import config from "../lib/config"
-    import CompAddSubsidiaryDevice from "./CompAddSubsidiaryDevice";
+    import CompSubsidiaryDeviceList from "./CompSubsidiaryDeviceList";
+    import CompSimList from "./CompSimList"
+    import CompAppTable from "./CompAppTable"
 
     const serializer = {
             deviceSerializer: {
@@ -200,7 +296,35 @@
                         ip_address: "string",
                         order: "number"
                     }
-                ]
+                ],
+                sim1:{
+                    id:"number",
+                    name:"string"
+                },
+                sim2:{
+                    id:"number",
+                    name:"string"
+                },
+                account:[{
+                    id:"number",
+                    app_name: "string",
+                    name: "string",
+                }],
+                subsidiary_device_info:[{
+                    SIMCard_info:[{
+                        operator: "string",
+                        order: "number",
+                        phone_number: "string",
+                    }],
+                    account_info:[{
+                        app_name: "string",
+                        name: "q"
+                    }],
+                    subsidiary_device_custom_name: "string",
+                    subsidiary_device_id: "number",
+                    subsidiary_device_name: "string",
+                    subsidiary_device_order: "number",
+                }]
             },
             tempPortSerializer: {
                 tempports: [
@@ -239,7 +363,7 @@
         }
     export default {
         name: "CompDeviceDetail",
-        components:{ CompAddSubsidiaryDevice },
+        components:{  CompSubsidiaryDeviceList,CompSimList,CompAppTable },
         props:{
             editable:{
                 type: Boolean,
@@ -273,7 +397,16 @@
                 spinShow:false,
                 openSwitch:true,
                 showAddModal:false,
-                addDeviceIndex:null,
+                subsidiaryDeviceSelected:{},
+                subsidiaryNumber:null,
+                subsidiaryOrderList:[],
+                openOrderModal:false,
+                //source
+                showAddSimModal:false,
+                showAddAppModal:false,
+                app_id:null,
+                sim_id:null,
+                simOrder:null,
             }
         },
         methods: {
@@ -371,7 +504,10 @@
                             "powerport,powerport.id,powerport.port," +
                             "monitor_index,monitor_index.id,monitor_index.port," +
                             "auto_test," +
-                            "subsidiarydevice,subsidiarydevice.id,subsidiarydevice.serial_number,subsidiarydevice.ip_address,subsidiarydevice.order"+
+                            'simcard,simcard.operator,simcard.phone_number,simcard.order,simcard.id,' +
+                            'account,account.app_name,account.name,account.id,' +
+                            "subsidiary_device_info," +
+                            "subsidiarydevice,subsidiarydevice.id,subsidiarydevice.serial_number,subsidiarydevice.ip_address,subsidiarydevice.order,subsidiarydevice.custom_name"+
                             "&ordering=subsidiarydevice.order"
                         ),
                         ajax.get("api/v1/cedar/temp_port/?fields=" +
@@ -402,6 +538,21 @@
                     this.powerPorts = utils.validate(serializer.powerPortSerializer, powerPortResponse.data).powerports
                     this.monitorPorts = utils.validate(serializer.monitorPortSerializer, monitorPortResponse.data).monitorports
 
+                    this.subsidiaryOrderList=[]
+                    //获取已有僚机的位置列表
+                    this.device.subsidiarydevice.forEach(item=>{
+                        this.subsidiaryOrderList.push(item.order)
+                    })
+                    //拼凑sim卡信息
+                    this.device.simcard.forEach(item=>{
+                        if(item.order===1){
+                            this.device.sim1.id = item.id
+                            this.device.sim1.name = item.operator + "_" + item.phone_number
+                        }else if(item.order===2){
+                            this.device.sim2.id = item.id
+                            this.device.sim2.name = item.operator + "_" + item.phone_number
+                        }
+                    })
                     //tempPort Detail
                     let deviceTempPorts = []     //当前device下选中的port， 可选中,可取消状态
                     this.device.tempport.forEach(port=>{
@@ -447,8 +598,7 @@
                     this.spinShow = false;
                 })).catch(reason => {
                     this.spinShow = false;
-                    if(config.DEBUG)
-                        console.log(reason)
+                    if(config.DEBUG) console.log(reason)
                     let status = reason.response?reason.response.status : "Network error!"
                     this.$Message.error("读取数据时出错! "+status)
                 })
@@ -583,39 +733,173 @@
                 let remove = this
                 this.$Modal.confirm({
                     title: "警告！",
-                    content: "您确定要移除僚机"+ (index+1) +"吗？",
+                    content: "您确定要解绑僚机"+ (index) +"吗？",
                     onOk(){
                         remove.spinShow = true
-                        remove.$ajax.delete("api/v1/cedar/subsidiary_device/"+ id +"/")
+                        remove.$ajax.post("api/v1/cedar/unbind_subsidiary_device/",{ subsidiary_device_id: id })
                             .then(response=>{
-                                remove.device.subsidiarydevice.splice(index,1)
-                                remove.$Message.success("僚机移除成功")
+                                remove.onDeviceAddSuccess()
+                                remove.$Message.success("僚机解绑成功")
                                 remove.spinShow = false
                             }).catch(error=>{
                                 if(config.DEBUG) console.log(error)
-                                remove.$Message.error("僚机移除失败")
+                                remove.$Message.error({content:"僚机解绑失败"+ error.response.data.message,duration:6})
                                 remove.spinShow = false
                         })
                     }
                 })
             },
-            //添加僚机
-            addSubsidiary(index){
-                this.showAddModal = true
-                this.addDeviceIndex = index
-                this.$refs.addDevice.reset()
+            //进入僚机选取
+            onOpenSubsidiaryList(){
+                if(this.subsidiaryNumber===null){
+                    this.$Message.warning("请先选择僚机位置")
+                    return
+                }
+                this.openOrderModal= false
+                this.showAddModal=true
+                this.$refs.addDevice.refresh()
+                this.subsidiaryDeviceSelected = null
+            },
+            //选择要添加的僚机
+            onSubsidiaryRowClick(row,index){
+                this.subsidiaryDeviceSelected = row
+            },
+            //添加僚机到主机上
+            addSubsidiary(){
+                if(!this.subsidiaryDeviceSelected){
+                    this.$Message.warning("请选择要添加的僚机")
+                    return
+                }
+                if(this.subsidiaryNumber===null ){
+                    this.$Message.warning("请选择僚机位置")
+                    return
+                }
+                this.$ajax.post('api/v1/cedar/bind_subsidiary_device/',{
+                    device_id: this.device.id,
+                    subsidiary_device_id: this.subsidiaryDeviceSelected.id,
+                    order: this.subsidiaryNumber
+                }).then(response=>{
+                    this.onDeviceAddSuccess()
+                    this.showAddModal = false
+                    this.$Message.success("添加僚机成功")
+                }).catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                    this.$Message.error({content:"僚机添加失败！" + error.response.message,duration:6})
+                })
             },
             //僚机添加成功以后的操作(在device详情页展示出来)
             onDeviceAddSuccess(){
-                this.showAddModal = false
-                this.$ajax.get("/api/v1/cedar/subsidiary_device/?fields=id,order,serial_number,ip_address&devices="+this.device.id)
+                this.$ajax.get("api/v1/cedar/device/"+this.device.id+"/?fields=subsidiary_device_info,device_label,device_name")
                     .then(response=>{
-                        this.device.subsidiarydevice = response.data.subsidiarydevice
+                        this.subsidiaryOrderList=[]
+                        this.device.subsidiary_device_info = response.data.subsidiary_device_info
+                        this.device.subsidiary_device_info.forEach(item=>{
+                            this.subsidiaryOrderList.push(item.subsidiary_device_order)
+                        })
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
                         this.$Message.error("僚机信息获取失败")
                 })
-            }
+            },
+            //资源添加成功以后的刷新操作
+            onSourceAddSuccess(){
+                this.$ajax.get("api/v1/cedar/device/"+this.device.id+"/?fields=simcard,simcard.operator," +
+                        "simcard.phone_number,simcard.order,simcard.id," +
+                        "account,account.app_name,account.name,account.id")
+                    .then(response=>{
+                        response.data.simcard.forEach(item=>{
+                            if(item.order===1){
+                                this.device.sim1.id = item.id
+                                this.device.sim1.name = item.operator + "_" + item.phone_number
+                            }else if(item.order===2){
+                                this.device.sim2.id = item.id
+                                this.device.sim2.name = item.operator + "_" + item.phone_number
+                            }
+                        })
+                        this.device.account = response.data.account
+                    }).catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                    this.$Message.error("资源信息获取失败")
+                })
+            },
+            //资源部分  sim、app添加移除
+            //选择要添加的SIM卡
+            onSimRowClick(row){
+                this.sim_id = row.id
+            },
+            //选择要添加的APP账号
+            onAppRowClick(row){
+                this.app_id = row.id
+            },
+            //add SIM card/---/app
+            addSimCard(){
+                this.$ajax.patch("api/v1/cedar/simcard/" + this.sim_id + "/",{
+                    order: this.simOrder,
+                    status:"busy",
+                    device:this.device.id
+                }).then(response=>{
+                    this.$Message.success("SIM卡绑定成功")
+                    this.showAddSimModal = false
+                    this.onSourceAddSuccess()
+                }).catch(error=>{
+                    this.$Message.error({content:"SIM卡绑定失败"+ error.response.data.message,duration:6})
+                })
+            },
+            addAppSource(){
+                this.$ajax.post("api/v1/cedar/bind_account_source/",{
+                    id:this.app_id,
+                    device:this.device.id
+                }).then(response=>{
+                    this.$Message.success("app账号资源绑定成功")
+                    this.showAddAppModal = false
+                    this.onSourceAddSuccess()
+                }).catch(error=>{
+                    this.$Message.error({content:"app账号资源绑定失败;"+error.response.data.message,duration:7})
+                })
+            },
+            //remove sim  card/---/ app
+            removeSimCard(id){
+                let root = this;
+                this.$Modal.confirm({
+                    title: "警告！",
+                    content: "您确定要解绑该SIM卡吗？",
+                    onOk(){
+                        root.$ajax.patch("api/v1/cedar/simcard/" + id + "/",{
+                            order: null,
+                            status: "idle",
+                            history_relevance:root.device.device_name,
+                            device:null,
+                        }).then(response=>{
+                            root.$Message.success("SIM卡解绑成功")
+                            root.showAddSimModal = false
+                            root.refresh(root.device.id)
+                        }).catch(error=>{
+                            if(config.DEBUG) console.log(error)
+                            root.$Message.error({content:"SIM卡解绑失败"+ error.response.data.message,duration:6})
+                        })
+                    }
+                })
+            },
+            removeAppSource(id){
+                let root = this;
+                this.$Modal.confirm({
+                    title: "警告！",
+                    content: "您确定要解绑该账号资源吗？",
+                    onOk(){
+                        root.$ajax.post("api/v1/cedar/unbind_account_source/",{
+                            account_id: id,
+                            device:root.device.id
+                        }).then(response=>{
+                            root.$Message.success("账号资源解绑成功")
+                            root.showAddAppModal = false
+                            root.refresh(root.device.id)
+                        }).catch(error=>{
+                            if(config.DEBUG) console.log(error)
+                            root.$Message.error({content:"账号资源解绑失败"+ error.response.data.message,duration:6})
+                        })
+                    }
+                })
+            },
 
         },
     }
@@ -636,5 +920,8 @@
           margin-right: 5px;
           vertical-align: middle;
       }
+    .ivu-radio-border{
+        padding: 0 15px;
+    }
 
 </style>
