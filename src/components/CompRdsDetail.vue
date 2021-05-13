@@ -3,6 +3,7 @@
         <p>
             <Button type="error" @click="delRds()">删除</Button>
             <Button v-if="propPerfRds&&rdsInfo.job_duration!==null" type="primary" @click="goRdsPhotos" style="margin-left: 24px;">测试图集</Button>
+            <Button v-if="rdsInfo.job.job_second_type==='SmoothJob'&&(rdsInfo.result!=='无效')" type="primary" @click="goRdsFramePhotos" style="margin-left: 24px;">测试图集</Button>
         </p>
         <Form :label-width="120">
             <Divider>RDS信息</Divider>
@@ -22,9 +23,13 @@
                 <b slot="label">测试结果：</b>
                 <Input v-model="rdsInfo.result" class="disabled-input" disabled></input>
             </FormItem>
-            <FormItem v-if="propPerfRds">
+            <FormItem v-if="propPerfRds&&rdsInfo.job_duration!==null">
                 <b slot="label">结果时间：</b>
                 <Input v-model="rdsInfo.job_duration+'s'" class="disabled-input" disabled></input>
+            </FormItem>
+            <FormItem v-if="rdsInfo.job.job_second_type==='SmoothJob'">
+                <b slot="label">丢帧位置：</b>
+                <Input v-model="rdsInfo.lose_frame_point" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
                 <b slot="label">rdsDict：</b>
@@ -102,6 +107,14 @@
                 <Button type="primary" @click="savePoint">确定</Button>
             </div>
         </Modal>
+        <!-- 丢帧点 -->
+        <Modal v-model="showRdsFramePhotosModal" :fullscreen="true" :closable="false">
+            <comp-perf-frame-rds-photos v-if="showRdsFramePhotosModal" ref="rdsFramePhotos"></comp-perf-frame-rds-photos>
+            <div slot="footer">
+                <Button type="text" @click="showRdsFramePhotosModal=false">取消</Button>
+                <Button type="primary" @click="saveFramePoint">确定</Button>
+            </div>
+        </Modal>
     </Card>
 </template>
 
@@ -111,6 +124,7 @@
     import CompTemperatureHistogram from "./CompTemperatureHistogram";
     import CompViewLogFile from "./CompViewLogFile";
     import CompPerfRdsPhotos from "./CompPerfRdsPhotos";
+    import CompPerfFrameRdsPhotos from "./CompPerfRdsPhotosFrame";
 
     const rdsSerializer = {
         device: {
@@ -134,7 +148,8 @@
         job: {
             id: "number",
             job_label: "string",
-            job_name: "string"
+            job_name: "string",
+            job_second_type:"string"
         },
         job_assessment_value: "string",
         rdslog: [{
@@ -148,6 +163,7 @@
             file_name:"string"
         }],
         job_duration:"string",
+        lose_frame_point:"string",
         start_time: "string",
         tboard: {
             id: "number",
@@ -162,7 +178,7 @@
 
 
     export default {
-        components:{ CompTemperatureHistogram, CompViewLogFile, CompPerfRdsPhotos },
+        components:{ CompTemperatureHistogram, CompViewLogFile, CompPerfRdsPhotos, CompPerfFrameRdsPhotos },
         props:{
             propPerfRds:{
                 type:Boolean,
@@ -186,6 +202,7 @@
                 jobResFile:[],
                 isReferenceShow:false,
                 showRdsPhotosModal:false,
+                showRdsFramePhotosModal:false,
             }
         },
         methods:{
@@ -197,7 +214,7 @@
                 this.$ajax
                     .get("api/v1/cedar/rds/"+rdsId+"/?fields="+
                         "id,"+
-                        "job,job.job_name,job.id,job.job_label,"+
+                        "job,job.job_name,job.id,job.job_label,job.job_second_type,"+
                         "device,device.id,device.device_name,"+
                         "device.phone_model,device.phone_model.id,device.phone_model.phone_model_name,"+
                         "device.android_version,device.android_version.id,device.android_version.version,"+
@@ -207,13 +224,15 @@
                         "tboard,tboard.id,tboard.board_name,"+
                         "start_time,"+
                         "end_time,"+
-                        "job_duration," +
+                        "job_duration,lose_frame_point," +
                         "job_assessment_value," +
                         "rds_dict")
                     .then(response=>{
                         this.showSpin=false;
                         this.rdsInfo = utils.validate(rdsSerializer,response.data);
                         this.rdsInfo.rds_dict = JSON.stringify(this.rdsInfo.rds_dict);
+                        this.rdsInfo.lose_frame_point = this.rdsInfo.lose_frame_point ? this.rdsInfo.lose_frame_point + ".jpg" : "无";
+                        console.log(this.rdsInfo)
                         if(this.rdsInfo.rds_dict === "null") this.rdsInfo.rds_dict = "";
                         if(this.rdsInfo.job_assessment_value==="0"){
                             this.rdsInfo.result = "通过";
@@ -348,10 +367,18 @@
                 })
                 window.open(route.href, "_blank")
             },
+            //启动时间测试图集
             goRdsPhotos(){
                 this.showRdsPhotosModal = true
                 this.$nextTick(function () {
                     this.$refs.rdsPhotos.refresh(this.rdsInfo.id)
+                })
+            },
+            //丢帧点测试图集
+            goRdsFramePhotos(){
+                this.showRdsFramePhotosModal = true
+                this.$nextTick(function () {
+                    this.$refs.rdsFramePhotos.refresh(this.rdsInfo.id)
                 })
             },
             //    保存起始结束点
@@ -369,6 +396,25 @@
                     this.$refs.rdsPhotos.showLoading = false
                     this.showRdsPhotosModal = false
 
+                }).catch(error=>{
+                    if (config.DEBUG) console.log(error)
+                    this.$Message.error("数据保存失败")
+                })
+            },
+            //  保存丢帧点
+            saveFramePoint(){
+                let Obj = this.$refs.rdsFramePhotos.getPointMsg()
+                this.$refs.rdsFramePhotos.showLoading = true
+                console.log(Obj)
+                this.$ajax.patch("api/v1/cedar/rds/" + this.rdsInfo.id + "/",{
+                    lose_frame_point:Obj.lose_frame_point_index,
+                    job_assessment_value:Obj.lose_frame_point_index ? "1" : "0"
+                }).then(response=>{
+                    this.rdsInfo.result = Obj.lose_frame_point_index ? "未通过" : "通过"
+                    this.rdsInfo.lose_frame_point = Obj.lose_frame_point_index ? Obj.lose_frame_point_index+'.jpg' : "无"
+                    this.$Message.success("数据保存成功")
+                    this.$refs.rdsFramePhotos.showLoading = false
+                    this.showRdsFramePhotosModal = false
                 }).catch(error=>{
                     if (config.DEBUG) console.log(error)
                     this.$Message.error("数据保存失败")

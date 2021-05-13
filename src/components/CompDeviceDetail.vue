@@ -477,7 +477,7 @@
                 }).catch(error=>{
                     this.spinShow = false;
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error("设备移除失败！");
+                    this.$Message.error({content:"设备移除失败！"+ error.response.data.message,duration:6});
                 })
             },
             // Load data
