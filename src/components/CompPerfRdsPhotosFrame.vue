@@ -66,8 +66,8 @@
                     .then(response => {
                         this.showLoading = false
                         this.rdsPhotosData = utils.validate(rdsPhotosSerializer, response.data)
-                        this.selectedIndex = parseInt(this.rdsPhotosData.lose_frame_point)
-                        this.selectedUrl = this.rdsPhotosData.url_prefix + this.rdsPhotosData.lose_frame_point
+                        this.selectedIndex = this.rdsPhotosData.lose_frame_point ? parseInt(this.rdsPhotosData.lose_frame_point) : 1
+                        this.selectedUrl = this.rdsPhotosData.lose_frame_point ? this.rdsPhotosData.url_prefix + this.rdsPhotosData.lose_frame_point +".jpg" : this.rdsPhotosData.url_prefix + "1.jpg"
                         this.lose_frame_point_index = parseInt(this.rdsPhotosData.lose_frame_point)
                         this.$nextTick(function () {
                             document.querySelector("#p" + this.lose_frame_point_index).scrollIntoView(true);
