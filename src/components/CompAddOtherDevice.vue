@@ -23,7 +23,7 @@
           <Input v-model="addedDeviceName"></Input>
         </FormItem>
             <FormItem label="设备型号" prop="test_area">
-              <Select  v-model="phoneModel" placeholder="请选择或新建设备型号" filterable allow-create>
+              <Select  @on-change="checkPhoneModelInfo" placeholder="请选择或新建设备型号" filterable allow-create>
                 <Option v-for="item in phoneModelList" :value="item">{{ item}}</Option>
               </Select>
             </FormItem>
@@ -179,24 +179,8 @@ export default {
       }
       this.filterPhoneModelNameList = list
     },
-  },
-  watch: {
-    CabinetSelected: function (newId, oldId) {
-      this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected)
-          .then(response => {
-            this.deviceNum = response.data.devices.length
-          })
-          .catch(error => {
-            if (config.DEBUG) console.log(error);
-            this.$Message.error("获取设备数量出错")
-          });
-      for (let cabinet of this.cabinetList) {
-        if (cabinet.id === newId) {
-          this.CabinetIpSelected = cabinet.ip_address
-        }
-      }
-    },
-    async phoneModel(item) {
+    async checkPhoneModelInfo(item)
+    {
       if (this.phoneModelList.indexOf(item) !== -1) {
         await this.$ajax.get(
             `api/v1/cedar/device/?phone_model__phone_model_name=${item}&fields=device_width,device_height`
@@ -216,6 +200,24 @@ export default {
             this.deviceInfo.screen_size = (length / response.data.phonemodels[0].x_dpi).toFixed(2)
           }
         })
+      }else this.phoneModel = item
+    }
+
+  },
+  watch: {
+    CabinetSelected: function (newId, oldId) {
+      this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected)
+          .then(response => {
+            this.deviceNum = response.data.devices.length
+          })
+          .catch(error => {
+            if (config.DEBUG) console.log(error);
+            this.$Message.error("获取设备数量出错")
+          });
+      for (let cabinet of this.cabinetList) {
+        if (cabinet.id === newId) {
+          this.CabinetIpSelected = cabinet.ip_address
+        }
       }
     }
 
