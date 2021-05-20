@@ -66,15 +66,16 @@
                 </div>
             </Panel>
             <Panel>SIM卡信息
+                <Button type="text" @click.stop="unboundAllSources(1)" style="float: right;margin-right: 10%;margin-top: 4px">批量解绑</Button>
                 <div slot="content">
-                    <Form :model="device" :label-width="90">
+                    <Form :model="device" :label-width="90" class="remove-icon">
                         <FormItem>
                             <b slot="label">SIM卡1</b>
                             <Row>
                                 <Input v-model="device.sim1.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
                                 <Icon v-show="propSubsidiaryDevice&& !device.sim1.id" type="ios-add-circle" size="20" color="#1bbc9c"
                                       @click="showAddSimModal=true;simOrder=1" style="margin-left: 5px;cursor: pointer;"/>
-                                <Icon v-show="propSubsidiaryDevice&& device.sim1.id" type="md-remove-circle" size="20" color="red"
+                                <Icon v-show="propSubsidiaryDevice&& device.sim1.id" type="md-remove-circle" size="20" color="#666"
                                       @click="removeSimCard(device.sim1.id)" style="margin-left: 5px;cursor: pointer;"/>
                             </Row>
                         </FormItem>
@@ -84,7 +85,7 @@
                                 <Input v-model="device.sim2.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
                                 <Icon v-show="propSubsidiaryDevice&& !device.sim2.id" type="ios-add-circle" size="20" color="#1bbc9c"
                                       @click="showAddSimModal=true;simOrder=2" style="margin-left: 5px;cursor: pointer;"/>
-                                <Icon v-show="propSubsidiaryDevice&& device.sim2.id" type="md-remove-circle" size="20" color="red"
+                                <Icon v-show="propSubsidiaryDevice&& device.sim2.id" type="md-remove-circle" size="20" color="#666"
                                       @click="removeSimCard(device.sim2.id)" style="margin-left: 5px;cursor: pointer;"/>
                             </Row>
                         </FormItem>
@@ -92,13 +93,14 @@
                 </div>
             </Panel>
             <Panel>账号信息
-                <div slot="content">
+                <Button type="text" @click.stop="unboundAllSources(2)" style="float: right;margin-right: 10%;margin-top: 4px">批量解绑</Button>
+                <div slot="content" class="remove-icon">
                     <Form :model="device" :label-width="90">
                         <FormItem v-for="item in device.account">
                             <b slot="label">账号</b>
                             <Row>
                                 <Input v-model="item.app_name + ' / ' + item.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
-                                <Icon v-show="propSubsidiaryDevice" type="md-remove-circle" size="20" color="red"
+                                <Icon v-show="propSubsidiaryDevice" type="md-remove-circle" size="20" color="#666"
                                       @click="removeAppSource(item.id)" style="margin-left: 5px;cursor: pointer;"/>
                             </Row>
                         </FormItem>
@@ -174,6 +176,12 @@
                 id:"number",
                 name:"string"
             },
+            simcard:[{
+                id:"number",
+                operator: "string",
+                order: "number",
+                phone_number: "string",
+            }],
             status: "string",
             serial_number: "string",
             device: {
@@ -354,7 +362,6 @@
                             subsidiary_device:null,
                         }).then(response=>{
                             root.$Message.success("SIM卡解绑成功")
-                            root.showAddSimModal = false
                             root.refresh(root.device.id)
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
@@ -374,11 +381,48 @@
                             subsidiary_device:root.device.id
                         }).then(response=>{
                             root.$Message.success("账号资源解绑成功")
-                            root.showAddAppModal = false
                             root.refresh(root.device.id)
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
                             root.$Message.error({content:"账号资源解绑失败"+ error.response.data.message,duration:7})
+                        })
+                    }
+                })
+            },
+            //批量解绑SIM卡、账号
+            unboundAllSources(val){
+                let _this = this
+                //val=>1:批量解绑SIM卡  2：批量解绑账号
+                let type = ""
+                let content = ""
+                if(val===1){
+                    if(this.device.simcard.length === 0){
+                        this.$Message.success("没有可批量解绑的SIM卡资源")
+                        return
+                    }
+                    type = "SIMCard"
+                    content = "您确定要解绑所有SIM卡资源吗?"
+                }else if(val===2){
+                    if(this.device.account.length === 0){
+                        this.$Message.success("没有可批量解绑的账号资源")
+                        return
+                    }
+                    type = "Account"
+                    content = "您确定要解绑所有账号资源吗?"
+                }
+                this.$Modal.confirm({
+                    title: "警告！",
+                    content:content,
+                    onOk(){
+                        _this.$ajax.post("api/v1/cedar/block_unbind_resource",{
+                            subsidiary_device:_this.device.id,
+                            "resource_type":type
+                        }).then(response=>{
+                            this.$Message.success("资源解绑成功")
+                            _this.refresh(_this.device.id)
+                        }).catch(error=>{
+                            if(config.DEBUG) console.log(error)
+                            this.$Message.error({content:"资源解绑失败:" + error.response.data.message,duration:5})
                         })
                     }
                 })
@@ -400,6 +444,15 @@
         color: #ff0000;
         margin-right: 5px;
         vertical-align: middle;
+    }
+    .remove-icon .ivu-icon-md-remove-circle:hover{
+        color: red!important;
+    }
+    .ivu-collapse-item .ivu-btn-text:hover{
+        background: transparent;
+    }
+    .ivu-collapse-item .ivu-btn-text:focus {
+        box-shadow:none;
     }
 
 </style>

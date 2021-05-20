@@ -100,9 +100,10 @@
                 </div>
             </Panel>
             <Panel v-show="device.status!=='offline'&&device.status!=='error'">SIM卡信息
+                <Button type="text" @click.stop="unboundAllSources(1)" style="float: right;margin-right: 10%;margin-top: 4px">批量解绑</Button>
                 <div slot="content">
                     <Form :model="device" :label-width="90">
-                        <div>
+                        <div class="remove-icon">
                             <FormItem>
                                 <b slot="label">SIM卡1</b>
                                 <Row>
@@ -110,7 +111,7 @@
                                     <Icon v-show="propSubsidiaryDevice&& !device.sim1.id" type="ios-add-circle"
                                           @click="showAddSimModal=true;simOrder=1" style="margin-left: 5px;cursor: pointer;" size="20" color="#1bbc9c"/>
                                     <Icon v-show="propSubsidiaryDevice&&device.sim1.id" type="md-remove-circle"
-                                          @click="removeSimCard(device.sim1.id)" style="margin-left: 5px;cursor: pointer;" size="20" color="red"/>
+                                          @click="removeSimCard(device.sim1.id)" style="margin-left: 5px;cursor: pointer;" size="20" color="#666"/>
                                 </Row>
                             </FormItem>
                             <FormItem>
@@ -120,7 +121,7 @@
                                     <Icon v-show="propSubsidiaryDevice&& !device.sim2.id" type="ios-add-circle"
                                           @click="showAddSimModal=true;simOrder=2" style="margin-left: 5px;cursor: pointer;" size="20" color="#1bbc9c"/>
                                     <Icon v-show="propSubsidiaryDevice&&device.sim2.id" type="md-remove-circle"
-                                          @click="removeSimCard(device.sim2.id)" style="margin-left: 5px;cursor: pointer;" size="20" color="red"/>
+                                          @click="removeSimCard(device.sim2.id)" style="margin-left: 5px;cursor: pointer;" size="20" color="#666"/>
                                 </Row>
                             </FormItem>
                         </div>
@@ -128,14 +129,15 @@
                 </div>
             </Panel>
             <Panel v-show="device.status!=='offline'&&device.status!=='error'">账号信息
+                <Button type="text" @click.stop="unboundAllSources(2)" style="float: right;margin-right: 10%;margin-top: 4px">批量解绑</Button>
                 <div slot="content">
                     <Form :model="device" :label-width="90">
-                        <div>
+                        <div class="remove-icon">
                             <FormItem v-for="item in device.account">
                                 <b slot="label">账号</b>
                                 <Row>
                                     <Input v-model="item.app_name+ ' / '+item.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
-                                    <Icon v-show="propSubsidiaryDevice" type="md-remove-circle" style="margin-left: 5px;cursor: pointer;" size="20" color="red"
+                                    <Icon v-show="propSubsidiaryDevice" type="md-remove-circle" style="margin-left: 5px;cursor: pointer;" size="20" color="#666"
                                           @click="removeAppSource(item.id)"/>
                                 </Row>
                             </FormItem>
@@ -310,6 +312,12 @@
                     id:"number",
                     app_name: "string",
                     name: "string",
+                }],
+                simcard:[{
+                    id:"number",
+                    operator: "string",
+                    order: "number",
+                    phone_number: "string",
                 }],
                 subsidiary_device_info:[{
                     SIMCard_info:[{
@@ -821,7 +829,14 @@
                                 this.device.sim2.name = item.operator + "_" + item.phone_number
                             }
                         })
+                        if(response.data.simcard.length===0){
+                            this.device.sim1.id = null
+                            this.device.sim1.name = ""
+                            this.device.sim2.id = null
+                            this.device.sim2.name = ""
+                        }
                         this.device.account = response.data.account
+                        this.device.simcard = response.data.simcard
                     }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     this.$Message.error("资源信息获取失败")
@@ -876,7 +891,6 @@
                             device:null,
                         }).then(response=>{
                             root.$Message.success("SIM卡解绑成功")
-                            root.showAddSimModal = false
                             root.refresh(root.device.id)
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
@@ -896,7 +910,6 @@
                             device:root.device.id
                         }).then(response=>{
                             root.$Message.success("账号资源解绑成功")
-                            root.showAddAppModal = false
                             root.refresh(root.device.id)
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
@@ -908,6 +921,44 @@
             //机械臂配置机型信息（选点选区）
             onConfigClick(){
                 this.$emit('on-config-click',this.device)
+            },
+            //批量解绑SIM卡、账号
+            unboundAllSources(val){
+                let _this = this
+                //val=>1:批量解绑SIM卡  2：批量解绑账号
+                let type = ""
+                let content = ""
+                if(val===1){
+                    if(this.device.simcard.length === 0){
+                        this.$Message.success("没有可批量解绑的SIM卡资源")
+                        return
+                    }
+                    type = "SIMCard"
+                    content = "您确定要解绑所有SIM卡资源吗?"
+                }else if(val===2){
+                    if(this.device.account.length === 0){
+                        this.$Message.success("没有可批量解绑的账号资源")
+                        return
+                    }
+                    type = "Account"
+                    content = "您确定要解绑所有账号资源吗?"
+                }
+                this.$Modal.confirm({
+                    title: "警告！",
+                    content:content,
+                    onOk(){
+                        _this.$ajax.post("api/v1/cedar/block_unbind_resource",{
+                            device:_this.device.id,
+                            "resource_type":type
+                        }).then(response=>{
+                            this.$Message.success("资源解绑成功")
+                            _this.onSourceAddSuccess()
+                        }).catch(error=>{
+                            if(config.DEBUG) console.log(error)
+                            this.$Message.error({content:"资源解绑失败:" + error.response.data.message,duration:5})
+                        })
+                    }
+                })
             }
         },
     }
@@ -930,6 +981,15 @@
       }
     .ivu-radio-border{
         padding: 0 15px;
+    }
+    .remove-icon .ivu-icon-md-remove-circle:hover{
+         color: red!important;
+     }
+    .ivu-collapse-item .ivu-btn-text:hover{
+        background: transparent;
+    }
+    .ivu-collapse-item .ivu-btn-text:focus {
+        box-shadow:none;
     }
 
 </style>
