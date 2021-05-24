@@ -104,6 +104,7 @@ export default {
       });
     },
     addDevice() {
+      console.log(this.phoneModel);
       if (this.addedDeviceName === "" || this.phoneModel === "" || this.deviceInfo.screen_size === "" || this.deviceInfo.x_border === null || this.deviceInfo.device_width === null || this.deviceInfo.y_border === null || this.deviceInfo.device_height === null) {
         this.$Message.warning("带*项信息不能为空！")
         return
@@ -200,7 +201,8 @@ export default {
             this.deviceInfo.screen_size = (length / response.data.phonemodels[0].x_dpi).toFixed(2)
           }
         })
-      }else this.phoneModel = item
+      }
+      this.phoneModel = item
     }
 
   },
