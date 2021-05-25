@@ -67,7 +67,7 @@
                         sortable:true
                     },
                     {
-                        title: "用户名",
+                        title: "用户名/昵称",
                         key: "username",
                         sortable:true
                     },
