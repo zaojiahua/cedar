@@ -82,7 +82,7 @@
             }
         },
         created(){
-            let userId = localStorage.getItem('id');
+            let userId = sessionStorage.getItem('id');
             this.userInfo.id = userId;
             this.$ajax
                 .get("api/v1/cedar/reefuser/?fields=id,username,last_name," +

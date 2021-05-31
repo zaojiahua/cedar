@@ -15,7 +15,7 @@
         </Row>
         <Table ref="table" border :columns="columns" :data="data" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="counter">
-                <InputNumber :min="1" v-model="data[index].counter"></InputNumber>
+                <InputNumber style="width: 65px" :min="1" v-model="data[index].counter"></InputNumber>
             </template>
             <template slot-scope="{row, index}" slot="delete">
                 <Button shape="circle" type="default" icon="md-trash" @click="deleteRow(index)">
@@ -59,7 +59,7 @@
         props: {
             propAutoLoad: {
                 type: Boolean,
-                default: true
+                default: false
             },
             propShowCounter: {
                 type: Boolean,
@@ -455,6 +455,7 @@
                 this.columns.splice(0, 0, {
                     title: "运行次数",
                     slot: "counter",
+                    width:93
                 })
             if (this.propMultiSelect)
                 this.columns.splice(0, 0, {
@@ -479,7 +480,7 @@
 
 <style scoped>
     /deep/.ivu-auto-complete.ivu-select-dropdown{
-        max-height: 500px
+        max-height: 350px
     }
 
 </style>

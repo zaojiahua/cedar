@@ -42,11 +42,7 @@
         <Card v-for="(job,index) in data.job_data" :key="job.job_id" style="margin-top: 20px;">
             <Divider orientation="left">测试用例{{ index+1 }}：{{ job.job_num }}</Divider>
             <Table border :columns="jobColumn" :data="[].concat(job)"></Table>
-            <comp-perf-histogram style="margin-top: 20px;" ref="histogram" :job-id="job.job_id"
-                                 @on-chart-click="onChartClick" @after-load-data="afterLoadData"
-            ></comp-perf-histogram>
-
-            <comp-perf-rds-list ref="perfRdsList" v-if="timeRange" :prop-job-id="job.job_id" :prop-tboard-id="data.id" :prop-time-range="timeRange"></comp-perf-rds-list>
+            <comp-perf-chart-rds-group ref="chartRdsGroup" :job="job" :tboard-id="data.id"></comp-perf-chart-rds-group>
         </Card>
 
         <div></div>
@@ -64,14 +60,13 @@
 <script>
     import CompDeviceDetail from "../components/CompDeviceDetail";
     import CompJobDetail from "../components/CompJobDetail";
-    import CompPerfHistogram from "../components/CompPerfHistogram";
-    import CompPerfRdsList from "../components/CompPerfRdsList";
+    import CompPerfChartRdsGroup from "../components/CompPerfChartRdsGroup";
 
     import config from "../lib/config";
     import utils from "../lib/utils";
 
     export default {
-        components: { CompDeviceDetail, CompJobDetail, CompPerfHistogram, CompPerfRdsList },
+        components: { CompDeviceDetail, CompJobDetail, CompPerfChartRdsGroup, },
         data() {
             return {
                 data:{},
@@ -106,7 +101,6 @@
                         align: 'center'
                     },
                 ],
-                timeRange:""
             }
         },
         methods: {
@@ -117,9 +111,9 @@
                         this.data = response.data
                         // 刷新所有性能图表
                         this.$nextTick(function () {
-                            if (this.$refs.histogram) {
-                                this.$refs.histogram.forEach(histogram => {
-                                    histogram.refresh(this.data.id)
+                            if (this.$refs.chartRdsGroup) {
+                                this.$refs.chartRdsGroup.forEach(group => {
+                                    group.$refs.histogram.refresh(this.data.id)
                                 })
                             }
                         })
@@ -129,12 +123,6 @@
                         this.$Message.error("载入失败")
                         this.showLoading = false;
                 })
-            },
-            afterLoadData(item){
-                this.timeRange = item
-            },
-            onChartClick(item){
-                this.timeRange = item
             },
         }
     }

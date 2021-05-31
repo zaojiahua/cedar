@@ -42,6 +42,8 @@ Vue.use(iView)
 if(sessionStorage.token === undefined
     && localStorage.token !== undefined){
         sessionStorage.setItem('token', localStorage.getItem('token'))
+        sessionStorage.setItem('id', localStorage.getItem('id'))
+        sessionStorage.setItem('username', localStorage.getItem('username'))
 }
 
 
@@ -63,6 +65,8 @@ if(localStorage.firstUse === undefined){
     localStorage.setItem("firstUse", "no")
     localStorage.setItem("device-management:DEFAULT_DEVICE_COLUMN",
         "device_label,device_name,phone_model,status")
+    localStorage.setItem("subsidiary-device-list:DEFAULT_DEVICE_COLUMN",
+        "serial_number,custom_name,phone_model,status")
 }
 
 export default main

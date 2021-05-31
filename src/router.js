@@ -133,12 +133,6 @@ router.beforeEach((to, from, next) => {
         return
     }
 
-    if(localStorage.id === undefined){
-        alert('登录已失效，请重新登录！')
-        next({name: "login"})
-        return
-    }
-
     // Has logged in.
     next()
 })

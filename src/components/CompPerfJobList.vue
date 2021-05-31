@@ -209,5 +209,7 @@
 </script>
 
 <style scoped>
-
+    /deep/.ivu-auto-complete.ivu-select-dropdown{
+        max-height: 350px
+    }
 </style>

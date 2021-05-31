@@ -14,7 +14,7 @@
             <p style="text-align: center;margin-top: 15px;"><span style="cursor: pointer">{{ propPane.name }}</span></p>
         </div>
         <Drawer v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
-            <comp-device-detail ref="deviceDetail" :prop-device-slot="true" @after-remove-pane-slot="afterRemovePaneSlot"></comp-device-detail>
+            <comp-device-detail ref="deviceDetail" :prop-device-slot="true" :prop-show-config="true" @after-remove-pane-slot="afterRemovePaneSlot" @on-config-click="onConfigClick"></comp-device-detail>
         </Drawer>
 
     </div>
@@ -90,7 +90,10 @@
             afterRemovePaneSlot(){
                 this.showDeviceDetail = false
                 this.$emit("after-remove-pane-slot")
-            }
+            },
+            onConfigClick(device){
+                this.$emit('on-config-click',device,this.propIndex)
+            },
         },
         mounted(){
         }

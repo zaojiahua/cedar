@@ -26,8 +26,8 @@
                 <comp-filter @on-return-data="onDefaultJobList" ref="jobFilter" :prop-default-device="selectedDevice" @on-change="onJobFilterChange"></comp-filter>
             </Row>
             <Row type="flex">
-                <Col span="14">
-                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-subsidiary-device-count="subsidiaryDeviceCount" :prop-show-job-type="true"></comp-job-list>
+                <Col span="11">
+                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true"></comp-job-list>
                 </Col>
                 <Col span="2">
                     <Row type="flex" justify="center" style="margin-top: 48px;">
@@ -112,9 +112,7 @@
                 showJobDetail:false,
                 disableFlag:true,
                 deviceSelection:[],
-                jobSelection:[],
                 showLoading:false,
-                subsidiaryDeviceCount:null,
             }
         },
         methods: {
@@ -135,12 +133,9 @@
                 this.selectedDevice = this.$refs.deviceList.getData()
                 if(this.selectedDevice.length>0){
                     let ids = []
-                    let count = []
                     this.selectedDevice.forEach(item=>{
                         ids.push(item.id)
-                        count.push(item.subsidiary_device_count)
                     })
-                    this.subsidiaryDeviceCount = Math.max.apply(null,count)
                     this.$ajax.get("api/v1/cedar/checkout_device/?devices=" + ids.join(","))
                         .then(response=>{
                             if(response.data.length===0){
@@ -148,7 +143,6 @@
                                 this.$nextTick(function () {
                                     if(this.selectedJob.length>0 ) {
                                         this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
-                                        this.$refs.jobList.setSelection(this.jobSelection)
                                     }
                                 })
                             }else {
@@ -201,10 +195,10 @@
             selectJob(){
                 this.$refs.jobSelectedList.refreshWithData(_.cloneDeep(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection())))
                 this.selectedJob = this.$refs.jobSelectedList.getData()
+                this.$refs.jobList.clearSelection()
             },
             toPageFillInfo(){
                 this.selectedJob = this.$refs.jobSelectedList.getData()
-                this.jobSelection = this.$refs.jobList.getThisSelection();
                 if(this.selectedJob.length>0){
                     this.current = 2
                 }else {
@@ -243,7 +237,7 @@
                     })
                     this.showLoading = true;
                     utils._initDate();
-                    let userId = localStorage.getItem('id');
+                    let userId = sessionStorage.getItem('id');
                     this.$ajax
                         .post("api/v1/coral/insert_tboard/ ",{
                             device_label_list:deviceList,
@@ -295,7 +289,6 @@
                 this.current = 1
                 this.$nextTick(function () {
                     this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
-                    this.$refs.jobList.setSelection(this.jobSelection);
                 })
             },
             JobOnRowClick(row){

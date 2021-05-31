@@ -371,6 +371,7 @@
                         'paneslot.col,' +
                         'paneslot.paneview,' +
                         'paneslot.paneview.name,' +
+                        'cabinet,cabinet.ip_address,' +
                         'subsidiary_device_count' +
                         '&limit=' + this.pageSize +
                         "&offset=" + this.offset +
@@ -439,9 +440,13 @@
                 this.loading = false
 
                 /* 将之前已经选中的选项重新勾选 */
-                if(this.selection[this.currentPage] !== undefined){
+                let arr = []
+                this.selection.forEach(selected=>{
+                    arr = arr.concat(selected)
+                })
+                if(arr.length>0){
                     let ids = []
-                    this.selection[this.currentPage].forEach(item=>{
+                    arr.forEach(item=>{
                         ids.push(item.id)
                     })
                     for(let i=0; i<this.data.length; ++i){
@@ -504,6 +509,7 @@
             },
             afterDeviceAddSuccess(device){
                 this.showAddDevice = false
+                this.showAddOtherDevice = false
                 this.refresh()
             },
             onPageChange(page){

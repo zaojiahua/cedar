@@ -62,10 +62,12 @@
                     })
                     .then(response => {
                         sessionStorage.setItem("token", response.data["token"])
-                        localStorage.setItem("id", response.data["id"])
-                        localStorage.setItem("username", response.data["username"])
+                        sessionStorage.setItem("id", response.data["id"])
+                        sessionStorage.setItem("username", response.data["username"])
                         if(this.keepLogin){
                             localStorage.setItem("token", response.data["token"])
+                            localStorage.setItem("id", response.data["id"])
+                            localStorage.setItem("username", response.data["username"])
                         }
                         this.$router.push({name: "home"})
                         this.$Message.success('成功登入!');
@@ -94,6 +96,9 @@
         mounted() {
             localStorage.removeItem("token")
             localStorage.removeItem("id")
+            localStorage.removeItem("username")
+            sessionStorage.removeItem("id")
+            sessionStorage.removeItem("username")
             sessionStorage.removeItem("permissions")
             sessionStorage.removeItem("token")
             particlesJS.load("particles-js", "particles.json")

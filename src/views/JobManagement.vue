@@ -41,7 +41,7 @@
 
         <Divider></Divider>
         <Row>
-            <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true" @get-job-count="getJobNumbers"></comp-job-list>
+            <comp-job-list ref="jobList" :prop-multi-select="true" :prop-auto-load="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true" @get-job-count="getJobNumbers"></comp-job-list>
         </Row>
         <Drawer v-model="showDetail" :draggable="true" :closable="false" width="50">
             <comp-job-detail ref="jobDetail" :prop-del-job="true" @closeDrawer="closeDrawer" @delJobOne="delJobOne"></comp-job-detail>
@@ -83,7 +83,7 @@
                 rowIndex:null,
                 uploadUrl:"",
                 jobNumbers:0,
-                userMsg:{ user_id: parseInt(localStorage.getItem("id"))},
+                userMsg:{ user_id: parseInt(sessionStorage.getItem("id"))},
                 roles:"",
                 userId:null,
                 showUserModal:false,
@@ -196,7 +196,7 @@
             exportCase(){
                 let root = this;
                 let jobList = this.getJobList();
-                let userId = localStorage.getItem('id')
+                let userId = sessionStorage.getItem('id')
                 if(jobList.length===0){
                     this.$Modal.confirm({
                         title: "提示",
@@ -281,7 +281,7 @@
         created(){
             this.uploadUrl =this.baseUrl + "/api/v1/cedar/job_import/";
 
-            this.userId = parseInt(localStorage.getItem('id'));
+            this.userId = parseInt(sessionStorage.getItem('id'));
             this.$ajax
                 .get("api/v1/cedar/reefuser/?fields=id,username," +
                     "groups,groups.id,groups.name" +

@@ -2,15 +2,18 @@
     <div>
         <Tabs type="card">
             <TabPane v-for="column in filterColumn" :label="column.title" :key="column.key">
-                <CheckboxGroup v-model="checked" @on-change="onChange">
-                    <Row type="flex">
-                        <Col span="4" v-for="(item, index) in filterData[column.key]" :key="index">
-                            <Checkbox :label="column.key+'_:_'+index+'_:_'+item[column.item_key]">
-                                {{item[column.item_key]}}
-                            </Checkbox>
-                        </Col>
-                    </Row>
-                </CheckboxGroup>
+                <div style="max-height: 130px;overflow: auto">
+                    <CheckboxGroup v-model="checked" @on-change="onChange">
+                        <Row type="flex">
+                            <Col span="4" v-for="(item, index) in filterData[column.key]" :key="index">
+                                <Checkbox :label="column.key+'_:_'+index+'_:_'+item[column.item_key]">
+                                    {{item[column.item_key]}}
+                                </Checkbox>
+                            </Col>
+                        </Row>
+                    </CheckboxGroup>
+                </div>
+
             </TabPane>
         </Tabs>
         <Row style="margin-top: 16px; border-bottom: 1px solid #dcdee2;">

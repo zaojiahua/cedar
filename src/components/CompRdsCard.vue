@@ -8,7 +8,7 @@
                 <Spin v-show="loadingData" size="large" style="position: absolute; width: 100%; height: inherit; left: 50%;"></Spin>
                 <div :class="loadingData ? 'opacity-row' : ''">
                     <div class="rds-box"
-                         v-for="(item,index) in rdsData" :key="item.id" :class="getRdsColorClass(item.job_assessment_value)" @mouseenter="onRdsMouseEnter(item)"
+                         v-for="(item,index) in rdsData" :key="item.id" :class="[getRdsColorClass(item.job_assessment_value),{'select':index===rdsIndex&&cardIndex===Index}]" @mouseenter="onRdsMouseEnter(item)"
                          @mouseleave="onRdsMouseLeave" @click="onRdsBoxClick(item,Index,index)"></div>
                 </div>
             </Row>
@@ -326,6 +326,9 @@
     }
 
     .rds-box:hover {
+        border: #000000 1px solid;
+    }
+    .select{
         border: #000000 1px solid;
     }
 
