@@ -182,7 +182,9 @@
                         this.$emit('afterDeviceAddSuccess', response.data)
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error({content:"僚机添加失败"+error.response.data.message,duration:6})
+                        this.spinShow = false;
+                        this.$Loading.error()
+                        this.$Message.error({content:"僚机添加失败！"+error.response.data.message,duration:6})
                     })
                 }
             },
