@@ -242,7 +242,8 @@
                         "-" +
                         (this.filterDateRange[1].getMonth() + 1) +
                         "-" +
-                        this.filterDateRange[1].getDate()
+                        this.filterDateRange[1].getDate() +
+                        " 23:59:59"
                 }
                 let userId = sessionStorage.getItem('id');
                 this.showLoading = true;

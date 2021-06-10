@@ -470,8 +470,6 @@
                         align: 'center'
                     })
                 }
-                console.log("deviceColumnChecked")
-                console.log(this.deviceColumnChecked)
                 this.deviceColumnChecked.forEach(
                     col => data.push(this.deviceColumn[col])
                 )
@@ -479,10 +477,6 @@
             },
             onTableColumnChange() {
                 this.tableDeviceColumn = this.getDeviceColumn()
-
-                console.log("不同的：")
-                console.log(this.deviceColumnChecked)
-                console.log(this.deviceColumnChecked.join(","))
                 localStorage.setItem("device-management:DEFAULT_DEVICE_COLUMN",
                     this.deviceColumnChecked.join(",")
                 )
