@@ -470,6 +470,8 @@
                         align: 'center'
                     })
                 }
+                console.log("deviceColumnChecked")
+                console.log(this.deviceColumnChecked)
                 this.deviceColumnChecked.forEach(
                     col => data.push(this.deviceColumn[col])
                 )
@@ -477,6 +479,10 @@
             },
             onTableColumnChange() {
                 this.tableDeviceColumn = this.getDeviceColumn()
+
+                console.log("不同的：")
+                console.log(this.deviceColumnChecked)
+                console.log(this.deviceColumnChecked.join(","))
                 localStorage.setItem("device-management:DEFAULT_DEVICE_COLUMN",
                     this.deviceColumnChecked.join(",")
                 )
@@ -583,6 +589,9 @@
                 })
         },
         mounted() {
+            if(!localStorage.getItem("device-management:DEFAULT_DEVICE_COLUMN")||localStorage.getItem("device-management:DEFAULT_DEVICE_COLUMN")==="")
+                localStorage.setItem("device-management:DEFAULT_DEVICE_COLUMN",
+                    "device_label,device_name,phone_model,status")
             this.deviceColumnChecked = localStorage.getItem("device-management:DEFAULT_DEVICE_COLUMN").split(",")
             if (this.propDeviceSlotError) {
                 this.$delete(this.deviceColumn, "status")

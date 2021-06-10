@@ -14,7 +14,7 @@
             <FormItem label="密码："  prop="password">
                 <Input v-model="selectMsg.password" placeholder="请输入"></Input>
             </FormItem>
-            <FormItem label="用户名："  prop="username">
+            <FormItem label="用户名/昵称："  prop="username">
                 <Input v-model="selectMsg.username" placeholder="请输入"></Input>
             </FormItem>
             <FormItem label="绑定手机号：">

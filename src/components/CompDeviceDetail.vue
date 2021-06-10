@@ -43,7 +43,7 @@
                 <Input v-model="device.device_name" :disabled="!editable"></Input>
             </FormItem>
         </Form>
-        <Collapse :value="[0,1,2,3,4,5]">
+        <Collapse :value="[0,1,2,3,4,5,6,7,8]">
             <Panel>机型信息
                 <div  slot="content">
                     <Form :model="device" :label-width="90">

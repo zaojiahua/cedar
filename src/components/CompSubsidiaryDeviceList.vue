@@ -341,6 +341,9 @@
                 })
         },
         mounted() {
+            if(!localStorage.getItem("subsidiary-device-list:DEFAULT_DEVICE_COLUMN")||localStorage.getItem("subsidiary-device-list:DEFAULT_DEVICE_COLUMN")==="")
+                localStorage.setItem("subsidiary-device-list:DEFAULT_DEVICE_COLUMN",
+                    "serial_number,custom_name,phone_model,status")
             this.deviceColumnChecked = localStorage.getItem("subsidiary-device-list:DEFAULT_DEVICE_COLUMN").split(",")
             this.onTableColumnChange()
             this.getCabinetList()
