@@ -11,7 +11,7 @@
             <DatePicker v-model="filterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
             <p style="color: rgb(194, 194, 194);margin-top: 10px;margin-bottom: 30px;">默认选择最近七天的数据 </p>
 
-            <comp-tboard-list ref="tboardList" :prop-show-header="false" :prop-multi-select="true" :prop-is-perf="true" :prop-filter-date-range="filterDateRange"
+            <comp-tboard-list ref="tboardList" :prop-show-header="false" :prop-multi-select="true" :prop-poll="true" :prop-is-perf="true" :prop-filter-date-range="filterDateRange"
                               @on-row-click="onTboardRowClick">
             </comp-tboard-list>
 

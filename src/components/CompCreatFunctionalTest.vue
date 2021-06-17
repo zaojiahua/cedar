@@ -26,7 +26,7 @@
                 <comp-filter @on-return-data="onDefaultJobList" ref="jobFilter" :prop-default-device="selectedDevice" @on-change="onJobFilterChange"></comp-filter>
             </Row>
             <Row type="flex">
-                <Col span="11">
+                <Col span="14">
                     <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true"></comp-job-list>
                 </Col>
                 <Col span="2">
