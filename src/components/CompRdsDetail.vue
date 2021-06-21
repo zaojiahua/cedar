@@ -84,11 +84,11 @@
             <br>
             <img style="margin: 5px; cursor: pointer;" v-for="(img,index) in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name @click="viewOriginalImg(img.id,index)">
         </div>
-        <div style="color: #515a6e;padding-left: 48px;font-size: 12px;margin-top: 16px" v-show="isReferenceShow">
-            <b style="cursor: default">查看查参考图片：</b><b style="cursor: default">共 {{jobResFile.length}} 张</b>
-            <br>
-            <img style="margin: 5px; cursor: pointer;max-width: 200px;border: 1px solid #ccc" v-for="(img,index) in jobResFile" :key="index" :src=baseUrl+img.file :alt=img.name>
-        </div>
+        <!--<div style="color: #515a6e;padding-left: 48px;font-size: 12px;margin-top: 16px" v-show="isReferenceShow">-->
+            <!--<b style="cursor: default">查看查参考图片：</b><b style="cursor: default">共 {{jobResFile.length}} 张</b>-->
+            <!--<br>-->
+            <!--<img style="margin: 5px; cursor: pointer;max-width: 200px;border: 1px solid #ccc" v-for="(img,index) in jobResFile" :key="index" :src=baseUrl+img.file :alt=img.name>-->
+        <!--</div>-->
         <Spin size="large" fix v-if="showSpin"></Spin>
         <Modal v-model="showImgModal" :fullscreen="true" footer-hide style="text-align: center">
             <Icon type="ios-arrow-dropleft-circle" size="60"  style="position: fixed;top: 45%;left: 5%;cursor: pointer;opacity: 0.4" @click="prevBtn"/>
@@ -267,20 +267,20 @@
                         }
                         this.$Message.error(errorMsg)
                     })
-                this.$ajax.get("api/v1/cedar/job_res_file/?type=png&job_id="+jobId)
-                    .then(response=>{
-                        this.jobResFile = response.data.job_res_files
-                    })
-                    .catch(error=>{
-                        if (config.DEBUG) console.log(error)
-                        let errorMsg = "";
-                        if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
-                        } else {
-                            errorMsg = "数据读取失败！"
-                        }
-                        this.$Message.error(errorMsg)
-                    })
+                // this.$ajax.get("api/v1/cedar/job_res_file/?type=png&job_id="+jobId)
+                //     .then(response=>{
+                //         this.jobResFile = response.data.job_res_files
+                //     })
+                //     .catch(error=>{
+                //         if (config.DEBUG) console.log(error)
+                //         let errorMsg = "";
+                //         if (error.response.status >= 500) {
+                //             errorMsg = "服务器错误！"
+                //         } else {
+                //             errorMsg = "数据读取失败！"
+                //         }
+                //         this.$Message.error(errorMsg)
+                //     })
             },
             delRds(){
                 let root = this;
