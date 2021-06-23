@@ -621,5 +621,7 @@
 </script>
 
 <style scoped>
-
+    /deep/.ivu-page-simple .ivu-page-simple-pager input{
+        width: 45px;
+    }
 </style>
