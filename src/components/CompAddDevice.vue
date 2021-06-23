@@ -295,4 +295,7 @@
         margin-right: 5px;
         vertical-align: middle;
     }
+    /deep/.ivu-select-group-title{
+        color: #c5c8ce;
+    }
 </style>
