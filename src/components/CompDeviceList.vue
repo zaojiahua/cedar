@@ -156,6 +156,9 @@
                 type: Boolean,
                 default: false
             },
+            propCabinetType:{
+                type:String,
+            }
         },
         data() {
             return {
@@ -340,6 +343,10 @@
                 if(this.phoneModelFilterList.length>0){
                     phoneModelCondition = "&phone_model__phone_model_name__in="+"ReefList["+this.phoneModelFilterList.join("{%,%}")+"]"
                 }
+                let cabinetTypeCondition = ""
+                if(this.propCabinetType){
+                    cabinetTypeCondition = "&cabinet__type=" + this.propCabinetType
+                }
                 let tboardCondition = ""
                 if(this.tboard.length>0)
                     tboardCondition = "&tboard=" + this.tboard[0].id;
@@ -371,7 +378,7 @@
                         'paneslot.col,' +
                         'paneslot.paneview,' +
                         'paneslot.paneview.name,' +
-                        'cabinet,cabinet.ip_address,' +
+                        'cabinet,cabinet.ip_address,cabinet.type,' +
                         'subsidiary_device_count' +
                         '&limit=' + this.pageSize +
                         "&offset=" + this.offset +
@@ -383,6 +390,7 @@
                         cabinetCondition +
                         paneviewTypeCondition +
                         deviceNumCondition +
+                        cabinetTypeCondition +
                         "&ordering=id"
                     )
                     .then(response => {
@@ -563,6 +571,11 @@
                 },
                 immediate: true
             },
+            propCabinetType:{
+                handler: function(val){
+                    this.refresh()
+                },
+            }
         },
         created() {
             this.pageSize = utils.getPageSize();
