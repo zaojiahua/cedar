@@ -106,21 +106,31 @@
                 let conditions = []
                 Object.keys(selected).forEach(key=>{
                     let condition = []  // store id data like [1,2,3]
-                    selected[key].forEach(item=>{
-                        condition.push(item.id)
-                    })
+                    if(key==="type"){    //key = cabinet_type时，condition=>name
+                        selected[key].forEach(item=>{
+                            condition.push(item.type)
+                        })
+                    }else {
+                        selected[key].forEach(item=>{
+                            condition.push(item.id)
+                        })
+                    }
 
                     // 不统一的命名额外处理
                     if(key==="job_test_area") key = "test_area"
                     else if(key==="phone_model") key = "phone_models"
                     else if(key==="reefuser") key = "author"
 
-
                     condition.forEach(item=>{
                         item = key+"__id="+item
                     })
 
-                    let conditionStr = key+"__id__in="+"ReefList["+condition.join("{%,%}")+"]"
+                    let conditionStr = ""
+                    if(key==="type"){
+                        conditionStr = "cabinet_type__in=ReefList["+condition.join("{%,%}")+"]"
+                    }else {
+                        conditionStr = key+"__id__in="+"ReefList["+condition.join("{%,%}")+"]"
+                    }
                     conditions.push(conditionStr)
                 })
 

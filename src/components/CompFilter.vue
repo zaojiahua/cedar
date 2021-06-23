@@ -318,4 +318,7 @@
     p:hover {
         color: @primary-color;
     }
+    /deep/ .ivu-tag .ivu-icon-ios-close{
+        color: #666!important;
+    }
 </style>
