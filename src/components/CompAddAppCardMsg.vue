@@ -4,7 +4,7 @@
         <Form :model="selectMsg" :label-width="130" :rules="ruleValidate" ref="formValidate">
             <FormItem label="App：" prop="app_name_id">
                 <!--<Input v-model="selectMsg.app_name" type="text" ></Input>-->
-                <Select v-model="selectMsg.app_name_id" style="width:100%">
+                <Select v-model="selectMsg.app_name_id" :filterable="true" style="width:100%">
                     <Option v-for="item in appNameList" :value="item.id" :key="item.id">{{ item.name }}</Option>
                 </Select>
             </FormItem>
