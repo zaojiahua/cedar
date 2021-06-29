@@ -271,43 +271,71 @@
                             owner_label:userId
                         })
                         .then(response=>{
-                            let str = ""
-                            if(response.data.fail_cabinet){
-                                response.data.fail_cabinet.forEach(item=>{
-                                    str = str + item+"服务器启动任务失败；"
-                                })
-                            }
-                            let root = this
-                            if(response.data.status==="fail"){
-                                this.$Modal.error({
-                                    title:"启动失败！",
-                                    content:str
-                                })
-                            }else if(response.data.status==="warning"){
-                                this.$Modal.warning({
-                                    title:"部分服务器启动失败！",
-                                    content:str,
-                                    onOk(){
-                                        root.$router.push({
-                                            name: "tboard-management",
-                                        })
-                                    }
-                                })
-                            }else if(response.data.status==="success"){
-                                this.$Message.success("任务启动成功！")
-                                this.$router.push({
-                                    name: "tboard-management",
-                                })
-                            }
-                            this.showLoading = false;
+                            this._responseHandle(response)
                         })
                         .catch(error=>{
                             if(config.DEBUG) console.log(error)
-                            this.$Message.error("任务启动失败")
                             this.showLoading = false;
+                            if(error.response.data.custom_code==="0"){
+                                let _this = this
+                                this.$Modal.confirm({
+                                    title:"任务启动失败",
+                                    content:"用例 "+error.response.data.data.data.error_job_name_list.join(",") +" 缺少资源文件，" +
+                                        "请尝试重新保存用例，是否继续运行其他用例？",
+                                    okText: '继续',
+                                    onOk(){
+                                        this.$ajax
+                                            .post("api/v1/coral/insert_tboard/ ",{
+                                                device_label_list:deviceList,
+                                                job_label_list:error.response.data.data.data.correct_job_label_list,
+                                                repeat_time:_this.tboardRepeatTime,
+                                                board_name:_this.tboardName,
+                                                owner_label:userId
+                                            })
+                                            .then(response=>{
+                                                _this._responseHandle(response)
+                                            }) .catch(error=>{
+                                            if(config.DEBUG) console.log(error)
+                                            this.$Message.error({content:"任务启动失败",duration:3})
+                                        })
+                                    }
+                                })
+                                return
+                            }
+                            this.$Message.error({content:"任务启动失败",duration:3})
                         })
                 }
-
+            },
+            _responseHandle(response){
+                let str = ""
+                if(response.data.fail_cabinet){
+                    response.data.fail_cabinet.forEach(item=>{
+                        str = str + item+"服务器启动任务失败；"
+                    })
+                }
+                let root = this
+                if(response.data.status==="fail"){
+                    this.$Modal.error({
+                        title:"启动失败！",
+                        content:str
+                    })
+                }else if(response.data.status==="warning"){
+                    this.$Modal.warning({
+                        title:"部分服务器启动失败！",
+                        content:str,
+                        onOk(){
+                            root.$router.push({
+                                name: "tboard-management",
+                            })
+                        }
+                    })
+                }else if(response.data.status==="success"){
+                    this.$Message.success("任务启动成功！")
+                    this.$router.push({
+                        name: "tboard-management",
+                    })
+                }
+                this.showLoading = false;
             },
             backToPageChooseJob(){
                 this.current = 1
