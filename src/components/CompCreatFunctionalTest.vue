@@ -280,7 +280,7 @@
                                 let _this = this
                                 this.$Modal.confirm({
                                     title:"任务启动失败",
-                                    content:"用例 "+error.response.data.data.data.error_job_name_list.join(",") +" 缺少资源文件，" +
+                                    content:"【用例】 "+error.response.data.data.data.error_job_name_list.join(",") +" 缺少资源文件，" +
                                         "请尝试重新保存用例，是否继续运行其他用例？",
                                     okText: '继续',
                                     onOk(){
