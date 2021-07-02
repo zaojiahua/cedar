@@ -19,7 +19,7 @@
             <comp-perf-histogram style="margin-top: 20px;" ref="histogram" :job-id="jobId" :propPhoneModels="phoneModel" :prop-canvas-id="2"
                                  @on-chart-click="onChartClick" @after-load-data="afterLoadData"
             ></comp-perf-histogram>
-            <comp-perf-rds-list ref="perfRdsList" v-if="timeRange" :prop-job-id="jobId" :prop-tboard-id-list="propTboardIds" :prop-time-range="timeRange"></comp-perf-rds-list>
+            <comp-perf-rds-list ref="perfRdsList" v-if="timeRange" :is-min="isMin" :prop-job-id="jobId" :prop-tboard-id-list="propTboardIds" :prop-time-range="timeRange"></comp-perf-rds-list>
         </Card>
     </div>
 </template>
@@ -85,6 +85,8 @@
                         align: 'center'
                     },
                 ],
+                isMin:false,
+                minTime:null,
                 timeRange:"",
                 phoneModel:[]
             }
@@ -100,9 +102,15 @@
             },
             afterLoadData(item){
                 this.timeRange = item
+                if(this.timeRange){
+                    this.minTime = parseFloat(this.timeRange.split("-")[0])
+                    this.isMin = true
+                }
             },
             onChartClick(item){
                 this.timeRange = item
+                let min = parseFloat(this.timeRange.split("-")[0])
+                this.isMin = this.minTime===min
             },
             //table
             getPerfTableData(tboardId){

@@ -12,7 +12,7 @@
             <Button v-show="!notHistory" type="error" style="float: right;" @click="onDelete">批量删除</Button>
         </Row>
         <Row style="margin-top: 16px;" v-show="!propIsPerf">
-            <DatePicker v-model="filterDateRange" type="daterange" placeholder="选择创建日期范围" :transfer="true"
+            <DatePicker v-model="filterDateRange" style="width: 220px;" type="daterange" placeholder="选择创建日期范围" :transfer="true"
                         @on-change="onConditionChange"></DatePicker>
         </Row>
         <Row>

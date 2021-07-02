@@ -6,7 +6,7 @@
                              @on-chart-click="onChartClick" @after-load-data="afterLoadData"
         ></comp-perf-histogram>
 
-        <comp-perf-rds-list ref="perfRdsList" v-if="timeRange" :prop-job-id="propJobId" :prop-time-range="timeRange"></comp-perf-rds-list>
+        <comp-perf-rds-list ref="perfRdsList" v-if="timeRange" :is-min="isMin" :prop-tboard-id-list="propTboardIdList" :prop-job-id="propJobId" :prop-time-range="timeRange"></comp-perf-rds-list>
     </div>
 
 </template>
@@ -64,6 +64,8 @@
                 ],
                 tableData:[],
                 timeRange:"",
+                isMin:false,
+                minTime:null,
             }
         },
         methods:{
@@ -89,9 +91,15 @@
             //图表的点击操作  echarts click
             afterLoadData(item){
                 this.timeRange = item
+                if(this.timeRange){
+                    this.minTime = parseFloat(this.timeRange.split("-")[0])
+                    this.isMin = true
+                }
             },
             onChartClick(item){
                 this.timeRange = item
+                let min = parseFloat(this.timeRange.split("-")[0])
+                this.isMin = this.minTime===min
             },
         },
         mounted(){
