@@ -660,8 +660,10 @@
                                 auto_test :this.openSwitch
                             }
                         ),
-                        this.$ajax.patch("/api/v1/cedar/phone_model/"+ this.device.phone_model.id +"/",
+                        this.$ajax.post("/api/v1/cedar/update_phone_model/",
                             {
+                                phone_model_id:this.device.phone_model.id,
+                                phone_model_name:this.device.phone_model.phone_model_name,
                                 x_border: this.device.phone_model.x_border,
                                 y_border: this.device.phone_model.y_border,
                                 x_dpi: this.device.phone_model.x_dpi,
