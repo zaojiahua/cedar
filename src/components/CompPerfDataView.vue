@@ -8,7 +8,7 @@
         </Modal>
 
         <div v-if="step===1">
-            <DatePicker v-model="filterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
+            <DatePicker v-model="filterDateRange" style="width: 220px;" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
             <p style="color: rgb(194, 194, 194);margin-top: 10px;margin-bottom: 30px;">默认选择最近七天的数据 </p>
 
             <comp-tboard-list ref="tboardList" :prop-show-header="false" :prop-multi-select="true" :prop-poll="true" :prop-is-perf="true" :prop-filter-date-range="filterDateRange"
@@ -37,7 +37,7 @@
                             <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">
                                 {{job.job_name}}
                             </Button>
-                            <DatePicker style="margin-left: 20px;" class="disabled-i" disabled v-model="filterDateRange" type="daterange" :transfer="true" :clearable="false"></DatePicker>
+                            <DatePicker style="margin-left: 20px;width: 220px" class="disabled-i" disabled v-model="filterDateRange" type="daterange" :transfer="true" :clearable="false"></DatePicker>
 
                             <div style="float: right;">
                                 <Button class="jobBtn" @click="onReJobSelect">重选用例</Button>

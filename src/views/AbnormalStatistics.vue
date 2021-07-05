@@ -31,7 +31,7 @@
                 <Row>
                     <b>设备列表</b>
                     <Button type="primary" style="float: right;" @click="openDeviceList">选取设备( {{ devices.length }} )</Button>
-                    <DatePicker style="float: right;margin-right: 20px;" v-model="deviceFilterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
+                    <DatePicker style="float: right;margin-right: 20px;width: 220px;" v-model="deviceFilterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
                 </Row>
                 <div style="max-height: 100px;overflow: auto;margin-top: 16px">
                     <Tag type="border" v-for="(item,index) in devices" :key="index" style="margin: 0 5px 5px 0"> {{ item.device_label }} </Tag>
