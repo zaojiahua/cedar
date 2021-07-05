@@ -37,7 +37,7 @@
                             <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">
                                 {{job.job_name}}
                             </Button>
-                            <DatePicker style="margin-left: 20px;width: 200px" class="disabled-i" disabled v-model="filterDateRange" type="daterange" :transfer="true" :clearable="false"></DatePicker>
+                            <DatePicker style="margin-left: 20px;width: 220px" class="disabled-i" disabled v-model="filterDateRange" type="daterange" :transfer="true" :clearable="false"></DatePicker>
 
                             <div style="float: right;">
                                 <Button class="jobBtn" @click="onReJobSelect">重选用例</Button>
