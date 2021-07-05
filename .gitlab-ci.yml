@@ -5,8 +5,9 @@ deploy:
   script:
     - echo $deploy_ip
     - echo $CI_COMMIT_SHA
+    - echo $branch_name
     - echo `pwd`
-    - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip $CI_COMMIT_SHA
+    - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip $CI_COMMIT_SHA $branch_name
   only:
     - schedules
   tags:
