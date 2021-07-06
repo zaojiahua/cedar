@@ -73,10 +73,10 @@
             <FormItem>
                 <b slot="label">日志文件：</b>
                 <p v-if="showLogTip" style="color: #FF9900">暂无日志文件信息</p>
-                <ButtonGroup>
+                <ButtonGroup v-show="rdsInfo.logList.length>0" style="margin-bottom: 8px">
                     <Button v-for="files in rdsInfo.logList" style="margin-bottom: 8px;" :key="files.id" @click="viewLogFile(files.log_file,files.file_name)">{{ files.file_name }}</Button>
                 </ButtonGroup>
-                <Row style="margin-top: 8px">
+                <Row v-show="rdsInfo.zipList.length>0">
                     <ButtonGroup>
                         <Button v-for="files in rdsInfo.zipList" style="margin-bottom: 8px;" :key="files.id" @click="downloadLog(files.log_file)">{{ files.file_name }}</Button>
                     </ButtonGroup>
