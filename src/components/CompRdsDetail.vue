@@ -74,8 +74,13 @@
                 <b slot="label">日志文件：</b>
                 <p v-if="showLogTip" style="color: #FF9900">暂无日志文件信息</p>
                 <ButtonGroup>
-                    <Button v-for="files in rdsInfo.rdslog" :key="files.id" @click="viewLogFile(files.log_file,files.file_name)">{{ files.file_name }}</Button>
+                    <Button v-for="files in rdsInfo.logList" style="margin-bottom: 8px;" :key="files.id" @click="viewLogFile(files.log_file,files.file_name)">{{ files.file_name }}</Button>
                 </ButtonGroup>
+                <Row style="margin-top: 8px">
+                    <ButtonGroup>
+                        <Button v-for="files in rdsInfo.zipList" style="margin-bottom: 8px;" :key="files.id" @click="downloadLog(files.log_file)">{{ files.file_name }}</Button>
+                    </ButtonGroup>
+                </Row>
             </FormItem>
         </Form>
         <div style="color: #515a6e;padding-left: 48px;font-size: 12px">
@@ -157,6 +162,16 @@
             log_file:"string",
             file_name:"string"
         }],
+        logList:[{
+            id:"number",
+            log_file:"string",
+            file_name:"string"
+        }],
+        zipList:[{
+            id:"number",
+            log_file:"string",
+            file_name:"string"
+        }],
         rdsscreenshot: [{
             id:"number",
             thumbs_file:"string",
@@ -232,7 +247,17 @@
                         this.rdsInfo = utils.validate(rdsSerializer,response.data);
                         this.rdsInfo.rds_dict = JSON.stringify(this.rdsInfo.rds_dict);
                         this.rdsInfo.lose_frame_point = this.rdsInfo.lose_frame_point ? this.rdsInfo.lose_frame_point + ".jpg" : "无";
-                        console.log(this.rdsInfo)
+                        let logList=[], zipList=[]
+                        this.rdsInfo.rdslog.forEach(item=>{
+                            let arr = item.file_name.split(".")
+                            if(arr[arr.length-1]==="zip"){    // or arr.pop()
+                                zipList.push(item)
+                            }else{
+                                logList.push(item)
+                            }
+                        })
+                        this.rdsInfo.logList = logList
+                        this.rdsInfo.zipList = zipList
                         if(this.rdsInfo.rds_dict === "null") this.rdsInfo.rds_dict = "";
                         if(this.rdsInfo.job_assessment_value==="0"){
                             this.rdsInfo.result = "通过";
@@ -313,11 +338,23 @@
                 this.logName = fileName;
                 this.path = path;
                 this.$refs.viewLogFile.refresh(path)
-
             },
-            downloadLog(){
-                window.open(this.baseUrl+this.path)
-                // document.location.href = this.baseUrl+this.path
+            downloadLog(path){
+                if(path){
+                    window.open(this.baseUrl+path)
+                    return
+                }
+                //  非zip文件下载  （特别针对txt文件）
+                this.$ajax.get(this.path, {responseType: 'blob'}).then(res => {
+                    let blob = new Blob([res.data]);
+                    let url = window.URL.createObjectURL(blob);
+                    let a = document.createElement("a");
+                    a.href = url;
+                    a.download = this.logName;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                // window.open(this.baseUrl+this.path)
             },
             viewOriginalImg(imgId,index){
                 this.imgIndex = index
