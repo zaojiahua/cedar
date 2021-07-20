@@ -44,6 +44,14 @@
                         key:"role"
                     },
                     {
+                      title:"编辑用例数量",
+                      key:"job_amount"
+                    },
+                    {
+                      title:"贡献总分",
+                      key:"job_contribution"
+                    },
+                    {
                         title:"操作",
                         key:"action",
                         // width:150,
@@ -134,7 +142,7 @@
             getUserData(){
                 this.$Loading.start();
                 this.$ajax
-                    .get('api/v1/cedar/reefuser/?fields=id,username,last_name,groups,groups.name,is_active,is_superuser&ordering=username' +
+                    .get('api/v1/cedar/reefuser/?fields=id,username,last_name,groups,groups.name,job_contribution,job_amount,is_active,is_superuser&ordering=username' +
                             '&limit=' + this.pageSize +
                             '&offset=' + this.offset )
                     .then(response => {
@@ -150,6 +158,8 @@
                                 id:response.data.reefusers[i].id,
                                 username:response.data.reefusers[i].username,
                                 firstname:response.data.reefusers[i].last_name,
+                                job_amount:response.data.reefusers[i].job_amount,
+                                job_contribution:response.data.reefusers[i].job_contribution,
                                 role:group,
                                 action:response.data.reefusers[i].is_active,
                                 is_superuser:response.data.reefusers[i].is_superuser,
