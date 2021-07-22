@@ -117,7 +117,7 @@ export default {
         this.startPoint = this.selectedIndex
       else
         this.endPoint = this.selectedIndex
-      this.job_duration = parseInt(((this.endPoint - this.startPoint) * this.rdsPhotosData.time_per_unit).toFixed(4))
+      this.job_duration = parseFloat(((this.endPoint - this.startPoint) * this.rdsPhotosData.time_per_unit).toFixed(3))
     },
     //点击快捷跳转到起点终点，顶部底部
     quickJump(point) {
