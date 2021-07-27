@@ -389,6 +389,15 @@
             setSelection(selection){
                 this.selection = selection;
             },
+            setSelectionJob(selection){   // 返回到选取job页时，恢复selection的值时将SelectionJob的值一并恢复
+                selection.forEach((value) => {
+                    if (this.selectionJob[value.id] === undefined ) {
+                        //console.log('勾选了id为' + value.id + '的job')
+                        this.$set(this.selectionJob, value.id, value)    //所有的已选择job  包括新选择的job
+                        this.$set(this.currentPageSelection, value.id, 'exist')    //currentPageSelectedJobs  当前页已选择job
+                    }
+                })
+            },
             filterJob () {
                 let deviceCountCondition = ""
                 if(this.propSubsidiaryDeviceCount)

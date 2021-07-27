@@ -53,19 +53,19 @@
                         </FormItem>
                         <FormItem>
                             <b slot="label"><span class="need">*</span>Xdpi</b>
-                            <InputNumber style="width: 100%" v-model="device.phone_model.x_dpi"></InputNumber>
+                            <InputNumber style="width: 100%" v-model="device.phone_model.x_dpi" :disabled="!editable" class="disabled-input"></InputNumber>
                         </FormItem>
                         <FormItem>
                             <b slot="label"><span class="need">*</span>Ydpi</b>
-                            <InputNumber style="width: 100%" v-model="device.phone_model.y_dpi"></InputNumber>
+                            <InputNumber style="width: 100%" v-model="device.phone_model.y_dpi" :disabled="!editable" class="disabled-input"></InputNumber>
                         </FormItem>
                         <FormItem>
                             <b slot="label"><span class="need">*</span>X边框厚度</b>
-                            <InputNumber style="width: 100%" v-model="device.phone_model.x_border"></InputNumber>
+                            <InputNumber style="width: 100%" v-model="device.phone_model.x_border" :disabled="!editable" class="disabled-input"></InputNumber>
                         </FormItem>
                         <FormItem>
                             <b slot="label"><span class="need">*</span>Y边框厚度</b>
-                            <InputNumber style="width: 100%" v-model="device.phone_model.y_border"></InputNumber>
+                            <InputNumber style="width: 100%" v-model="device.phone_model.y_border" :disabled="!editable" class="disabled-input"></InputNumber>
                         </FormItem>
                     </Form>
                 </div>
