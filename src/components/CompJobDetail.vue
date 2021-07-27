@@ -46,6 +46,11 @@
                 <Input v-model="customTag" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
+                <b slot="label">附加资源:</b>
+                <Cascader :disabled="true" v-for="i in resourceList.length" v-model="resourceList[i-1]" :data="cascaderData" :key="i"
+                          :transfer="true" style="margin-bottom: 16px" class="disabled-input"></Cascader>
+            </FormItem>
+            <FormItem>
                 <b slot="label">编写人员:</b>
                 <Input v-model="jobInfo.author.username" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
@@ -99,6 +104,110 @@
         updated_time:"string",
         cabinet_type:"string"
     };
+    const simChildren = [
+        {
+            value: '中国移动',
+            label: '中国移动',
+            children: [
+                {
+                    value: 'volte_true',
+                    label: 'Volte',
+                },
+                {
+                    value: 'volte_false',
+                    label: '非Volte',
+                }
+            ]
+        },
+        {
+            value: '中国联通',
+            label: '中国联通',
+            children: [
+                {
+                    value: 'volte_true',
+                    label: 'Volte',
+                },
+                {
+                    value: 'volte_false',
+                    label: '非Volte',
+                }
+            ]
+        },
+        {
+            value: '中国电信',
+            label: '中国电信',
+            children: [
+                {
+                    value: 'volte_true',
+                    label: 'Volte',
+                },
+                {
+                    value: 'volte_false',
+                    label: '非Volte',
+                }
+            ]
+        },
+        {
+            value: 'anything',
+            label: '移动/联通/电信',
+            children: [
+                {
+                    value: 'volte_true',
+                    label: 'Volte',
+                },
+                {
+                    value: 'volte_false',
+                    label: '非Volte',
+                }
+            ]
+        },
+        {
+            value: 'not_中国移动',
+            label: '非中国移动',
+            children: [
+                {
+                    value: 'volte_true',
+                    label: 'Volte',
+                },
+                {
+                    value: 'volte_false',
+                    label: '非Volte',
+                }
+            ]
+        },
+        {
+            value: 'not_中国联通',
+            label: '非中国联通',
+            children: [
+                {
+                    value: 'volte_true',
+                    label: 'Volte',
+                },
+                {
+                    value: 'volte_false',
+                    label: '非Volte',
+                }
+            ]
+        },
+        {
+            value: 'not_中国电信',
+            label: '非中国电信',
+            children: [
+                {
+                    value: 'volte_true',
+                    label: 'Volte',
+                },
+                {
+                    value: 'volte_false',
+                    label: '非Volte',
+                }
+            ]
+        },
+        {
+            value: 'nothing',
+            label: '无'
+        },
+    ];
 
     export default {
         props:{
@@ -118,7 +227,97 @@
                 romVersion: "",
                 customTag: "",
                 phoneModels: "",
-                testArea: ""
+                testArea: "",
+                cascaderData:[
+                    {
+                        value: 'device',
+                        label: '主机',
+                        children: [
+                            {
+                                value: 'simcard_1',
+                                label: 'SIM卡1',
+                                children: simChildren,
+                            },
+                            {
+                                value: 'simcard_2',
+                                label: 'SIM卡2',
+                                children: simChildren,
+                            },
+                            {
+                                value: 'account_resource',
+                                label: '账号资源',
+                                children:[]
+                            }
+                        ]
+                    },
+                    //=========================================
+                    {
+                        value: 'subsidiary_device_1',
+                        label: '僚机1',
+                        children: [
+                            {
+                                value: 'simcard_1',
+                                label: 'SIM卡1',
+                                children: simChildren,
+                            },
+                            {
+                                value: 'simcard_2',
+                                label: 'SIM卡2',
+                                children: simChildren,
+                            },
+                            {
+                                value: 'account_resource',
+                                label: '账号资源',
+                                children:[]
+                            }
+                        ]
+                    },
+                    //============================
+                    {
+                        value: 'subsidiary_device_2',
+                        label: '僚机2',
+                        children: [
+                            {
+                                value: 'simcard_1',
+                                label: 'SIM卡1',
+                                children: simChildren,
+                            },
+                            {
+                                value: 'simcard_2',
+                                label: 'SIM卡2',
+                                children: simChildren,
+                            },
+                            {
+                                value: 'account_resource',
+                                label: '账号资源',
+                                children:[]
+                            }
+                        ]
+                    },
+                    //=======================
+                    {
+                        value: 'subsidiary_device_3',
+                        label: '僚机3',
+                        children: [
+                            {
+                                value: 'simcard_1',
+                                label: 'SIM卡1',
+                                children: simChildren,
+                            },
+                            {
+                                value: 'simcard_2',
+                                label: 'SIM卡2',
+                                children: simChildren,
+                            },
+                            {
+                                value: 'account_resource',
+                                label: '账号资源',
+                                children:[]
+                            }
+                        ]
+                    }
+                ],
+                resourceList:[],
             }
         },
         methods:{
@@ -139,6 +338,7 @@
                         "test_area,test_area.description,"+
                         "job_name,"+
                         "job_label," +
+                        "matching_rule,"+
                         "cabinet_type"
                     )
                     .then(response=>{
@@ -172,6 +372,7 @@
                             areas.push(area.description)
                         })
                         this.testArea = areas.join(",");
+                        this.resourceList = this.jobInfo.matching_rule.resource_data
 
                     })
                     .catch(error=>{
@@ -212,7 +413,31 @@
                             })
                     }
                 });
+            },
+            getAppNameList(){
+                this.$ajax.get("api/v1/cedar/get_order_app_name")
+                    .then(response=>{
+                        let appChildren = []
+                        let subsidiaryAppChildren = []
+                        response.data.result.forEach(app=>{
+                            appChildren.push({value:app.name,label:app.name})
+                            subsidiaryAppChildren.push({value:app.name,label:app.name,children:[{value:"account_alike_true",label:"与主机相同"},{value:"unrestrained",label:"无特殊要求"}]})
+                        })
+                        this.cascaderData.forEach(item=> {
+                            if(item.label === "主机")
+                                item.children[2].children = appChildren
+                            else
+                                item.children[2].children = subsidiaryAppChildren
+                        })
+                    })
+                    .catch(error=>{
+                        if(config.DEBUG) console.log(error)
+                        this.$Message.error({content:"获取app列表失败"+ error.response.data.message,duration:3})
+                    })
             }
+        },
+        created(){
+            this.getAppNameList()
         }
     }
 </script>
