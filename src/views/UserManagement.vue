@@ -165,6 +165,7 @@
                                 is_superuser:response.data.reefusers[i].is_superuser,
                             })
                         }
+                      userList.sort((a, b)=>b.job_contribution - a.job_contribution)
                         this.userData = userList;
                         this.$Loading.finish()
                     })
@@ -178,6 +179,7 @@
                         this.$Message.error(errorMsg)
                         this.$Loading.error()
                     })
+
             },
             //  批量删除用户
             delUserList(){
