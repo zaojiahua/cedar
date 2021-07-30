@@ -86,7 +86,8 @@
             <Select v-model="selectCabinetType" title="CabinetType">
                 <Option v-for="item in cabinetTypeList" :value="item" :label="item" :key="item"></Option>
             </Select>
-            <Row type="flex" justify="center" style="margin-top: 30px;">
+            <Row type="flex" justify="end" style="margin-top: 30px;">
+                <Button type="text" @click="onBackClick">取消</Button>
                 <Button type="primary" @click="onCabinetTypeClick">确定</Button>
             </Row>
         </Modal>
