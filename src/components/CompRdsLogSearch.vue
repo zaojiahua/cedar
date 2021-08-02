@@ -1,7 +1,7 @@
 <template>
     <div>
         <Row type="flex" style="margin-bottom: 16px;">
-            <DatePicker v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" @on-change="onPageChange(1)" :options="options"></DatePicker>
+            <DatePicker v-model="filterDateRange" style="width: 220px;" type="daterange" placeholder="测试开始时间" :transfer="true" @on-change="onPageChange(1)" :options="options"></DatePicker>
         </Row>
         <Row type="flex" style="margin-bottom: 16px;">
             <Input v-model="keyword" style="width: 100%;" search enter-button placeholder="请输入关键字..." @on-search="onSearch" />

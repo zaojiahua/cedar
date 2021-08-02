@@ -73,9 +73,14 @@
             <FormItem>
                 <b slot="label">日志文件：</b>
                 <p v-if="showLogTip" style="color: #FF9900">暂无日志文件信息</p>
-                <ButtonGroup>
-                    <Button v-for="files in rdsInfo.rdslog" :key="files.id" @click="viewLogFile(files.log_file,files.file_name)">{{ files.file_name }}</Button>
+                <ButtonGroup v-show="rdsInfo.logList.length>0" style="margin-bottom: 8px">
+                    <Button v-for="files in rdsInfo.logList" style="margin-bottom: 8px;" :key="files.id" @click="viewLogFile(files.log_file,files.file_name)">{{ files.file_name }}</Button>
                 </ButtonGroup>
+                <Row v-show="rdsInfo.zipList.length>0">
+                    <ButtonGroup>
+                        <Button v-for="files in rdsInfo.zipList" style="margin-bottom: 8px;" :key="files.id" @click="downloadLog(files.log_file)">{{ files.file_name }}</Button>
+                    </ButtonGroup>
+                </Row>
             </FormItem>
         </Form>
         <div style="color: #515a6e;padding-left: 48px;font-size: 12px">
@@ -84,11 +89,11 @@
             <br>
             <img style="margin: 5px; cursor: pointer;" v-for="(img,index) in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name @click="viewOriginalImg(img.id,index)">
         </div>
-        <div style="color: #515a6e;padding-left: 48px;font-size: 12px;margin-top: 16px" v-show="isReferenceShow">
-            <b style="cursor: default">查看查参考图片：</b><b style="cursor: default">共 {{jobResFile.length}} 张</b>
-            <br>
-            <img style="margin: 5px; cursor: pointer;max-width: 200px;border: 1px solid #ccc" v-for="(img,index) in jobResFile" :key="index" :src=baseUrl+img.file :alt=img.name>
-        </div>
+        <!--<div style="color: #515a6e;padding-left: 48px;font-size: 12px;margin-top: 16px" v-show="isReferenceShow">-->
+            <!--<b style="cursor: default">查看查参考图片：</b><b style="cursor: default">共 {{jobResFile.length}} 张</b>-->
+            <!--<br>-->
+            <!--<img style="margin: 5px; cursor: pointer;max-width: 200px;border: 1px solid #ccc" v-for="(img,index) in jobResFile" :key="index" :src=baseUrl+img.file :alt=img.name>-->
+        <!--</div>-->
         <Spin size="large" fix v-if="showSpin"></Spin>
         <Modal v-model="showImgModal" :fullscreen="true" footer-hide style="text-align: center">
             <Icon type="ios-arrow-dropleft-circle" size="60"  style="position: fixed;top: 45%;left: 5%;cursor: pointer;opacity: 0.4" @click="prevBtn"/>
@@ -153,6 +158,16 @@
         },
         job_assessment_value: "string",
         rdslog: [{
+            id:"number",
+            log_file:"string",
+            file_name:"string"
+        }],
+        logList:[{
+            id:"number",
+            log_file:"string",
+            file_name:"string"
+        }],
+        zipList:[{
             id:"number",
             log_file:"string",
             file_name:"string"
@@ -232,7 +247,17 @@
                         this.rdsInfo = utils.validate(rdsSerializer,response.data);
                         this.rdsInfo.rds_dict = JSON.stringify(this.rdsInfo.rds_dict);
                         this.rdsInfo.lose_frame_point = this.rdsInfo.lose_frame_point ? this.rdsInfo.lose_frame_point + ".jpg" : "无";
-                        console.log(this.rdsInfo)
+                        let logList=[], zipList=[]
+                        this.rdsInfo.rdslog.forEach(item=>{
+                            let arr = item.file_name.split(".")
+                            if(arr[arr.length-1]==="zip"){    // or arr.pop()
+                                zipList.push(item)
+                            }else{
+                                logList.push(item)
+                            }
+                        })
+                        this.rdsInfo.logList = logList
+                        this.rdsInfo.zipList = zipList
                         if(this.rdsInfo.rds_dict === "null") this.rdsInfo.rds_dict = "";
                         if(this.rdsInfo.job_assessment_value==="0"){
                             this.rdsInfo.result = "通过";
@@ -267,20 +292,20 @@
                         }
                         this.$Message.error(errorMsg)
                     })
-                this.$ajax.get("api/v1/cedar/job_res_file/?type=png&job_id="+jobId)
-                    .then(response=>{
-                        this.jobResFile = response.data.job_res_files
-                    })
-                    .catch(error=>{
-                        if (config.DEBUG) console.log(error)
-                        let errorMsg = "";
-                        if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
-                        } else {
-                            errorMsg = "数据读取失败！"
-                        }
-                        this.$Message.error(errorMsg)
-                    })
+                // this.$ajax.get("api/v1/cedar/job_res_file/?type=png&job_id="+jobId)
+                //     .then(response=>{
+                //         this.jobResFile = response.data.job_res_files
+                //     })
+                //     .catch(error=>{
+                //         if (config.DEBUG) console.log(error)
+                //         let errorMsg = "";
+                //         if (error.response.status >= 500) {
+                //             errorMsg = "服务器错误！"
+                //         } else {
+                //             errorMsg = "数据读取失败！"
+                //         }
+                //         this.$Message.error(errorMsg)
+                //     })
             },
             delRds(){
                 let root = this;
@@ -313,11 +338,23 @@
                 this.logName = fileName;
                 this.path = path;
                 this.$refs.viewLogFile.refresh(path)
-
             },
-            downloadLog(){
-                window.open(this.baseUrl+this.path)
-                // document.location.href = this.baseUrl+this.path
+            downloadLog(path){
+                if(path){
+                    window.open(this.baseUrl+path)
+                    return
+                }
+                //  非zip文件下载  （特别针对txt文件）
+                this.$ajax.get(this.path, {responseType: 'blob'}).then(res => {
+                    let blob = new Blob([res.data]);
+                    let url = window.URL.createObjectURL(blob);
+                    let a = document.createElement("a");
+                    a.href = url;
+                    a.download = this.logName;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                // window.open(this.baseUrl+this.path)
             },
             viewOriginalImg(imgId,index){
                 this.imgIndex = index

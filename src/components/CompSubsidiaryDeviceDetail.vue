@@ -11,7 +11,7 @@
             </FormItem>
             <FormItem>
                 <b slot="label">机柜</b>
-                <Input v-model="device.cabinet.cabinet_name" :disabled="true" class="disabled-input"></Input>
+                <Input v-model="device.cabinet.cabinet_name+' ( '+device.cabinet.type +' )'" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">IP</b>
@@ -157,7 +157,8 @@
             cabinet: {
                 id: "number",
                 cabinet_name: "string",
-                ip_address: "string"
+                ip_address: "string",
+                type: "string"
             },
             ip_address: "string",
             phone_model: {
@@ -269,7 +270,7 @@
                     'phone_model.y_border,' +
                     'custom_name,' +
                     'ip_address,' +
-                    'cabinet,cabinet.id,cabinet.cabinet_name,' +
+                    'cabinet,cabinet.id,cabinet.cabinet_name,cabinet.type,' +
                     'device,device.id,device.device_name,' +
                     'simcard,simcard.operator,simcard.phone_number,simcard.order,simcard.id,' +
                     'account,account.app_name,account.name,account.id,' +

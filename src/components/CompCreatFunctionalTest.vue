@@ -7,7 +7,7 @@
         </Steps>
         <div v-if="current===0">
             <Modal v-model="showSelectDeviceModal" :fullscreen="true" :transfer="false" :closable="false" @on-ok="getDeviceSelection">
-                <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true" :prop-device-status="true"
+                <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true" :prop-device-status="true" :propCabinetType="propCabinetType"
                                   @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
             </Modal>
             <comp-device-list :prop-show-cabinet-select="false" :prop-show-select-number="false" ref="deviceList" :prop-add-mode="false" :prop-auto-load="false" :prop-filter-status="true"></comp-device-list>
@@ -26,7 +26,7 @@
                 <comp-filter @on-return-data="onDefaultJobList" ref="jobFilter" :prop-default-device="selectedDevice" @on-change="onJobFilterChange"></comp-filter>
             </Row>
             <Row type="flex">
-                <Col span="11">
+                <Col span="14">
                     <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true"></comp-job-list>
                 </Col>
                 <Col span="2">
@@ -81,6 +81,16 @@
             <comp-job-detail ref="jobDetail"  @closeDrawer="closeDrawer"></comp-job-detail>
         </Drawer>
         <Spin size="large" fix v-if="showLoading"></Spin>
+        <Modal v-model="showBeforeSelect" :closable="false" :mask-closable="false" :footer-hide="true" width="450">
+            <p style="margin: 10px 0;">请选择测试柜类型：</p>
+            <Select v-model="selectCabinetType" title="CabinetType">
+                <Option v-for="item in cabinetTypeList" :value="item" :label="item" :key="item"></Option>
+            </Select>
+            <Row type="flex" justify="end" style="margin-top: 30px;">
+                <Button type="text" @click="onBackClick">取消</Button>
+                <Button type="primary" @click="onCabinetTypeClick">确定</Button>
+            </Row>
+        </Modal>
     </Card>
 </template>
 
@@ -113,6 +123,10 @@
                 disableFlag:true,
                 deviceSelection:[],
                 showLoading:false,
+                showBeforeSelect:true,
+                selectCabinetType:"",
+                cabinetTypeList:[],
+                propCabinetType:"",
             }
         },
         methods: {
@@ -169,9 +183,15 @@
                 let conditions = []
                 Object.keys(selected).forEach(key=>{
                     let condition = []  // store id data like [1,2,3]
-                    selected[key].forEach(item=>{
-                        condition.push(item.id)
-                    })
+                    if(key==="type"){    //key = cabinet_type时，condition=>name
+                        selected[key].forEach(item=>{
+                            condition.push(item.type)
+                        })
+                    }else {
+                        selected[key].forEach(item=>{
+                            condition.push(item.id)
+                        })
+                    }
 
                     // 不统一的命名额外处理
                     if(key==="job_test_area") key = "test_area"
@@ -182,7 +202,12 @@
                         item = key+"__id="+item
                     })
 
-                    let conditionStr = key+"__id__in="+"ReefList["+condition.join("{%,%}")+"]"
+                    let conditionStr = ""
+                    if(key==="type"){
+                        conditionStr = "cabinet_type__in=ReefList["+condition.join("{%,%}")+"]"
+                    }else {
+                        conditionStr = key+"__id__in="+"ReefList["+condition.join("{%,%}")+"]"
+                    }
                     conditions.push(conditionStr)
                 })
 
@@ -247,43 +272,71 @@
                             owner_label:userId
                         })
                         .then(response=>{
-                            let str = ""
-                            if(response.data.fail_cabinet){
-                                response.data.fail_cabinet.forEach(item=>{
-                                    str = str + item+"服务器启动任务失败；"
-                                })
-                            }
-                            let root = this
-                            if(response.data.status==="fail"){
-                                this.$Modal.error({
-                                    title:"启动失败！",
-                                    content:str
-                                })
-                            }else if(response.data.status==="warning"){
-                                this.$Modal.warning({
-                                    title:"部分服务器启动失败！",
-                                    content:str,
-                                    onOk(){
-                                        root.$router.push({
-                                            name: "tboard-management",
-                                        })
-                                    }
-                                })
-                            }else if(response.data.status==="success"){
-                                this.$Message.success("任务启动成功！")
-                                this.$router.push({
-                                    name: "tboard-management",
-                                })
-                            }
-                            this.showLoading = false;
+                            this._responseHandle(response)
                         })
                         .catch(error=>{
                             if(config.DEBUG) console.log(error)
-                            this.$Message.error("任务启动失败")
                             this.showLoading = false;
+                            if(error.response.data.custom_code==="0"){
+                                let _this = this
+                                this.$Modal.confirm({
+                                    title:"任务启动失败",
+                                    content:"【用例】 "+error.response.data.data.data.error_job_name_list.join(",") +" 缺少资源文件，" +
+                                        "请尝试重新保存用例，是否继续运行其他用例？",
+                                    okText: '继续',
+                                    onOk(){
+                                        this.$ajax
+                                            .post("api/v1/coral/insert_tboard/ ",{
+                                                device_label_list:deviceList,
+                                                job_label_list:error.response.data.data.data.correct_job_label_list,
+                                                repeat_time:_this.tboardRepeatTime,
+                                                board_name:_this.tboardName,
+                                                owner_label:userId
+                                            })
+                                            .then(response=>{
+                                                _this._responseHandle(response)
+                                            }) .catch(error=>{
+                                            if(config.DEBUG) console.log(error)
+                                            this.$Message.error({content:"任务启动失败",duration:3})
+                                        })
+                                    }
+                                })
+                                return
+                            }
+                            this.$Message.error({content:"任务启动失败",duration:3})
                         })
                 }
-
+            },
+            _responseHandle(response){
+                let str = ""
+                if(response.data.fail_cabinet){
+                    response.data.fail_cabinet.forEach(item=>{
+                        str = str + item+"服务器启动任务失败；"
+                    })
+                }
+                let root = this
+                if(response.data.status==="fail"){
+                    this.$Modal.error({
+                        title:"启动失败！",
+                        content:str
+                    })
+                }else if(response.data.status==="warning"){
+                    this.$Modal.warning({
+                        title:"部分服务器启动失败！",
+                        content:str,
+                        onOk(){
+                            root.$router.push({
+                                name: "tboard-management",
+                            })
+                        }
+                    })
+                }else if(response.data.status==="success"){
+                    this.$Message.success("任务启动成功！")
+                    this.$router.push({
+                        name: "tboard-management",
+                    })
+                }
+                this.showLoading = false;
             },
             backToPageChooseJob(){
                 this.current = 1
@@ -300,7 +353,27 @@
             },
             onBackClick(){
                 this.$emit("on-back-click")
+            },
+            getCabinetTypeList(){
+                this.$ajax.get('api/v1/cedar/get_cabinet_type_info/')
+                    .then(response=>{
+                        this.cabinetTypeList = response.data
+                    }).catch(error=>{
+                        if(config.DEBUG) console.log(error)
+                    this.$Message.error({content:"获取机柜类型失败！"+ error.response.data.message,duration:6})
+                })
+            },
+            onCabinetTypeClick(){
+                if(this.selectCabinetType===""){
+                    this.$Message.warning("请选择机柜类型！")
+                    return
+                }
+                this.propCabinetType = this.selectCabinetType
+                this.showBeforeSelect = false
             }
+        },
+        created(){
+            this.getCabinetTypeList()
         }
     }
 </script>

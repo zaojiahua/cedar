@@ -57,8 +57,8 @@
                     <Radio style="width: 100px;text-align: center;" :label="1">日</Radio>
                     <Radio style="width: 100px;text-align: center;" :label="2">月</Radio>
                 </RadioGroup>
-                <DatePicker v-show="date===1" v-model="filterDate" class="index-time" type="date" open :options="options"></DatePicker>
-                <DatePicker v-show="date===2" v-model="monthData" class="index-time" type="month" open :options="monthOptions"></DatePicker>
+                <DatePicker v-show="date===1" v-model="filterDate" class="index-time" style="width: 220px;" type="date" open :options="options"></DatePicker>
+                <DatePicker v-show="date===2" v-model="monthData" class="index-time" style="width: 220px;" type="month" open :options="monthOptions"></DatePicker>
             </div>
             <div style="margin-left: 280px">
                 <div v-show="date===1">

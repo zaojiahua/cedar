@@ -15,9 +15,12 @@
         <Card dis-hover title="第二步: 选择机柜" v-if="addDeviceStep === 2" style="text-align:left;">
             <br>
             <b>机柜列表：</b>
-            <i-select v-model="CabinetSelected" style="width:150px">
-                <i-option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</i-option>
-            </i-select>
+            <Select v-model="CabinetSelected" style="width:150px">
+                <OptionGroup v-for="types in cabinetList" :label="types.type">
+                    <Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id"
+                            @click.native="onCabinetSelectChange(cabinets.id,cabinets.ip_address)">{{ cabinets.cabinet_name }}</Option>
+                </OptionGroup>
+            </Select>
             <br>
             <br>
             <b >机柜内已有设备数量： </b>
@@ -254,20 +257,7 @@
                             })
                     }
             },
-            getCabinetInfo() {
-                this.addDeviceStep = 2;
-                this.$ajax.get("api/v1/cedar/cabinet/?fields=ip_address,cabinet_name,id&is_delete=False")
-                    .then(response => {
-                        this.cabinetList = response.data.cabinets
-                    })
-                    .catch(error => {
-                        if (config.DEBUG) console.log(error)
-                        this.$Message.error("取得机柜信息出错")
-                    })
-            }
-        },
-        watch: {
-            CabinetSelected: function (newId, oldId) {
+            onCabinetSelectChange(val,ip){
                 this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected + "&status__in=ReefList[idle{%,%}busy]")
                     .then(response => {
                         this.deviceNum = response.data.devices.length
@@ -276,12 +266,19 @@
                         if (config.DEBUG) console.log(error);
                         this.$Message.error("获取设备数量出错")
                     });
-                for (let cabinet of this.cabinetList) {
-                    if (cabinet.id === newId) {
-                        this.CabinetIpSelected = cabinet.ip_address
-                        this.CabinetId = cabinet.id
-                    }
-                }
+                    this.CabinetIpSelected = ip
+                    this.CabinetId = val
+            },
+            getCabinetInfo() {
+                this.addDeviceStep = 2;
+                this.$ajax.get("api/v1/cedar/get_cabinet_type_info/?data_type=cabinet_type_data")
+                    .then(response => {
+                        this.cabinetList = response.data
+                    })
+                    .catch(error => {
+                        if (config.DEBUG) console.log(error)
+                        this.$Message.error("取得机柜信息出错")
+                    })
             }
         },
     }
@@ -297,5 +294,8 @@
         color: #ff0000;
         margin-right: 5px;
         vertical-align: middle;
+    }
+    /deep/.ivu-select-group-title{
+        color: #c5c8ce;
     }
 </style>

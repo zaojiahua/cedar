@@ -15,7 +15,7 @@
             </FormItem>
             <FormItem>
                 <b slot="label">机柜</b>
-                <Input v-model="device.cabinet.cabinet_name" :disabled="true" class="disabled-input"></Input>
+                <Input v-model="device.cabinet.cabinet_name+' ( '+device.cabinet.type +' )'" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">CPU ID</b>
@@ -255,7 +255,8 @@
                 cabinet: {
                     id: "number",
                     cabinet_name: "string",
-                    ip_address: "string"
+                    ip_address: "string",
+                    type: "string"
                 },
                 cpu_id: "string",
                 ip_address: "string",
@@ -504,7 +505,7 @@
                             "id," +
                             "device_label," +
                             "android_version,android_version.id,android_version.version," +
-                            "cabinet,cabinet.id,cabinet.cabinet_name,cabinet.ip_address," +
+                            "cabinet,cabinet.id,cabinet.cabinet_name,cabinet.ip_address,cabinet.type," +
                             "cpu_id," +
                             "ip_address," +
                             "phone_model,phone_model.id,phone_model.phone_model_name," +
@@ -660,8 +661,10 @@
                                 auto_test :this.openSwitch
                             }
                         ),
-                        this.$ajax.patch("/api/v1/cedar/phone_model/"+ this.device.phone_model.id +"/",
+                        this.$ajax.post("/api/v1/cedar/update_phone_model/",
                             {
+                                phone_model_id:this.device.phone_model.id,
+                                phone_model_name:this.device.phone_model.phone_model_name,
                                 x_border: this.device.phone_model.x_border,
                                 y_border: this.device.phone_model.y_border,
                                 x_dpi: this.device.phone_model.x_dpi,

@@ -38,6 +38,10 @@
                 <Input v-model="romVersion" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
+                <b slot="label">测试柜类型:</b>
+                <Input v-model="jobInfo.cabinet_type" disabled class="disabled-input"></Input>
+            </FormItem>
+            <FormItem>
                 <b slot="label">自定义标签:</b>
                 <Input v-model="customTag" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
@@ -92,8 +96,8 @@
             id:"number",
             description:"string"
         }],
-        updated_time:"string"
-
+        updated_time:"string",
+        cabinet_type:"string"
     };
 
     export default {
@@ -134,7 +138,8 @@
                         "phone_models,phone_models.phone_model_name,"+
                         "test_area,test_area.description,"+
                         "job_name,"+
-                        "job_label"
+                        "job_label," +
+                        "cabinet_type"
                     )
                     .then(response=>{
                         this.jobInfo = utils.validate(serializer, response.data);

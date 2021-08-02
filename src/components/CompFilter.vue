@@ -113,7 +113,7 @@
             propFilterColumn: {
                 type: Array,
                 default: () => {
-                    return ["phone_model", "job_test_area", "android_version", "rom_version", "reefuser", "custom_tag"]
+                    return ["phone_model", "job_test_area", "android_version", "rom_version", "reefuser", "custom_tag","cabinet_type"]
                 }
             },
             propRdsFilter: {
@@ -159,6 +159,11 @@
                         title: "自定义标签",
                         key: "custom_tag",
                         item_key: "custom_tag_name"
+                    },
+                    {
+                        title: "测试柜类型",
+                        key: "type",
+                        item_key: "type"
                     }
                 ],
                 filterData: {},
@@ -175,6 +180,7 @@
                 if (type === "rom_version") return "cyan"
                 if (type === "reefuser") return "blue"
                 if (type === "custom_tag") return "purple"
+                if (type === "type") return "geekblue"
                 return "default"
             },
             closeTag(event, name) {
@@ -237,11 +243,12 @@
                     "id," +
                     "custom_tag_name" +
                     "&ordering=custom_tag_name"
-                )
+                ),
+                this.$ajax.get('api/v1/cedar/get_cabinet_type_info/?data_type=cabinet_type_data')
             ]
 
             this.$ajax.all(requests)
-                .then(this.$ajax.spread((phone_model_resp, job_test_area_resp, android_version_resp, rom_version_resp, reefuser_resp, custom_tag_resp) => {
+                .then(this.$ajax.spread((phone_model_resp, job_test_area_resp, android_version_resp, rom_version_resp, reefuser_resp, custom_tag_resp,cabinet_type_resp) => {
                     this.filterData = {
                         phone_model: utils.validate(getPhoneModelSerializer, phone_model_resp.data).phonemodels,
                         job_test_area: utils.validate(getJobTestAreaSerializer, job_test_area_resp.data).jobtestareas,
@@ -249,14 +256,21 @@
                         rom_version: utils.validate(getRomVersionSerializer, rom_version_resp.data).romversions,
                         reefuser: utils.validate(getReefUserSerializer, reefuser_resp.data).reefusers,
                         custom_tag: utils.validate(getCustomTagSerializer, custom_tag_resp.data).customtags,
-                        job_assessment_value:getJobAssessmentValue.job_assessment_value
+                        job_assessment_value:getJobAssessmentValue.job_assessment_value,
+                        type: cabinet_type_resp.data
                     }
-                    //detail phoneModel   from select device
+                    //detail phoneModel and  cabinetType  from select device
                     if(this.propDefaultDevice.length>0){
                         let defaultPhoneModel = [];
                         this.propDefaultDevice.forEach(item=>{
                             if(defaultPhoneModel.indexOf(item.phone_model) === -1)
                                 defaultPhoneModel.push(item.phone_model)
+                        })
+
+                        let defaultCabinetType = [];
+                        this.propDefaultDevice.forEach(item=>{
+                            if(defaultCabinetType.indexOf(item.cabinet.type) === -1)
+                                defaultCabinetType.push(item.cabinet.type)
                         })
 
                         let phoneModelList = [];
@@ -266,8 +280,18 @@
                                 phoneModelList.push(item);
                             }
                         })
+
+                        let CabinetTypeList = [];
+                        this.filterData.type.forEach((item,index)=>{
+                            if(defaultCabinetType.indexOf(item.type) !== -1){
+                                this.checked.push("type_:_"+ index + "_:_" + item.type)
+                                CabinetTypeList.push(item);
+                            }
+                        })
+
                         this.defaultPhoneModelList.phone_model = phoneModelList;
-                        this.$emit("on-return-data",this.defaultPhoneModelList)
+                        this.defaultPhoneModelList.type = CabinetTypeList;
+                        this.$emit("on-return-data",this.defaultPhoneModelList,)
                     }
                 })).catch(reason => {
                 if (config.DEBUG) console.log(reason)
@@ -293,5 +317,8 @@
 
     p:hover {
         color: @primary-color;
+    }
+    /deep/ .ivu-tag .ivu-icon-ios-close{
+        color: #666!important;
     }
 </style>

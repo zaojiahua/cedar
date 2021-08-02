@@ -8,7 +8,7 @@
         </Modal>
 
         <Row v-show="devices.length === 0" style="margin-bottom: 16px;">
-            <DatePicker v-model="filterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
+            <DatePicker v-model="filterDateRange" @on-change="onDateChange" style="width: 220px;" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
             <p style="color: rgb(194, 194, 194);margin-top: 10px;">默认选择最近七天的数据 </p>
         </Row>
         <Row v-show="devices.length === 0" style="margin-top: 100px;text-align: center">
@@ -22,7 +22,7 @@
                 <Radio style="width: 100px;text-align: center;margin-bottom: 12px" :label="2">无效数据</Radio>
             </RadioGroup>
             <Button type="primary" style="float: right;" @click="openDeviceList">选取设备( {{ devices.length }} )</Button>
-            <DatePicker style="float: right;margin-right: 20px;" v-model="filterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
+            <DatePicker style="float: right;margin-right: 20px;width: 220px;" v-model="filterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
 
         </div>
 
@@ -64,7 +64,7 @@
                     <p style="height: 32px;line-height:32px;margin-bottom: 6px;">
                         <span>设备列表</span>
                         <!--<Button type="primary" style="float: right;" @click="openDeviceList">选取设备( {{ devices.length }} )</Button>-->
-                        <!--<DatePicker style="float: right;margin-right: 20px;" v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>-->
+                        <!--<DatePicker style="float: right;margin-right: 20px;width:220px;" v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>-->
                     </p>
                     <div style="height: 130px;overflow: auto">
                         <Tag type="border" v-for="(item,index) in devices" :key="index" style="margin: 0 5px 5px 0"> {{ item.device_label }} </Tag>

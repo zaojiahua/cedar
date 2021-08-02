@@ -482,5 +482,7 @@
     /deep/.ivu-auto-complete.ivu-select-dropdown{
         max-height: 350px
     }
-
+    /deep/.ivu-page-simple .ivu-page-simple-pager input{
+        width: 45px;
+    }
 </style>

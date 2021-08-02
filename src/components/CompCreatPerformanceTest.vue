@@ -20,7 +20,7 @@
                 <!--<TabPane label="启动时间"></TabPane>-->
             <!--</Tabs>-->
             <Row type="flex">
-                <Col span="11">
+                <Col span="12">
                     <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
                 </Col>
                 <Col span="2">
@@ -31,15 +31,16 @@
                         </Button>
                     </Row>
                 </Col>
-                <Col span="11">
+                <Col span="10">
                     <comp-job-list style="margin-top: 48px" ref="jobSelectedList" :prop-auto-load="false" :prop-show-search="false"
                                    :prop-show-counter="true" :prop-deletable="true" :prop-show-page="false"></comp-job-list>
+                    <Row type="flex" justify="center" style="margin-top: 32px;">
+                        <Button type="primary" style="width: 90px;" @click="backToPageChooseDevice">上一步</Button>
+                        <Button type="primary" style="width: 90px; margin-left:32px;" @click="toPageFillInfo">下一步( {{selectedJob.length}} )</Button>
+                    </Row>
                 </Col>
             </Row>
-            <Row type="flex" justify="center" style="margin-top: 32px;">
-                <Button type="primary" style="width: 90px;" @click="backToPageChooseDevice">上一步</Button>
-                <Button type="primary" style="width: 90px; margin-left:32px;" @click="toPageFillInfo">下一步( {{selectedJob.length}} )</Button>
-            </Row>
+
         </div>
 
         <div v-if="current===2">

@@ -12,7 +12,7 @@
             <Button v-show="!notHistory" type="error" style="float: right;" @click="onDelete">批量删除</Button>
         </Row>
         <Row style="margin-top: 16px;" v-show="!propIsPerf">
-            <DatePicker v-model="filterDateRange" type="daterange" placeholder="选择创建日期范围" :transfer="true"
+            <DatePicker v-model="filterDateRange" style="width: 220px;" type="daterange" placeholder="选择创建日期范围" :transfer="true"
                         @on-change="onConditionChange"></DatePicker>
         </Row>
         <Row>
@@ -242,7 +242,8 @@
                         "-" +
                         (this.filterDateRange[1].getMonth() + 1) +
                         "-" +
-                        this.filterDateRange[1].getDate()
+                        this.filterDateRange[1].getDate() +
+                        " 23:59:59"
                 }
                 let userId = sessionStorage.getItem('id');
                 this.showLoading = true;
@@ -576,5 +577,7 @@
 </script>
 
 <style scoped>
-
+    /deep/.ivu-page-simple .ivu-page-simple-pager input{
+        width: 45px;
+    }
 </style>
