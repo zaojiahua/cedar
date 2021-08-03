@@ -290,6 +290,9 @@
             clearSelection() {
                 this.$refs.table.selectAll(false)
             },
+            clearJobSelection() {
+                this.selection = []
+            },
             onSelectionChange(selection){
                 selection.forEach((value) => {
                     if (this.selectionJob[value.id] === undefined ) {
