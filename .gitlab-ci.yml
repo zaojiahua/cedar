@@ -7,6 +7,9 @@ deploy:
     - echo $CI_COMMIT_SHA
     - echo $branch_name
     - echo `pwd`
+    - echo `git log $branch_name -1 --pretty=format:"%h"`
+    - SHA=`git log $branch_name -1 --pretty=format:"%h"`
+    - echo $SHA
     - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip $CI_COMMIT_SHA $branch_name
   only:
     - schedules
