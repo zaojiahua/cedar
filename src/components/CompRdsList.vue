@@ -21,7 +21,7 @@
             </p>
         </Row>
         <Row style="margin-bottom: 16px;">
-            <Select v-model="resultRange" multiple style="width:260px" placeholder="请选择测试结果类型">
+            <Select v-model="resultRange" multiple style="width:260px" :transfer="true" placeholder="请选择测试结果类型">
                 <Option value="0"> 通过 </Option>
                 <Option value="1"> 未通过 </Option>
                 <Option value="-1"> 无效 </Option>

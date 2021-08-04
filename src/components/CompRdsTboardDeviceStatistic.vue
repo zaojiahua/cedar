@@ -32,7 +32,7 @@
                     <div style="overflow:hidden;">
                         <div>
                             <div style="margin: 5px 0 20px 0">
-                                <Select v-model="resultRange" multiple style="width:230px" placeholder="请选择测试结果类型">
+                                <Select v-model="resultRange" multiple style="width:230px" :transfer="true" placeholder="请选择测试结果类型">
                                     <Option value="0"> 通过 </Option>
                                     <Option value="1"> 未通过 </Option>
                                     <Option value="-1"> 无效 </Option>
@@ -103,7 +103,7 @@
                     <p style="font-size: 12px">设备：【{{ deviceLabel }}】    用例：【{{ jobName }}】<a href="javascript:" style="margin-left: 10px" @click="showJobDetail=true;$refs.jobDetail.refresh(jobId)">用例详情</a></p>
                     <div>
                         <div style="margin: 20px 0;">
-                            <Select v-model="resultRange" multiple style="width:230px" placeholder="请选择测试结果类型">
+                            <Select v-model="resultRange" multiple style="width:230px" :transfer="true" placeholder="请选择测试结果类型">
                                 <Option value="0"> 通过 </Option>
                                 <Option value="1"> 未通过 </Option>
                                 <Option value="-1"> 无效 </Option>

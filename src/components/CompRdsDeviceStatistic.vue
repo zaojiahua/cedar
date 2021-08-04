@@ -64,7 +64,7 @@
                 <div v-show="date===1">
                     <p style="text-align: center;font-size: 16px;font-weight: bold">{{ filterDate.format("yyyy年MM月dd日") }}</p>
                     <div style="margin: 20px 0;">
-                        <Select v-model="resultRange" multiple style="width:230px" placeholder="请选择测试结果类型">
+                        <Select v-model="resultRange" multiple style="width:230px" :transfer="true" placeholder="请选择测试结果类型">
                             <Option value="0"> 通过 </Option>
                             <Option value="1"> 未通过 </Option>
                             <Option value="-1"> 无效 </Option>

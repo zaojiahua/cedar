@@ -230,6 +230,7 @@
                                 }
                             }, '编辑'),
                             h('span', {
+                                class: 'mouse-hover-remove',
                                 style: {
                                     cursor: 'pointer'
                                 },
@@ -260,6 +261,9 @@
 <style>
     .mouse-hover:hover{
         color: #1bbc9c;
+    }
+    .mouse-hover-remove:hover{
+        color: red;
     }
 </style>
 <style scoped>
