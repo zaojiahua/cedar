@@ -87,7 +87,7 @@
             <b style="cursor: default">截图：</b><b style="cursor: default" v-if="!showScreenTip">共 {{rdsInfo.rdsscreenshot.length}} 张</b>
             <label v-if="showScreenTip" style="color: #FF9900">暂无截图信息</label>
             <br>
-            <img style="margin: 5px; cursor: pointer;" v-for="(img,index) in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name @click="viewOriginalImg(img.id,index)">
+            <img style="margin: 5px; cursor: pointer;" v-for="(img,index) in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name :title=img.file_name @click="viewOriginalImg(img.id,index)">
         </div>
         <!--<div style="color: #515a6e;padding-left: 48px;font-size: 12px;margin-top: 16px" v-show="isReferenceShow">-->
             <!--<b style="cursor: default">查看查参考图片：</b><b style="cursor: default">共 {{jobResFile.length}} 张</b>-->
