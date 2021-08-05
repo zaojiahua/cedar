@@ -109,6 +109,11 @@
                 this.$ajax.get("api/v1/cedar/get_tboard_perf_dtail_data/?tboard=" + tboardId)
                     .then(response => {
                         this.data = response.data
+                        let hash = {};
+                        this.data.job_data = response.data.job_data.reduce(function(item, next) {
+                            hash[next.job_num] ? '' : hash[next.job_num] = true && item.push(next);
+                            return item
+                        }, [])
                         // 刷新所有性能图表
                         this.$nextTick(function () {
                             if (this.$refs.chartRdsGroup) {
