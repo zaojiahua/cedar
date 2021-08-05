@@ -32,14 +32,14 @@
           <b slot="label"><span class="need">*</span>屏幕尺寸</b>
           <Input style="width: 200px;margin-right: 5px" v-model="deviceInfo.screen_size"></Input><span>英寸</span>
         </FormItem>
+         <FormItem>
+            <b slot="label"><span class="need">*</span>Y 分辨率</b>
+            <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.device_height" placeholder="高度"></InputNumber>
+            <span>像素</span>
+         </FormItem>
         <FormItem>
           <b slot="label"><span class="need">*</span>X 分辨率</b>
-          <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.device_width"></InputNumber>
-          <span>像素</span>
-        </FormItem>
-        <FormItem>
-          <b slot="label"><span class="need">*</span>Y 分辨率</b>
-          <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.device_height"></InputNumber>
+          <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.device_width" placeholder="宽度"></InputNumber>
           <span>像素</span>
         </FormItem>
         <FormItem>

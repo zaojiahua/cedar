@@ -71,11 +71,11 @@
                 </FormItem>
                 <FormItem>
                     <b slot="label"><span class="need">*</span>X边框厚度</b>
-                    <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.x_border"  :min="0" placeholder="请输入手机顶部边框厚度"></InputNumber><span>毫米</span>
+                    <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.x_border"  :min="0" placeholder="请输入手机左侧边框厚度"></InputNumber><span>毫米</span>
                 </FormItem>
                 <FormItem>
                     <b slot="label"><span class="need">*</span>Y边框厚度</b>
-                    <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.y_border" placeholder="请输入手机左侧边框厚度"></InputNumber><span>毫米</span>
+                    <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.y_border" placeholder="请输入手机顶部边框厚度"></InputNumber><span>毫米</span>
                 </FormItem>
             </Form>
             <Row type="flex" justify="center">
