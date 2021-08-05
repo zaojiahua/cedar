@@ -10,7 +10,7 @@ deploy:
     - echo `git log remotes/origin/$branch_name -1 --pretty=format:"%h"`
     - SHA=`git log remotes/origin/$branch_name -1 --pretty=format:"%h"`
     - echo $SHA
-    - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip $CI_COMMIT_SHA $branch_name
+    - bash /home/gitlab-runner/cedar_deploy.sh $deploy_ip $SHA $branch_name
   only:
     - schedules
   tags:
