@@ -6,8 +6,10 @@ deploy:
     - echo $deploy_ip
     - echo $CI_COMMIT_SHA
     - echo $branch_name
+    - echo ${#branch_name}
+    - echo "branch len: ${#branch_name}"
     - echo `pwd`
-    - command=`if [ branch_name == '' ];then branch_name=devp;else echo $branch_name;fi`
+    - command=`if [ ${#branch_name} == 0 ];then branch_name='devp';else echo $branch_name;fi`
     - SHA=`git log remotes/origin/$branch_name -1 --pretty=format:"%h"`
     - echo $SHA
     - echo $branch_name
