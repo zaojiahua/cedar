@@ -4,7 +4,7 @@
         <Page :total="dataTotal" :current="currentPage" @on-change="onPageChange" :page-size="pageSize" simple style="margin-top:20px;text-align: center "/>
         <Spin size="large" fix v-if="showLoading"></Spin>
         <Modal v-model="showAppModal" footer-hide :mask-closable="false">
-            <comp-add-app-card-msg ref="editApp" @after-update="afterUpdate"></comp-add-app-card-msg>
+            <comp-add-app-card-msg ref="editApp" :isDisabled="true" @after-update="afterUpdate"></comp-add-app-card-msg>
         </Modal>
     </div>
 </template>

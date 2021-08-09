@@ -4,7 +4,7 @@
         <Form :model="selectMsg" :label-width="130" :rules="ruleValidate" ref="formValidate">
             <FormItem label="App：" prop="app_name_id">
                 <!--<Input v-model="selectMsg.app_name" type="text" ></Input>-->
-                <Select v-model="selectMsg.app_name_id" :filterable="true" style="width:100%">
+                <Select v-model="selectMsg.app_name_id" :filterable="true" style="width:100%" class="disabled" :disabled="isDisabled">
                     <Option v-for="item in appNameList" :value="item.id" :key="item.id">{{ item.name }}</Option>
                 </Select>
             </FormItem>
@@ -41,6 +41,12 @@
 
     export default {
         name: "CompAddAppCardMsg",
+        props:{
+            isDisabled:{
+                type: Boolean,
+                default: false
+            }
+        },
         data(){
             return{
                 selectMsg:{
@@ -176,5 +182,8 @@
 </script>
 
 <style scoped>
-
+    /deep/.disabled .ivu-select-input[disabled]{
+        color: #666;
+        -webkit-text-fill-color: #666;
+    }
 </style>
