@@ -47,7 +47,8 @@
             </FormItem>
             <FormItem>
                 <b slot="label">附加资源:</b>
-                <Cascader :disabled="true" v-for="i in resourceList.length" v-model="resourceList[i-1]" :data="cascaderData" :key="i"
+                <span v-if="resourceList.length===0">暂无资源</span>
+                <Cascader v-else :disabled="true" v-for="i in resourceList.length" v-model="resourceList[i-1]" :data="cascaderData" :key="i"
                           :transfer="true" style="margin-bottom: 16px" class="disabled-input"></Cascader>
             </FormItem>
             <FormItem>
@@ -57,6 +58,10 @@
             <FormItem>
                 <b slot="label">更新时间:</b>
                 <Input v-model="jobInfo.updated_time" disabled class="disabled-input"></Input>
+            </FormItem>
+            <FormItem>
+                <b slot="label">预计时长:</b>
+                <Input v-model="jobInfo.process_time" disabled class="disabled-input"></Input>
             </FormItem>
         </Form>
         <p style="text-align: right">
@@ -102,6 +107,7 @@
             description:"string"
         }],
         updated_time:"string",
+        process_time:"string",
         cabinet_type:"string"
     };
     const simChildren = [
@@ -205,7 +211,7 @@
         },
         {
             value: 'nothing',
-            label: '无'
+            label: '无卡'
         },
     ];
 
@@ -339,6 +345,7 @@
                         "job_name,"+
                         "job_label," +
                         "matching_rule,"+
+                        "process_time," +
                         "cabinet_type"
                     )
                     .then(response=>{
@@ -372,7 +379,19 @@
                             areas.push(area.description)
                         })
                         this.testArea = areas.join(",");
-                        this.resourceList = this.jobInfo.matching_rule.resource_data
+                        this.resourceList = this.jobInfo.matching_rule ? this.jobInfo.matching_rule.resource_data : []
+
+                        if(response.data.process_time){
+                            //计算分钟数
+                            let minutes=Math.floor(response.data.process_time/60)
+                            //计算相差秒数
+                            let leave=response.data.process_time%60    //计算分钟数后剩余的毫秒数
+                            let seconds=Math.round(leave)
+                            this.jobInfo.process_time = minutes+" min "+seconds+" s"
+                        }else
+                            this.jobInfo.process_time = "暂无数据"
+
+
 
                     })
                     .catch(error=>{
