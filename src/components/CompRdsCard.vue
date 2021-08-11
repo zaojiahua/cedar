@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Drawer v-model="showRdsDetail" :closable="false" width="50" transfer>
+        <Drawer v-model="showRdsDetail" :closable="false" width="50" :draggable="true" transfer>
             <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne"></comp-rds-detail>
         </Drawer>
         <Card style="margin-bottom: 16px;" dis-hover v-for="(rdsData,Index) in rdsDataList" :key="Index">
