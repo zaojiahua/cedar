@@ -84,10 +84,10 @@
             </FormItem>
         </Form>
         <div style="color: #515a6e;padding-left: 48px;font-size: 12px">
-            <b style="cursor: default">截图：</b><b style="cursor: default" v-if="!showScreenTip">共 {{rdsInfo.rdsscreenshot.length}} 张</b>
+            <b style="cursor: default">截图：</b><b style="cursor: default" v-if="!showScreenTip">共 {{rdsscreenshot.length}} 张</b>
             <label v-if="showScreenTip" style="color: #FF9900">暂无截图信息</label>
             <br>
-            <img style="margin: 5px; cursor: pointer;" v-for="(img,index) in rdsInfo.rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name :title=img.file_name @click="viewOriginalImg(img.id,index)">
+            <img style="margin: 5px; cursor: pointer;" v-for="(img,index) in rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name :title=img.file_name @click="viewOriginalImg(img,index)">
         </div>
         <!--<div style="color: #515a6e;padding-left: 48px;font-size: 12px;margin-top: 16px" v-show="isReferenceShow">-->
             <!--<b style="cursor: default">查看查参考图片：</b><b style="cursor: default">共 {{jobResFile.length}} 张</b>-->
@@ -100,7 +100,7 @@
             <img :src=baseUrl+imgInfo.img_file :alt="imgInfo.file_name" style="max-height: 92%;max-width: 100%;">
             <Icon type="ios-arrow-dropright-circle" size="60" style="position: fixed;top: 45%;right: 5%;cursor: pointer;opacity: 0.4" @click="nextBtn"/>
             <p style="font-size: 20px"> {{ imgInfo.file_name }} </p>
-            <p style="font-size: 20px"> {{ imgIndex+1 }} / {{ rdsInfo.rdsscreenshot.length }} </p>
+            <p style="font-size: 20px"> {{ imgIndex+1 }} / {{ rdsscreenshot.length }} </p>
         </Modal>
         <Modal v-model="showRdsLogModal" :fullscreen="true" :title="logName" ok-text="下载" @on-ok="downloadLog">
             <comp-view-log-file ref="viewLogFile"></comp-view-log-file>
@@ -185,11 +185,20 @@
             board_name: "string"
         }
     }
+    const rdsscreenshotSerializer = [{
+        id:"number",
+        thumbs_file:"string",
+        file_name:"string",
+        img_file:"string",
+        rds:"number"
+    }]
     const imgSerializer = {
-            id:"number",
-            file_name:"string",
-            img_file:"string"
-        }
+        id:"number",
+        thumbs_file:"string",
+        file_name:"string",
+        img_file:"string",
+        rds:"number"
+    }
 
 
     export default {
@@ -218,6 +227,7 @@
                 isReferenceShow:false,
                 showRdsPhotosModal:false,
                 showRdsFramePhotosModal:false,
+                rdsscreenshot:utils.validate(rdsscreenshotSerializer,[]),
             }
         },
         methods:{
@@ -270,8 +280,6 @@
                         }
                         if(this.rdsInfo.rdslog.length===0)
                             this.showLogTip=true;
-                        if(this.rdsInfo.rdsscreenshot.length===0)
-                            this.showScreenTip=true;
                         this.showTemperatures=true;
                         let endTime = this.rdsInfo.end_time;
                         if(this.rdsInfo.end_time===null){
@@ -289,6 +297,22 @@
                             errorMsg = "服务器错误！"
                         } else {
                             errorMsg = "数据读取失败！"
+                        }
+                        this.$Message.error(errorMsg)
+                    })
+                this.$ajax.get("api/v1/cedar/get_sort_rds_screenshot/?reverse=false&rds=" + rdsId)
+                    .then(response=>{
+                        this.rdsscreenshot = response.data
+                        if(this.rdsscreenshot.length===0)
+                            this.showScreenTip=true;
+                    })
+                    .catch(error=>{
+                        if (config.DEBUG) console.log(error)
+                        let errorMsg = "";
+                        if (error.response.status >= 500) {
+                            errorMsg = "服务器错误！"
+                        } else {
+                            errorMsg = "截图获取失败！"
                         }
                         this.$Message.error(errorMsg)
                     })
@@ -356,43 +380,22 @@
                 })
                 // window.open(this.baseUrl+this.path)
             },
-            viewOriginalImg(imgId,index){
+            viewOriginalImg(img,index){
                 this.imgIndex = index
                 this.showImgModal = true;
-                this.getOriginalImg(imgId)
+                this.imgInfo = img
             },
             nextBtn(){
-                if(this.rdsInfo.rdsscreenshot[this.imgIndex+1]){
+                if(this.rdsscreenshot[this.imgIndex+1]){
                     this.imgIndex++
-                    let imgId = this.rdsInfo.rdsscreenshot[this.imgIndex].id
-                    this.showImgModal = true;
-                    this.getOriginalImg(imgId)
+                    this.imgInfo = this.rdsscreenshot[this.imgIndex]
                 }
             },
             prevBtn(){
                 if(this.imgIndex===0)
                     return
                 this.imgIndex--
-                let imgId = this.rdsInfo.rdsscreenshot[this.imgIndex].id
-                this.showImgModal = true;
-                this.getOriginalImg(imgId)
-            },
-            getOriginalImg(imgId){
-                this.$ajax
-                    .get("api/v1/cedar/rds_screenshot/"+imgId+"/?fields="+
-                        "id,img_file,file_name")
-                    .then(response=>{
-                        this.imgInfo = utils.validate(imgSerializer,response.data);
-                    }).catch(error=>{
-                        if (config.DEBUG) console.log(error)
-                        let errorMsg = "";
-                        if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
-                        } else {
-                            errorMsg = "图片读取失败！"
-                        }
-                        this.$Message.error(errorMsg)
-                })
+                this.imgInfo = this.rdsscreenshot[this.imgIndex]
             },
             openRdsDict(){
                 let route = this.$router.resolve({
@@ -457,7 +460,23 @@
                     this.$Message.error("数据保存失败")
                 })
             },
+            //键盘左右切换事件
+            onKeyUpEvent(event) {
+                if(this.showImgModal){
+                    if (event.keyCode === 37) {  //左 ←
+                        this.prevBtn()
+                    } else if (event.keyCode === 39) {  //右 →
+                        this.nextBtn()
+                    }
+                }
+            }
         },
+        created() {
+            window.addEventListener('keyup', this.onKeyUpEvent)
+        },
+        beforeDestroy() {
+            window.removeEventListener('keyup', this.onKeyUpEvent)
+        }
     }
 </script>
 
