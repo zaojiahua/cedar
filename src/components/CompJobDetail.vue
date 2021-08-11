@@ -60,8 +60,12 @@
                 <Input v-model="jobInfo.updated_time" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">预计时长:</b>
+                <b slot="label">平均时长:</b>
                 <Input v-model="jobInfo.process_time" disabled class="disabled-input"></Input>
+            </FormItem>
+            <FormItem>
+                <b slot="label">最大时长:</b>
+                <Input v-model="jobInfo.max_process_time" disabled class="disabled-input"></Input>
             </FormItem>
         </Form>
         <p style="text-align: right">
@@ -108,6 +112,7 @@
         }],
         updated_time:"string",
         process_time:"string",
+        max_process_time:"string",
         cabinet_type:"string"
     };
     const simChildren = [
@@ -346,6 +351,7 @@
                         "job_label," +
                         "matching_rule,"+
                         "process_time," +
+                        "max_process_time," +
                         "cabinet_type"
                     )
                     .then(response=>{
@@ -390,8 +396,15 @@
                             this.jobInfo.process_time = minutes+" min "+seconds+" s"
                         }else
                             this.jobInfo.process_time = "暂无数据"
-
-
+                        if(response.data.max_process_time){
+                            //计算分钟数
+                            let minutes=Math.floor(response.data.max_process_time/60)
+                            //计算相差秒数
+                            let leave=response.data.max_process_time%60    //计算分钟数后剩余的毫秒数
+                            let seconds=Math.round(leave)
+                            this.jobInfo.max_process_time = minutes+" min "+seconds+" s"
+                        }else
+                            this.jobInfo.max_process_time = "暂无数据"
 
                     })
                     .catch(error=>{
