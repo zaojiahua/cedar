@@ -6,12 +6,20 @@
                 <Input disabled class="disabled-input" :value="data.board_name"></Input>
             </FormItem>
             <FormItem>
+                <b slot="label">用例数量:</b>
+                <Input disabled class="disabled-input" :value="getJobNum(data.job)"></Input>
+            </FormItem>
+            <FormItem>
                 <b slot="label">测试用例:</b>
                 <ButtonGroup>
                     <Tooltip v-for="(job,index) in data.job" :content="job.job_label" :key="index" placement="top" transfer>
                         <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">{{job.job_name}}</Button>
                     </Tooltip>
                 </ButtonGroup>
+            </FormItem>
+            <FormItem>
+                <b slot="label">设备数量:</b>
+                <Input disabled class="disabled-input" :value="data.device.length"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">测试设备:</b>
@@ -336,6 +344,15 @@
             },
             onJobCellClick(statistic){
                 this.$emit('on-job-cell-click', this.data.id, statistic)
+            },
+            //去重后的job数量
+            getJobNum(arr){
+                let hash = {};
+                let list = arr.reduce(function(item, next) {
+                    hash[next.job_label] ? '' : hash[next.job_label] = true && item.push(next);
+                    return item
+                }, [])
+                return list.length
             }
         }
     }
