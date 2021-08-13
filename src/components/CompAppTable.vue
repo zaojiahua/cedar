@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Table :columns="appColumn" :data="data" border highlight-row @on-row-click="onRowClick"></Table>
+        <Table :columns="appColumn" :data="data" border @on-row-click="onRowClick" @on-selection-change="onSelectionChange"></Table>
         <Page :total="dataTotal" :current="currentPage" @on-change="onPageChange" :page-size="pageSize" simple style="margin-top:20px;text-align: center "/>
         <Spin size="large" fix v-if="showLoading"></Spin>
         <Modal v-model="showAppModal" footer-hide :mask-closable="false">
@@ -47,6 +47,10 @@
             propAction:{
                 type:Boolean,
                 default:true
+            },
+            propMultiSelect:{
+                type:Boolean,
+                default:false
             }
         },
         data(){
@@ -125,10 +129,14 @@
                 dataTotal:0,
                 currentPage:1,
                 offset: 0,
+                selection:[],
+                selectionApp:{},
+                currentPageSelection:{},
             }
         },
         methods:{
             getData(){
+                this.currentPageSelection = {}
                 let appNameCondition = ""
                 if(this.appNameList.length>0)
                     appNameCondition = "&app__id__in="+"ReefList["+this.appNameList.join("{%,%}")+"]"
@@ -167,6 +175,14 @@
                                     subsidiaryList.push(device.custom_name)
                                 })
                             item.connection = deviceList.join(",") + subsidiaryList.join(",")
+                            /* 将之前已经选中的选项重新勾选 */
+                            if(this.selection.length>0)
+                                this.selection.forEach(selected=>{
+                                    if (item.id === selected.id){
+                                        item._checked = true
+                                        this.$set(this.currentPageSelection, item.id, 'exist')
+                                    }
+                                })
                         })
                         this.showLoading = false
                     }).catch(error=>{
@@ -214,10 +230,46 @@
                         this.$Message.error("app列表获取失败")
                     })
             },
+            // 支持多选
+            getThisSelection(){
+                return this.selection;
+            },
+            onSelectionChange(selection){
+                selection.forEach((value) => {
+                    if (this.selectionApp[value.id] === undefined ) {
+                        //console.log('勾选了id为' + value.id + '的job')
+                        this.$set(this.selectionApp, value.id, value)    //所有的已选择App  包括新选择的App
+                        this.$set(this.currentPageSelection, value.id, 'exist')    //currentPageSelectedApp  当前页已选择App
+                    }
+                })
+                //用上个步骤得到的当前页已选择的App-id 和 实际表格返回的 selection做比对，如果对上，则不做任何操作
+                // 如果对不上，则表示多了一个，即用户点击了一次取消，就用$delete方法将多出来的这条数据删除this.$delete(obj,key);
+                for (let item in this.currentPageSelection) {
+                    let i = 0
+                    for (i; i < selection.length; i++) {
+                        if (parseInt(item) === selection[i].id) {
+                            break
+                        }
+                    }
+                    if (i === selection.length) {
+                        //console.log('不再勾选id为' + item + '的job')
+                        this.$delete(this.selectionApp, item)
+                        this.$delete(this.currentPageSelection, item)
+                    }
+                }
+                //对象提取所有的value
+                this.selection = _.values(this.selectionApp)
+            },
         },
         created(){
             let username = sessionStorage.getItem('username');
             this.getAppNameList()
+            if (this.propMultiSelect)
+                this.appColumn.splice(0, 0, {
+                    type: 'selection',
+                    width: 60,
+                    align: 'center'
+                })
             if (username==="admin" && this.propAction) {
                 this.appColumn.push({
                     title: "操作",

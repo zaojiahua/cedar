@@ -134,7 +134,7 @@
             </div>
         </Modal>
         <Modal v-model="showAddAppModal"  :fullscreen="true" :transfer="false" :closable="false">
-            <comp-app-table v-if="showAddAppModal" :prop-status="true" :prop-action="false" @on-row-click="onAppRowClick"></comp-app-table>
+            <comp-app-table v-if="showAddAppModal" ref="appTable" :prop-status="true" :prop-action="false" :prop-multi-select="true"></comp-app-table>
             <div slot="footer">
                 <Button type="text" @click="showAddAppModal=false">取消</Button>
                 <Button type="primary" @click="addAppSource">确定</Button>
@@ -320,11 +320,15 @@
                 this.sim_id = row.id
             },
             //选择要添加的APP账号
-            onAppRowClick(row){
-                this.app_id = row.id
-            },
+            // onAppRowClick(row){
+            //     this.app_id = row.id
+            // },
             //add SIM card/---/app
             addSimCard(){
+                if(!this.sim_id){
+                    this.$Message.info("请选择要绑定的SIM卡！")
+                    return
+                }
                 this.$ajax.patch("api/v1/cedar/simcard/" + this.sim_id + "/",{
                     order: this.simOrder,
                     status:"busy",
@@ -338,16 +342,28 @@
                 })
             },
             addAppSource(){
-                this.$ajax.post("api/v1/cedar/bind_account_source/",{
-                    id:this.app_id,
-                    subsidiary_device:this.device.id
-                }).then(response=>{
-                    this.$Message.success("app账号资源绑定成功")
-                    this.showAddAppModal = false
-                    this.refresh(this.device.id)
-                }).catch(error=>{
-                    this.$Message.error({content:"app账号资源绑定失败"+ error.response.data.message,duration:6})
+                let apps = this.$refs.appTable.getThisSelection()
+                if(apps.length===0){
+                    this.$Message.info("请选择要绑定的APP资源！")
+                    return
+                }
+                let ajaxObj = [];
+                apps.forEach(info=>{
+                    ajaxObj.push(this.$ajax.post("api/v1/cedar/bind_account_source/",{
+                        id:info.id,
+                        subsidiary_device:this.device.id
+                    }))
                 })
+                this.$ajax.all(ajaxObj)
+                    .then(response=>{
+                        this.$Message.success("app账号资源绑定成功！")
+                        this.showAddAppModal = false
+                        this.refresh(this.device.id)
+                    })
+                    .catch(error=>{
+                        if (config.DEBUG) console.log(error)
+                        this.$Message.error({content:"app账号资源绑定失败;"+error.response.data.message,duration:7})
+                    })
             },
             //remove sim  card/---/ app
             removeSimCard(id){
