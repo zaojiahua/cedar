@@ -7,9 +7,9 @@
             <Row type="flex">
                 <Spin v-show="loadingData" size="large" style="position: absolute; width: 100%; height: inherit; left: 50%;"></Spin>
                 <div :class="loadingData ? 'opacity-row' : ''">
-                    <div class="rds-box"
-                         v-for="(item,index) in rdsData" :key="item.id" :class="[getRdsColorClass(item.job_assessment_value),{'select':index===rdsIndex&&cardIndex===Index}]" @mouseenter="onRdsMouseEnter(item)"
-                         @mouseleave="onRdsMouseLeave" @click="onRdsBoxClick(item,Index,index)"></div>
+                    <div class="rds-box tooltip" :title="'ID：'+item.id+'\n设备名称：'+ item.device.device_name+'\n用例名称：'+item.job.job_name+'\n结果：'+item.job_assessment_value"
+                         v-for="(item,index) in rdsData" :key="item.id" :class="[getRdsColorClass(item.job_assessment_value),{'select':index===rdsIndex&&cardIndex===Index}]"
+                         @click="onRdsBoxClick(item,Index,index)"></div>
                 </div>
             </Row>
         </Card>
