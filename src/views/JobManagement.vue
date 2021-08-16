@@ -163,6 +163,7 @@
                             this.$ajax.post("api/v1/cedar/job_deleted/", { job_ids:jobList } )
                                 .then(response=>{
                                     this.$Message.success("用例删除成功！")
+                                    that.jobNumbers = 0
                                     that.onJobFilterChange(that.$refs.jobFilter._jobRender())
                                 })
                                 .catch(error=>{
