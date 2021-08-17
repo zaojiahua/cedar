@@ -334,7 +334,7 @@
                     })
                     .catch(this._requestErrorHandle)
             },
-            handleSearch (value) {
+            handleSearch (value) {  //搜索补全项的时候调用//输入框输入实时改变option
                 let list = [];
                 if(this.allJobNameList.toString().toUpperCase().indexOf(value.toUpperCase())!==-1){
                     this.allJobNameList.forEach(item=>{
@@ -348,6 +348,7 @@
                 if(value.indexOf("&")!==-1){
                     value = value.replace(/\&/g,"%26")
                 }
+                value= encodeURIComponent(value)
                 let deviceCountCondition = ""
                 if(this.propSubsidiaryDeviceCount)
                     deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
