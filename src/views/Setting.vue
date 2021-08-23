@@ -8,6 +8,7 @@
                 <Option :value="10">10 条/页 </Option>
                 <Option :value="30">30 条/页</Option>
                 <Option :value="50"> 50 条/页</Option>
+                <Option :value="100"> 100 条/页</Option>
             </Select>
         </Row>
         <Row style="text-align: center">
