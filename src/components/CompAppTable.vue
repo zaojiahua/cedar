@@ -223,7 +223,10 @@
                         appNameList.forEach(item=>{
                             appNameFilters.push({label:item.name,value:item.id})
                         })
-                        this.appColumn[0].filters = appNameFilters;
+                        if(this.propMultiSelect)
+                            this.appColumn[1].filters = appNameFilters;
+                        else
+                            this.appColumn[0].filters = appNameFilters;
                     })
                     .catch(error=>{
                         if(config.DEBUG) console.log(error)
