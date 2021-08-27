@@ -32,10 +32,15 @@
                     <div style="overflow:hidden;">
                         <div>
                             <div style="margin: 5px 0 20px 0">
-                                <Select v-model="resultRange" multiple style="width:230px" :transfer="true" placeholder="请选择测试结果类型">
+                                <Select v-model="resultRange" multiple style="width:230px" @on-change="invalidType=''" :transfer="true" placeholder="请选择测试结果类型">
                                     <Option value="0"> 通过 </Option>
                                     <Option value="1"> 未通过 </Option>
                                     <Option value="-1"> 无效 </Option>
+                                </Select>
+                                <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
+                                    <Option value="2003"> 2003 </Option>
+                                    <Option value="7003"> 7003 </Option>
+                                    <Option value="7006"> 7006 </Option>
                                 </Select>
                                 <p style="float: right">
                                     <Tag type="dot" color="#1bbc9c">通过</Tag>
@@ -47,6 +52,7 @@
                                            :prop-device-id="deviceId"
                                            :prop-tboard-id="propTboardId"
                                            :prop-result-range="resultRange"
+                                           :prop-invalid-type="invalidType"
                                            @after-load-data="afterLoadData1"
                                            @rds-mouse-enter="onRdsMouseEnter"
                                            @rds-mouse-leave="onRdsMouseLeave">
@@ -103,10 +109,15 @@
                     <p style="font-size: 12px">设备：【{{ deviceLabel }}】    用例：【{{ jobName }}】<a href="javascript:" style="margin-left: 10px" @click="showJobDetail=true;$refs.jobDetail.refresh(jobId)">用例详情</a></p>
                     <div>
                         <div style="margin: 20px 0;">
-                            <Select v-model="resultRange" multiple style="width:230px" :transfer="true" placeholder="请选择测试结果类型">
+                            <Select v-model="resultRange2" multiple style="width:230px" @on-change="invalidType2=''" :transfer="true" placeholder="请选择测试结果类型">
                                 <Option value="0"> 通过 </Option>
                                 <Option value="1"> 未通过 </Option>
                                 <Option value="-1"> 无效 </Option>
+                            </Select>
+                            <Select v-model="invalidType2" v-show="resultRange2.length===1&&resultRange2[0]==='-1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
+                                <Option value="2003"> 2003 </Option>
+                                <Option value="7003"> 7003 </Option>
+                                <Option value="7006"> 7006 </Option>
                             </Select>
                             <p style="float: right">
                                 <Tag type="dot" color="#1bbc9c">通过</Tag>
@@ -118,7 +129,8 @@
                                        :prop-device-id="deviceId"
                                        :prop-job-id="jobId"
                                        :prop-tboard-id="propTboardId"
-                                       :prop-result-range="resultRange"
+                                       :prop-result-range="resultRange2"
+                                       :prop-invalid-type="invalidType2"
                                        @after-load-data="afterLoadData"
                                        @rds-mouse-enter="onRdsMouseEnter"
                                        @rds-mouse-leave="onRdsMouseLeave">
@@ -187,6 +199,7 @@
                     invalid:0
                 },
                 resultRange:[],
+                resultRange2:[],
                 scrollMore:false,
                 noMoreData:false,
                 scrollMore1:false,
@@ -202,6 +215,8 @@
                 pieFailure:null,
                 showLoading:false,
                 tabName:"testInfo",
+                invalidType:'',
+                invalidType2:'',
 
             }
         },

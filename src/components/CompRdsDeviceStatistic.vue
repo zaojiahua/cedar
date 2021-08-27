@@ -64,10 +64,15 @@
                 <div v-show="date===1">
                     <p style="text-align: center;font-size: 16px;font-weight: bold">{{ filterDate.format("yyyy年MM月dd日") }}</p>
                     <div style="margin: 20px 0;">
-                        <Select v-model="resultRange" multiple style="width:230px" :transfer="true" placeholder="请选择测试结果类型">
+                        <Select v-model="resultRange" multiple style="width:230px" @on-change="invalidType=''" :transfer="true" placeholder="请选择测试结果类型">
                             <Option value="0"> 通过 </Option>
                             <Option value="1"> 未通过 </Option>
                             <Option value="-1"> 无效 </Option>
+                        </Select>
+                        <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
+                            <Option value="2003"> 2003 </Option>
+                            <Option value="7003"> 7003 </Option>
+                            <Option value="7006"> 7006 </Option>
                         </Select>
                         <p style="float: right">
                             <Tag type="dot" color="#1bbc9c">通过</Tag>
@@ -80,6 +85,7 @@
                                    :prop-job-id="jobId"
                                    :prop-filter-date-range="filterDateOne"
                                    :prop-result-range="resultRange"
+                                   :prop-invalid-type="invalidType"
                                    @after-load-data="afterLoadData"
                                    @rds-mouse-enter="onRdsMouseEnter"
                                    @rds-mouse-leave="onRdsMouseLeave">
@@ -177,6 +183,7 @@
                 pieData:[],
                 pieFailure:null,
                 showLoading:false,
+                invalidType:'',
 
             }
         },
