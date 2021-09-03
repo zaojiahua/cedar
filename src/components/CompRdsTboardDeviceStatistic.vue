@@ -299,8 +299,10 @@
             },
             deviceId:{
                 handler: function(){
-                    this.$refs.tempHistogram.refresh(this.propFilterDateRange[0],this.propFilterDateRange[1])
-                    this.$refs.powerHistogram.refresh(this.propFilterDateRange[0],this.propFilterDateRange[1])
+                    if(this.tabName==="testInfo"){
+                        this.$refs.tempHistogram.refresh(this.propFilterDateRange[0],this.propFilterDateRange[1])
+                        this.$refs.powerHistogram.refresh(this.propFilterDateRange[0],this.propFilterDateRange[1])
+                    }
                 }
             }
 
