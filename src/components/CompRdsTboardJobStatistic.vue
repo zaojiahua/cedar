@@ -55,10 +55,8 @@
                             <Option value="1"> 未通过 </Option>
                             <Option value="-1"> 无效 </Option>
                         </Select>
-                        <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
-                            <Option value="2003"> 2003 </Option>
-                            <Option value="7003"> 7003 </Option>
-                            <Option value="7006"> 7006 </Option>
+                        <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'&&invalidList.length>0" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
+                            <Option v-for="item in invalidList" :value="item.job_assessment_value"> {{ item.job_assessment_value }} ({{ item.count }}) </Option>
                         </Select>
                         <p style="float: right">
                             <Tag type="dot" color="#1bbc9c">通过</Tag>
@@ -153,6 +151,7 @@
                 showLoading:false,
                 updateRds:"",
                 invalidType:'',
+                invalidList:[],
             }
         },
         methods:{
@@ -212,15 +211,28 @@
                 this.deviceId = id
                 this.deviceLabel = label
                 this.updateRds = this.jobId + " "+ this.deviceId
+                this.getInvalidList()
             },
             onDeviceChartClick(id,na,success,fail,total,na_ratio,fail_ratio,label){
                 this.deviceId = id
                 this.deviceLabel = label
                 this.updateRds = this.jobId + " "+ this.deviceId
+                this.getInvalidList()
             },
             onClickLoadMore(){
                 this.scrollMore = true
                 this.$refs.rdsCard.loadMoreData(false)
+            },
+            getInvalidList(){
+                this.$ajax.post("api/v1/cedar/filter_invalid_rds/",{
+                    device_id:this.deviceId,
+                    tboard_id: this.propTboardId,
+                    job_id: this.jobId
+                }).then(response=>{
+                    this.invalidList = response.data
+                }).catch(error=>{
+                    this.$Message.error("获取无效类型出错")
+                })
             },
 
         },

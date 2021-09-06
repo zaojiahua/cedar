@@ -37,10 +37,8 @@
                                     <Option value="1"> 未通过 </Option>
                                     <Option value="-1"> 无效 </Option>
                                 </Select>
-                                <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
-                                    <Option value="2003"> 2003 </Option>
-                                    <Option value="7003"> 7003 </Option>
-                                    <Option value="7006"> 7006 </Option>
+                                <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'&&invalidList.length>0" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
+                                    <Option v-for="item in invalidList" :value="item.job_assessment_value"> {{ item.job_assessment_value }} ({{ item.count }}) </Option>
                                 </Select>
                                 <p style="float: right">
                                     <Tag type="dot" color="#1bbc9c">通过</Tag>
@@ -114,10 +112,8 @@
                                 <Option value="1"> 未通过 </Option>
                                 <Option value="-1"> 无效 </Option>
                             </Select>
-                            <Select v-model="invalidType2" v-show="resultRange2.length===1&&resultRange2[0]==='-1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
-                                <Option value="2003"> 2003 </Option>
-                                <Option value="7003"> 7003 </Option>
-                                <Option value="7006"> 7006 </Option>
+                            <Select v-model="invalidType2" v-show="resultRange2.length===1&&resultRange2[0]==='-1'&&invalidList2.length>0" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
+                                <Option v-for="item in invalidList2" :value="item.job_assessment_value"> {{ item.job_assessment_value }} ({{ item.count }}) </Option>
                             </Select>
                             <p style="float: right">
                                 <Tag type="dot" color="#1bbc9c">通过</Tag>
@@ -219,6 +215,8 @@
                 invalidType:'',
                 invalidType2:'',
                 updateRds:"",
+                invalidList:[],
+                invalidList2:[],
             }
         },
         methods:{
@@ -252,9 +250,11 @@
                 let type = "fail_ratio"
                 if(this.propType===2)
                     type = "na_ratio"
-                if(id)
+                if(id){
                     this.jobUrl = "api/v1/cedar/get_data_view/?tboard_id="+ this.propTboardId +"&device_id=" + id +
                         "&group_by=job&page=0&ordering=-" + type
+                    this.getInvalidList()
+                }
                 else
                     this.jobUrl = ""
                 this.showLoading = false
@@ -277,16 +277,19 @@
                     type = "na_ratio"
                 this.jobUrl = "api/v1/cedar/get_data_view/?tboard_id="+ this.propTboardId + "&device_id=" + id +
                     "&group_by=job&page=0&ordering=-" + type
+                this.getInvalidList()
             },
             afterJobDataLoading(id,na,success,fail,total,na_ratio,fail_ratio,label,name){
                 this.jobId = id
                 this.jobName = name
                 this.updateRds = this.deviceId + " "+ this.jobId
+                this.getInvalidList2()
             },
             onJobChartClick(id,na,success,fail,total,na_ratio,fail_ratio,label,name){
                 this.jobId = id
                 this.jobName = name
                 this.updateRds = this.deviceId + " "+ this.jobId
+                this.getInvalidList2()
             },
             onClickLoadMore(){
                 this.scrollMore = true
@@ -295,6 +298,27 @@
             onClickLoadMore1(){
                 this.scrollMore1 = true
                 this.$refs.rdsCard1.loadMoreData(false)
+            },
+            getInvalidList(){
+                this.$ajax.post("api/v1/cedar/filter_invalid_rds/",{
+                    device_id:this.deviceId,
+                    tboard_id: this.propTboardId,
+                }).then(response=>{
+                    this.invalidList = response.data
+                }).catch(error=>{
+                    this.$Message.error("获取无效类型出错")
+                })
+            },
+            getInvalidList2(){
+                this.$ajax.post("api/v1/cedar/filter_invalid_rds/",{
+                    device_id:this.deviceId,
+                    tboard_id: this.propTboardId,
+                    job_id: this.jobId
+                }).then(response=>{
+                    this.invalidList2 = response.data
+                }).catch(error=>{
+                    this.$Message.error("获取无效类型出错")
+                })
             }
 
         },
