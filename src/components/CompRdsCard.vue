@@ -86,6 +86,10 @@
             propFullDate:{
                 type: Boolean,
                 default: true
+            },
+            updateRds:{
+                type: String,
+                default: ""
             }
         },
         data: function () {
@@ -297,13 +301,21 @@
                     this.loadMoreData(true)
                 }
             },
-            propJobId:{
-                handler: function(){
-                    this.loadMoreData(true)
-                }
-            },
+            // propJobId:{
+            //     handler: function(){
+            //         console.log(this.propJobId)
+            //         this.loadMoreData(true)
+            //     }
+            // },
             propDeviceId:{
                 handler: function(){
+                    if(this.updateRds===""){
+                        this.loadMoreData(true)
+                    }
+                }
+            },
+            updateRds:{
+                handler: function(val){
                     this.loadMoreData(true)
                 }
             }
