@@ -83,6 +83,7 @@
                     <comp-rds-card ref="rdsCard" v-if="jobId!==null"
                                    :prop-device-id="deviceId"
                                    :prop-job-id="jobId"
+                                   :update-rds="updateRds"
                                    :prop-filter-date-range="filterDateOne"
                                    :prop-result-range="resultRange"
                                    :prop-invalid-type="invalidType"
@@ -183,6 +184,7 @@
                 pieData:[],
                 pieFailure:null,
                 showLoading:false,
+                updateRds:"",
                 invalidType:'',
 
             }
@@ -252,10 +254,12 @@
             afterJobDataLoading(id,na,success,fail,total,na_ratio,fail_ratio,label,name){
                 this.jobId = id
                 this.jobName = name
+                this.updateRds = this.deviceId + " "+ this.jobId
             },
             onJobChartClick(id,na,success,fail,total,na_ratio,fail_ratio,label,name){
                 this.jobId = id
                 this.jobName = name
+                this.updateRds = this.deviceId + " "+ this.jobId
             }
 
         },

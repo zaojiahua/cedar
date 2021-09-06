@@ -375,7 +375,7 @@
                 if(this.propShowPage){
                     this.currentPage = 1;
                     url = url +
-                        "&limit=" + config.DEFAULT_PAGE_SIZE +
+                        "&limit=" + this.pageSize +
                         "&offset=0"
                 }
                 this.$ajax.get(url)

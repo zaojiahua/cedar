@@ -61,6 +61,7 @@
                 board_stamp: "date",
                 board_name: "string",
                 finished_flag: "boolean",
+                username:"",
                 success_ratio: "number"
             }
         ]
@@ -200,6 +201,8 @@
                 path:"ws://"+config.REEF_HOST+":"+config.WEBSOCKET+"/ws/tboard_delete/",
                 showTestAgain:false,
                 errorModalMessage:"",
+                userFilterList:[],
+                hisUserFilterList:[],
             }
         },
         methods: {
@@ -246,6 +249,18 @@
                         " 23:59:59"
                 }
                 let userId = sessionStorage.getItem('id');
+                let userCondition = ""
+                if(sessionStorage.getItem('username')==='admin'){
+                    if (this.filterCondition === "history"){
+                        if(this.hisUserFilterList.length>0)
+                            userCondition = "&author__id__in=ReefList[" + this.hisUserFilterList.join("{%,%}") + "]"
+                    }else {
+                        if(this.userFilterList.length>0)
+                            userCondition = "&author__id__in=ReefList[" + this.userFilterList.join("{%,%}") + "]"
+                    }
+                } else
+                    userCondition = "&author__id=" + userId
+
                 this.showLoading = true;
                 this.$ajax.get(
                     "api/v1/cedar/tboard/?fields=" +
@@ -254,12 +269,13 @@
                     "board_name," +
                     "device,job,repeat_time," +
                     "finished_flag," +
+                    "author,author.id,author.username," +
                     "success_ratio" +
-                    "&author__id=" + userId +
                     "&ordering=-board_stamp" +
                     "&is_to_delete=False" +
                     '&limit=' + this.pageSize +
                     "&offset=" + this.offset +
+                    userCondition +
                     finishedCondition +
                     dateRangeCondition +
                     perfCondition +
@@ -269,6 +285,7 @@
                     this.dataTotal = parseInt(response.headers["total-count"])
                     this.data = utils.validate(getTboardSerializer, response.data).tboards
                     this.data.forEach(item=>{
+                        item.username = item.author.username
                         item.success_ratio = (item.success_ratio *100).toFixed(1) + "%";
                         this.tboardIdList.push(item.id)
                         // //判断是否可以重来一次
@@ -552,6 +569,49 @@
         },
         created() {
             this.pageSize = utils.getPageSize();
+            let userList = []
+            this.$ajax.get(
+                "api/v1/cedar/reefuser/?fields=" +
+                "id," +
+                "username," +
+                "last_name" +
+                "&ordering=username" +
+                "&is_active=True"
+            ).then(response=>{
+                response.data.reefusers.forEach(item=>{
+                    userList.push({
+                        label:item.username,
+                        value:item.id
+                    })
+                })
+            }).catch(error=>{
+                this.$Message.error("获取用户列表失败!")
+            })
+
+            let _this = this
+            if(sessionStorage.getItem('username')==='admin'){
+                this.columns.push({
+                    title: "操作人员",
+                    key:"username",
+                    sortable: true,
+                    filters: userList,
+                    filterRemote(value){
+                        _this.userFilterList = value
+                        _this.onPageChange(1)
+                    }
+                })
+                this.columns1.push({
+                    title: "操作人员",
+                    key:"username",
+                    sortable: true,
+                    filters: userList,
+                    filterRemote(value){
+                        _this.hisUserFilterList = value
+                        _this.onPageChange(1)
+                    }
+                })
+            }
+
             if (this.propShowActionColumn)
                 this.columns.push({
                     width: 180,

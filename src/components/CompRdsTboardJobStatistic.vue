@@ -69,6 +69,7 @@
                     <comp-rds-card ref="rdsCard" v-if="deviceId!==null"
                                    :prop-device-id="deviceId"
                                    :prop-job-id="jobId"
+                                   :update-rds="updateRds"
                                    :prop-tboard-id="propTboardId"
                                    :prop-result-range="resultRange"
                                    :prop-invalid-type="invalidType"
@@ -150,6 +151,7 @@
                 pieData:[],
                 pieFailure:null,
                 showLoading:false,
+                updateRds:"",
                 invalidType:'',
             }
         },
@@ -209,10 +211,12 @@
             afterDeviceDataLoading(id,na,success,fail,total,na_ratio,fail_ratio,label){
                 this.deviceId = id
                 this.deviceLabel = label
+                this.updateRds = this.jobId + " "+ this.deviceId
             },
             onDeviceChartClick(id,na,success,fail,total,na_ratio,fail_ratio,label){
                 this.deviceId = id
                 this.deviceLabel = label
+                this.updateRds = this.jobId + " "+ this.deviceId
             },
             onClickLoadMore(){
                 this.scrollMore = true
