@@ -69,7 +69,7 @@
                             <Option value="1"> 未通过 </Option>
                             <Option value="-1"> 无效 </Option>
                         </Select>
-                        <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
+                        <Select v-model="invalidType" v-if="false" v-show="resultRange.length===1&&resultRange[0]==='-1'&&false" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
                             <Option value="2003"> 2003 </Option>
                             <Option value="7003"> 7003 </Option>
                             <Option value="7006"> 7006 </Option>
