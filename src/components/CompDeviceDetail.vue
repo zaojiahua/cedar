@@ -99,7 +99,7 @@
                     </Form>
                 </div>
             </Panel>
-            <Panel v-show="device.status!=='offline'&&device.status!=='error'">SIM卡信息
+            <Panel>SIM卡信息
                 <Button type="text" @click.stop="unboundAllSources(1)" style="float: right;margin-right: 10%;margin-top: 4px">批量解绑</Button>
                 <div slot="content">
                     <Form :model="device" :label-width="90">
@@ -108,7 +108,7 @@
                                 <b slot="label">SIM卡1</b>
                                 <Row>
                                     <Input v-model="device.sim1.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
-                                    <Icon v-show="propSubsidiaryDevice&& !device.sim1.id" type="ios-add-circle"
+                                    <Icon v-show="propSubsidiaryDevice&& !device.sim1.id &&device.status!=='offline'&&device.status!=='error'" type="ios-add-circle"
                                           @click="showAddSimModal=true;simOrder=1" style="margin-left: 5px;cursor: pointer;" size="20" color="#1bbc9c"/>
                                     <Icon v-show="propSubsidiaryDevice&&device.sim1.id" type="md-remove-circle"
                                           @click="removeSimCard(device.sim1.id)" style="margin-left: 5px;cursor: pointer;" size="20" color="#666"/>
@@ -118,7 +118,7 @@
                                 <b slot="label">SIM卡2</b>
                                 <Row>
                                     <Input v-model="device.sim2.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
-                                    <Icon v-show="propSubsidiaryDevice&& !device.sim2.id" type="ios-add-circle"
+                                    <Icon v-show="propSubsidiaryDevice&& !device.sim2.id&&device.status!=='offline'&&device.status!=='error'" type="ios-add-circle"
                                           @click="showAddSimModal=true;simOrder=2" style="margin-left: 5px;cursor: pointer;" size="20" color="#1bbc9c"/>
                                     <Icon v-show="propSubsidiaryDevice&&device.sim2.id" type="md-remove-circle"
                                           @click="removeSimCard(device.sim2.id)" style="margin-left: 5px;cursor: pointer;" size="20" color="#666"/>
@@ -128,7 +128,7 @@
                     </Form>
                 </div>
             </Panel>
-            <Panel v-show="device.status!=='offline'&&device.status!=='error'">账号信息
+            <Panel>账号信息
                 <Button type="text" @click.stop="unboundAllSources(2)" style="float: right;margin-right: 10%;margin-top: 4px">批量解绑</Button>
                 <div slot="content">
                     <Form :model="device" :label-width="90">
@@ -141,7 +141,7 @@
                                           @click="removeAppSource(item.id)"/>
                                 </Row>
                             </FormItem>
-                            <FormItem v-show="propSubsidiaryDevice">
+                            <FormItem v-show="propSubsidiaryDevice&&device.status!=='offline'&&device.status!=='error'">
                                 <b slot="label">账号</b>
                                 <Row>
                                     <Input style="width: 80%" :disabled="true" class="disabled-input"></Input>
@@ -230,6 +230,20 @@
             <div slot="footer">
                 <Button type="text" @click="showAddAppModal=false">取消</Button>
                 <Button type="primary" @click="addAppSource">确定</Button>
+            </div>
+        </Modal>
+        <Modal v-model="showRemoveModal" :closable="false" :footer-hide="true" width="420">
+            <div style="padding: 10px">
+                <Row>
+                    <Icon type="ios-help-circle" size="28" style="position: relative;top: 4px;color:#ff9900"/>
+                    <span style="font-size: 16px;margin-left: 10px;">警告！</span>
+                </Row>
+                <p style="margin: 15px 0 30px 38px">{{ removeMsg }}</p>
+                <Row style="margin-left: 38px;">
+                    <Button type="primary" style="margin-right: 20px" @click="deleteAjax(device.device_label,true)">解绑资源后移除</Button>
+                    <Button type="info" style="margin-right: 20px" @click="deleteAjax(device.device_label,false)">仅移除设备</Button>
+                    <Button type="default" @click="showRemoveModal=false">取消</Button>
+                </Row>
             </div>
         </Modal>
 
@@ -421,6 +435,8 @@
                 app_id:null,
                 sim_id:null,
                 simOrder:null,
+                showRemoveModal:false,
+                removeMsg:"",
             }
         },
         methods: {
@@ -430,21 +446,35 @@
                 let device_status = this.device.status
                 let detailComp = this
                 if(device_status==="busy"){
-                    this.$Modal.confirm({
-                        title: "警告！",
-                        content: "当前设备正在执行任务，确定要停止任务并将该设备从系统中移除？",
-                        onOk() {
-                            detailComp.deleteAjax(device_id,device_status)
-                        }
-                    })
+                    if(this.device.simcard.length === 0&&this.device.account.length === 0){
+                        //未绑定附加资源
+                        this.$Modal.confirm({
+                            title: "警告！",
+                            content: "移除设备将停止执行任务，确认要移除设备吗？",
+                            onOk() {
+                                detailComp.deleteAjax(device_id,false)
+                            }
+                        })
+                    }else {
+                        //绑定了附加资源
+                        this.removeMsg = "移除设备将停止执行任务，设备绑定了附加资源，请选择要进行的操作。"
+                        this.showRemoveModal = true
+                    }
                 }else {
-                    this.$Modal.confirm({
-                        title: "警告！",
-                        content: "您确定要从系统中移除该装置吗？",
-                        onOk(){
-                            detailComp.deleteAjax(device_id,device_status)
-                        }
-                    });
+                    if(this.device.simcard.length === 0&&this.device.account.length === 0){
+                        //未绑定附加资源
+                        this.$Modal.confirm({
+                            title: "警告！",
+                            content: "确认要移除设备吗？",
+                            onOk() {
+                                detailComp.deleteAjax(device_id,false)
+                            }
+                        })
+                    }else {
+                        //绑定了附加资源
+                        this.removeMsg = "设备绑定了附加资源，请选择要进行的操作。"
+                        this.showRemoveModal = true
+                    }
                 }
             },
             reconnectDevice(){
@@ -469,22 +499,25 @@
                     })
                 }
             },
-            deleteAjax(device_id,device_status){
+            deleteAjax(device_id,unbind_flag=false){
                 this.spinShow = true;
                 this.$ajax.post("api/v1/coral/release_device/",{
                     ip_address:this.device.ip_address,
                     device_label:device_id,
+                    unbind_resource:unbind_flag,
                     tempport:this.device.tempport
                 }).then(response=>{
                     this.spinShow = false;
-                    if(response.data==="success"){
+                    if(response.data.status==="success"){
                         this.$Message.success("该设备已从系统中移除");
                         this.$emit('after-device-delete')
                     } else{
                         this.$Message.error("设备移除失败！");
                     }
+                    this.showRemoveModal = false
                 }).catch(error=>{
                     this.spinShow = false;
+                    this.showRemoveModal = false
                     if(config.DEBUG) console.log(error)
                     this.$Message.error({content:"设备移除失败！"+ error.response.data.message,duration:6});
                 })
