@@ -36,6 +36,10 @@
                     <b slot="label">结束时间:</b>
                     <Input disabled class="disabled-input" :value="data.end_time"></Input>
                 </FormItem>
+              <FormItem>
+<!--                <Button style="text-align: left" @click="downloadxls">下载原始数据</Button>-->
+                <a :href="xls_url">下载原始数据</a>
+              </FormItem>
             </Form>
         </Card>
 
@@ -103,6 +107,10 @@
                 ],
             }
         },
+        computed:{
+          xls_url (){
+            return  `http://${config.REEF_HOST}:${config.REEF_PORT}/api/v1/cedar/get_xls_data/?tboard=${this.data.id}`
+        }},
         methods: {
             refresh(tboardId) {
                 this.showLoading = true;
