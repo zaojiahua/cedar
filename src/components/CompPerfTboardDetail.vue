@@ -1,6 +1,9 @@
 <template>
     <div>
         <Card :title="data.board_name + '(' + data.id + ')'" dis-hover>
+            <a :href="xls_url" slot="extra" style="float:right;margin-top: -5px;">
+                <Button type="primary">导出数据</Button>
+            </a>
             <Form :label-width="80">
                 <FormItem>
                     <b slot="label">任务名称:</b>
@@ -101,6 +104,11 @@
                     },
                 ],
                 groupView:1,
+            }
+        },
+        computed:{
+            xls_url (){
+                return  `http://${config.REEF_HOST}:${config.REEF_PORT}/api/v1/cedar/get_xls_data/?tboard=${this.data.id}`
             }
         },
         methods: {
