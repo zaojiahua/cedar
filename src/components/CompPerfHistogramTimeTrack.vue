@@ -81,18 +81,23 @@
                 let option = {
                     tooltip:{
                         trigger: "axis",
+                        formatter: function (obj) {
+                            return obj[0].value[0]+ '<br>'
+                                + '启动时间：' + obj[0].value[1] + ' s<br>'
+                        }
                     },
                     grid:{
+                        show:false,
                         left:"40px",
                         right:"20px",
                         top: "10px",
                         bottom: "41px"
                     },
                     xAxis: {
-                        type: "category",
-                        name:"RDS开始时间",
-                        nameLocation:"center",
-                        nameGap:30,
+                        type: "time",
+                        splitLine:{
+                            show:false
+                        }
                     },
                     yAxis: {
                         type: "value",
