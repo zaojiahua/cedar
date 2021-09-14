@@ -1,10 +1,10 @@
 <template>
     <div>
-        <comp-perf-histogram style="margin-top: 20px;" ref="histogram" :job-id="job.job_id"
+        <comp-perf-histogram style="margin: 20px 0;" ref="histogram" :job-id="job.job_id"
                              @on-chart-click="onChartClick" @after-load-data="afterLoadData"
         ></comp-perf-histogram>
 
-        <comp-perf-rds-list ref="perfRdsList" :is-min="isMin" :prop-job-id="job.job_id" :prop-tboard-id="tboardId" :prop-time-range="timeRange"></comp-perf-rds-list>
+        <comp-perf-rds-list v-show="timeRange" ref="perfRdsList" :is-min="isMin" :prop-job-id="job.job_id" :prop-tboard-id="tboardId" :prop-time-range="timeRange"></comp-perf-rds-list>
     </div>
 </template>
 
