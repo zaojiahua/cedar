@@ -1,6 +1,6 @@
 <template>
     <div>
-        <comp-perf-histogram-time-track style="margin-top: 20px;" ref="histogram"
+        <comp-perf-histogram-time-track style="margin: 20px 0;" ref="histogram"
                                         :job-id="job.job_id" :prop-canvas-id="index"
                                         @after-load-data="isShowRdsCard"></comp-perf-histogram-time-track>
         <div v-show="showRds">
