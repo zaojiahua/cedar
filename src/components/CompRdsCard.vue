@@ -1,7 +1,7 @@
 <template>
     <div>
         <Drawer v-model="showRdsDetail" :closable="false" width="50" :draggable="true" transfer>
-            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne"></comp-rds-detail>
+            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne" :prop-perf-rds="perfRds"></comp-rds-detail>
         </Drawer>
         <Card style="margin-bottom: 16px;" dis-hover v-for="(rdsData,Index) in rdsDataList" :key="Index">
             <Row type="flex">
@@ -86,6 +86,10 @@
             propInvalidType:{
                 type: String,
                 default: ''
+            },
+            perfRds:{
+                type: Boolean,
+                default: false
             },
             propFullDate:{
                 type: Boolean,
@@ -292,6 +296,12 @@
             propDefaultJobs:{
                 handler: function(val){
                     this.jobs = _.cloneDeep(val)
+                },
+                immediate: true
+            },
+            propTboardId:{
+                handler: function(val){
+                    this.loadMoreData(true)
                 },
                 immediate: true
             },

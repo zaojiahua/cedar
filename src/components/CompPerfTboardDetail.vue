@@ -1,6 +1,9 @@
 <template>
     <div>
         <Card :title="data.board_name + '(' + data.id + ')'" dis-hover>
+            <a :href="xls_url" slot="extra" style="float:right;margin-top: -5px;">
+                <Button type="primary">导出数据</Button>
+            </a>
             <Form :label-width="80">
                 <FormItem>
                     <b slot="label">任务名称:</b>
@@ -41,8 +44,7 @@
 
         <Card v-for="(job,index) in data.job_data" :key="job.job_id" style="margin-top: 20px;">
             <Divider orientation="left">测试用例{{ index+1 }}：{{ job.job_num }}</Divider>
-            <Table border :columns="jobColumn" :data="[].concat(job)"></Table>
-            <comp-perf-chart-rds-group ref="chartRdsGroup" :job="job" :tboard-id="data.id"></comp-perf-chart-rds-group>
+            <comp-perf-group-view-list ref="perfViewList" :index="index" :job="job" :tboard-id="data.id" :device-id="data.device_id"></comp-perf-group-view-list>
         </Card>
 
         <div></div>
@@ -60,13 +62,13 @@
 <script>
     import CompDeviceDetail from "../components/CompDeviceDetail";
     import CompJobDetail from "../components/CompJobDetail";
-    import CompPerfChartRdsGroup from "../components/CompPerfChartRdsGroup";
+    import CompPerfGroupViewList from "../components/CompPerfGroupViewList";
 
     import config from "../lib/config";
     import utils from "../lib/utils";
 
     export default {
-        components: { CompDeviceDetail, CompJobDetail, CompPerfChartRdsGroup, },
+        components: { CompDeviceDetail, CompJobDetail, CompPerfGroupViewList, },
         data() {
             return {
                 data:{},
@@ -101,6 +103,12 @@
                         align: 'center'
                     },
                 ],
+                groupView:1,
+            }
+        },
+        computed:{
+            xls_url (){
+                return  `http://${config.REEF_HOST}:${config.REEF_PORT}/api/v1/cedar/get_xls_data/?tboard=${this.data.id}`
             }
         },
         methods: {
@@ -116,9 +124,9 @@
                         }, [])
                         // 刷新所有性能图表
                         this.$nextTick(function () {
-                            if (this.$refs.chartRdsGroup) {
-                                this.$refs.chartRdsGroup.forEach(group => {
-                                    group.$refs.histogram.refresh(this.data.id)
+                            if (this.$refs.perfViewList) {
+                                this.$refs.perfViewList.forEach(group => {
+                                    group.groupView = 1
                                 })
                             }
                         })
