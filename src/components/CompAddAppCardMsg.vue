@@ -20,9 +20,9 @@
             <FormItem label="绑定手机号：">
                 <Input v-model="selectMsg.phone_number"  @on-keyup="selectMsg.phone_number=phoneInput(selectMsg.phone_number)" :maxlength="11" placeholder="请输入正确的手机号"></Input>
             </FormItem>
-            <FormItem label="头像：">
-                <Input v-model="selectMsg.head_portrait_name" placeholder="请输入"></Input>
-            </FormItem>
+            <!--<FormItem label="头像：">-->
+            <!--<Input v-model="selectMsg.head_portrait_name" placeholder="请输入"></Input>-->
+            <!--</FormItem>-->
             <FormItem label="好友：">
                 <Input v-model="selectMsg.crony" placeholder="请输入"></Input>
             </FormItem>

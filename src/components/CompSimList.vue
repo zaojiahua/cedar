@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Table :columns="modelColumn" :data="data" border @on-row-click="onRowClick" highlight-row></Table>
+        <Table :columns="modelColumn" :data="data" border @on-row-click="onRowClick" highlight-row  @on-selection-change="onSelectionChange"></Table>
         <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" @on-change="onPageChange" simple style="margin-top:20px;text-align: center "/>
         <Spin size="large" fix v-if="showLoading"></Spin>
         <Modal v-model="showSimModal" footer-hide :mask-closable="false">
@@ -38,6 +38,10 @@
         components:{ CompAddSimMsg },
         props:{
             propStatus:{
+                type:Boolean,
+                default:false
+            },
+            propMultiSelect:{
                 type:Boolean,
                 default:false
             },
@@ -138,10 +142,14 @@
                 dataTotal:0,
                 currentPage:1,
                 offset: 0,
+                selection:[],
+                selectionSim:{},
+                currentPageSelection:{},
             }
         },
         methods:{
             getData(){
+                this.currentPageSelection = {}
                 let operatorCondition = ""
                 if(this.operatorList.length>0)
                     operatorCondition = "&operator__in="+"ReefList["+this.operatorList.join("{%,%}")+"]"
@@ -173,6 +181,14 @@
                             item.status = item.status === "idle" ? "未占用" :"占用"
                             item.volte = item.is_volte ? "是" : "否"
                             item.connection = (item.device.id ? item.device.device_name : "" ) + (item.subsidiary_device.id ? item.subsidiary_device.custom_name : "")
+                            /* 将之前已经选中的选项重新勾选 */
+                            if(this.selection.length>0)
+                                this.selection.forEach(selected=>{
+                                    if (item.id === selected.id){
+                                        item._checked = true
+                                        this.$set(this.currentPageSelection, item.id, 'exist')
+                                    }
+                                })
                         })
                         this.showLoading = false
                     }).catch(error=>{
@@ -199,15 +215,63 @@
                 this.$ajax.delete("api/v1/cedar/simcard/" + id + "/")
                     .then(response=>{
                         this.$Message.success("SIM卡资源移除成功")
-                        this. getData()
+                        this.getData()
                     }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     this.$Message.error({content:"SIM卡资源移除失败:" + error.response.data.message,duration:7})
+                })
+            },
+            // 支持多选
+            getThisSelection(){
+                return this.selection;
+            },
+            onSelectionChange(selection){
+                selection.forEach((value) => {
+                    if (this.selectionSim[value.id] === undefined ) {
+                        //console.log('勾选了id为' + value.id + '的job')
+                        this.$set(this.selectionSim, value.id, value)    //所有的已选择App  包括新选择的App
+                        this.$set(this.currentPageSelection, value.id, 'exist')    //currentPageSelectedApp  当前页已选择App
+                    }
+                })
+                //用上个步骤得到的当前页已选择的App-id 和 实际表格返回的 selection做比对，如果对上，则不做任何操作
+                // 如果对不上，则表示多了一个，即用户点击了一次取消，就用$delete方法将多出来的这条数据删除this.$delete(obj,key);
+                for (let item in this.currentPageSelection) {
+                    let i = 0
+                    for (i; i < selection.length; i++) {
+                        if (parseInt(item) === selection[i].id) {
+                            break
+                        }
+                    }
+                    if (i === selection.length) {
+                        //console.log('不再勾选id为' + item + '的job')
+                        this.$delete(this.selectionSim, item)
+                        this.$delete(this.currentPageSelection, item)
+                    }
+                }
+                //对象提取所有的value
+                this.selection = _.values(this.selectionSim)
+                this.$emit("selected-count",this.selection.length)
+            },
+            //取消全选
+            resetSimList(){
+                this.selectionSim = {}
+                this.currentPageSelection = {}
+                this.selection = []
+                this.$emit("selected-count",0)
+                this.data.forEach(item=>{
+                    this.$set(item,"_checked",false)
+                    this.$delete(item, "_checked")
                 })
             }
         },
         created(){
             let username = sessionStorage.getItem('username');
+            if (this.propMultiSelect && username==="admin")
+                this.modelColumn.splice(0, 0, {
+                    type: 'selection',
+                    width: 60,
+                    align: 'center'
+                })
             if (username==="admin" && this.propAction) {
                 this.modelColumn.push(  {
                     title: "操作",
@@ -253,6 +317,7 @@
             }
         },
         mounted(){
+            this.pageSize = utils.getPageSize();
             this.getData()
         }
     }

@@ -83,10 +83,10 @@
                         title: "绑定手机号",
                         key: "phone_number",
                     },
-                    {
-                        title: "头像",
-                        key: "head_portrait_name",
-                    },
+                    // {
+                    //     title: "头像",
+                    //     key: "head_portrait_name",
+                    // },
                     {
                         title: "好友",
                         key: "crony",
@@ -195,7 +195,7 @@
                 this.$ajax.delete("api/v1/cedar/account/" + id + "/")
                     .then(response=>{
                         this.$Message.success("账号资源移除成功")
-                        this. getData()
+                        this.getData()
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
                         this.$Message.error({content:"账号资源移除失败:" + error.response.data.message,duration:7})
@@ -262,12 +262,24 @@
                 }
                 //对象提取所有的value
                 this.selection = _.values(this.selectionApp)
+                this.$emit("selected-count",this.selection.length)
             },
+            //取消全选
+            resetAppList(){
+                this.selectionApp = {}
+                this.currentPageSelection = {}
+                this.selection = []
+                this.$emit("selected-count",0)
+                this.data.forEach(item=>{
+                    this.$set(item,"_checked",false)
+                    this.$delete(item, "_checked")
+                })
+            }
         },
         created(){
             let username = sessionStorage.getItem('username');
             this.getAppNameList()
-            if (this.propMultiSelect)
+            if (this.propMultiSelect && username==="admin" )
                 this.appColumn.splice(0, 0, {
                     type: 'selection',
                     width: 60,
@@ -289,7 +301,7 @@
                                 },
                                 on: {
                                     click: () => {
-                                         this.showAppModal = true
+                                        this.showAppModal = true
                                         this.$refs.editApp.setData(params.row)
                                     }
                                 }
@@ -319,6 +331,7 @@
 
         },
         mounted(){
+            this.pageSize = utils.getPageSize();
             this.getData()
         }
     }
