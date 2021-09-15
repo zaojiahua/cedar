@@ -331,6 +331,7 @@
 
         },
         mounted(){
+            this.pageSize = utils.getPageSize();
             this.getData()
         }
     }
