@@ -6,7 +6,10 @@
                     <comp-rds-dict-serialize :prop-data="content" style="width: 100%;"></comp-rds-dict-serialize>
                 </div>
                 <div slot="right" class="demo-split-pane rds-box" style="padding: 0 0 0 10px">
-                    <gallery :pic-url="fileList"></gallery>
+                    <gallery v-show="fileList.length>0" :pic-url="fileList"></gallery>
+                    <div v-show="fileList.length===0" style="text-align: center;margin-top: 200px">
+                        <span style="font-size: 18px;">暂无图片!</span>
+                    </div>
                 </div>
             </Split>
     </div>
@@ -49,8 +52,6 @@
                 this.$ajax.get("api/v1/cedar/get_sort_rds_screenshot/?reverse=false&rds=" + rdsId)
                     .then(response=>{
                         this.fileList = response.data
-                        // if(this.fileList.length===0)
-                        //     this.showScreenTip=true;
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)

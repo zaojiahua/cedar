@@ -1,20 +1,20 @@
 <template>
-  <!--<Modal v-model="curOpen" :closable="false" fullscreen @on-ok="close(true)" @on-cancel="close(false)">-->
     <div class="gallery" :class="mode">
         <div class="thumbnail">
             <ul>
-                <li v-for="(pic, idx) in picUrl" :key="pic.name">
+                <li v-for="(pic, idx) in picUrl" :key="pic.idx">
                     <img :src="baseUrl+pic.thumbs_file" :alt="pic.file_name" :title="pic.file_name" @click="selectPic(pic, idx)" :class="idx === curPicIdx ? 'selected' : ''">
-                    <p :title="pic.file_name">{{ pic.name }}</p>
+                    <p :title="pic.file_name">{{ pic.file_name }}</p>
                  </li>
             </ul>
         </div>
         <div class="picture">
+            <Icon type="ios-arrow-dropleft-circle" size="60"  style="position: absolute;top: 45%;left: 5%;cursor: pointer;" @click="prevBtn"/>
             <img :src="baseUrl+curPic.img_file" :alt="curPic.file_name" style="object-fit:contain">
-            <p></p>
+            <Icon type="ios-arrow-dropright-circle" size="60" style="position: fixed;top: 45%;right: 5%;cursor: pointer;" @click="nextBtn"/>
+            <p style="margin-top: 5px">{{ curPic.file_name }}</p>
         </div>
     </div>
-  <!--</Modal>-->
 </template>
 <script>
     import config from "../../lib/config";
@@ -22,7 +22,6 @@
     export default {
         name: 'Gallery',
         props: {
-            // open: Boolean,
             mode: { // 决定缩略图的展示模式(水平/竖直), 参数传递错误时采用水平模式
                 type: String,
                 default: 'vertical',
@@ -35,16 +34,7 @@
             picUrl: { // 需要展示的图片的数组, 数组元素结构为 { name: '', file: ''} file为图片的url
                 type: Array,
                 default () {
-                    return [
-                      // {
-                      //   file_name: 1,
-                      //   thumbs_file: 'https://t1.hxzdhn.com/uploads/tu/202005/9999/6ef75a2cbd.jpg',
-                      //   img_file:""
-                      // }, {
-                      //   name: 2,
-                      //   file: 'https://t1.hxzdhn.com/uploads/tu/202005/9999/fd949f19b7.jpg'
-                      // },
-                    ]
+                    return []
                  }
             }
         },
@@ -61,9 +51,6 @@
         },
         watch: {
             picUrl (val) {
-                console.log(val)
-                console.log(val[0]);
-                console.log(JSON.parse(JSON.stringify(val[0])))
                 setTimeout(() => {
                     if (val[0]) {
                         this.curPic = val[0]
@@ -90,9 +77,37 @@
                 this.curPic = pic
                 this.curPicIdx = idx
             },
+            nextBtn(){
+                if(this.picUrl[this.curPicIdx+1]){
+                    this.curPicIdx++
+                    this.curPic = this.picUrl[this.curPicIdx]
+                }
+            },
+            prevBtn(){
+                if(this.curPicIdx===0)
+                    return
+                this.curPicIdx--
+                this.curPic = this.picUrl[this.curPicIdx]
+            },
+            //键盘左右切换事件
+            onKeyUpEvent(event) {
+                if(this.picUrl.length>0){
+                    if (event.keyCode === 37) {  //左 ←
+                        this.prevBtn()
+                    } else if (event.keyCode === 39) {  //右 →
+                        this.nextBtn()
+                    }
+                }
+            }
         },
         mounted () {
             this.picDom = document.querySelector('.picture > img')
+        },
+        created() {
+            window.addEventListener('keyup', this.onKeyUpEvent)
+        },
+        beforeDestroy() {
+            window.removeEventListener('keyup', this.onKeyUpEvent)
         }
     }
 </script>
@@ -110,12 +125,12 @@
                 li {
                     text-align: center;
                     img {
-                    cursor: pointer;
-                    border-radius: 4px;
-                    transition: all .3s linear;
-                    &:hover {
-                     box-shadow: 0 0 6px #333333;
-                    }
+                        cursor: pointer;
+                        border-radius: 4px;
+                        transition: all .3s linear;
+                        &:hover {
+                            box-shadow: 0 0 6px #333333;
+                        }
                     }
                 }
                 .selected {
@@ -132,13 +147,16 @@
             }
         }
         .picture {
-            flex: 1;
             overflow: hidden;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding-top: 1.4em;
+            padding: 16px 0;
             background-color: #fff;
+            img{
+                height: calc(100% - 30px);
+            }
         }
     }
     .horizontal {
@@ -167,19 +185,18 @@
     .vertical {
         flex-direction: column;
         .thumbnail {
-            height: 200px;
+            height: 150px;
             padding-bottom: 0.4em;
             ul {
                 display: flex;
                  height: 100%;
-                align-items: baseline;
-                overflow-y: hidden;
                 li {
                     height: 100%;
-                    width: 100px;
+                    width: 200px;
                     margin-right: 1em;
                     img {
-                         max-width: 100px;
+                        height: 100%;
+                        max-width: 200px;
                         max-height: calc(100% - 28px);
                     }
                 }

@@ -9,12 +9,12 @@
                             <Panel  v-for="(item_eb1,eb1_index) in flow.eblock_list">
                                 <span :class="{'high-light':item_eb1.job_assessment_value!=='0'}" v-if="item_eb1.eblock_list">
                                     {{ eb1_index+1 }}-{{ item_eb1.block_name }}<span v-show="item_eb1.job_assessment_value"> ( {{ item_eb1.job_assessment_value }} )</span></span>
-                                <span :class="{'high-light':item_eb1.value!==0}" v-if="item_eb1.all_unit_list">
+                                <span :class="{'high-light':item_eb1.value!==undefined&&item_eb1.value!==0}" v-if="item_eb1.all_unit_list">
                                     {{ eb1_index+1 }}-{{ item_eb1.block_name }}<span v-show="item_eb1.value!==undefined"> ( {{ item_eb1.value }} )</span></span>
                                 <div slot="content" v-if="item_eb1.eblock_list">
                                     <Collapse>
                                         <Panel v-for="(item_eb2,eb2_index) in item_eb1.eblock_list">
-                                            <span :class="{'high-light':item_eb1.value!==0}">{{ eb2_index+1 }}-{{ item_eb2.block_name }}
+                                            <span :class="{'high-light':(item_eb1.value!==undefined&&item_eb1.value!==0)}">{{ eb2_index+1 }}-{{ item_eb2.block_name }}
                                                 <span v-show="item_eb2.value!==undefined"> ( {{ item_eb2.value }} )</span></span>
                                             <div slot="content" v-for="(unit_list,unit_index) in item_eb2.all_unit_list" class="unit_box">
                                                 <p v-for="unit_item in unit_list.units" :class="{'high-light':unit_item.detail.result!==0}">
