@@ -140,6 +140,8 @@
                     resultRangeCondition = "&job_assessment_value!=0";
                 else
                     resultRangeCondition = ""
+                if(this.propResultRange.length === 1 && this.propResultRange[0] === '-1' && this.propInvalidType.length > 0)
+                    resultRangeCondition = "&job_assessment_value=" + this.propInvalidType;
                 //时间参数选择
                 let dateRangeCondition = ""
                 if (this.propFilterDateRange && this.propFilterDateRange[0] && this.propFilterDateRange[1]) {
