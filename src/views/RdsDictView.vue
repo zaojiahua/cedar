@@ -3,10 +3,10 @@
         <div  class="demo-split">
             <Split v-model="split1">
                 <div slot="left" class="demo-split-pane rds-box scroll-bar">
-                    <comp-rds-dict-serialize :prop-data="content" style="width: 100%;"></comp-rds-dict-serialize>
+                    <comp-rds-dict-serialize :prop-data="content" :prop-pic-name="highLightFileName" style="width: 100%;" @on-pic-name-click="onPicNameClick"></comp-rds-dict-serialize>
                 </div>
                 <div slot="right" class="demo-split-pane rds-box" style="padding: 0 0 0 10px">
-                    <gallery v-show="fileList.length>0" :pic-url="fileList"></gallery>
+                    <gallery v-show="fileList.length>0" :pic-url="fileList" :pic-name="highLightFileName" @on-pic-click="afterGalleryClick"></gallery>
                     <div v-show="fileList.length===0" style="text-align: center;margin-top: 200px">
                         <span style="font-size: 18px;">暂无图片!</span>
                     </div>
@@ -28,6 +28,7 @@
                 content:[],
                 split1: 0.35,
                 fileList:[],
+                highLightFileName:"",
             }
         },
         methods:{
@@ -36,7 +37,6 @@
                     .get("api/v1/cedar/rds/"+id+"/?fields=id,rds_dict")
                     .then(response=>{
                         this.content = response.data.rds_dict
-                        console.log(this.content)
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
                         let errorMsg = "";
@@ -52,6 +52,9 @@
                 this.$ajax.get("api/v1/cedar/get_sort_rds_screenshot/?reverse=false&rds=" + rdsId)
                     .then(response=>{
                         this.fileList = response.data
+                        this.highLightFileName = ""
+                        if(this.fileList.length>0)
+                            this.highLightFileName = this.fileList[0].file_name
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
@@ -63,6 +66,12 @@
                         }
                         this.$Message.error(errorMsg)
                     })
+            },
+            afterGalleryClick(file){
+                this.highLightFileName = file.file_name
+            },
+            onPicNameClick(picName){
+                this.highLightFileName = picName
             }
         },
         mounted(){

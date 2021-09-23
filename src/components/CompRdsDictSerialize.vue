@@ -17,9 +17,12 @@
                                             <span :class="{'high-light':(item_eb1.value!==undefined&&item_eb1.value!==0)}">{{ eb2_index+1 }}-{{ item_eb2.block_name }}
                                                 <span v-show="item_eb2.value!==undefined"> ( {{ item_eb2.value }} )</span></span>
                                             <div slot="content" v-for="(unit_list,unit_index) in item_eb2.all_unit_list" class="unit_box">
-                                                <p v-for="unit_item in unit_list.units" :class="{'high-light':unit_item.detail.result!==0}">
-                                                    {{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )
-                                                </p>
+                                                <div v-for="unit_item in unit_list.units">
+                                                    <p :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )</p>
+                                                    <div class="pic" v-for="pic in unit_item.pictures" >
+                                                        <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ pic }}</p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </Panel>
 
@@ -27,9 +30,12 @@
                                 </div>
                                 <div slot="content"  v-if="item_eb1.all_unit_list">
                                     <div v-for="(unit_list,unit_index) in item_eb1.all_unit_list" class="unit_box">
-                                        <p v-for="unit_item in unit_list.units" :class="{'high-light':unit_item.detail.result!==0}">
-                                            {{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )
-                                        </p>
+                                        <div v-for="unit_item in unit_list.units">
+                                            <p :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )</p>
+                                            <div class="pic " v-for="pic in unit_item.pictures" >
+                                                <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ pic }}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </Panel>
@@ -51,6 +57,10 @@
                 default:()=>{
                     return []
                 }
+            },
+            propPicName:{
+                type:String,
+                default:""
             }
         },
         data(){
@@ -59,7 +69,9 @@
             }
         },
         methods:{
-
+            onPicClick(picName){
+                this.$emit("on-pic-name-click",picName)
+            }
         }
     }
 </script>
@@ -67,6 +79,18 @@
 <style>
     .high-light{
         color: red;
+    }
+    .pic{
+        margin-top: 5px;
+        margin-left: 14px;
+        cursor: pointer;
+    }
+    .p-icon{
+        margin-right: 5px;
+    }
+    .high-light-pic{
+        background: #515a6e;
+        color: #fff;
     }
     .unit_box{
         padding: 5px;

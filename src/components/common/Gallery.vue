@@ -36,6 +36,10 @@
                 default () {
                     return []
                  }
+            },
+            picName:{
+                type: String,
+                default: '',
             }
         },
         data () {
@@ -63,24 +67,35 @@
                 image.src = this.curPic.img_file
                 image.onload = () => { // 使图片尺寸自适应
                     if (image.width > image.height) {
-                    this.picDom.style.width = '100%'
-                    this.picDom.style.maxWidth = '100%'
+                        this.picDom.style.width = '100%'
+                        this.picDom.style.maxWidth = '100%'
                     } else {
-                    this.picDom.style.height = '100%'
-                     this.picDom.style.maxHeight = '100%'
+                        this.picDom.style.height = '100%'
+                        this.picDom.style.maxHeight = '100%'
                     }
                 }
             },
+            picName(val){
+                for (let i = 0; i < this.picUrl.length; i++) {
+                    if(this.picUrl[i].file_name===val){
+                        this.curPic = this.picUrl[i]
+                        this.curPicIdx = i
+                        return
+                    }
+                }
+            }
         },
         methods: {
             selectPic (pic, idx) { // 点击缩略图时选中图片
                 this.curPic = pic
                 this.curPicIdx = idx
+                this.$emit("on-pic-click",pic)
             },
             nextBtn(){
                 if(this.picUrl[this.curPicIdx+1]){
                     this.curPicIdx++
                     this.curPic = this.picUrl[this.curPicIdx]
+                    this.$emit("on-pic-click",this.curPic)
                 }
             },
             prevBtn(){
@@ -88,6 +103,7 @@
                     return
                 this.curPicIdx--
                 this.curPic = this.picUrl[this.curPicIdx]
+                this.$emit("on-pic-click",this.curPic)
             },
             //键盘左右切换事件
             onKeyUpEvent(event) {
