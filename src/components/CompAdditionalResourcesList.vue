@@ -8,11 +8,12 @@
                 </Select>
                 <Button v-show="(tableList===1)&&(username==='admin')" type="primary" style="margin-left: 16px" @click="onOpenSimModal">添加SIM卡资源</Button>
                 <Button v-show="(tableList===2)&&(username==='admin')" type="primary" style="margin-left: 16px" @click="onOpenAppModal">添加账号资源</Button>
+                <Button v-show="(tableList===2)&&(username==='admin')" type="default" style="margin-left: 16px;width: 80px" @click="showCreateAppName=true">添加App</Button>
             </Col>
 
             <Col span="12" style="text-align: right" v-show="username==='admin'">
                 <Button type="warning" style="margin-right: 16px;" @click="cancelSelected">取消选择 ( {{ selectedNum }} )</Button>
-                <Dropdown trigger="click" style="margi n-right: 2px;">
+                <Dropdown trigger="click" style="margin-right: 2px;">
                     <Button>
                         更多操作
                         <Icon type="ios-arrow-down"></Icon>
@@ -43,6 +44,13 @@
         <Modal v-model="showAddAppModal" :mask-closable="false" :footer-hide="true">
             <comp-add-app-card-msg ref="addApp" @after-succrss="onAfterAddApp"></comp-add-app-card-msg>
         </Modal>
+        <Modal v-model="showCreateAppName" footer-hide :closable="false" :mask-closable="false" width="420">
+            <Input v-model="appName" style="margin-top: 16px" placeholder="请输入要添加的App名称"></Input>
+            <Row style="text-align: right;margin-top: 20px;">
+                <Button type="text" @click="showCreateAppName=false;appName = ''">取消</Button>
+                <Button type="primary" @click="createAppName">确认</Button>
+            </Row>
+        </Modal>
     </div>
 </template>
 
@@ -64,6 +72,8 @@
                 username:"",
                 selectedNum:0,
                 importResourcesUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT + "/api/v1/cedar/resource_import/",
+                appName:"",
+                showCreateAppName:false,
             }
         },
         methods:{
@@ -244,6 +254,26 @@
                         }
                     })
                 }
+            },
+            createAppName(){
+                if(this.appName.trim().length===0){
+                    this.$Message.warning("请输入要添加的App名称！")
+                    return
+                }
+                this.$ajax.post("api/v1/cedar/appgather/",{
+                    name:this.appName
+                }).then(response=>{
+                    this.showCreateAppName = false
+                    this.$Message.success("App名称添加成功")
+                    this.$refs.addApp.getAppNameList()
+                }).catch(error=>{
+                    if(error.response.data.name){
+                        this.$Message.error({content:error.response.data.name.join(","),duration:5})
+                    }else {
+                        this.$Message.error("App名称添加失败")
+                    }
+                })
+
             }
         },
         watch:{
