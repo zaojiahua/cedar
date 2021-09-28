@@ -266,6 +266,7 @@
                     this.showCreateAppName = false
                     this.$Message.success("App名称添加成功")
                     this.$refs.addApp.getAppNameList()
+                    this.$refs.appTable.getAppNameList()
                 }).catch(error=>{
                     if(error.response.data.name){
                         this.$Message.error({content:error.response.data.name.join(","),duration:5})
