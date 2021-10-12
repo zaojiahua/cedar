@@ -76,6 +76,8 @@
                     this.getTguardList()
                     if(error.response.data.data_info&&error.response.data.data_info.length>0)
                         this.$Message.error({content:error.response.data.data_info.join(',')+'下发失败',duration:10})
+                    else if(error.response.data.name)
+                        this.$Message.error({content:'干扰词已存在',duration:6})
                     else
                         this.$Message.error({content:'干扰词添加失败',duration:6})
                 })
