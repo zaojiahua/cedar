@@ -11,20 +11,21 @@
                     <div class="layout-nav">
                         <comp-reef-usage></comp-reef-usage>
                         <MenuItem name="0" :to="{name: 'personal-data'}">
-                            Hi! {{ username }}
+                            {{ username }}
                         </MenuItem>
-                        <MenuItem name="1" :to="{name: 'setting'}">
-                            设置
-                            <Icon type="ios-settings-outline"  size="24"/>
-                        </MenuItem>
-                        <MenuItem name="2" @click.native="getSysVersion">
-                            关于TMach
-                            <Icon type="ios-help-circle-outline" size="24"/>
-                        </MenuItem>
+                        <Submenu name="1">
+                            <template slot="title">
+                                设置
+                            </template>
+                            <div class="box">
+                                <MenuItem name="1-1" :to="{name: 'TGuard-management'}">T-Guard干扰词库</MenuItem>
+                                <MenuItem name="1-2" :to="{name: 'setting'}">页面设置</MenuItem>
+                                <MenuItem name="1-3"  @click.native="getSysVersion">关于TMach</MenuItem>
+                            </div>
+                        </Submenu>
                         <MenuItem name="3" @click.native="logout">
                             登出
-                            <Icon type="ios-exit-outline" size="24">
-                            </Icon>
+                            <Icon type="ios-exit-outline" size="24"></Icon>
                         </MenuItem>
                     </div>
                 </Menu>
@@ -299,5 +300,11 @@
     }
     .ivu-tooltip{
         margin-right: 6px;
+    }
+    .box{
+        position: fixed;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.2);
     }
 </style>

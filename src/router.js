@@ -17,6 +17,7 @@ import CleanCenter from "./views/CleanCenter"
 import AbnormalStatistics from "./views/AbnormalStatistics"
 import PerfDataManagement from "./views/PerfDataManagement"
 import RdsDictView from "./views/RdsDictView"
+import TGuardManagement from "./views/TGuardManagement"
 
 
 Vue.use(Router)
@@ -94,6 +95,11 @@ let router = new Router({
                     path: "perf-data-management",
                     name: "perf-data-management",
                     component: PerfDataManagement
+                },
+                {
+                    path: "TGuard-management",
+                    name: "TGuard-management",
+                    component: TGuardManagement
                 }
             ]
         },
