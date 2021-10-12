@@ -51,7 +51,7 @@
                             }).catch(error=>{
                                 if(config.DEBUG) console.log(error);
                                 _this.getTguardList()
-                                if(error.response.data.data_info.length>0)
+                                if(error.response.data.data_info&&error.response.data.data_info.length>0)
                                     this.$Message.error({content:error.response.data.data_info.join(',')+'删除失败',duration:10})
                                 else
                                     this.$Message.error({content:'干扰词删除失败',duration:6})
@@ -74,7 +74,7 @@
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error);
                     this.getTguardList()
-                    if(error.response.data.data_info.length>0)
+                    if(error.response.data.data_info&&error.response.data.data_info.length>0)
                         this.$Message.error({content:error.response.data.data_info.join(',')+'下发失败',duration:10})
                     else
                         this.$Message.error({content:'干扰词添加失败',duration:6})
