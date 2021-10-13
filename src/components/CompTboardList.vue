@@ -454,6 +454,9 @@
             clearSelection(){
                 this.$refs.table.selectAll(false)
             },
+            clearSelectionAll(){
+                this.selection = []
+            },
             toggleSelect(_index){
                 return this.$refs.table.toggleSelect(_index)
             },
@@ -549,6 +552,7 @@
                             tboard_id:selectId
                         }).then(response=>{
                             this.$Message.info("正在删除...该操作可能需要点时间，如需查看进度可进入清理中心页面！")
+                            root.clearSelectionAll()
                             root.refresh()
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
