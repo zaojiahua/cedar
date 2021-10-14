@@ -2,8 +2,8 @@
     <div>
         <comp-perf-histogram-time-track style="margin: 20px 0;" ref="histogram"
                                         :job-id="job.job_id" :prop-canvas-id="index"
-                                        @after-load-data="isShowRdsCard"></comp-perf-histogram-time-track>
-        <div v-show="showRds">
+                                        ></comp-perf-histogram-time-track>
+        <div>
             <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 5px;">测试结果</p>
             <!--  RDS部分 -->
             <div style="overflow:hidden;">
@@ -12,12 +12,12 @@
                         <Select v-model="resultRange" multiple style="width:230px" :transfer="true" placeholder="请选择测试结果类型">
                             <Option value="0"> 成功 </Option>
                             <Option value="1"> 失败 </Option>
-                            <Tag type="dot" color="#F75F0D">严重失败</Tag>
                             <Option value="-1"> 无效 </Option>
                         </Select>
                         <p style="float: right">
                             <Tag type="dot" color="#1bbc9c">成功</Tag>
                             <Tag type="dot" color="#FFAE25">失败</Tag>
+                            <Tag type="dot" color="#F75F0D">严重失败</Tag>
                             <Tag type="dot" color="#BDC3C7">无效</Tag>
                         </p>
                     </div>
