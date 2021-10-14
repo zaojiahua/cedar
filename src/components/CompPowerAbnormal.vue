@@ -51,8 +51,8 @@
                                         <Button :class="{ active: isActive1===4 }" @click="beforeAbnormalDateClick(4,60)">1h</Button>
                                     </ButtonGroup>
                                     <p style="float: right">
-                                        <Tag type="dot" color="#1bbc9c">通过</Tag>
-                                        <Tag type="dot" color="#FFAE25">未通过</Tag>
+                                        <Tag type="dot" color="#1bbc9c">成功</Tag>
+                                        <Tag type="dot" color="#FFAE25">失败</Tag>
                                         <Tag type="dot" color="#BDC3C7">无效</Tag>
                                     </p>
                                 </div>
@@ -80,8 +80,9 @@
                             <span>异常期间测试数据</span>
                             <div>
                                 <p style="float: right">
-                                    <Tag type="dot" color="#1bbc9c">通过</Tag>
-                                    <Tag type="dot" color="#FFAE25">未通过</Tag>
+                                    <Tag type="dot" color="#1bbc9c">成功</Tag>
+                                    <Tag type="dot" color="#FFAE25">失败</Tag>
+                                    <Tag type="dot" color="#F75F0D">严重失败</Tag>
                                     <Tag type="dot" color="#BDC3C7">无效</Tag>
                                 </p>
                                 <div style="clear: both;margin-bottom: 20px"></div>
@@ -116,8 +117,8 @@
                                         <Button :class="{ active: isActive2===4 }" @click="afterAbnormalDateClick(4,-60)">1h</Button>
                                     </ButtonGroup>
                                     <p style="float: right">
-                                        <Tag type="dot" color="#1bbc9c">通过</Tag>
-                                        <Tag type="dot" color="#FFAE25">未通过</Tag>
+                                        <Tag type="dot" color="#1bbc9c">成功</Tag>
+                                        <Tag type="dot" color="#FFAE25">失败</Tag>
                                         <Tag type="dot" color="#BDC3C7">无效</Tag>
                                     </p>
                                 </div>

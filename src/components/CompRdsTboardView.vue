@@ -203,7 +203,7 @@
                 pieData:[0,0,0],
                 columns: [
                     {
-                        title: '通过',
+                        title: '成功',
                         key: 'pass'
                     },
                     {

@@ -65,7 +65,9 @@
                         </MenuItem>
                         <MenuItem name="tboard-management" :to="{name: 'tboard-management'}">
                             <Tooltip content="我的任务" placement="right" :disabled="!isCollapsed">
-                                <Icon type="ios-folder-open-outline" size="24"/>
+                                <Icon type="ios-list-box-outline" size="24" />
+
+                                <!--<Icon type="ios-folder-open-outline" size="24"/>-->
                             </Tooltip>
                             <span>我的任务</span>
                         </MenuItem>

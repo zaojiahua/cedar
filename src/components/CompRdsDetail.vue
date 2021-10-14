@@ -270,9 +270,9 @@
                         this.rdsInfo.zipList = zipList
                         if(this.rdsInfo.rds_dict === "null") this.rdsInfo.rds_dict = "";
                         if(this.rdsInfo.job_assessment_value==="0"){
-                            this.rdsInfo.result = "通过";
+                            this.rdsInfo.result = "成功";
                         }else if(this.rdsInfo.job_assessment_value==="1"){
-                            this.rdsInfo.result = "未通过";
+                            this.rdsInfo.result = "失败";
                             this.isReferenceShow = true
                         }else{
                             this.rdsInfo.result = "无效";
@@ -450,7 +450,7 @@
                     lose_frame_point:Obj.lose_frame_point_index,
                     job_assessment_value:Obj.lose_frame_point_index ? "1" : "0"
                 }).then(response=>{
-                    this.rdsInfo.result = Obj.lose_frame_point_index ? "未通过" : "通过"
+                    this.rdsInfo.result = Obj.lose_frame_point_index ? "失败" : "成功"
                     this.rdsInfo.lose_frame_point = Obj.lose_frame_point_index ? Obj.lose_frame_point_index+'.jpg' : "无"
                     this.$Message.success("数据保存成功")
                     this.$refs.rdsFramePhotos.showLoading = false

@@ -54,7 +54,7 @@
                     </Col>
                     <Col style="margin-left:16px;">
                         <b>总共: </b><span>{{totalStatisticData.total.toFixed()}}</span><br>
-                        <b>通过: </b><span>{{totalStatisticData.pass}}</span><br>
+                        <b>成功: </b><span>{{totalStatisticData.pass}}</span><br>
                         <b>失败: </b><span>{{totalStatisticData.fail}}</span><br>
                         <b>无效: </b><span>{{totalStatisticData.invalid}}</span>
                     </Col>
@@ -73,7 +73,7 @@
                     <Col style="margin-left: 16px;">
                         <b>设备名称: </b><span>{{statistic.deviceName}}</span><br>
                         <b>总共: </b><span>{{statistic.total}}</span><br>
-                        <b>通过: </b><span>{{statistic.pass}}</span><br>
+                        <b>成功: </b><span>{{statistic.pass}}</span><br>
                         <b>失败: </b><span>{{statistic.fail}}</span><br>
                         <b>无效: </b><span>{{statistic.invalid}}</span>
                     </Col>
@@ -98,7 +98,7 @@
                     <Col style="margin-left: 16px;">
                         <b>用例名称: </b><span>{{statistic.job_name}}</span><br>
                         <b>总共: </b><span>{{statistic.total}}</span><br>
-                        <b>通过: </b><span>{{statistic.pass}}</span><br>
+                        <b>成功: </b><span>{{statistic.pass}}</span><br>
                         <b>失败: </b><span>{{statistic.fail}}</span><br>
                         <b>无效: </b><span>{{statistic.na}}</span>
                     </Col>

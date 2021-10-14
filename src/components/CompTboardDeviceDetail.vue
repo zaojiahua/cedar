@@ -9,7 +9,7 @@
             </Col>
             <Col style="margin-left:16px;">
                 <b>总共: </b><span>{{statistic.total}}</span><br>
-                <b>通过: </b><span>{{statistic.pass}}</span><br>
+                <b>成功: </b><span>{{statistic.pass}}</span><br>
                 <b>失败: </b><span>{{statistic.fail}}</span><br>
                 <b>无效: </b><span>{{statistic.invalid}}</span>
             </Col>
@@ -27,7 +27,7 @@
                     <Input disabled class="disabled-input" :value="statistic.total.toFixed(0)"></Input>
                 </FormItem>
                 <FormItem style="margin-bottom: 0px;">
-                    <b slot="label">通过:</b>
+                    <b slot="label">成功:</b>
                     <Progress :percent="statistic.pass/statistic.total*100" :stroke-width="4">{{statistic.pass}}</Progress>
                 </FormItem>
                 <FormItem style="margin-bottom: 0px;">

@@ -56,7 +56,7 @@
                             <span class="icon-span" style="background: #999"></span> 无效： {{ totalCount.invalid }}
                         </Col>
                         <Col span="12">
-                            <span class="icon-span" style="background: #1bbc9c"></span> 通过： {{ totalCount.pass }}
+                            <span class="icon-span" style="background: #1bbc9c"></span> 成功： {{ totalCount.pass }}
                         </Col>
                     </Row>
                 </div>

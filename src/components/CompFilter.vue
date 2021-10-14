@@ -90,11 +90,11 @@
         job_assessment_value:[
             {
                 id:1,
-                job_assessment:"通过"
+                job_assessment:"成功"
             },
             {
                 id:2,
-                job_assessment:"未通过"
+                job_assessment:"失败"
             },
             {
                 id:3,

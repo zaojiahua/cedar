@@ -8,7 +8,7 @@
                 <Spin v-show="loadingData" size="large" style="position: absolute; width: 100%; height: inherit; left: 50%;"></Spin>
                 <div :class="loadingData ? 'opacity-row' : ''">
                     <div class="rds-box tooltip" :title="'ID：'+item.id+'\n设备名称：'+ item.device.device_name+'\n用例名称：'+item.job.job_name+'\n结果：'+item.job_assessment_value"
-                         v-for="(item,index) in rdsData" :key="item.id" :class="[getRdsColorClass(item.job_assessment_value),{'select':index===rdsIndex&&cardIndex===Index}]"
+                         v-for="(item,index) in rdsData" :key="item.id" :class="[getRdsColorClass(item),{'select':index===rdsIndex&&cardIndex===Index}]"
                          @click="onRdsBoxClick(item,Index,index)"></div>
                 </div>
             </Row>
@@ -87,6 +87,10 @@
                 type: String,
                 default: ''
             },
+            propFilterType:{   //严重失败
+                type: String,
+                default: ''
+            },
             perfRds:{
                 type: Boolean,
                 default: false
@@ -142,6 +146,10 @@
                     resultRangeCondition = ""
                 if(this.propResultRange.length === 1 && this.propResultRange[0] === '-1' && this.propInvalidType.length > 0)
                     resultRangeCondition = "&job_assessment_value=" + this.propInvalidType;
+
+                if(this.propResultRange.length === 1 && this.propResultRange[0] === '1' && this.propFilterType.length > 0)
+                    resultRangeCondition = "&job_assessment_value=1&filter=" + this.propFilterType;
+
                 //时间参数选择
                 let dateRangeCondition = ""
                 if (this.propFilterDateRange && this.propFilterDateRange[0] && this.propFilterDateRange[1]) {
@@ -283,8 +291,10 @@
                 this.rdsDataList[this.cardIndex].splice(this.rdsIndex, 1)   /////////////
             },
             getRdsColorClass(type) {
-                if (type === "0") return "success"
-                if (type === "1") return "failed"
+                // filter=serious
+                if (type.job_assessment_value === "0") return "success"
+                if (type.job_assessment_value === "1" && type.filter!=="serious") return "failed"
+                if(type.job_assessment_value === "1" && type.filter==="serious") return "serious"
                 return "invalid"
             },
         },
@@ -318,6 +328,11 @@
                 }
             },
             propInvalidType:{
+                handler: function(){
+                    this.loadMoreData(true)
+                }
+            },
+            propFilterType:{
                 handler: function(){
                     this.loadMoreData(true)
                 }
@@ -376,5 +391,8 @@
     }
     .invalid{
         background-color: #BDC3C7;
+    }
+    .serious{
+        background-color: #F75F0D;
     }
 </style>

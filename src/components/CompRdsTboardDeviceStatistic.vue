@@ -32,17 +32,21 @@
                     <div style="overflow:hidden;">
                         <div>
                             <div style="margin: 5px 0 20px 0">
-                                <Select v-model="resultRange" multiple style="width:230px" @on-change="invalidType=''" :transfer="true" placeholder="请选择测试结果类型">
-                                    <Option value="0"> 通过 </Option>
-                                    <Option value="1"> 未通过 </Option>
+                                <Select v-model="resultRange" multiple style="width:230px" @on-change="invalidType='';filterType=''" :transfer="true" placeholder="请选择测试结果类型">
+                                    <Option value="0"> 成功 </Option>
+                                    <Option value="1"> 失败 </Option>
                                     <Option value="-1"> 无效 </Option>
                                 </Select>
                                 <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'&&invalidList.length>0" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
                                     <Option v-for="item in invalidList" :value="item.job_assessment_value"> {{ item.job_assessment_value }} ({{ item.count }}) </Option>
                                 </Select>
+                                <Select v-model="filterType" v-show="resultRange.length===1&&resultRange[0]==='1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择失败类型">
+                                    <Option value="serious">严重失败</Option>
+                                </Select>
                                 <p style="float: right">
-                                    <Tag type="dot" color="#1bbc9c">通过</Tag>
-                                    <Tag type="dot" color="#FFAE25">未通过</Tag>
+                                    <Tag type="dot" color="#1bbc9c">成功</Tag>
+                                    <Tag type="dot" color="#FFAE25">失败</Tag>
+                                    <Tag type="dot" color="#F75F0D">严重失败</Tag>
                                     <Tag type="dot" color="#BDC3C7">无效</Tag>
                                 </p>
                             </div>
@@ -51,6 +55,7 @@
                                            :prop-tboard-id="propTboardId"
                                            :prop-result-range="resultRange"
                                            :prop-invalid-type="invalidType"
+                                           :prop-filter-type="filterType"
                                            @after-load-data="afterLoadData1"
                                            @rds-mouse-enter="onRdsMouseEnter"
                                            @rds-mouse-leave="onRdsMouseLeave">
@@ -87,7 +92,7 @@
                                     <span class="iconTip" style="background: #999"></span> 无效： {{ totalCount.invalid }}
                                 </Col>
                                 <Col span="12">
-                                    <span class="iconTip" style="background: #1bbc9c"></span> 通过： {{ totalCount.pass }}
+                                    <span class="iconTip" style="background: #1bbc9c"></span> 成功： {{ totalCount.pass }}
                                 </Col>
                             </Row>
                         </div>
@@ -107,17 +112,21 @@
                     <p style="font-size: 12px">设备：【{{ deviceLabel }}】    用例：【{{ jobName }}】<a href="javascript:" style="margin-left: 10px" @click="showJobDetail=true;$refs.jobDetail.refresh(jobId)">用例详情</a></p>
                     <div>
                         <div style="margin: 20px 0;">
-                            <Select v-model="resultRange2" multiple style="width:230px" @on-change="invalidType2=''" :transfer="true" placeholder="请选择测试结果类型">
-                                <Option value="0"> 通过 </Option>
-                                <Option value="1"> 未通过 </Option>
+                            <Select v-model="resultRange2" multiple style="width:230px" @on-change="invalidType2='';filterType2=''" :transfer="true" placeholder="请选择测试结果类型">
+                                <Option value="0"> 成功 </Option>
+                                <Option value="1"> 失败 </Option>
                                 <Option value="-1"> 无效 </Option>
                             </Select>
                             <Select v-model="invalidType2" v-show="resultRange2.length===1&&resultRange2[0]==='-1'&&invalidList2.length>0" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
                                 <Option v-for="item in invalidList2" :value="item.job_assessment_value"> {{ item.job_assessment_value }} ({{ item.count }}) </Option>
                             </Select>
+                            <Select v-model="filterType2" v-show="resultRange.length===1&&resultRange[0]==='1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择失败类型">
+                                <Option value="serious">严重失败</Option>
+                            </Select>
                             <p style="float: right">
-                                <Tag type="dot" color="#1bbc9c">通过</Tag>
-                                <Tag type="dot" color="#FFAE25">未通过</Tag>
+                                <Tag type="dot" color="#1bbc9c">成功</Tag>
+                                <Tag type="dot" color="#FFAE25">失败</Tag>
+                                <Tag type="dot" color="#F75F0D">严重失败</Tag>
                                 <Tag type="dot" color="#BDC3C7">无效</Tag>
                             </p>
                         </div>
@@ -128,6 +137,7 @@
                                        :prop-tboard-id="propTboardId"
                                        :prop-result-range="resultRange2"
                                        :prop-invalid-type="invalidType2"
+                                       :prop-filter-type="filterType2"
                                        @after-load-data="afterLoadData"
                                        @rds-mouse-enter="onRdsMouseEnter"
                                        @rds-mouse-leave="onRdsMouseLeave">
@@ -214,6 +224,8 @@
                 tabName:"testInfo",
                 invalidType:'',
                 invalidType2:'',
+                filterType:'',
+                filterType2:'',
                 updateRds:"",
                 invalidList:[],
                 invalidList2:[],

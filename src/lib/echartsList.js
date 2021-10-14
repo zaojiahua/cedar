@@ -8,7 +8,7 @@ export default {
                 }
             },
             legend: {
-                data: ['通过', '未通过','无效'],
+                data: ['成功', '失败','无效'],
                 right:20
             },
             grid: {
