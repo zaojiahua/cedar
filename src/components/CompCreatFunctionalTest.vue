@@ -282,14 +282,14 @@
                                 let _this = this
                                 this.$Modal.confirm({
                                     title:"任务启动失败",
-                                    content:"【用例】 "+error.response.data.data.data.error_job_name_list.join(",") +" 缺少资源文件，" +
+                                    content:"【用例】 "+error.response.data.error_job_name_list.join(",") +" 缺少资源文件，" +
                                         "请尝试重新保存用例，是否继续运行其他用例？",
                                     okText: '继续',
                                     onOk(){
                                         this.$ajax
                                             .post("api/v1/coral/insert_tboard/ ",{
                                                 device_label_list:deviceList,
-                                                job_label_list:error.response.data.data.data.correct_job_label_list,
+                                                job_label_list:error.response.data.correct_job_label_list,
                                                 repeat_time:_this.tboardRepeatTime,
                                                 board_name:_this.tboardName,
                                                 owner_label:userId
