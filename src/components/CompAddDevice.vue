@@ -53,6 +53,12 @@
                     <Input v-model="deviceInfo.ip_address" class="disabled-input" :disabled="true"></Input>
                 </FormItem>
                 <Divider />
+              <FormItem>
+                <b slot="label"><span class="need">*</span>厂商名称</b>
+                <Select  @on-change="setManufacturer"  placeholder="请选择或新建厂商信息" filterable allow-create>
+                  <Option v-for="item in manufacturerList" :value="item">{{ item}}</Option>
+                </Select>
+              </FormItem>
                 <FormItem>
                     <b slot="label">手机型号</b>
                     <Input v-model="deviceInfo.phone_model_name" class="disabled-input" :disabled="true"></Input>
@@ -99,6 +105,7 @@
         device_label: "string",
         ip_address: "string",
         phone_model_name:"string",
+        manufacturer:"string",
         x_border:"number",
         x_dpi:"number",
         y_border:"number",
@@ -122,11 +129,15 @@
                 deviceNum: 0,
                 CabinetIpSelected: '',
                 deviceType:1,
+                manufacturerList:[]
             }
         },
         methods: {
             reset() {
                 this.addDeviceStep = 1
+            },
+            setManufacturer(item){
+              this.deviceInfo.manufacturer = item
             },
             addDeviceError(title, desc) {
                 this.$Notice.error({
@@ -136,7 +147,8 @@
                 });
             },
             addDevice() {
-                if(this.addedDeviceName.trim().length===0||this.deviceInfo.x_border===null||this.deviceInfo.x_dpi===null||this.deviceInfo.y_border===null||this.deviceInfo.y_dpi===null){
+              if(this.addedDeviceName.trim().length===0||this.deviceInfo.x_border===null||this.deviceInfo.x_dpi===null
+                    ||this.deviceInfo.y_border===null||this.deviceInfo.y_dpi===null||this.deviceInfo.manufacturer===""){
                     this.$Message.warning("带*项信息不能为空！")
                     return
                 }
@@ -281,6 +293,18 @@
                     })
             }
         },
+        created() {
+          this.$ajax.get(
+              "api/v1/cedar/manufacturer/?fields=" +
+              "id," +
+              "manufacturer_name"
+          ).then(response => {
+            this.manufacturerList = []
+            response.data.manufacturers.forEach(item => {
+              this.manufacturerList.push(item.manufacturer_name)
+            })
+          })
+        }
     }
 </script>
 
