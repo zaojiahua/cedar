@@ -491,11 +491,11 @@
                             this.$Message.success("重连成功")
                             this.$emit('after-device-delete')
                         }else{
-                            this.$Message.error({content:response.data.description,duration: 6})
+                            this.$Message.error({content:response.data.state,duration: 6})
                         }
                     }).catch(error=>{
                         this.spinShow = false
-                        this.$Message.error({content:error.response.data.description,duration: 6})
+                        this.$Message.error({content:error.response.data.state,duration: 6})
                     })
                 }
             },

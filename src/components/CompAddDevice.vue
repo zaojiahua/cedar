@@ -55,7 +55,7 @@
                 <Divider />
               <FormItem>
                 <b slot="label"><span class="need">*</span>厂商名称</b>
-                <Select  @on-change="setManufacturer"  placeholder="请选择或新建厂商信息" filterable allow-create>
+                <Select   @on-create="addManufacturer" v-model="deviceInfo.manufacturer" placeholder="请选择或新建厂商信息" filterable allow-create>
                   <Option v-for="item in manufacturerList" :value="item">{{ item}}</Option>
                 </Select>
               </FormItem>
@@ -138,6 +138,10 @@
             },
             setManufacturer(item){
               this.deviceInfo.manufacturer = item
+              // this.manufacturerList.push(item)
+            },
+            addManufacturer (item){
+              this.manufacturerList.push(item)
             },
             addDeviceError(title, desc) {
                 this.$Notice.error({
@@ -234,6 +238,8 @@
                                 this.addDeviceError('ip侦测失败', '侦测不到该设备的IP地址，请确认待添加设备已连接到TMach系统WLAN！')
                             } else {
                                 this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
+                                if (this.manufacturerList.indexOf(this.deviceInfo.manufacturer) === -1)
+                                  this.manufacturerList.push(this.deviceInfo.manufacturer)
                             }
                             this.$Loading.finish();
                             this.spinShow = false;
@@ -251,6 +257,8 @@
                             .then(response => {
                                 this.deviceInfo = utils.validate(addDeviceSerializer, response.data)
                                 this.spinShow = false;
+                              if (this.manufacturerList.indexOf(this.deviceInfo.manufacturer) === -1)
+                                this.manufacturerList.push(this.deviceInfo.manufacturer)
                             })
                             .catch(error => {
                                 if (config.DEBUG) console.log(error)
