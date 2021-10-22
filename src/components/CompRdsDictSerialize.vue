@@ -40,6 +40,9 @@
                                 </div>
                             </Panel>
                         </Collapse>
+                        <div style="margin-top: 10px;margin-left: 16px">
+                            <p v-for="times in flow.switch_times">{{ times.name }} ( {{ times.time }} / {{ times.max_time }} )</p>
+                        </div>
                     </div>
                 </Panel>
             </Collapse>
