@@ -99,6 +99,10 @@
                 type: Boolean,
                 default: true
             },
+            propOrder:{
+                type: Boolean,
+                default: false
+            },
             updateRds:{
                 type: String,
                 default: ""
@@ -190,6 +194,11 @@
                 if(this.propTboardId){
                     tboardCondition =  "&tboard=" + this.propTboardId
                 }
+                // RDS排序开关：true正序；false倒序
+                let orderCondition = "&ordering=-start_time"
+                if(this.propOrder){
+                    orderCondition = "&ordering=start_time"
+                }
                 // if(this.tboards.length !== 0) {
                 //     let tboardIds = []
                 //     this.tboards.forEach(tboard=>{
@@ -205,7 +214,7 @@
                     "&limit=" + pageSize +
                     "&offset=" + this.dataOffset +
                     "&device=" + this.propDeviceId +
-                    "&ordering=-start_time")
+                    orderCondition)
                     .then(response=>{
                         this.dataOffset += pageSize
                         if(reset) { // 数据加载完成才清空原有数据，以免画面闪烁。

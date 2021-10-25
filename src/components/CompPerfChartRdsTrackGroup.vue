@@ -22,6 +22,7 @@
                         </p>
                     </div>
                     <comp-rds-card ref="rdsCard"
+                                   :prop-order="true"
                                    :prop-tboard-id="tboardId"
                                    :prop-job-id="job.job_id"
                                    :prop-device-id="deviceId"
