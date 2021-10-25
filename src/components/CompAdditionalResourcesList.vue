@@ -8,7 +8,7 @@
                 </Select>
                 <Button v-show="(tableList===1)&&(username==='admin')" type="primary" style="margin-left: 16px" @click="onOpenSimModal">添加SIM卡资源</Button>
                 <Button v-show="(tableList===2)&&(username==='admin')" type="primary" style="margin-left: 16px" @click="onOpenAppModal">添加账号资源</Button>
-                <Button v-show="(tableList===2)&&(username==='admin')" type="default" style="margin-left: 16px;width: 80px" @click="showCreateAppName=true">添加App</Button>
+                <Button v-show="(tableList===2)&&(username==='admin')" type="default" style="margin-left: 16px;width: 80px" @click="showCreateAppName=true;appName = ''">添加App</Button>
             </Col>
 
             <Col span="12" style="text-align: right" v-show="username==='admin'">
