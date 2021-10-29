@@ -93,6 +93,10 @@
             propShowJobType: {
                 type: Boolean,
                 default: false
+            },
+            propNotInner:{
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -132,6 +136,27 @@
                         filterRemote (value) {
                             this.jobType = value[0] || ''
                             localStorage.setItem('COMPJOBLIST:FILTER_JOB_TYPE', this.jobType)
+                            this.jobSearch(this.keyword)
+                        }
+                    } :  this.propNotInner ? {
+                        title: "用例类型",
+                        key: "job_type",
+                        sortable: true,
+                        filters: [
+                            {
+                                label: '功能测试',
+                                value: 'Joblib'
+                            },
+                            {
+                                label: '性能测试',
+                                value: 'PerfJob'
+                            },
+                        ],
+                        filterMultiple: false,
+                        filteredValue: [],
+                        filterRemote (value) {
+                            this.jobType = value[0] || ''
+                            console.log(this.jobType)
                             this.jobSearch(this.keyword)
                         }
                     } : {
@@ -245,6 +270,7 @@
                     "&job_deleted=False" +
                     this.filterUrlParam +
                     "&ordering=-updated_time" +
+                    "&draft=False" +
                     tboardCondition +
                     deviceCountCondition +
                     this.urlParam
@@ -324,7 +350,7 @@
                 let deviceCountCondition = ""
                 if(this.propSubsidiaryDeviceCount)
                     deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
-                this.$ajax.get("api/v1/cedar/job/?fields=job_name&job_deleted=False"+this.urlParam + deviceCountCondition)
+                this.$ajax.get("api/v1/cedar/job/?fields=job_name&job_deleted=False&draft=False"+this.urlParam + deviceCountCondition)
                     .then(response=>{
                         let jobNameList = [];
                         response.data.jobs.forEach(job=>{
@@ -366,6 +392,7 @@
                     "updated_time," +
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
+                    "&draft=False" +
                     "&ordering=-updated_time" +
                     this.filterUrlParam +
                     "&job_name__icontains=" +  value +
@@ -420,6 +447,7 @@
                     "updated_time," +
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
+                    "&draft=False" +
                     "&ordering=-updated_time" +
                     this.filterUrlParam +
                     "&job_name__icontains=" +
@@ -450,7 +478,7 @@
         },
         computed:{
             filterUrlParam(){
-                return this.propShowJobType ? `${this.jobType ? `&job_type=${this.jobType}` : ''}` : ""
+                return this.propShowJobType || this.propNotInner ? `${this.jobType ? `&job_type=${this.jobType}` : ''}` : ""
             }
         },
         watch:{
@@ -463,6 +491,7 @@
         },
         created() {
             this.pageSize = utils.getPageSize();
+            if(this.propNotInner) this.jobType = ""
             if (this.propAutoLoad) this.refresh()
             if (this.propShowCounter)
                 this.columns.splice(0, 0, {

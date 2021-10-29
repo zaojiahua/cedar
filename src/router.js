@@ -18,6 +18,7 @@ import AbnormalStatistics from "./views/AbnormalStatistics"
 import PerfDataManagement from "./views/PerfDataManagement"
 import RdsDictView from "./views/RdsDictView"
 import TGuardManagement from "./views/TGuardManagement"
+import TestSetManagement from "./views/TestSetManagement"
 
 
 Vue.use(Router)
@@ -100,6 +101,11 @@ let router = new Router({
                     path: "TGuard-management",
                     name: "TGuard-management",
                     component: TGuardManagement
+                },
+                {
+                    path: "testSet-management",
+                    name: "testSet-management",
+                    component: TestSetManagement
                 }
             ]
         },

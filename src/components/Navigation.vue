@@ -57,6 +57,12 @@
                             </Tooltip>
                             <span>用例管理</span>
                         </MenuItem>
+                        <MenuItem name="testSet-management" :to="{name: 'testSet-management'}">
+                            <Tooltip content="测试集" placement="right" :disabled="!isCollapsed">
+                                <Icon type="ios-cube-outline" size="24" />
+                            </Tooltip>
+                            <span>测试集</span>
+                        </MenuItem>
                         <MenuItem name="create-tboard" :to="{name: 'create-tboard'}">
                             <Tooltip content="新建任务" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-add-circle-outline" size="24"/>

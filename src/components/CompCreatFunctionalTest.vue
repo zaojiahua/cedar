@@ -22,31 +22,39 @@
         </div>
 
         <div v-if="current===1">
-            <Row>
-                <comp-filter @on-return-data="onDefaultJobList" ref="jobFilter" :prop-default-device="selectedDevice" @on-change="onJobFilterChange"></comp-filter>
-            </Row>
-            <Row type="flex">
-                <Col span="14">
-                    <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true"></comp-job-list>
-                </Col>
-                <Col span="2">
-                    <Row type="flex" justify="center" style="margin-top: 48px;">
-                        <Button @click="selectJob">
-                            添加
-                            <Icon type="ios-arrow-forward" />
-                        </Button>
-                    </Row>
-                </Col>
-                <Col span="8">
-                    <comp-job-list style="margin-top: 48px" ref="jobSelectedList" :prop-auto-load="false" :prop-show-search="false"
-                                   :prop-show-counter="true" :prop-deletable="true" :prop-show-page="false"></comp-job-list>
-
-                    <Row type="flex" justify="center" style="margin-top: 32px;">
-                        <Button type="primary" style="width: 90px;" @click="backToPageChooseDevice">上一步</Button>
-                        <Button type="primary" style="width: 90px; margin-left:32px;" @click="toPageFillInfo">下一步( {{selectedJob.length}} )</Button>
-                    </Row>
-                </Col>
-            </Row>
+            <RadioGroup v-model="groupType" type="button" style="margin-bottom: 12px;">
+                <Radio :label="1">用例列表</Radio>
+                <Radio :label="2">测试集列表</Radio>
+            </RadioGroup>
+            <div v-show="groupType===1">
+                <Row>
+                    <comp-filter @on-return-data="onDefaultJobList" ref="jobFilter" :prop-default-device="selectedDevice" @on-change="onJobFilterChange"></comp-filter>
+                </Row>
+                <Row type="flex">
+                    <Col span="14">
+                        <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true"></comp-job-list>
+                    </Col>
+                    <Col span="2">
+                        <Row type="flex" justify="center" style="margin-top: 48px;">
+                            <Button @click="selectJob">
+                                添加
+                                <Icon type="ios-arrow-forward" />
+                            </Button>
+                        </Row>
+                    </Col>
+                    <Col span="8">
+                        <comp-job-list style="margin-top: 48px" ref="jobSelectedList" :prop-auto-load="false" :prop-show-search="false"
+                                       :prop-show-counter="true" :prop-deletable="true" :prop-show-page="false"></comp-job-list>
+                        <Row type="flex" justify="center" style="margin-top: 32px;">
+                            <Button type="primary" style="width: 90px;" @click="backToPageChooseDevice">上一步</Button>
+                            <Button type="primary" style="width: 90px; margin-left:32px;" @click="toPageFillInfo">下一步( {{selectedJob.length}} )</Button>
+                        </Row>
+                    </Col>
+                </Row>
+            </div>
+            <div v-show="groupType===2">
+                <comp-test-set-select-view @on-back="backToPageChooseDevice" @on-next-step="toPageFillInfoNext"></comp-test-set-select-view>
+            </div>
 
         </div>
 
@@ -73,7 +81,34 @@
             </Card>
             <Row type="flex" justify="center" style="margin-top: 32px;">
                 <Button type="primary" style="width: 80px;" @click="backToPageChooseJob">上一步</Button>
-                <Button type="primary" style="width: 80px; margin-left:32px;" @click="complete">启动任务</Button>
+                <Button type="primary" style="width: 80px; margin-left:32px;" @click="complete(false)">启动任务</Button>
+            </Row>
+        </div>
+
+        <div v-if="current===3">
+            <Card title="填写任务讯息" dis-hover>
+                <Form :label-width="90">
+                    <FormItem>
+                        <b slot="label">任务名称</b>
+                        <Input v-model="tboardName" style="max-width: 600px;" :maxlength="32"></Input>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">运行轮次</b>
+                        <InputNumber v-model="tboardRepeatTime" :min="1" :precision="0"></InputNumber>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">已选设备</b>
+                        <span> {{selectedDevice.length}} 台</span>
+                    </FormItem>
+                    <FormItem>
+                    <b slot="label">已选测试集</b>
+                    <span> {{selectedTestSet.length}} 个</span>
+                    </FormItem>
+                </Form>
+            </Card>
+            <Row type="flex" justify="center" style="margin-top: 32px;">
+                <Button type="primary" style="width: 80px;" @click="backToPageChooseJob">上一步</Button>
+                <Button type="primary" style="width: 80px; margin-left:32px;" @click="complete(true)">启动任务</Button>
             </Row>
         </div>
 
@@ -99,13 +134,14 @@
     import CompFilter from "../components/CompFilter";
     import CompJobList from "../components/CompJobList";
     import CompJobDetail from  "../components/CompJobDetail"
+    import CompTestSetSelectView from  "../components/CompTestSetSelectView"
     import config from "../lib/config";
     import utils from "../lib/utils";
     import main from "../main";
 
 
     export default {
-        components: {CompJobList, CompDeviceList, CompFilter,CompJobDetail},
+        components: {CompJobList, CompDeviceList, CompFilter,CompJobDetail, CompTestSetSelectView},
         data() {
             return {
                 current: 0,
@@ -127,6 +163,9 @@
                 selectCabinetType:"",
                 cabinetTypeList:[],
                 propCabinetType:"",
+                groupType:1,
+                selectedTestSet:[],
+                selectedTestSetJobs:[],
             }
         },
         methods: {
@@ -231,6 +270,11 @@
                     this.$Message.warning("请选择要进行测试的用例！");
                 }
             },
+            toPageFillInfoNext(jobs,selectSet){
+                this.selectedTestSet = selectSet
+                this.selectedTestSetJobs = jobs
+                this.current = 3
+            },
             backToPageChooseDevice(){
                 this.current = 0
                 if(this.selectedDevice.length === 0)
@@ -241,7 +285,7 @@
                 })
             },
             // Page "Fill info"
-            complete(){
+            complete(flag){
                 if(config.DEBUG){
                     console.log(this.selectedDevice)
                     console.log(this.selectedJob)
@@ -261,6 +305,9 @@
                             jobList.push(job.job_label);
                         }
                     })
+                    if(flag)   //测试集合并过来的用例
+                        jobList = this.selectedTestSetJobs
+
                     this.showLoading = true;
                     utils._initDate();
                     let userId = sessionStorage.getItem('id');
@@ -340,10 +387,24 @@
                 this.showLoading = false;
             },
             backToPageChooseJob(){
-                this.current = 1
-                this.$nextTick(function () {
-                    this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
-                })
+                if(this.current===3){
+                    let _this = this
+                    this.$Modal.confirm({
+                        title:"提示",
+                        content:"返回上一步将不会保存已选测试集，是否继续？",
+                        onOk(){
+                            _this.current = 1
+                            _this.$nextTick(function () {
+                                _this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
+                            })
+                        }
+                    })
+                }else {
+                    this.current = 1
+                    this.$nextTick(function () {
+                        this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
+                    })
+                }
             },
             JobOnRowClick(row){
                 this.showJobDetail = true;
