@@ -3,6 +3,12 @@
         <Tabs type="card">
             <TabPane v-for="column in filterColumn" :label="column.title" :key="column.key">
                 <div style="max-height: 130px;overflow: auto">
+                    <Row v-if="column.title==='测试用途'||column.title==='自定义标签'" style="text-align: right;margin-right: 20px">
+                        <i-switch v-model="filterType" size="large" @on-change="onOrderChange">
+                            <span slot="open">用例</span>
+                            <span slot="close">字母</span>
+                        </i-switch>
+                    </Row>
                     <CheckboxGroup v-model="checked" @on-change="onChange">
                         <Row type="flex">
                             <Col span="4" v-for="(item, index) in filterData[column.key]" :key="index">
@@ -102,6 +108,13 @@
             }
         ]
     }
+    const getOrderSerializer = [
+        {
+            id: "number",
+            name: "string",
+            job_count:"number"
+        }
+    ]
 
     export default {
         name: "CompFilter",
@@ -169,6 +182,7 @@
                 filterData: {},
                 checked: [],
                 defaultPhoneModelList:{},
+                filterType:true,
             }
 
         },
@@ -201,6 +215,51 @@
             onChange() {
                 let selectedData = this._jobRender()
                 this.$emit('on-change', selectedData)
+            },
+            // 按照用例数量/首字母顺序排序  true:用例  false:字母
+            onOrderChange(flag){
+                let requests = []
+                if(flag)
+                    requests = [
+                        this.$ajax.get("api/v1/cedar/job_label_order/?label_name=JobTestArea"),
+                        this.$ajax.get("api/v1/cedar/job_label_order/?label_name=CustomTag")
+                    ]
+                else
+                    requests = [
+                        this.$ajax.get(
+                            "api/v1/cedar/job_test_area/?fields=" +
+                            "id," +
+                            "description" +
+                            "&ordering=description"
+                        ),
+                        this.$ajax.get(
+                            "api/v1/cedar/custom_tag/?fields=" +
+                            "id," +
+                            "custom_tag_name" +
+                            "&ordering=custom_tag_name"
+                        )
+                    ]
+                this.$ajax.all(requests)
+                    .then(this.$ajax.spread((job_test_area_resp,custom_tag_resp) => {
+                        if(flag){
+                            let job_test_area_list = utils.validate(getOrderSerializer, job_test_area_resp.data)
+                            let custom_tag_list = utils.validate(getOrderSerializer, custom_tag_resp.data)
+                            job_test_area_list.forEach(item=>{
+                                item.description = item.name
+                            })
+                            custom_tag_list.forEach(item=>{
+                                item.custom_tag_name = item.name
+                            })
+                            this.filterData.job_test_area = job_test_area_list
+                            this.filterData.custom_tag = custom_tag_list
+                        }else {
+                            this.filterData.job_test_area = utils.validate(getJobTestAreaSerializer, job_test_area_resp.data).jobtestareas
+                            this.filterData.custom_tag = utils.validate(getCustomTagSerializer, custom_tag_resp.data).customtags
+                        }
+                    })).catch(reason => {
+                        if (config.DEBUG) console.log(reason)
+                        this.$Message.error("载入失败")
+                    })
             }
         },
         created() {
@@ -212,12 +271,6 @@
                     "id," +
                     "phone_model_name" +
                     "&ordering=phone_model_name"
-                ),
-                this.$ajax.get(
-                    "api/v1/cedar/job_test_area/?fields=" +
-                    "id," +
-                    "description" +
-                    "&ordering=description"
                 ),
                 this.$ajax.get(
                     "api/v1/cedar/android_version/?fields=" +
@@ -238,24 +291,28 @@
                     "last_name" +
                     "&ordering=username"
                 ),
-                this.$ajax.get(
-                    "api/v1/cedar/custom_tag/?fields=" +
-                    "id," +
-                    "custom_tag_name" +
-                    "&ordering=custom_tag_name"
-                ),
+                this.$ajax.get("api/v1/cedar/job_label_order/?label_name=JobTestArea"),
+                this.$ajax.get("api/v1/cedar/job_label_order/?label_name=CustomTag"),
                 this.$ajax.get('api/v1/cedar/get_cabinet_type_info/?data_type=cabinet_type_data')
             ]
 
             this.$ajax.all(requests)
-                .then(this.$ajax.spread((phone_model_resp, job_test_area_resp, android_version_resp, rom_version_resp, reefuser_resp, custom_tag_resp,cabinet_type_resp) => {
+                .then(this.$ajax.spread((phone_model_resp, android_version_resp, rom_version_resp, reefuser_resp, job_test_area_resp, custom_tag_resp,cabinet_type_resp) => {
+                    let job_test_area_list = utils.validate(getOrderSerializer, job_test_area_resp.data)
+                    let custom_tag_list = utils.validate(getOrderSerializer, custom_tag_resp.data)
+                    job_test_area_list.forEach(item=>{
+                        item.description = item.name
+                    })
+                    custom_tag_list.forEach(item=>{
+                        item.custom_tag_name = item.name
+                    })
                     this.filterData = {
                         phone_model: utils.validate(getPhoneModelSerializer, phone_model_resp.data).phonemodels,
-                        job_test_area: utils.validate(getJobTestAreaSerializer, job_test_area_resp.data).jobtestareas,
+                        job_test_area: job_test_area_list,
                         android_version: utils.validate(getAndroidVersionSerializer, android_version_resp.data).androidversions,
                         rom_version: utils.validate(getRomVersionSerializer, rom_version_resp.data).romversions,
                         reefuser: utils.validate(getReefUserSerializer, reefuser_resp.data).reefusers,
-                        custom_tag: utils.validate(getCustomTagSerializer, custom_tag_resp.data).customtags,
+                        custom_tag: custom_tag_list,
                         job_assessment_value:getJobAssessmentValue.job_assessment_value,
                         type: cabinet_type_resp.data
                     }
