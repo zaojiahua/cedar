@@ -4,7 +4,7 @@
             <comp-filter ref="jobFilter" @on-change="onJobFilterChange"></comp-filter>
         </Row>
         <Row>
-            <comp-job-list ref="jobList" :prop-auto-load="true" :prop-multi-select="true" :prop-not-inner="true"></comp-job-list>
+            <comp-job-list ref="jobList" :prop-auto-load="true" :prop-multi-select="true" :prop-not-inner="true" @get-job-count="getJobCount"></comp-job-list>
         </Row>
     </div>
 </template>
@@ -64,6 +64,9 @@
                 let param = conditions.join("&")
                 return param
             },
+            getJobCount(number){
+                this.$emit("get-job-count",number)
+            }
         },
         mounted(){
         }

@@ -205,6 +205,7 @@
                         }).then(response=>{
                             this.$Message.success("用例移除成功")
                             root.data.splice(index, 1)
+                            root.$emit("on-remove-success")
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
                             this.$Message.error({content:"用例移除失败"+error.response.data.description,duration:6})

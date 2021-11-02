@@ -8,16 +8,17 @@
                 <h2>测试集：{{ viewName }}</h2>
             </Row>
             <Row style="text-align: right;margin: 10px 0">
+                <Button @click="onRefreshJobList" style="margin-right: 16px">刷新列表</Button>
                 <Button type="primary" @click="openJobModal">添加用例</Button>
             </Row>
-            <comp-test-set-job-table ref="testSetJobList" :prop-show-remove="true"></comp-test-set-job-table>
+            <comp-test-set-job-table ref="testSetJobList" :prop-show-remove="true" @on-remove-success="onRemoveSuccess"></comp-test-set-job-table>
         </Modal>
 
         <Modal v-model="showSelectJobModal" v-if="showSelectJobModal" :fullscreen="true" :transfer="false" :closable="false">
-            <comp-test-set-add-job ref="addJob"></comp-test-set-add-job>
+            <comp-test-set-add-job ref="addJob"  @get-job-count="getJobCount"></comp-test-set-add-job>
             <div slot="footer">
                 <Button type="text" @click="showSelectJobModal=false">取消</Button>
-                <Button type="primary" @click="getJobSelection">确定</Button>
+                <Button type="primary" @click="getJobSelection">确定 ( {{ selectJobCount }} )</Button>
             </div>
         </Modal>
     </div>
@@ -97,6 +98,7 @@
                 showSelectJobModal:false,
                 viewName:'',
                 viewId:null,
+                selectJobCount:0,
                 pageSize:config.DEFAULT_PAGE_SIZE,
                 keywords: "",
             }
@@ -207,6 +209,17 @@
             },
             openJobModal(){
                 this.showSelectJobModal = true
+                this.selectJobCount = 0
+            },
+            // 用例移除以后刷新外层测试集列表
+            onRemoveSuccess(){
+                this.refresh()
+            },
+            onRefreshJobList(){
+                this.$refs.testSetJobList.onPageChange(1)
+            },
+            getJobCount(count){
+                this.selectJobCount = count
             }
         },
         mounted(){

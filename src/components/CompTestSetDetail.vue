@@ -55,6 +55,7 @@
         },
         methods:{
             reset(){
+                this.$refs.form.resetFields()
                 this.testInfo = utils.validate(testSetSerializer,{})
             },
             refresh(id){
@@ -64,6 +65,7 @@
                     .then(response=>{
                         this.spinShow = false
                         this.testInfo = utils.validate(testSetSerializer,response.data)
+                        this.testInfo.duration_time =  (this.testInfo.duration_time/3600).toFixed(1) + ' 小时'
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
                         this.spinShow = false

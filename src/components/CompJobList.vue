@@ -478,7 +478,7 @@
         },
         computed:{
             filterUrlParam(){
-                return this.propShowJobType || this.propNotInner ? `${this.jobType ? `&job_type=${this.jobType}` : ''}` : ""
+                return this.propShowJobType || this.propNotInner ? `${this.jobType ? `&job_type=${this.jobType}` : this.propNotInner ? `&job_type__in=ReefList[PerfJob{%,%}Joblib]` :''}` : ""
             }
         },
         watch:{

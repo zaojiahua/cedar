@@ -32,9 +32,13 @@
         },
         methods:{
             refresh(){
-                this.$ajax.get("api/v1/cedar/test_gather/?fields=id,name&ordering=-update_time")
+                this.$ajax.get("api/v1/cedar/test_gather/?fields=id,name,job_count&ordering=-update_time")
                     .then(response=>{
                         let data = response.data.test_gather
+                        // 去除空的测试集
+                        data = data.filter(item=>{
+                            return item.job_count>0
+                        })
                         let children = []
                         data.forEach((item,index)=>{
                             if(index===0)
@@ -51,7 +55,7 @@
                         })
                         this.treeData = [{
                             title: '全部测试集',
-                            expand: false,
+                            expand: true,
                             children: children
                         }]
                         this.testName = this.treeData[0].children[0].title
