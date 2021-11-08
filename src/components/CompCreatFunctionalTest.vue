@@ -126,6 +126,28 @@
                 <Button type="primary" @click="onCabinetTypeClick">确定</Button>
             </Row>
         </Modal>
+
+        <Modal v-model="showErrorInner" :closable="false" :mask-closable="false" :footer-hide="true" width="60">
+            <Icon type="ios-help-circle" style="color: #ff9900;float: left;margin: 15px 10px 0 0;" size="24"/>
+            <p style="margin: 15px 0;font-size: 16px">任务启动失败</p>
+            <Row>以下用例：</Row>
+            <Row style="margin: 10px 0">
+                <Button v-for="item in errorInnerList" @click="getJobConnection(item.job_label,item.job_name)">{{item.job_name}}</Button>
+            </Row>
+            <p>缺少资源文件，请尝试重新保存用例，是否继续运行其他用例？</p>
+            <Row type="flex" justify="end" style="margin-top: 30px;">
+                <Button type="text" @click="showErrorInner=false">取消</Button>
+                <Button type="primary" @click="continueCreated">继续</Button>
+            </Row>
+        </Modal>
+
+        <Modal v-model="showJobConnectionModal" :fullscreen="true" :transfer="false" :closable="false" >
+            <comp-inner-job-connection ref="innerJobConnection"></comp-inner-job-connection>
+            <div slot="footer">
+                <Button type="primary" @click="showJobConnectionModal = false">关闭</Button>
+            </div>
+        </Modal>
+
     </Card>
 </template>
 
@@ -135,13 +157,14 @@
     import CompJobList from "../components/CompJobList";
     import CompJobDetail from  "../components/CompJobDetail"
     import CompTestSetSelectView from  "../components/CompTestSetSelectView"
+    import CompInnerJobConnection from  "../components/CompInnerJobConnection"
     import config from "../lib/config";
     import utils from "../lib/utils";
     import main from "../main";
 
 
     export default {
-        components: {CompJobList, CompDeviceList, CompFilter,CompJobDetail, CompTestSetSelectView},
+        components: {CompJobList, CompDeviceList, CompFilter,CompJobDetail, CompTestSetSelectView, CompInnerJobConnection},
         data() {
             return {
                 current: 0,
@@ -166,6 +189,14 @@
                 groupType:1,
                 selectedTestSet:[],
                 selectedTestSetJobs:[],
+                showJobConnectionModal:false,
+                showErrorInner:false,
+                errorInnerList:[],
+                continueLabelList:[],
+                userId:"",
+                //已选定的device和job 的label集合
+                deviceLabelList:[],
+                jobLabelList:[],
             }
         },
         methods: {
@@ -299,6 +330,7 @@
                     this.selectedDevice.forEach(device=>{
                         deviceList.push(device.device_label);
                     })
+                    this.deviceLabelList = deviceList
                     let jobList = [];
                     this.selectedJob.forEach(job=>{
                         for (let i=0;i<job.counter;i++){
@@ -307,17 +339,17 @@
                     })
                     if(flag)   //测试集合并过来的用例
                         jobList = this.selectedTestSetJobs
+                    this.jobLabelList = jobList
 
                     this.showLoading = true;
                     utils._initDate();
-                    let userId = sessionStorage.getItem('id');
                     this.$ajax
                         .post("api/v1/coral/insert_tboard/ ",{
-                            device_label_list:deviceList,
-                            job_label_list:jobList,
+                            device_label_list:this.deviceLabelList,
+                            job_label_list:this.jobLabelList,
                             repeat_time:this.tboardRepeatTime,
                             board_name:this.tboardName,
-                            owner_label:userId
+                            owner_label:this.userId
                         })
                         .then(response=>{
                             this._responseHandle(response)
@@ -326,29 +358,11 @@
                             if(config.DEBUG) console.log(error)
                             this.showLoading = false;
                             if(error.response.data.custom_code==="0"){
-                                let _this = this
-                                this.$Modal.confirm({
-                                    title:"任务启动失败",
-                                    content:"【用例】 "+error.response.data.error_job_name_list.join(",") +" 缺少资源文件，" +
-                                        "请尝试重新保存用例，是否继续运行其他用例？",
-                                    okText: '继续',
-                                    onOk(){
-                                        this.$ajax
-                                            .post("api/v1/coral/insert_tboard/ ",{
-                                                device_label_list:deviceList,
-                                                job_label_list:error.response.data.correct_job_label_list,
-                                                repeat_time:_this.tboardRepeatTime,
-                                                board_name:_this.tboardName,
-                                                owner_label:userId
-                                            })
-                                            .then(response=>{
-                                                _this._responseHandle(response)
-                                            }) .catch(error=>{
-                                            if(config.DEBUG) console.log(error)
-                                            this.$Message.error({content:"任务启动失败",duration:3})
-                                        })
-                                    }
+                                this.errorInnerList =error.response.data.error_job_name_list.filter(item=>{
+                                    return item.job_type==="InnerJob"
                                 })
+                                this.continueLabelList = error.response.data.correct_job_label_list
+                                this.showErrorInner = true
                                 return
                             }
                             this.$Message.error({content:"任务启动失败",duration:3})
@@ -432,10 +446,35 @@
                 }
                 this.propCabinetType = this.selectCabinetType
                 this.showBeforeSelect = false
+            },
+            //继续下发剩下的用例做任务
+            continueCreated(){
+                this.showLoading = true;
+                this.$ajax
+                    .post("api/v1/coral/insert_tboard/ ",{
+                        device_label_list:this.deviceLabelList,
+                        job_label_list:this.continueLabelList,
+                        repeat_time:this.tboardRepeatTime,
+                        board_name:this.tboardName,
+                        owner_label:this.userId
+                    })
+                    .then(response=>{
+                        this._responseHandle(response)
+                    }) .catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                    this.$Message.error({content:"任务启动失败",duration:3})
+                })
+            },
+            //查看缺少资源的 innerJob 对应关联的 普通job
+            getJobConnection(label,name){
+                this.showJobConnectionModal = true
+                this.$refs.innerJobConnection.setInnerName(name)
+                this.$refs.innerJobConnection.refresh(label,this.jobLabelList)
             }
         },
         created(){
             this.getCabinetTypeList()
+            this.userId = sessionStorage.getItem('id');
         }
     }
 </script>
