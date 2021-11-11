@@ -11,8 +11,8 @@
                     </Row>
                     <CheckboxGroup v-model="checked" @on-change="onChange">
                         <Row type="flex">
-                            <Col span="4" v-for="(item, index) in filterData[column.key]" :key="index">
-                                <Checkbox :label="column.key+'_:_'+index+'_:_'+item[column.item_key]">
+                            <Col span="4" v-for="(item, index) in filterData[column.key]" :key="item.id">
+                                <Checkbox :label="column.key+'_:_'+item.id+'_:_'+item[column.item_key]">
                                     {{item[column.item_key]}}
                                 </Checkbox>
                             </Col>
@@ -206,9 +206,12 @@
                 this.checked.forEach(item => {
                     let info = item.split('_:_')
                     let type = info[0]
-                    let index = info[1]
+                    let id = parseInt(info[1])
                     if (selectedData[type] === undefined) selectedData[type] = []
-                    selectedData[type].push(this.filterData[type][index])
+                    this.filterData[type].forEach(item=>{
+                        if(item.id===id)
+                            selectedData[type].push(item)
+                    })
                 })
                 return selectedData;
             },
@@ -333,7 +336,7 @@
                         let phoneModelList = [];
                         this.filterData.phone_model.forEach((item,index)=>{
                             if(defaultPhoneModel.indexOf(item.phone_model_name) !== -1){
-                                this.checked.push("phone_model_:_"+ index + "_:_" + item.phone_model_name)
+                                this.checked.push("phone_model_:_"+ item.id + "_:_" + item.phone_model_name)
                                 phoneModelList.push(item);
                             }
                         })
@@ -341,7 +344,7 @@
                         let CabinetTypeList = [];
                         this.filterData.type.forEach((item,index)=>{
                             if(defaultCabinetType.indexOf(item.type) !== -1){
-                                this.checked.push("type_:_"+ index + "_:_" + item.type)
+                                this.checked.push("type_:_"+ item.id + "_:_" + item.type)
                                 CabinetTypeList.push(item);
                             }
                         })
