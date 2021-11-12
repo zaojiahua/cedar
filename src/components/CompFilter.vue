@@ -319,6 +319,9 @@
                         job_assessment_value:getJobAssessmentValue.job_assessment_value,
                         type: cabinet_type_resp.data
                     }
+                    this.filterData.type.forEach(item=>{
+                        item.id = item.val[0].id
+                    })
                     //detail phoneModel and  cabinetType  from select device
                     if(this.propDefaultDevice.length>0){
                         let defaultPhoneModel = [];
