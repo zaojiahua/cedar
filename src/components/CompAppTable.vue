@@ -1,5 +1,11 @@
 <template>
     <div>
+        <Row style="margin-bottom: 10px">
+            <Input style="width: calc(100% - 70px)" v-model="keyword" :clearable="true"
+                   placeholder="输入账号搜索..."
+                   @on-enter="onPageChange(1)" @on-clear="keyword='';onPageChange(1)"></Input>
+            <Button style="height: 32px;" @click="onPageChange(1)" type="primary">search</Button>
+        </Row>
         <Table :columns="appColumn" :data="data" border @on-row-click="onRowClick" @on-selection-change="onSelectionChange"></Table>
         <Page :total="dataTotal" :current="currentPage" @on-change="onPageChange" :page-size="pageSize" simple style="margin-top:20px;text-align: center "/>
         <Spin size="large" fix v-if="showLoading"></Spin>
@@ -22,8 +28,7 @@
         username: "string",
         password: "string",
         connection:"string",
-        head_portrait_name:"string",
-        crony:"string",
+        usage_rate:"string",
         status :"string",
         max_login_num:"string",
         device:[{
@@ -68,12 +73,10 @@
                     {
                         title: "账号",
                         key: "name",
-                        sortable:true
                     },
                     {
                         title: "用户名/昵称",
                         key: "username",
-                        sortable:true
                     },
                     {
                         title: "密码",
@@ -84,45 +87,37 @@
                         key: "phone_number",
                     },
                     // {
-                    //     title: "头像",
-                    //     key: "head_portrait_name",
+                    //     title: "是否已达上限",
+                    //     key: "status",
+                    //     filters: [
+                    //         {
+                    //             label: '是',
+                    //             value: 'idle'
+                    //         },
+                    //         {
+                    //             label: '否',
+                    //             value: 'busy'
+                    //         }
+                    //     ],
+                    //     filteredValue: this.propStatus ? ['idle'] : [],
+                    //     filterRemote (value, row) {
+                    //         this.statusList = value
+                    //         this.onPageChange(1)
+                    //     }
                     // },
                     {
-                        title: "好友",
-                        key: "crony",
-                    },
-                    {
-                        title: "资源状态",
-                        key: "status",
-                        filters: [
-                            {
-                                label: '未占用',
-                                value: 'idle'
-                            },
-                            {
-                                label: '占用',
-                                value: 'busy'
-                            }
-                        ],
-                        filteredValue: this.propStatus ? ['idle'] : [],
-                        filterRemote (value, row) {
-                            this.statusList = value
-                            this.onPageChange(1)
-                        }
-                    },
-                    {
-                        title: "关联设备/僚机",
+                        title: "关联设备(僚机)",
                         key: "connection",
-                        sortable: true,
                     },
                     {
-                        title: "最多登录数",
-                        key: "max_login_num",
+                        title: "已登录/可登录",
+                        key: "usage_rate",
                     },
                 ],
                 data:[],
                 appNameList:[],
-                statusList:[],
+                // statusList:[],
+                keyword:"",
                 showLoading:false,
                 pageSize:config.DEFAULT_PAGE_SIZE,
                 showAppModal:false,
@@ -141,21 +136,27 @@
                 if(this.appNameList.length>0)
                     appNameCondition = "&app__id__in="+"ReefList["+this.appNameList.join("{%,%}")+"]"
 
-                let statusCondition = ""
-                if(this.propStatus)
-                    statusCondition = "&status=idle"
-                if(this.statusList.length>0)
-                    statusCondition = "&status__in="+"ReefList["+this.statusList.join("{%,%}")+"]"
+                let keywordCondition = ""
+                if(this.keyword.trim().length!==0){
+                    keywordCondition = "&name__icontains=" +  encodeURIComponent(this.keyword)
+                }
+
+
+                // let statusCondition = ""
+                // if(this.propStatus)
+                //     statusCondition = "&status=idle"
+                // if(this.statusList.length>0)
+                //     statusCondition = "&status__in="+"ReefList["+this.statusList.join("{%,%}")+"]"
 
                 this.showLoading = true
                 this.$ajax.get("api/v1/cedar/account/?fields=id,app_name,app,app.id,app.name," +
-                    "crony,head_portrait_name,max_login_num," +
+                    "max_login_num,usage_rate," +
                     "name,password,phone_number," +
                     "status,username," +
                     "device.id,device.device_name," +
                     "subsidiary_device.id,subsidiary_device.custom_name" +
                     appNameCondition +
-                    statusCondition +
+                    keywordCondition +
                     "&ordering=-update_time" +
                     "&limit=" + this.pageSize +
                     "&offset=" + this.offset )

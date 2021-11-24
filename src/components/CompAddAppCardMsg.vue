@@ -20,15 +20,6 @@
             <FormItem label="绑定手机号：">
                 <Input v-model="selectMsg.phone_number"  @on-keyup="selectMsg.phone_number=phoneInput(selectMsg.phone_number)" :maxlength="11" placeholder="请输入正确的手机号"></Input>
             </FormItem>
-            <!--<FormItem label="头像：">-->
-                <!--<Input v-model="selectMsg.head_portrait_name" placeholder="请输入"></Input>-->
-            <!--</FormItem>-->
-            <FormItem label="好友：">
-                <Input v-model="selectMsg.crony" placeholder="请输入"></Input>
-            </FormItem>
-            <FormItem label="最多登录数：" prop="max_login_num">
-                <Input v-model="selectMsg.max_login_num" @on-keyup="selectMsg.max_login_num=phoneInput(selectMsg.max_login_num)"></Input>
-            </FormItem>
         </Form>
         <Row type="flex" justify="center">
             <Button type="primary" @click="commit()">提交</Button>
@@ -56,9 +47,6 @@
                     username:"",
                     password:"",
                     phone_number:"",
-                    head_portrait_name:"",
-                    crony:"",
-                    max_login_num:""
                 },
                 appNameList:[],
                 ruleValidate: {
@@ -74,9 +62,6 @@
                     username: [
                         { required: true, message: '用户名不能为空', trigger: 'blur' }
                     ],
-                    max_login_num:[
-                        { required: true, message: '该项不能为空', trigger: 'blur' }
-                    ]
                 },
                 flag:true,   //true:新建   false:修改
             }
@@ -91,9 +76,6 @@
                     username:"",
                     password:"",
                     phone_number:"",
-                    head_portrait_name:"",
-                    crony:"",
-                    max_login_num:""
                 }
             },
             setData(row){
@@ -106,9 +88,6 @@
                     username:row.username,
                     password:row.password,
                     phone_number:row.phone_number,
-                    head_portrait_name:row.head_portrait_name,
-                    crony:row.crony,
-                    max_login_num:row.max_login_num.toString()
                 }
             },
             commit(){
@@ -126,9 +105,6 @@
                                 username:this.selectMsg.username,
                                 password:this.selectMsg.password,
                                 phone_number:this.selectMsg.phone_number,
-                                head_portrait_name:this.selectMsg.head_portrait_name,
-                                crony:this.selectMsg.crony,
-                                max_login_num:this.selectMsg.max_login_num
                             }).then(response=>{
                                 this.$Message.success("账号资源添加成功")
                                 this.$emit('after-succrss')
@@ -144,9 +120,6 @@
                                 username:this.selectMsg.username,
                                 password:this.selectMsg.password,
                                 phone_number:this.selectMsg.phone_number,
-                                head_portrait_name:this.selectMsg.head_portrait_name,
-                                crony:this.selectMsg.crony,
-                                max_login_num:this.selectMsg.max_login_num
                             }).then(response=>{
                                 this.$Message.success("账号信息修改成功")
                                 this.$emit('after-update')

@@ -911,23 +911,28 @@
                     this.$Message.info("请选择要绑定的APP资源！")
                     return
                 }
-                let ajaxObj = [];
-                apps.forEach(info=>{
-                    ajaxObj.push(this.$ajax.post("api/v1/cedar/bind_account_source/",{
-                        id:info.id,
-                        device:this.device.id
-                    }))
+                let ids = [];
+                apps.forEach(info=> {
+                    ids.push(info.id)
                 })
-                this.$ajax.all(ajaxObj)
-                    .then(response=>{
-                        this.$Message.success("app账号资源绑定成功！")
-                        this.showAddAppModal = false
-                        this.onSourceAddSuccess()
-                    })
-                    .catch(error=>{
-                        if (config.DEBUG) console.log(error)
-                        this.$Message.error({content:"app账号资源绑定失败;"+error.response.data.message,duration:7})
-                    })
+                this.$ajax.post("api/v1/cedar/bind_account_source/",{
+                    ids:ids,
+                    device:this.device.id
+                }).then(response=>{
+                    if(response.data.length>0){
+                        this.$Modal.error({
+                            title:'绑定失败',
+                            content:'app账号资源【'+ response.data.join("】,【") +'】已经超出最大登录数，绑定失败'
+                        })
+                    }else
+                        this.$Message.success("绑定成功！")
+                    this.showAddAppModal = false
+                    this.onSourceAddSuccess()
+                })
+                .catch(error=>{
+                    if (config.DEBUG) console.log(error)
+                    this.$Message.error({content:"app账号资源绑定失败;"+error.response.data.message,duration:7})
+                })
             },
             //remove sim  card/---/ app
             removeSimCard(id){
