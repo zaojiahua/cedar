@@ -338,7 +338,8 @@
             },
             propInvalidType:{
                 handler: function(){
-                    this.loadMoreData(true)
+                    if(this.propResultRange.length === 1 && this.propResultRange[0] === '-1')
+                        this.loadMoreData(true)
                 }
             },
             propFilterType:{
