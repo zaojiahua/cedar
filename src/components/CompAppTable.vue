@@ -280,7 +280,7 @@
         created(){
             let username = sessionStorage.getItem('username');
             this.getAppNameList()
-            if (this.propMultiSelect && username==="admin" )
+            if (this.propMultiSelect)
                 this.appColumn.splice(0, 0, {
                     type: 'selection',
                     width: 60,
