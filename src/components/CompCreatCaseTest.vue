@@ -218,6 +218,7 @@
                         job_prior_data: obj
                     })
                     .then(response=>{
+                        console.log(response)
                         let str = ""
                         if(response.data.fail_cabinet){
                             response.data.fail_cabinet.forEach(item=>{
@@ -252,30 +253,24 @@
                         if(config.DEBUG) console.log(error)
                         this.showLoading = false;
                         if(error.response.data.custom_code==="0"){
-                            let _this = this
-                            this.$Modal.warning({
-                                title:"任务启动失败",
-                                content:"【用例】 "+error.response.data.data.data.error_job_name_list.join(",") +" 缺少资源文件，" +
-                                    "请尝试重新保存用例，再进行进一步操作！",
-                                // okText: '继续',
-                                // onOk(){
-                                //     this.$ajax
-                                //         .post("api/v1/coral/insert_tboard/ ",{
-                                //             device_label_list:deviceList,
-                                //             job_label_list:error.response.data.data.data.correct_job_label_list,
-                                //             repeat_time:_this.tboardRepeatTime,
-                                //             board_name:_this.tboardName,
-                                //             owner_label:userId
-                                //         })
-                                //         .then(response=>{
-                                //             _this._responseHandle(response)
-                                //         }) .catch(error=>{
-                                //         if(config.DEBUG) console.log(error)
-                                //         this.$Message.error({content:"任务启动失败",duration:3})
-                                //     })
-                                // }
-                            })
-                            return
+                            if(error.response.data.error_job_name_list){
+                                let errorList = []
+                                error.response.data.error_job_name_list.forEach(item=>{
+                                    errorList.push(item.job_name)
+                                })
+                                let _this = this
+                                this.$Modal.warning({
+                                    title:"任务启动失败",
+                                    width:60,
+                                    content:"【用例】 "+errorList.join(",") +" 缺少资源文件，" +
+                                        "请尝试重新保存用例，再进行下一步操作！",
+                                })
+                                return
+                            }
+                            if(error.response.data.data_info===''){
+                                this.$Message.error({content:error.response.data.message.fail_cabinet.join(',')+ error.response.data.description,duration:10})
+                                return
+                            }
                         }
                         this.$Message.error({content:"任务启动失败",duration:3})
                     })

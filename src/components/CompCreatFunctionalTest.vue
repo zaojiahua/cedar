@@ -358,12 +358,17 @@
                             if(config.DEBUG) console.log(error)
                             this.showLoading = false;
                             if(error.response.data.custom_code==="0"){
-                                this.errorInnerList =error.response.data.error_job_name_list.filter(item=>{
-                                    return item.job_type==="InnerJob"
-                                })
-                                this.continueLabelList = error.response.data.correct_job_label_list
-                                this.showErrorInner = true
-                                return
+                                if(error.response.data.error_job_name_list){
+                                    this.errorInnerList =error.response.data.error_job_name_list.filter(item=>{
+                                        return item.job_type==="InnerJob"
+                                    })
+                                    this.continueLabelList = error.response.data.correct_job_label_list
+                                    this.showErrorInner = true
+                                    return
+                                }
+                                if(error.response.data.data_info){
+                                    this.$Message.error({content:error.response.data.message.fail_cabinet.join(',')+'下发任务失败。'+ error.response.data.description,duration:7})
+                                }
                             }
                             this.$Message.error({content:"任务启动失败",duration:3})
                         })
@@ -450,6 +455,7 @@
             //继续下发剩下的用例做任务
             continueCreated(){
                 this.showLoading = true;
+                this.showErrorInner = false
                 this.$ajax
                     .post("api/v1/coral/insert_tboard/ ",{
                         device_label_list:this.deviceLabelList,
@@ -462,6 +468,7 @@
                         this._responseHandle(response)
                     }) .catch(error=>{
                     if(config.DEBUG) console.log(error)
+                    this.showLoading = false
                     this.$Message.error({content:"任务启动失败",duration:3})
                 })
             },
