@@ -18,6 +18,12 @@
         <Row>
             <slot name="header-bottom"></slot>
         </Row>
+        <Row style="margin-top: 10px">
+            <Input style="width: calc(100% - 70px)" v-model="keyword" :clearable="true"
+                   placeholder="输入任务名称搜索..."
+                   @on-enter="onPageChange(1)" @on-clear="keyword='';onPageChange(1)"></Input>
+            <Button style="height: 32px;" @click="onPageChange(1)" type="primary">search</Button>
+        </Row>
         <Table v-show="notHistory" :loading="showLoading" :highlight-row="true" ref="table" :columns="columns" :data="data" border style="margin-top: 16px;" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="pauseOrDelete">
                 <Button shape="circle" type="default" :icon="row.finished_flag?'md-trash':'md-square'"
@@ -203,6 +209,7 @@
                 errorModalMessage:"",
                 userFilterList:[],
                 hisUserFilterList:[],
+                keyword:"",
             }
         },
         methods: {
@@ -219,6 +226,11 @@
                     if(this.propDeleteMore){
                         this.notHistory = false
                     }
+                }
+
+                let keywordCondition = ""
+                if(this.keyword.trim().length!==0){
+                    keywordCondition = "&board_name__icontains=" +  encodeURIComponent(this.keyword)
                 }
 
                 let tboardCondition = ""
@@ -279,6 +291,7 @@
                     finishedCondition +
                     dateRangeCondition +
                     perfCondition +
+                    keywordCondition +
                     tboardCondition
                 ).then(response => {
                     this.tboardIdList=[];
@@ -571,10 +584,11 @@
                 immediate: true
             },
         },
-        created() {
+        async created() {
             this.pageSize = utils.getPageSize();
             let userList = []
-            this.$ajax.get(
+            let defaultFilterValue = []
+            await this.$ajax.get(
                 "api/v1/cedar/reefuser/?fields=" +
                 "id," +
                 "username," +
@@ -587,7 +601,11 @@
                         label:item.username,
                         value:item.id
                     })
+                    if(item.username==='admin')
+                        defaultFilterValue = [].concat(item.id)
                 })
+                this.userFilterList = defaultFilterValue
+                this.hisUserFilterList = defaultFilterValue
             }).catch(error=>{
                 this.$Message.error("获取用户列表失败!")
             })
@@ -598,6 +616,7 @@
                     title: "操作人员",
                     key:"username",
                     sortable: true,
+                    filteredValue:_this.userFilterList,
                     filters: userList,
                     filterRemote(value){
                         _this.userFilterList = value
@@ -608,6 +627,7 @@
                     title: "操作人员",
                     key:"username",
                     sortable: true,
+                    filteredValue:_this.hisUserFilterList,
                     filters: userList,
                     filterRemote(value){
                         _this.hisUserFilterList = value
