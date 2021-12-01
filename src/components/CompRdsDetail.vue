@@ -82,6 +82,18 @@
                     </ButtonGroup>
                 </Row>
             </FormItem>
+            <FormItem>
+                <b slot="label">当时ROM版本：</b>
+                <p v-if="!rdsInfo.rom_version_const" style="color: #FF9900">暂无数据</p>
+                <Input v-show="rdsInfo.rom_version_const" v-model="rdsInfo.rom_version_const" class="disabled-input" disabled></input>
+            </FormItem>
+            <FormItem>
+                <b slot="label">App版本：</b>
+                <p v-if="rdsInfo.app_info.length===0" style="color: #FF9900">暂无数据</p>
+                <div v-show="rdsInfo.app_info.length>0">
+                    <Input v-for="item in rdsInfo.app_info" v-model="item.app_version+'('+item.package_name+')'" class="disabled-input" style="margin-bottom: 10px" disabled></input>
+                </div>
+            </FormItem>
         </Form>
         <div style="color: #515a6e;padding-left: 48px;font-size: 12px">
             <b style="cursor: default">截图：</b><b style="cursor: default" v-if="!showScreenTip">共 {{rdsscreenshot.length}} 张</b>
@@ -180,6 +192,11 @@
         job_duration:"string",
         lose_frame_point:"string",
         start_time: "string",
+        rom_version_const:"string",
+        app_info: [{
+            app_version: "number",
+            package_name: "string"
+        }],
         tboard: {
             id: "number",
             board_name: "string"
@@ -249,6 +266,8 @@
                         "tboard,tboard.id,tboard.board_name,"+
                         "start_time,"+
                         "end_time,"+
+                        "rom_version_const," +
+                        "app_info,"+
                         "job_duration,lose_frame_point," +
                         "job_assessment_value," +
                         "rds_dict")
