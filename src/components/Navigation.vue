@@ -45,12 +45,12 @@
                             </Tooltip>
                             <span>系统升级</span>
                         </MenuItem>
-                        <MenuItem v-if="permissions.includes('apiv1.view_system_log')" name="log-files" :to="{name: 'log-files'}">
-                            <Tooltip content="日志文件" placement="right" :disabled="!isCollapsed">
-                                <Icon type="md-filing" size="24"/>
-                            </Tooltip>
-                            <span>日志文件</span>
-                        </MenuItem>
+                        <!--<MenuItem v-if="permissions.includes('apiv1.view_system_log')" name="log-files" :to="{name: 'log-files'}">-->
+                            <!--<Tooltip content="日志文件" placement="right" :disabled="!isCollapsed">-->
+                                <!--<Icon type="md-filing" size="24"/>-->
+                            <!--</Tooltip>-->
+                            <!--<span>日志文件</span>-->
+                        <!--</MenuItem>-->
                         <MenuItem name="job-management" :to="{name: 'job-management'}">
                             <Tooltip content="用例管理" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-briefcase-outline" size="24"/>
