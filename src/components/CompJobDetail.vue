@@ -439,9 +439,13 @@
                                         errorMsg = "job不存在"
                                     }else if (error.response.data.custom_code === "203002") {
                                         errorMsg = "该inner job关联了其他用例，无法完成删除操作"
+                                    }else if(error.response.data.custom_code ==="201001"){
+                                        errorMsg = '用例删除失败！'+error.response.data.description
+                                    }else{
+                                        errorMsg = 'Inner 【'+ error.response.data.point_out_job.join("】,【") +'】 存在关联用例，无法删除！'
                                     }
                                 }
-                                this.$Message.error({content:errorMsg,duration:5})
+                                this.$Message.error({content:errorMsg,duration:10})
                             })
                     }
                 });

@@ -63,6 +63,18 @@
                 </p>
             </Card>
         </Modal>
+
+        <Modal v-model="showErrorInner" :closable="false" :mask-closable="false" :footer-hide="true" width="50">
+            <Icon type="ios-help-circle" style="color: #ff9900;float: left;margin: 15px 10px 0 0;" size="24"/>
+            <p style="margin: 15px 0;font-size: 16px">提示</p>
+            <Row style="margin: 10px 0 0 30px;">
+                Inner 【{{ errorInnerList.join("】,【") }}】 存在关联用例，无法删除，继续删除选中的其他用例吗？
+            </Row>
+            <Row type="flex" justify="end" style="margin-top: 30px;">
+                <Button type="text" @click="showErrorInner=false">取消</Button>
+                <Button type="primary" :disabled="delJobIds.length===0" @click="continueDeleted">继续</Button>
+            </Row>
+        </Modal>
     </Card>
 </template>
 
@@ -91,6 +103,9 @@
                 isActive:null,
                 targetUserId:null,
                 showLoading:false,
+                showErrorInner:false,
+                errorInnerList:[],
+                delJobIds:[],
             }
         },
         methods:{
@@ -164,23 +179,52 @@
                                 .then(response=>{
                                     this.$Message.success("用例删除成功！")
                                     that.jobNumbers = 0
+                                    that.$refs.jobList.resetJobList()
                                     that.onJobFilterChange(that.$refs.jobFilter._jobRender())
                                 })
                                 .catch(error=>{
-                                    let errorMsg = ""
                                     if (config.DEBUG) console.log(error)
-                                    if(error.response.data.custom_code==="203001"){
-                                        errorMsg = error.response.data.description.join(",") + "job不存在"
-                                    }else if (error.response.data.custom_code === "203002") {
-                                        errorMsg = error.response.data.description.join(",") + "关联了其他用例，无法完成删除操作"
+                                    if(error.response.status===500){
+                                        this.$Message.error('服务器错误！')
+                                        return
                                     }
-                                    this.$Message.error({content:errorMsg,duration:8})
-                                    that.onJobFilterChange(that.$refs.jobFilter._jobRender())
+                                    if(error.response.data.custom_code==="0"){  //管理员 （带admin权限）
+                                        if(error.response.data.point_out_job.length===0){
+                                            this.$Message.success('用例删除成功')
+                                            that.jobNumbers = 0
+                                            that.$refs.jobList.resetJobList()
+                                            that.onJobFilterChange(that.$refs.jobFilter._jobRender())
+                                        }else {
+                                            that.showErrorInner = true
+                                            that.errorInnerList = error.response.data.point_out_job
+                                            that.delJobIds = error.response.data.enable
+                                        }
+                                    }else if(error.response.data.custom_code==="201001"){  //普通用户
+                                        this.$Message.error({content:'用例删除失败！'+error.response.data.description,duration:10})
+                                    }else
+                                        this.$Message.error({content:'用例删除失败！'+error.response.data.description,duration:10})
                                 })
-
                         }
                     });
                 }
+            },
+            continueDeleted(){
+                this.$ajax.post("api/v1/cedar/job_deleted/", { job_ids:this.delJobIds } )
+                    .then(response=>{
+                        this.showErrorInner = false
+                        this.$Message.success("用例删除成功！")
+                        this.jobNumbers = 0
+                        this.$refs.jobList.resetJobList()
+                        this.onJobFilterChange(this.$refs.jobFilter._jobRender())
+                    })
+                    .catch(error=>{
+                        if (config.DEBUG) console.log(error)
+                        if(error.response.status===500){
+                            this.$Message.error('服务器错误！')
+                            return
+                        }
+                        this.$Message.error({content:'用例删除失败！'+error.response.data.description,duration:10})
+                    })
             },
             JobOnRowClick(row,index){
                 this.showDetail = true;

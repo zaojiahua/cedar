@@ -210,6 +210,7 @@
                 this.dataTotal = parseInt(response.headers["total-count"])
                 this.data = utils.validate(getJobSerializer, response.data).jobs
                 this.data.forEach(job => {
+                    // if (job.job_type === "InnerJob" && sessionStorage.username!=='admin') job._disabled = true
                     if (job.counter === null) job.counter = 1
                     let job_test_areas = []
                     job.test_area.forEach(job_test_area => {
