@@ -247,6 +247,41 @@
             </div>
         </Modal>
 
+        <Modal v-model="showRegisterModal" :closable="false" :footer-hide="true" width="420">
+            <div style="padding: 10px">
+                <Form :model="device" :label-width="110">
+                    <FormItem>
+                        <b slot="label"><span class="need">*</span>自定义名称</b>
+                        <Input v-model="device.device_name" :disabled="true" class="disabled-input"></Input>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label"><span class="need">*</span>设备编号</b>
+                        <Input style="width: 100%" v-model="device.device_label" :disabled="true" class="disabled-input"></Input>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label"><span class="need">*</span>厂商信息</b>
+                        <Input style="width: 100%" v-model="device.phone_model.manufacturer.manufacturer_name" :disabled="true" class="disabled-input"></Input>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label"><span class="need">*</span>Android版本</b>
+                        <Input style="width: 100%" v-model="registerDeviceInfo.android_version" class="disabled-input"></Input>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label"><span class="need">*</span>Rom版本</b>
+                        <Input style="width: 100%" v-model="registerDeviceInfo.rom_version" :disabled="!editable" class="disabled-input"></Input>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label"><span class="need">*</span>IP地址</b>
+                        <Input style="width: 100%" v-model="registerDeviceInfo.ip_address" :disabled="true" class="disabled-input"></Input>
+                    </FormItem>
+                </Form>
+                <Row style="text-align: center">
+                    <Button type="primary" style="margin-right: 20px" @click="registerDevice">确定</Button>
+                    <Button type="default" @click="showRegisterModal=false">取消</Button>
+                </Row>
+            </div>
+        </Modal>
+
     </Card>
 </template>
 
@@ -281,6 +316,10 @@
                     y_border: "number",
                     x_dpi: "number",
                     y_dpi: "number",
+                    manufacturer:{
+                        id:"number",
+                        manufacturer_name:"string"
+                    }
                 },
                 rom_version: {
                     id: "number",
@@ -437,6 +476,12 @@
                 simOrder:null,
                 showRemoveModal:false,
                 removeMsg:"",
+                showRegisterModal:false,
+                registerDeviceInfo:{
+                    android_version: "",
+                    rom_version: "",
+                    ip_address: "",
+                }
             }
         },
         methods: {
@@ -482,22 +527,62 @@
                     this.$Message.error("离线设备请直接走注册流程")
                 }
                 else{
+                    this.registerDeviceInfo ={
+                        android_version: "",
+                        rom_version: "",
+                        ip_address: "",
+                    }
                     this.spinShow = true
                     this.$ajax.post("http://" + this.device.cabinet.ip_address + ":5000"+"/door/wifi_port/",
                         {cpu_id:this.device.device_label}
                     ).then(response=>{
                         this.spinShow = false
-                        if(response.data.state==="DONE"){
-                            this.$Message.success("重连成功")
-                            this.$emit('after-device-delete')
+                        if(response.data.error_code===0){
+                            this.registerDeviceInfo = response.data.data
+                            this.showRegisterModal = true
                         }else{
-                            this.$Message.error({content:response.data.state,duration: 6})
+                            this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
                         this.spinShow = false
-                        this.$Message.error({content:error.response.data.state,duration: 6})
+                        if(error.response.status>=500)
+                            this.$Message.error({content:'服务器错误',duration: 5})
+                        else
+                            this.$Message.error({content:'请求失败',duration: 5})
                     })
                 }
+            },
+            //重新链接后注册进系统
+            registerDevice(){
+                if(this.device.device_name===""||this.device.device_label===""||
+                    this.device.phone_model.manufacturer.manufacturer_name===""||
+                    this.registerDeviceInfo.android_version===""||this.registerDeviceInfo.rom_version===""||
+                    this.registerDeviceInfo.ip_address===""){
+                    this.$Message.warning("请将信息填写完整！")
+                    return
+                }
+                this.$ajax.post("http://" + this.device.cabinet.ip_address + ":5000"+"/door/device_info/", {
+                        device_label: this.device.device_label,
+                        android_version: this.registerDeviceInfo.android_version,
+                        rom_version: this.registerDeviceInfo.rom_version,
+                        ip_address: this.registerDeviceInfo.ip_address,
+                        manufacturer: this.device.phone_model.manufacturer.manufacturer_name
+                }).then(response=>{
+                    if(response.data.error_code===0){
+                        this.registerDeviceInfo = response.data.data
+                        this.showRegisterModal = false
+                        this.$Message.success("重连成功")
+                        this.$emit('after-device-delete')
+                    }else{
+                        this.$Message.error({content:response.data.description,duration: 10})
+                    }
+                }).catch(error=>{
+                    this.spinShow = false
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
             },
             deleteAjax(device_id,unbind_flag=false){
                 this.spinShow = true;
@@ -542,6 +627,7 @@
                             "cpu_id," +
                             "ip_address," +
                             "phone_model,phone_model.id,phone_model.phone_model_name," +
+                            "phone_model.manufacturer,phone_model.manufacturer.id,phone_model.manufacturer.manufacturer_name," +
                             "phone_model.x_border,phone_model.y_border,phone_model.x_dpi,phone_model.y_dpi," +
                             "rom_version,rom_version.id,rom_version.version," +
                             "start_time_key," +
