@@ -18,8 +18,9 @@
                                                 <span v-show="item_eb2.value!==undefined"> ( {{ item_eb2.value }} )</span></span>
                                             <div slot="content" v-for="(unit_list,unit_index) in item_eb2.all_unit_list" class="unit_box">
                                                 <div v-for="unit_item in unit_list.units">
-                                                    <p v-if="unit_item.detail" :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )</p>
-                                                    <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }}</p>
+                                                    <p v-if="unit_item.detail" :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )
+                                                        {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
+                                                    <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }} {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
                                                     <div class="pic" v-for="pic in unit_item.pictures" >
                                                         <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ pic }}</p>
                                                     </div>
@@ -32,8 +33,9 @@
                                 <div slot="content"  v-if="item_eb1.all_unit_list">
                                     <div v-for="(unit_list,unit_index) in item_eb1.all_unit_list" class="unit_box">
                                         <div v-for="unit_item in unit_list.units">
-                                            <p v-if="unit_item.detail" :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )</p>
-                                            <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }}</p>
+                                            <p v-if="unit_item.detail" :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )
+                                                {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
+                                            <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }} {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】': ''}}</p>
                                             <div class="pic " v-for="pic in unit_item.pictures" >
                                                 <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ pic }}</p>
                                             </div>
