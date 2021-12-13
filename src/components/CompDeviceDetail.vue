@@ -70,7 +70,7 @@
                     </Form>
                 </div>
             </Panel>
-            <Panel v-show="device.status!=='offline'&&device.status!=='error'">僚机设备信息
+            <Panel v-show="device.status!=='offline'">僚机设备信息
                 <div slot="content">
                     <Form :model="device" :label-width="90">
                         <div v-for="(deviceItem,index) in device.subsidiary_device_info">
@@ -90,7 +90,7 @@
                                 <Input v-model="app.app_name + ' / ' + app.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
                             </FormItem>
                         </div>
-                        <div v-if="device.subsidiary_device_info.length<3">
+                        <div v-if="device.subsidiary_device_info.length<3 && (device.status!=='error')">
                             <Divider></Divider>
                             <Button :disabled="!propSubsidiaryDevice" type="primary" style="width: 80%;margin-left: 10%;" @click="openOrderModal=true;subsidiaryNumber=null">
                                 <Icon type="ios-add-circle-outline" size="20" />
@@ -174,12 +174,12 @@
                 </p>
             </Panel>
         </Collapse>
-        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable" v-show="device.status!=='offline'&&device.status!=='error'">
+        <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable" v-show="device.status!=='offline'">
             <Col>
                 <Button type="error" style="margin-right: 16px;" @click="deleteDevice">移除设备</Button>
                 <Button type="primary" @click="reconnectDevice">重新连接</Button>
             </Col>
-            <Col>
+            <Col v-show="device.status!=='error'">
                 <Button type="primary" style="margin-right: 16px;" @click="updateDevice">保存</Button>
                 <Button @click="cancelConfig">取消</Button>
             </Col>

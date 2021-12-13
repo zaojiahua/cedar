@@ -226,6 +226,10 @@
                                 value:"busy"
                             },
                             {
+                                label: 'occupied',
+                                value: 'occupied'
+                            },
+                            {
                                 label:"offline",
                                 value:"offline"
                             },
@@ -535,7 +539,11 @@
                 this.selection = selection;
             },
             getCabinetList() {
-                this.$ajax.get("api/v1/cedar/cabinet/?fields=cabinet_name,id&is_delete=False")
+                let tcabCondition = ""
+                if(this.propCabinetType){
+                    tcabCondition = '&type=' + this.propCabinetType
+                }
+                this.$ajax.get("api/v1/cedar/cabinet/?fields=cabinet_name,id&is_delete=False" + tcabCondition)
                     .then(response => {
                         this.cabinetList = response.data.cabinets
                     })
@@ -574,6 +582,7 @@
             propCabinetType:{
                 handler: function(val){
                     this.refresh()
+                    this.getCabinetList()
                 },
             }
         },
