@@ -77,7 +77,6 @@
         },
         methods:{
             onPicClick(picName){
-                console.log(picName);
                 this.$emit("on-pic-name-click",picName)
             }
         }
