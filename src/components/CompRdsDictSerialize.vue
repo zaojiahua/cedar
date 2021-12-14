@@ -21,8 +21,8 @@
                                                     <p v-if="unit_item.detail" :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )
                                                         {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
                                                     <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }} {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
-                                                    <div class="pic" v-for="pic in unit_item.pictures" >
-                                                        <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ pic }}</p>
+                                                    <div class="pic" v-for="(pic,index) in unit_item.pictures" >
+                                                        <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps[index] }} {{ pic }}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -36,8 +36,8 @@
                                             <p v-if="unit_item.detail" :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )
                                                 {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
                                             <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }} {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】': ''}}</p>
-                                            <div class="pic " v-for="pic in unit_item.pictures" >
-                                                <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ pic }}</p>
+                                            <div class="pic " v-for="(pic,index) in unit_item.pictures" >
+                                                <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps[index] }} {{ pic }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -77,6 +77,7 @@
         },
         methods:{
             onPicClick(picName){
+                console.log(picName);
                 this.$emit("on-pic-name-click",picName)
             }
         }
