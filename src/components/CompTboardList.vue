@@ -407,9 +407,10 @@
                                 root.$Message.success("停止任务成功!")
                                 root.onConditionChange();
                             } else {
-                                this.$Modal.warning({
+                                this.$Notice.warning({
                                     title:"停止失败！",
-                                    content:str,
+                                    desc:str,
+                                    duration:0
                                 })
                             }
                         }).catch(reason => {
