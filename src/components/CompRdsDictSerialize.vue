@@ -21,7 +21,7 @@
                                                     <p v-if="unit_item.detail" :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )</p>
                                                     <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }}</p>
                                                     <div class="pic" v-for="(pic,index) in unit_item.pictures" >
-                                                        <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps[index] }} {{ pic }}</p>
+                                                        <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps ? unit_item.timestamps[index] :'' }} {{ pic }}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -35,7 +35,7 @@
                                             <p v-if="unit_item.detail" :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )</p>
                                             <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }}</p>
                                             <div class="pic " v-for="(pic,index) in unit_item.pictures" >
-                                                <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps[index] }} {{ pic }}</p>
+                                                <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps ? unit_item.timestamps[index] :'' }} {{ pic }}</p>
                                             </div>
                                         </div>
                                     </div>
