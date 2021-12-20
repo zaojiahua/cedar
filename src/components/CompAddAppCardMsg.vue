@@ -110,7 +110,11 @@
                                 this.$emit('after-succrss')
                             }).catch(error=>{
                                 if(config.DEBUG) console.log(error)
-                                this.$Message.error({content:"账号资源添加失败! " + error.response.data,duration: 6})
+                                if(error.response.data.non_field_errors){
+                                    this.$Message.error({content:"账号资源添加失败! 当前app下已有该账号",duration: 6})
+                                    return
+                                }
+                                this.$Message.error({content:"账号资源添加失败! ",duration: 6})
                             })
                         }else {
                             //修改资源
@@ -125,7 +129,11 @@
                                 this.$emit('after-update')
                             }).catch(error=>{
                                 if(config.DEBUG) console.log(error)
-                                this.$Message.error({content:"账号信息修改失败! " + error.response.data,duration: 6})
+                                if(error.response.data.non_field_errors){
+                                    this.$Message.error({content:"账号资源添加失败! 当前app下已有该账号",duration: 6})
+                                    return
+                                }
+                                this.$Message.error({content:"账号资源添加失败! ",duration: 6})
                             })
                         }
                     } else {
