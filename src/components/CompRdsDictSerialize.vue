@@ -14,7 +14,7 @@
                                 <div slot="content" v-if="item_eb1.eblock_list">
                                     <Collapse>
                                         <Panel v-for="(item_eb2,eb2_index) in item_eb1.eblock_list">
-                                            <span :class="{'high-light':(item_eb1.value!==undefined&&item_eb1.value!==0)}">{{ eb2_index+1 }}-{{ item_eb2.block_name }}
+                                            <span :class="{'high-light':(item_eb2.value!==undefined&&item_eb2.value!==0)}">{{ eb2_index+1 }}-{{ item_eb2.block_name }}
                                                 <span v-show="item_eb2.value!==undefined"> ( {{ item_eb2.value }} )</span></span>
                                             <div slot="content" v-for="(unit_list,unit_index) in item_eb2.all_unit_list" class="unit_box">
                                                 <div v-for="unit_item in unit_list.units">
