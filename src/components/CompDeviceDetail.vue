@@ -158,6 +158,7 @@
                 </CheckboxGroup>
             </Panel>
             <Panel>智能充电口配对
+                <Button type="text" v-show="device.powerport.port!==null" @click.stop="checkPowerPort" style="float: right;margin-right: 10%;margin-top: 4px">查询充电口状态</Button>
                 <CheckboxGroup  slot="content" v-model="selectedPowerPorts" @on-change="powerPortCheckbox">
                     <Checkbox  v-for="item in powerPorts" :label="item.id" :key="item.id" :disabled="isDisabled(item.id,disablePowerPorts)">{{item.port}}</Checkbox >
                 </CheckboxGroup >
@@ -1101,6 +1102,59 @@
                             this.$Message.error({content:"资源解绑失败:" + error.response.data.message,duration:5})
                         })
                     }
+                })
+            },
+            //查询充电口状态
+            checkPowerPort(){
+                this.$ajax.post('http://'+this.device.cabinet.ip_address+':5000/resource/power_check',{
+                    port:this.device.powerport.port
+                })
+                .then(response=>{
+                    let _this = this
+                    if(response.data.status==="on")
+                        this.$Modal.confirm({
+                            title:'提示',
+                            content:_this.device.powerport.port+'充电口已开启，要关闭充电口停止为设备充电吗？',
+                            okText:'关闭充电口',
+                            onOk(){
+                                _this.$ajax.post('http://'+_this.device.cabinet.ip_address+':5000/resource/power_action',{
+                                    port:_this.device.powerport.port,
+                                    action:"off"
+                                }).then(response=>{
+                                    _this.$Message.success('充电口关闭成功')
+                                }).catch(error=>{
+                                    if(error.response.status>=500)
+                                        _this.$Message.error({content:"服务器错误",duration:8})
+                                    else
+                                        _this.$Message.error({content:"充电口操作失败，请联系管理员处理！",duration:8})
+                                })
+                            }
+                        })
+                    else
+                        this.$Modal.confirm({
+                            title:'提示',
+                            content:_this.device.powerport.port+'充电口已关闭，要开启充电口为设备充电吗？',
+                            okText:'开启充电口',
+                            onOk(){
+                                _this.$ajax.post('http://'+_this.device.cabinet.ip_address+':5000/resource/power_action',{
+                                    port:_this.device.powerport.port,
+                                    action:"on"
+                                }).then(response=>{
+                                    _this.$Message.success('充电口开启成功')
+                                }).catch(error=>{
+                                    if(error.response.status>=500)
+                                        _this.$Message.error({content:"服务器错误",duration:8})
+                                    else
+                                        _this.$Message.error({content:"充电口操作失败，请联系管理员处理！",duration:8})
+                                })
+                            }
+                        })
+                })
+                .catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:"服务器错误",duration:8})
+                    else
+                        this.$Message.error({content:"继电器失联，请联系管理员处理！",duration:8})
                 })
             }
         },
