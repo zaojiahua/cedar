@@ -240,7 +240,7 @@
             },
             handleUploadError( error, file){
                 if (config.DEBUG) console.log(error);
-                this.$Message.error({content:"文件上传失败! " + file.error,duration: 6})
+                this.$Message.error({content: file.description,duration: 6})
             },
             handleUploadSuccess(response, file, fileList){
                 this.$Message.success("文件上传成功！")
@@ -281,7 +281,7 @@
                                 })
                                 .catch(error=>{
                                     if (config.DEBUG) console.log(error)
-                                    this.$Message.error({content:"导出用例失败! " + error.response.data.error,duration: 6})
+                                    this.$Message.error({content: error.response.data.description,duration: 6})
                                     root.showLoading = false
                                 })
                         }

@@ -43,14 +43,24 @@
         </Table>
         <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
 
-        <Modal v-model="showTestAgain" :closable="false" title="启动失败" width="450">
-            <div style="height: 30px;">
-                <div style="height: 24px;display: inline-block;line-height: 24px">
-                    <Icon type="md-close-circle" size="20" color="red" />
-                </div>
-                <span style="font-size: 15px;margin-left: 2px;font-weight: 500">{{ errorModalMessage }}</span>
-            </div>
-
+        <Modal v-model="showTestAgain" :closable="false" :mask-closable="false" :footer-hide="true" width="450">
+            <Card dis-hover title="确认任务信息">
+                <p style="margin:0 0 16px 20px;font-size: 12px;color: #aaa">注意：启动任务前，请先确保设备注册机柜未发生改变。</p>
+                <Form :label-width="90">
+                    <FormItem>
+                        <b slot="label">任务名称</b>
+                        <Input v-model="againInfo.board_name"></Input>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">轮次</b>
+                        <InputNumber v-model="againInfo.repeat_time" :min="1" :precision="0"></InputNumber>
+                    </FormItem>
+                </Form>
+                <Row type="flex" justify="end" style="margin-top: 20px;">
+                    <Button type="text" @click="showTestAgain=false">取消</Button>
+                    <Button type="primary" @click="createTboard">启动任务</Button>
+                </Row>
+            </Card>
         </Modal>
 
     </Card>
@@ -206,10 +216,15 @@
                 socket:null,
                 path:"ws://"+config.REEF_HOST+":"+config.WEBSOCKET+"/ws/tboard_delete/",
                 showTestAgain:false,
-                errorModalMessage:"",
                 userFilterList:[],
                 hisUserFilterList:[],
                 keyword:"",
+                againInfo:{
+                    board_name:"",
+                    repeat_time:1,
+                    job_label_list:[],
+                    device_label_list:[],
+                },
             }
         },
         methods: {
@@ -422,38 +437,93 @@
             },
             showRepeatTboard(index){
                 let row = this.data[index]
-                return row.finished_flag && (row.device.length === 1) && (row.job.length === 1) && (row.repeat_time === 1) && (new Date()-new Date(row.board_stamp)<=24*60*60*1000);
+                return row.finished_flag && (new Date()-new Date(row.board_stamp)<=24*60*60*1000);
             },
             repeatTboard(row){
                 //再来一次 API
                 event.stopPropagation();
-                let root = this
-                this.$Modal.confirm({
-                    title: "确认再来一次任务 " + row.board_name + "吗?",
-                    onOk() {
-                        root.showLoading = true
-                        root.$ajax.post("api/v1/cedar/repeat_execute_tboard/",
-                            {
-                                id:row.id
-                            })
-                            .then(response => {
-                                root.showLoading = false
-                                this.$Message.success("任务启动成功")
-                                root.refresh()
-                            }).catch(error => {
-                                root.showLoading = false
-                                if (config.DEBUG) console.log(error)
-                                root.showTestAgain = true
-                                if(error.response.data.custom_code==="204001")
-                                    root.errorModalMessage = "当前设备非idle状态，请检查设备状态"
-                                else if(error.response.data.custom_code==="203001")
-                                    root.errorModalMessage = "未找到所选用例，请检查用例状态"
-                                else
-                                    root.errorModalMessage = "该任务无法再来一次"
-
-                            })
+                this.$ajax.post('api/v1/cedar/tboard_repeat_execute_check/',{
+                    tboard:row.id
+                }).then(response=>{
+                    let _this = this
+                    if(response.data.description){
+                        this.$Modal.confirm({
+                            title: "提示?",
+                            content: response.data.description,
+                            onOk(){
+                                _this.showTestAgain = true
+                                _this.againInfo = row
+                                _this.againInfo.job_label_list = response.data.job_label_list
+                                _this.againInfo.device_label_list = response.data.device_label_list
+                            }
+                        })
+                    }else {
+                        this.showTestAgain = true
+                        this.againInfo = row
+                        this.againInfo.job_label_list = response.data.job_label_list
+                        this.againInfo.device_label_list = response.data.device_label_list
                     }
+                }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error("服务器错误")
+                    else
+                        this.$Message.error({content:error.response.data.description,duration:8})
                 })
+            },
+            //启动再来一次任务
+            createTboard(){
+                this.showLoading = true
+                this.$ajax
+                    .post("api/v1/coral/insert_tboard/ ",{
+                        device_label_list:this.againInfo.device_label_list,
+                        job_label_list:this.againInfo.job_label_list,
+                        repeat_time:this.againInfo.repeat_time,
+                        board_name:this.againInfo.board_name,
+                        owner_label:sessionStorage.getItem('id')
+                    })
+                    .then(response=>{
+                        let str = ""
+                        if(response.data.fail_cabinet){
+                            response.data.fail_cabinet.forEach(item=>{
+                                str = str + item+"服务器启动任务失败；"
+                            })
+                        }
+                        if(response.data.status==="fail"){
+                            this.$Modal.error({
+                                title:"启动失败！",
+                                content:str
+                            })
+                        }else if(response.data.status==="warning"){
+                            this.$Modal.warning({
+                                title:"部分服务器启动失败！",
+                                content:str,
+                            })
+                        }else if(response.data.status==="success"){
+                            this.$Message.success("任务启动成功！")
+                        }
+                        this.showLoading = false;
+                    })
+                    .catch(error=>{
+                        if(config.DEBUG) console.log(error)
+                        this.showLoading = false;
+                        if(error.response.data.custom_code==="0"){
+                            if(error.response.data.error_job_name_list){
+                                let errorList = []
+                                error.response.data.error_job_name_list.filter(item=>{
+                                    errorList.push(item.job_name)
+                                })
+                                this.$Modal.error({
+                                    title:"任务启动失败！",
+                                    content:'以下用例缺少资源文件，请尝试重新保存用例再进行尝试!<br>【'+ errorList.join('】,【') +'】',
+                                })
+                                return
+                            }
+                            if(error.response.data.data_info){
+                                this.$Message.error({content:error.response.data.message.fail_cabinet.join(',')+'下发任务失败。'+ error.response.data.description,duration:8})
+                            }
+                        }
+                        this.$Message.error({content:"任务启动失败",duration:8})
+                    })
             },
             onRowClick(row, index) {
                 this.$emit("on-row-click", row, index)
