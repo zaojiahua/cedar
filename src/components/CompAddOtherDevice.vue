@@ -123,20 +123,24 @@ export default {
 
           }
       ).then(response => {
-        if (response.data.state === "DONE") {
+          if (response.data.error_code === 0) {
           this.$Message.success("添加成功")
           this.$Notice.success({
             title: '设备即将重启,请稍侯...'
           });
           this.$emit('afterDeviceAddSuccess', response.data)
-        }
+        }else {
+              this.$Message.error({content: "添加失败 " + response.data.description, duration: 8})
+          }
         this.spinShow = false;
         this.$Loading.finish()
 
       }).catch(reason => {
         this.spinShow = false;
-        console.log(reason);
-        this.$Message.error({content: "添加失败" + reason.response.data.description, duration: 5})
+        if(reason.response.status>=500)
+          this.$Message.error({content:'服务器错误',duration: 5})
+        else
+          this.$Message.error({content:'请求失败',duration: 5})
         this.$Loading.error()
         this.$emit('afterDeviceAddFailed', reason)
       })
