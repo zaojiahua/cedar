@@ -130,7 +130,7 @@ export default {
           });
           this.$emit('afterDeviceAddSuccess', response.data)
         }else {
-              this.$Message.error({content: "添加失败 " + response.data.description, duration: 8})
+              this.$Message.error({content: response.data.description, duration: 8})
           }
         this.spinShow = false;
         this.$Loading.finish()
