@@ -229,20 +229,26 @@
                         this.$ajax
                         .get("http://" + this.CabinetIpSelected + ":5000" + "/door/get_device_in_door/")
                         .then(response => {
-                            if (utils.validate(addDeviceSerializer, response.data).ip_address === null) {
+                            if(response.data.error_code==="0"){
+                                if (utils.validate(addDeviceSerializer, response.data).ip_address === null) {
+                                    this.addDeviceError('扫描设备失败', response.data.description);
+                                    this.addBtn = false;
+                                    this.backStepOne = true;
+                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
+                                } else if (utils.validate(addDeviceSerializer, response.data).ip_address === "") {
+                                    this.addBtn = false;
+                                    this.rescan = true;
+                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
+                                    this.addDeviceError('ip侦测失败', '侦测不到该设备的IP地址，请确认待添加设备已连接到TMach系统WLAN！')
+                                } else {
+                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
+                                    if (this.manufacturerList.indexOf(this.deviceInfo.manufacturer) === -1)
+                                        this.manufacturerList.push(this.deviceInfo.manufacturer)
+                                }
+                            }else {
                                 this.addDeviceError('扫描设备失败', response.data.description);
                                 this.addBtn = false;
-                                this.backStepOne = true;
-                                this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
-                            } else if (utils.validate(addDeviceSerializer, response.data).ip_address === "") {
-                                this.addBtn = false;
                                 this.rescan = true;
-                                this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
-                                this.addDeviceError('ip侦测失败', '侦测不到该设备的IP地址，请确认待添加设备已连接到TMach系统WLAN！')
-                            } else {
-                                this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
-                                if (this.manufacturerList.indexOf(this.deviceInfo.manufacturer) === -1)
-                                  this.manufacturerList.push(this.deviceInfo.manufacturer)
                             }
                             this.$Loading.finish();
                             this.spinShow = false;
@@ -258,10 +264,18 @@
                     }else if(this.deviceType=== 2){
                         this.$ajax.get("http://" + this.CabinetIpSelected + ":5000" + "/door/get_assistance_device_in_door/")
                             .then(response => {
-                                this.deviceInfo = utils.validate(addDeviceSerializer, response.data)
-                                this.spinShow = false;
-                              if (this.manufacturerList.indexOf(this.deviceInfo.manufacturer) === -1)
-                                this.manufacturerList.push(this.deviceInfo.manufacturer)
+                                if(response.data.error_code==="0") {
+                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data)
+                                    this.spinShow = false;
+                                    if (this.manufacturerList.indexOf(this.deviceInfo.manufacturer) === -1)
+                                        this.manufacturerList.push(this.deviceInfo.manufacturer)
+                                }else {
+                                    this.addDeviceError('僚机信息获取失败', response.data.description);
+                                    this.addBtn = false;
+                                    this.backStepOne = true;
+                                    this.rescan = true;
+                                    this.spinShow = false;
+                                }
                             })
                             .catch(error => {
                                 if (config.DEBUG) console.log(error)
