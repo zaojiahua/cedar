@@ -482,6 +482,7 @@
                         owner_label:sessionStorage.getItem('id')
                     })
                     .then(response=>{
+                        this.showTestAgain = false
                         let str = ""
                         if(response.data.fail_cabinet){
                             response.data.fail_cabinet.forEach(item=>{
@@ -494,12 +495,17 @@
                                 content:str
                             })
                         }else if(response.data.status==="warning"){
+                            let _this = this
                             this.$Modal.warning({
                                 title:"部分服务器启动失败！",
                                 content:str,
+                                onOk(){
+                                    _this.refresh()
+                                }
                             })
                         }else if(response.data.status==="success"){
                             this.$Message.success("任务启动成功！")
+                            this.refresh()
                         }
                         this.showLoading = false;
                     })
