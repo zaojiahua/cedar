@@ -194,6 +194,10 @@
                 if(this.propTboardId){
                     tboardCondition =  "&tboard=" + this.propTboardId
                 }
+                let deviceCondition = ""
+                if(this.propDeviceId){
+                    deviceCondition ="&device=" + this.propDeviceId
+                }
                 // RDS排序开关：true正序；false倒序
                 let orderCondition = "&ordering=-start_time"
                 if(this.propOrder){
@@ -213,7 +217,7 @@
                     resultRangeCondition +
                     "&limit=" + pageSize +
                     "&offset=" + this.dataOffset +
-                    "&device=" + this.propDeviceId +
+                    deviceCondition +
                     orderCondition)
                     .then(response=>{
                         this.dataOffset += pageSize
@@ -233,9 +237,9 @@
                                 tboardCondition +
                                 dateRangeCondition +
                                 resultRangeCondition +
+                                deviceCondition +
                                 "&limit=1" +
-                                "&offset=" + this.dataOffset +
-                                "&device=" + this.propDeviceId)
+                                "&offset=" + this.dataOffset)
                             .then(response=>{
                                 // this.showMore = utils.validate(isThereMoreSerializer, response.data).rdss.length > 0
                                 this.$emit("after-load-data",utils.validate(isThereMoreSerializer, response.data).rdss.length > 0)

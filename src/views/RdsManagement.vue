@@ -15,12 +15,16 @@
         <!--<TabPane label="用例数据视图" name="rdsGroupByJob" tab="outer">-->
             <!--&lt;!&ndash;<comp-rds-device-view></comp-rds-device-view>&ndash;&gt;-->
         <!--</TabPane>-->
-        <TabPane label="任务数据视图" name="rdsGroupByTboard" tab="outer">
-            <comp-rds-tboard-view></comp-rds-tboard-view>
+        <TabPane :label=tabLabel name="rdsGroupByTboard" tab="outer" icon="ios-arrow-down" context-menu>
+            <comp-rds-tboard-view :prop-tab-name="tabLabel"></comp-rds-tboard-view>
         </TabPane>
         <TabPane label="日志文件搜索" name="logSearch">
             <comp-rds-log-search></comp-rds-log-search>
         </TabPane>
+        <template slot="contextMenu">
+            <DropdownItem @click.native="tabLabel='任务数据统计'">任务数据统计</DropdownItem>
+            <DropdownItem @click.native="tabLabel='任务数据视图'">任务数据视图</DropdownItem>
+        </template>
     </Tabs>
 
 
@@ -40,8 +44,11 @@
         components: {CompRdsLogSearch, CompRdsList , CompRdsDeviceView, CompDynamicLoadingChart, CompRdsTboardView},
         data(){
             return{
-                tabName:"rdsGroupByDevice"
+                tabName:"rdsGroupByDevice",
+                tabLabel:"任务数据统计",
             }
+        },
+        methods:{
         },
         mounted(){
             let tboardId = NaN
@@ -55,3 +62,9 @@
     }
 
 </script>
+
+<style scoped>
+    /deep/.ivu-tabs-nav .ivu-tabs-tab .ivu-icon{
+        margin-right: 0!important;
+    }
+</style>

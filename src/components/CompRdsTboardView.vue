@@ -11,104 +11,120 @@
         </Row>
 
         <div v-if="showView">
-            <RadioGroup v-model="groupType" type="button">
-                <Radio style="width: 100px;text-align: center;" :label="1">失败数据</Radio>
-                <Radio style="width: 100px;text-align: center;" :label="2">无效数据</Radio>
-            </RadioGroup>
-            <Button type="primary" style="float: right;" @click="openTboardList">重选任务</Button>
+            <div v-if="propTabName==='任务数据视图'">
+                <RadioGroup v-model="groupType" type="button">
+                    <Radio style="width: 100px;text-align: center;" :label="1">失败数据</Radio>
+                    <Radio style="width: 100px;text-align: center;" :label="2">无效数据</Radio>
+                </RadioGroup>
+                <Button type="primary" style="float: right;" @click="openTboardList">重选任务</Button>
 
-            <!--   无效/失败总统计切换  Card   -->
-            <Card :bordered="false" style="margin-top: 16px;box-shadow:2px 2px 5px #f2f2f2">
-                <b style="border-left: 3px solid #1bbc9c;padding-left: 10px;font-size: 16px">{{ data.board_name }}（ {{data.end_time===null?"进行中":"已完成"}} ）</b><span style="color: #979797;font-size: 12px"> x{{data.repeat_time}}轮</span>
-                <Row class="t-font" style="margin-top: 5px;">
-                    <span class="dot"></span><span>{{ data.author.username }}</span>
-                    <!--<Tag type="dot" style="border: none!important;padding: 0!important;">{{ data.author.username }}</Tag>-->
-                    <span class="tit">创建</span><span>{{ data.board_stamp }}</span>
-                    <span class="tit">截止</span><span>{{ data.end_time!==null?data.end_time:new Date().format("yy-MM-dd hh:mm:ss")}}</span>
-                    <span class="tit" style="margin-left: 50px"><span class="dot"></span>历时</span><span>{{ diffTime(data.board_stamp,data.end_time) }}</span>
-                </Row>
+                <!--   无效/失败总统计切换  Card   -->
+                <Card :bordered="false" style="margin-top: 16px;box-shadow:2px 2px 5px #f2f2f2">
+                    <b style="border-left: 3px solid #1bbc9c;padding-left: 10px;font-size: 16px">{{ data.board_name }}（ {{data.end_time===null?"进行中":"已完成"}} ）</b><span style="color: #979797;font-size: 12px"> x{{data.repeat_time}}轮</span>
+                    <Row class="t-font" style="margin-top: 5px;">
+                        <span class="dot"></span><span>{{ data.author.username }}</span>
+                        <!--<Tag type="dot" style="border: none!important;padding: 0!important;">{{ data.author.username }}</Tag>-->
+                        <span class="tit">创建</span><span>{{ data.board_stamp }}</span>
+                        <span class="tit">截止</span><span>{{ data.end_time!==null?data.end_time:new Date().format("yy-MM-dd hh:mm:ss")}}</span>
+                        <span class="tit" style="margin-left: 50px"><span class="dot"></span>历时</span><span>{{ diffTime(data.board_stamp,data.end_time) }}</span>
+                    </Row>
 
-                <div style="width: 200px;float: left;">
-                    <comp-statistic-pie v-show="groupType===1" :prop-data="pieData" :prop-failure="statistics.fail_rds_percentage" :prop-id="-99" :prop-type="1"></comp-statistic-pie>
-                    <comp-statistic-pie v-if="groupType===2" :prop-data="pieData" :prop-invalid-rate="statistics.invalid_rds_percentage" :prop-id="-98" :prop-type="2"></comp-statistic-pie>
+                    <div style="width: 200px;float: left;">
+                        <comp-statistic-pie v-show="groupType===1" :prop-data="pieData" :prop-failure="statistics.fail_rds_percentage" :prop-id="-99" :prop-type="1"></comp-statistic-pie>
+                        <comp-statistic-pie v-if="groupType===2" :prop-data="pieData" :prop-invalid-rate="statistics.invalid_rds_percentage" :prop-id="-98" :prop-type="2"></comp-statistic-pie>
+                    </div>
+
+                    <div style="margin-left: 200px;height:170px;margin-top: 30px">
+                        <Table stripe width="500" :columns="columns" :data="tableData"></Table>
+                    </div>
+                    <Row  v-show="showMsg" >
+                        <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 10px">测试用例</p>
+                        <ButtonGroup>
+                            <Tooltip v-for="(job,index) in data.job" :content="job.job_label" :key="index" placement="bottom" transfer>
+                                <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">
+                                    {{job.job_name}}
+                                </Button>
+                            </Tooltip>
+                        </ButtonGroup>
+                    </Row>
+                    <Row  v-show="showMsg" >
+                        <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin: 10px 0">测试设备</p>
+                        <ButtonGroup>
+                            <Tooltip v-for="(device,index) in data.device" :content="device.device_label" :key="index" placement="bottom" transfer>
+                                <Button @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
+                                    {{device.device_name}}
+                                </Button>
+                            </Tooltip>
+                        </ButtonGroup>
+                    </Row>
+                    <Row>
+                        <span v-show="showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=false"><Icon type="ios-arrow-up" />收起</span>
+                        <span v-show="!showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=true"><Icon type="ios-arrow-down" />展开</span>
+                    </Row>
+                </Card>
+
+                <!--     图表统计部份    失败    -->
+                <div class="device-statistic" style="margin-top: 16px" v-if="showStatistic&&(groupType===1)">
+                    <Tabs v-model="tabName" type="card" name="inside" v-if="groupType===1">
+                        <TabPane label="设备统计" name="deviceStatistic" tab="inside">
+                            <comp-rds-tboard-device-statistic ref="rdsDeviceStatistic"
+                                                              :prop-device-url="compDeviceUrl"
+                                                              :prop-tboard-id="tboardId"
+                                                              :prop-filter-date-range="filterDateRange"
+                                                              @rds-mouse-enter="onRdsMouseEnter"
+                                                              @rds-mouse-leave="onRdsMouseLeave">
+                            </comp-rds-tboard-device-statistic>
+                        </TabPane>
+                        <TabPane label="用例统计" name="jobStatistic" tab="inside">
+                            <comp-rds-tboard-job-statistic ref="rdsJobStatistic"
+                                                           :prop-job-url="compJobUrl"
+                                                           :prop-tboard-id="tboardId"
+                                                           :prop-filter-date-range="filterDateRange"
+                                                           @rds-mouse-enter="onRdsMouseEnter"
+                                                           @rds-mouse-leave="onRdsMouseLeave">
+                            </comp-rds-tboard-job-statistic>
+                        </TabPane>
+                    </Tabs>
                 </div>
-
-                <div style="margin-left: 200px;height:170px;margin-top: 30px">
-                    <Table stripe width="500" :columns="columns" :data="tableData"></Table>
+                <!--     图表统计部份    无效    -->
+                <div class="device-statistic" style="margin-top: 16px" v-if="showStatistic&&(groupType===2)">
+                    <Tabs v-model="tabName" type="card" name="inside" v-if="groupType===2">
+                        <TabPane label="设备统计" name="deviceStatistic" tab="inside">
+                            <comp-rds-tboard-device-statistic ref="rdsDeviceStatistic"
+                                                              :prop-device-url="compDeviceUrl"
+                                                              :prop-tboard-id="tboardId"
+                                                              :prop-type="2"
+                                                              :prop-filter-date-range="filterDateRange"
+                                                              @rds-mouse-enter="onRdsMouseEnter"
+                                                              @rds-mouse-leave="onRdsMouseLeave">
+                            </comp-rds-tboard-device-statistic>
+                        </TabPane>
+                        <TabPane label="用例统计" name="jobStatistic" tab="inside">
+                            <comp-rds-tboard-job-statistic ref="rdsJobStatistic"
+                                                           :prop-job-url="compJobUrl"
+                                                           :prop-tboard-id="tboardId"
+                                                           :prop-filter-date-range="filterDateRange"
+                                                           :prop-type="2"
+                                                           @rds-mouse-enter="onRdsMouseEnter"
+                                                           @rds-mouse-leave="onRdsMouseLeave">
+                            </comp-rds-tboard-job-statistic>
+                        </TabPane>
+                    </Tabs>
                 </div>
-                <Row  v-show="showMsg" >
-                    <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 10px">测试用例</p>
-                    <ButtonGroup>
-                        <Tooltip v-for="(job,index) in data.job" :content="job.job_label" :key="index" placement="bottom" transfer>
-                            <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">
-                                {{job.job_name}}
-                            </Button>
-                        </Tooltip>
-                    </ButtonGroup>
-                </Row>
-                <Row  v-show="showMsg" >
-                    <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin: 10px 0">测试设备</p>
-                    <ButtonGroup>
-                        <Tooltip v-for="(device,index) in data.device" :content="device.device_label" :key="index" placement="bottom" transfer>
-                            <Button @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
-                                {{device.device_name}}
-                            </Button>
-                        </Tooltip>
-                    </ButtonGroup>
-                </Row>
-                <Row>
-                    <span v-show="showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=false"><Icon type="ios-arrow-up" />收起</span>
-                    <span v-show="!showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=true"><Icon type="ios-arrow-down" />展开</span>
-                </Row>
-            </Card>
-
-            <!--     图表统计部份    失败    -->
-            <div class="device-statistic" style="margin-top: 16px" v-if="showStatistic&&(groupType===1)">
-                <Tabs v-model="tabName" type="card" name="inside" v-if="groupType===1">
-                    <TabPane label="设备统计" name="deviceStatistic" tab="inside">
-                        <comp-rds-tboard-device-statistic ref="rdsDeviceStatistic"
-                                                          :prop-device-url="compDeviceUrl"
-                                                          :prop-tboard-id="tboardId"
-                                                          :prop-filter-date-range="filterDateRange"
-                                                          @rds-mouse-enter="onRdsMouseEnter"
-                                                          @rds-mouse-leave="onRdsMouseLeave">
-                        </comp-rds-tboard-device-statistic>
-                    </TabPane>
-                    <TabPane label="用例统计" name="jobStatistic" tab="inside">
-                        <comp-rds-tboard-job-statistic ref="rdsJobStatistic"
-                                                       :prop-job-url="compJobUrl"
-                                                       :prop-tboard-id="tboardId"
-                                                       :prop-filter-date-range="filterDateRange"
-                                                       @rds-mouse-enter="onRdsMouseEnter"
-                                                       @rds-mouse-leave="onRdsMouseLeave">
-                        </comp-rds-tboard-job-statistic>
-                    </TabPane>
-                </Tabs>
             </div>
-            <!--     图表统计部份    无效    -->
-            <div class="device-statistic" style="margin-top: 16px" v-if="showStatistic&&(groupType===2)">
-                <Tabs v-model="tabName" type="card" name="inside" v-if="groupType===2">
-                    <TabPane label="设备统计" name="deviceStatistic" tab="inside">
-                        <comp-rds-tboard-device-statistic ref="rdsDeviceStatistic"
-                                                    :prop-device-url="compDeviceUrl"
-                                                    :prop-tboard-id="tboardId"
-                                                    :prop-type="2"
-                                                    :prop-filter-date-range="filterDateRange"
-                                                    @rds-mouse-enter="onRdsMouseEnter"
-                                                    @rds-mouse-leave="onRdsMouseLeave">
-                        </comp-rds-tboard-device-statistic>
-                    </TabPane>
-                    <TabPane label="用例统计" name="jobStatistic" tab="inside">
-                        <comp-rds-tboard-job-statistic ref="rdsJobStatistic"
-                                                    :prop-job-url="compJobUrl"
-                                                    :prop-tboard-id="tboardId"
-                                                    :prop-filter-date-range="filterDateRange"
-                                                    :prop-type="2"
-                                                    @rds-mouse-enter="onRdsMouseEnter"
-                                                    @rds-mouse-leave="onRdsMouseLeave">
-                        </comp-rds-tboard-job-statistic>
-                    </TabPane>
-                </Tabs>
+            <div v-if="propTabName==='任务数据统计'">
+                <RadioGroup v-model="groupTypeSwitch" type="button" style="margin-bottom: 16px">
+                    <Radio style="width: 100px;text-align: center;" :label="1">用例统计</Radio>
+                    <Radio style="width: 100px;text-align: center;" :label="2">设备统计</Radio>
+                </RadioGroup>
+                <comp-rds-tboard-job-statistic-switch v-show="groupTypeSwitch===1" :tboard="tboardId"
+                                                      @rds-mouse-enter="onRdsMouseEnter"
+                                                      @rds-mouse-leave="onRdsMouseLeave">
+                </comp-rds-tboard-job-statistic-switch>
+                <comp-rds-tboard-device-statistic-switch v-show="groupTypeSwitch===2" :tboard="tboardId"
+                                                         @rds-mouse-enter="onRdsMouseEnter"
+                                                         @rds-mouse-leave="onRdsMouseLeave">
+                </comp-rds-tboard-device-statistic-switch>
             </div>
         </div>
 
@@ -146,6 +162,8 @@
     import CompDeviceDetail from "./CompDeviceDetail";
     import CompRdsTboardDeviceStatistic from "./CompRdsTboardDeviceStatistic";
     import CompRdsTboardJobStatistic from "./CompRdsTboardJobStatistic";
+    import CompRdsTboardDeviceStatisticSwitch from "./CompRdsTboardDeviceStatisticSwitch";
+    import CompRdsTboardJobStatisticSwitch from "./CompRdsTboardJobStatisticSwitch";
 
     const getTboardSerializer = {
         id: "number",
@@ -180,7 +198,14 @@
     }
 
     export default {
-        components:{ CompTboardList, CompStatisticPie,CompDeviceDetail,CompJobDetail,CompRdsTboardDeviceStatistic,CompRdsTboardJobStatistic },
+        components:{ CompTboardList, CompStatisticPie,CompDeviceDetail,CompJobDetail,CompRdsTboardDeviceStatistic,CompRdsTboardJobStatistic,
+            CompRdsTboardDeviceStatisticSwitch, CompRdsTboardJobStatisticSwitch },
+        props:{
+            propTabName:{
+                type: String,
+                default:"任务数据统计"
+            }
+        },
         data(){
             return{
                 filterDateRange:[],
@@ -228,6 +253,7 @@
                 compDeviceUrl:"",
                 compJobUrl:"",
                 tipData:utils.validate(tipDataSerializer, null),
+                groupTypeSwitch:1,
             }
         },
         methods:{
