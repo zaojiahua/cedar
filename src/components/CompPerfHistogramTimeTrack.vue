@@ -47,7 +47,7 @@
                         response.data.forEach(item=>{
                             list.push(item[1])
                         })
-                        let max = Math.ceil(Math.max.apply(null,list));
+                        let max = Math.ceil(Math.max.apply(null,list))+0.5;
                         let vRange = {
                             max:max,
                         }
