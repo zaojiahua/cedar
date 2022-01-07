@@ -56,7 +56,7 @@
             </FormItem>
             <FormItem>
                 <b slot="label">设备编号：</b>
-                <Input v-model="rdsInfo.device.phone_model.phone_model_name" class="disabled-input" disabled></input>
+                <Input v-model="rdsInfo.device.device_label" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
                 <b slot="label">安卓版本：</b>
@@ -257,7 +257,7 @@
                     .get("api/v1/cedar/rds/"+rdsId+"/?fields="+
                         "id,"+
                         "job,job.job_name,job.id,job.job_label,job.job_second_type,"+
-                        "device,device.id,device.device_name,"+
+                        "device,device.id,device.device_name,device.device_label,"+
                         "device.phone_model,device.phone_model.id,device.phone_model.phone_model_name,"+
                         "device.android_version,device.android_version.id,device.android_version.version,"+
                         "device.rom_version,device.rom_version.id,device.rom_version.version,"+

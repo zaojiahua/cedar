@@ -229,19 +229,19 @@
                         this.$ajax
                         .get("http://" + this.CabinetIpSelected + ":5000" + "/door/get_device_in_door/")
                         .then(response => {
-                            if(response.data.error_code==="0"){
-                                if (utils.validate(addDeviceSerializer, response.data).ip_address === null) {
-                                    this.addDeviceError('扫描设备失败', response.data.description);
+                            if(response.data.error_code===0){
+                                if (utils.validate(addDeviceSerializer, response.data.data).ip_address === null) {
+                                    this.addDeviceError('扫描设备失败', response.data.data.description);
                                     this.addBtn = false;
                                     this.backStepOne = true;
-                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
-                                } else if (utils.validate(addDeviceSerializer, response.data).ip_address === "") {
+                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data.data);
+                                } else if (utils.validate(addDeviceSerializer, response.data.data).ip_address === "") {
                                     this.addBtn = false;
                                     this.rescan = true;
-                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
+                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data.data);
                                     this.addDeviceError('ip侦测失败', '侦测不到该设备的IP地址，请确认待添加设备已连接到TMach系统WLAN！')
                                 } else {
-                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data);
+                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data.data);
                                     if (this.manufacturerList.indexOf(this.deviceInfo.manufacturer) === -1)
                                         this.manufacturerList.push(this.deviceInfo.manufacturer)
                                 }
@@ -264,8 +264,8 @@
                     }else if(this.deviceType=== 2){
                         this.$ajax.get("http://" + this.CabinetIpSelected + ":5000" + "/door/get_assistance_device_in_door/")
                             .then(response => {
-                                if(response.data.error_code==="0") {
-                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data)
+                                if(response.data.error_code===0) {
+                                    this.deviceInfo = utils.validate(addDeviceSerializer, response.data.data)
                                     this.spinShow = false;
                                     if (this.manufacturerList.indexOf(this.deviceInfo.manufacturer) === -1)
                                         this.manufacturerList.push(this.deviceInfo.manufacturer)
