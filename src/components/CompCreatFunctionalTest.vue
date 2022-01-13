@@ -357,7 +357,7 @@
                         .catch(error=>{
                             if(config.DEBUG) console.log(error)
                             this.showLoading = false;
-                            if(error.response.data.custom_code==="0"){
+                            if(error.response.status===400){
                                 if(error.response.data.error_job_name_list){
                                     this.errorInnerList =error.response.data.error_job_name_list.filter(item=>{
                                         return item.job_type==="InnerJob"
@@ -367,10 +367,10 @@
                                     return
                                 }
                                 if(error.response.data.data_info){
-                                    this.$Message.error({content:error.response.data.message.fail_cabinet.join(',')+'下发任务失败。'+ error.response.data.description,duration:7})
+                                    this.$Message.error({content:error.response.data.description,duration:7})
                                 }
-                            }
-                            this.$Message.error({content:"任务启动失败",duration:3})
+                            }else
+                                this.$Message.error({content:error.response.data.description,duration:7})
                         })
                 }
             },
