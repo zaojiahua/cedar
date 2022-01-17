@@ -90,7 +90,7 @@
                   style="padding: 7px 16px; margin-bottom: 8px; cursor: pointer;">
                 <Row type="flex" align="middle" style="margin: 16px 0">
                     <Col>
-                        <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
+                        <i-circle :size="80" :percent="statistic.total===0 ? 0 : statistic.pass*100/statistic.total">
                             <p style="font-weight: bold;margin-bottom: 2px">{{statistic.total===0 ? 0 : (statistic.pass*100/statistic.total).toFixed(1)}}%</p>
                             <small>用例成功率</small>
                         </i-circle>
