@@ -208,7 +208,6 @@
         </Modal>
         <Modal v-model="showAddModal" :fullscreen="true" :transfer="false" :closable="false">
             <comp-subsidiary-device-list ref="addDevice" :prop-show-cabinet-select="false"
-                                         :prop-phone-model="device.phone_model.phone_model_name"
                                          :prop-cabinet-id="device.cabinet.id"
                                          :prop-status="true"
                                          @on-row-click="onSubsidiaryRowClick"

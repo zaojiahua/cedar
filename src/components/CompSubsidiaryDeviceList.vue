@@ -105,15 +105,8 @@
                         sortable: true,
                         filters:[],
                         filterRemote(value){
-                            if(this.propPhoneModel){
-                                this.$Modal.info({
-                                    title: "提示",
-                                    content: "当前状态不支持筛选功能！"
-                                });
-                            }else {
-                                this.phoneModelFilterList = value
-                                this.onPageChange(1)
-                            }
+                            this.phoneModelFilterList = value
+                            this.onPageChange(1)
                         }
                     },
                     "status": {
@@ -186,9 +179,6 @@
                 let phoneModelCondition = ""
                 if(this.phoneModelFilterList.length>0){
                     phoneModelCondition = "&phone_model__phone_model_name__in="+"ReefList["+this.phoneModelFilterList.join("{%,%}")+"]"
-                }
-                if(this.propPhoneModel){
-                    phoneModelCondition = "&phone_model__phone_model_name__in="+"ReefList["+this.propPhoneModel +"]"
                 }
 
                 let cabinetCondition = ""
