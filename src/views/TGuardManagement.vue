@@ -4,7 +4,7 @@
             <Tag v-for="item in tguardList" style="margin-bottom: 5px"
                  :closable="!item.is_system&&username==='admin'" :color="getColor(item.is_system)"
                  @on-close="deleteTGuard(item)">{{ item.name }}</Tag>
-            <Button class="box" type="primary" v-if="username==='admin'" icon="md-add" size="small" @click="showAddModal=true">添加</Button>
+            <Button class="box" type="primary" v-if="username==='admin'" icon="md-add" size="small" @click="showAddModal=true;addName = ''">添加</Button>
         </Row>
         <Modal v-model="showAddModal" footer-hide :closable="false" :mask-closable="false" width="420">
             <p style="margin: 12px 0 10px 0"><b>请添加新干扰词</b></p>
@@ -68,14 +68,16 @@
                 this.$ajax.post("api/v1/cedar/tguard/",{
                     name: this.addName
                 }).then(response=>{
-                    this.showAddModal = true
+                    this.showAddModal = false
                     this.$Message.success("干扰词添加成功")
                     this.getTguardList()
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error);
                     this.getTguardList()
-                    if(error.response.data.data_info&&error.response.data.data_info.length>0)
+                    if(error.response.data.data_info&&error.response.data.data_info.length>0){
                         this.$Message.error({content:error.response.data.data_info.join(',')+'下发失败',duration:10})
+                        this.showAddModal = false
+                    }
                     else if(error.response.data.name)
                         this.$Message.error({content:'干扰词已存在',duration:6})
                     else
