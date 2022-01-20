@@ -45,7 +45,7 @@
         methods:{
             onJobFilterParams(params){
                 this.$refs.statisticTable._setUrlParam(params)
-                this.$refs.statisticTable.refresh()
+                this.$refs.statisticTable.onPageChange(1)
             },
             onRowClick(row,index){
                 this.showRdsCard = true

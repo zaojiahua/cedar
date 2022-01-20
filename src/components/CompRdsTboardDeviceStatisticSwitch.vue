@@ -51,7 +51,7 @@
                 if(this.keyword.trim())
                     conditions.contains= this.keyword.trim()
                 this.$refs.statisticTable._setUrlParam(conditions)
-                this.$refs.statisticTable.refresh()
+                this.$refs.statisticTable.onPageChange(1)
             },
             onRowClick(row,index){
                 this.showRdsCard = true

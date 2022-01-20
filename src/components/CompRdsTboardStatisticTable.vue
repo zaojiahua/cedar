@@ -6,7 +6,8 @@
                 <Radio style="width: 100px;text-align: center;" :label="2">百分比</Radio>
             </RadioGroup>
         </Row>
-        <Table row-key="uuid" :load-data="handleLoadData" :columns="columns" :data="data" border highlight-row @on-sort-change="onSortChange" @on-row-click="onRowClick" ></Table>
+        <Table row-key="uuid" :load-data="handleLoadData" :columns="columns" :data="data" border highlight-row
+               :update-show-children="true" @on-sort-change="onSortChange" @on-row-click="onRowClick" ></Table>
         <Row style="margin-top:20px;text-align: center ">
             <Page :current="currentPage" :total="dataTotal" :page-size="pageSize" simple @on-change="onPageChange" style="display: inline-flex"/>
             <Select v-model="pageSize" style="width:100px;margin-left: 30px" size="small">
@@ -133,7 +134,7 @@
             },
             //翻页
             onPageChange(page){
-                this.offset = this.pageSize * (page-1)
+                this.offset = page-1
                 this.currentPage = page
                 this.refresh()
             },
