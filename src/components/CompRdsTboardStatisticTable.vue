@@ -11,6 +11,7 @@
         <Row style="margin-top:20px;text-align: center ">
             <Page :current="currentPage" :total="dataTotal" :page-size="pageSize" simple @on-change="onPageChange" style="display: inline-flex"/>
             <Select v-model="pageSize" style="width:100px;margin-left: 30px" size="small">
+                <Option :value="10">10 条/页</Option>
                 <Option :value="30">30 条/页</Option>
                 <Option :value="50"> 50 条/页</Option>
                 <Option :value="100"> 100 条/页</Option>
@@ -53,7 +54,7 @@
                 currentPage:1,
                 dataTotal:0,
                 offset: 0,
-                pageSize:30,
+                pageSize:10,
                 showJobDetail:false,
                 showDeviceDetail:false,
                 urlParam:{},
