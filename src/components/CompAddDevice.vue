@@ -124,7 +124,7 @@
                 rescan: false,
                 backStepOne: false,
                 cabinetList: [],
-                CabinetSelected: '',
+                CabinetSelected: null,
                 CabinetId:null,
                 deviceNum: 0,
                 CabinetIpSelected: '',
@@ -214,6 +214,16 @@
                 if (this.CabinetIpSelected === "" ){
                     this.$Message.error("请先选择机柜信息")
                     return
+                }
+                if(this.CabinetSelected){
+                    this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected)
+                        .then(response => {
+                            this.deviceNum = response.data.devices.length
+                        })
+                        .catch(error => {
+                            if (config.DEBUG) console.log(error);
+                            this.$Message.error("获取设备数量出错")
+                        });
                 }
                 this.deviceInfo = utils.validate(addDeviceSerializer, {});
                 // else{
