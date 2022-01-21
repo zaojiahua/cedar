@@ -52,7 +52,7 @@
                           :transfer="true" style="margin-bottom: 16px" class="disabled-input"></Cascader>
             </FormItem>
             <FormItem>
-                <b slot="label">编写人员:</b>
+                <b slot="label">维护人员:</b>
                 <Input v-model="jobInfo.author.username" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>

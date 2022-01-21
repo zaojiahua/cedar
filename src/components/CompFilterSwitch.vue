@@ -264,6 +264,9 @@
 </script>
 
 <style scoped lang="less">
+    /deep/ .ivu-tag .ivu-icon-ios-close{
+        color: #666!important;
+    }
     .collapse {
         display: flex;
         flex-direction: column;
