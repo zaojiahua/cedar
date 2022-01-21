@@ -46,6 +46,10 @@
                 <Input v-model="rdsInfo.job.job_name" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
+                <b slot="label">维护人员：</b>
+                <Input v-model="rdsInfo.job.author.username" class="disabled-input" disabled></input>
+            </FormItem>
+            <FormItem>
                 <b slot="label">来自任务：</b>
                 <Input v-model="rdsInfo.tboard.board_name" class="disabled-input" disabled></input>
             </FormItem>
@@ -166,7 +170,10 @@
             id: "number",
             job_label: "string",
             job_name: "string",
-            job_second_type:"string"
+            job_second_type:"string",
+            author: {
+                username: "string"
+            }
         },
         job_assessment_value: "string",
         rdslog: [{
@@ -256,7 +263,7 @@
                 this.$ajax
                     .get("api/v1/cedar/rds/"+rdsId+"/?fields="+
                         "id,"+
-                        "job,job.job_name,job.id,job.job_label,job.job_second_type,"+
+                        "job,job.job_name,job.id,job.job_label,job.job_second_type,job.author,job.author.username," +
                         "device,device.id,device.device_name,device.device_label,"+
                         "device.phone_model,device.phone_model.id,device.phone_model.phone_model_name,"+
                         "device.android_version,device.android_version.id,device.android_version.version,"+
