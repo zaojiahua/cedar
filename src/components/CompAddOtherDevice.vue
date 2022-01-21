@@ -54,6 +54,21 @@
                        placeholder="请输入手机顶部边框厚度"></InputNumber>
           <span>毫米</span>
         </FormItem>
+        <FormItem>
+          <b slot="label">机型高度</b>
+          <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.height"></InputNumber>
+          <span>毫米</span>
+        </FormItem>
+        <FormItem>
+          <b slot="label">机型宽度</b>
+          <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.width"></InputNumber>
+          <span>毫米</span>
+        </FormItem>
+        <FormItem>
+          <b slot="label"><span class="need">*</span>机型厚度</b>
+          <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.ply"></InputNumber>
+          <span>毫米</span>
+        </FormItem>
       </Form>
       <Row type="flex" justify="center">
         <Button type="primary" @click="addDevice()">添加</Button>
@@ -72,7 +87,10 @@ const addDeviceSerializer = {
   device_width: "number",
   y_border: "number",
   device_height: "number",
-  screen_size: "string"   //屏幕分辨率
+  screen_size: "string",   //屏幕分辨率
+  height:"number",
+  width:"number",
+  ply:"number"
 }
 
 export default {
@@ -84,7 +102,7 @@ export default {
       deviceInfo: utils.validate(addDeviceSerializer, {}),
       spinShow: false,
       cabinetList: [],
-      CabinetSelected: '',
+      CabinetSelected: null,
       deviceNum: 0,
       CabinetIpSelected: '',
       phoneModel: "",
@@ -95,6 +113,16 @@ export default {
   methods: {
     reset() {
       this.addDeviceStep = 1
+        if(this.CabinetSelected){
+            this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected)
+                .then(response => {
+                    this.deviceNum = response.data.devices.length
+                })
+                .catch(error => {
+                    if (config.DEBUG) console.log(error);
+                    this.$Message.error("获取设备数量出错")
+                });
+        }
     },
     addDeviceError(title, desc) {
       this.$Notice.error({
@@ -104,8 +132,9 @@ export default {
       });
     },
     addDevice() {
-      console.log(this.phoneModel);
-      if (this.addedDeviceName === "" || this.phoneModel === "" || this.deviceInfo.screen_size === "" || this.deviceInfo.x_border === null || this.deviceInfo.device_width === null || this.deviceInfo.y_border === null || this.deviceInfo.device_height === null) {
+      if (this.addedDeviceName === "" || this.phoneModel === "" || this.deviceInfo.screen_size === ""
+          || this.deviceInfo.x_border === null || this.deviceInfo.device_width === null
+          || this.deviceInfo.y_border === null || this.deviceInfo.device_height === null || this.deviceInfo.ply === null) {
         this.$Message.warning("带*项信息不能为空！")
         return
       }
@@ -119,7 +148,10 @@ export default {
             device_width: this.deviceInfo.device_width,
             y_border: this.deviceInfo.y_border,
             device_height: this.deviceInfo.device_height,
-            screen_size: this.deviceInfo.screen_size
+            screen_size: this.deviceInfo.screen_size,
+            width:this.deviceInfo.width,
+            height:this.deviceInfo.height,
+            ply:this.deviceInfo.ply,
 
           }
       ).then(response => {
@@ -151,6 +183,8 @@ export default {
         return
       }
       this.addDeviceStep = 2;
+      this.deviceInfo = utils.validate(addDeviceSerializer, {})
+      this.addedDeviceName = ""
     },
     getCabinetInfo() {
       this.$ajax.get("api/v1/cedar/cabinet/?fields=ip_address,cabinet_name,id&is_delete=False")
@@ -196,11 +230,14 @@ export default {
           }
         })
         this.$ajax.get(
-            `api/v1/cedar/phone_model/?phone_model_name=${item}&fields=x_border,y_border,x_dpi`
+            `api/v1/cedar/phone_model/?phone_model_name=${item}&fields=x_border,y_border,x_dpi,width,height,ply`
         ).then(response => {
           if (response.data.phonemodels.length > 0){
             this.deviceInfo.x_border = response.data.phonemodels[0].x_border
             this.deviceInfo.y_border = response.data.phonemodels[0].y_border
+            this.deviceInfo.width = response.data.phonemodels[0].width
+            this.deviceInfo.height = response.data.phonemodels[0].height
+            this.deviceInfo.ply = response.data.phonemodels[0].ply
             let length = Math.sqrt(Math.pow(this.deviceInfo.device_height, 2) + Math.pow(this.deviceInfo.device_width, 2))
             this.deviceInfo.screen_size = (length / response.data.phonemodels[0].x_dpi).toFixed(2)
           }
