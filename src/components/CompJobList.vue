@@ -119,15 +119,15 @@
                         sortable: true,
                         filters: [
                             {
-                                label: '功能测试',
+                                label: '功能',
                                 value: 'Joblib'
                             },
                             {
-                                label: '性能测试',
+                                label: '性能',
                                 value: 'PerfJob'
                             },
                             {
-                                label: '内嵌用例',
+                                label: '内嵌',
                                 value: 'InnerJob'
                             }
                         ],
@@ -144,11 +144,11 @@
                         sortable: true,
                         filters: [
                             {
-                                label: '功能测试',
+                                label: '功能',
                                 value: 'Joblib'
                             },
                             {
-                                label: '性能测试',
+                                label: '性能',
                                 value: 'PerfJob'
                             },
                         ],
@@ -210,6 +210,12 @@
                 this.dataTotal = parseInt(response.headers["total-count"])
                 this.data = utils.validate(getJobSerializer, response.data).jobs
                 this.data.forEach(job => {
+                    if( job.job_type === "Joblib" )
+                        job.job_type = '功能'
+                    else if( job.job_type === "InnerJob" )
+                        job.job_type = '内嵌'
+                    else if( job.job_type === "PerfJob" )
+                        job.job_type = '性能'
                     // if (job.job_type === "InnerJob" && sessionStorage.username!=='admin') job._disabled = true
                     if (job.counter === null) job.counter = 1
                     let job_test_areas = []
