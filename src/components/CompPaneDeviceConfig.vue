@@ -567,6 +567,7 @@
                         this.areaInfo.inside_under_right_y = response.data.under_right_y
                         this.showScreenArea = false
                         this.isScreenUpdate = true
+                        this.$Message.success("边框获取成功")
                     }).catch(error=>{
                         this.$Message.error({content:error.response.data.description,duration:8})
                     })
@@ -812,6 +813,10 @@
                 })
                 if(nameList.includes(this.addInfo.name.trim())){
                     this.$Message.warning({content:"名称已存在！",duration:3})
+                    return
+                }
+                if(this.addInfo.z_coordinate==='' || this.addInfo.z_coordinate>10||this.addInfo.z_coordinate<-10){
+                    this.$Message.warning({content:"z 的取值范围为[-10,10]！",duration:3})
                     return
                 }
                 this.tableData.push({
