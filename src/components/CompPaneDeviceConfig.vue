@@ -473,6 +473,7 @@
                 //获取边框坐标
                 this.$ajax.get("api/v1/cedar/devicecutcoordinate/" +
                     "?phone_model__device=" + this.deviceId +
+                    "&pane_view=" + this.paneId +
                     "&fields=inside_upper_left_x,inside_upper_left_y," +
                     "inside_under_right_x,inside_under_right_y,id"
                 ).then(response => {
