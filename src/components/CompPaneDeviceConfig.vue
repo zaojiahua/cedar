@@ -355,7 +355,7 @@
                 tableData:[],
                 deleteList:[],
                 //边框的值是否做了修改
-                isScreenUpdate:false,
+                // isScreenUpdate:false,
                 showModal:false,
                 //点击新建按钮初始化的数据
                 addInfo:{
@@ -458,7 +458,7 @@
             //取回机型和坐标点信息   //表格的自定义按键信息也在这里获取
             async getCoordinateInfo() {
                 this.deleteList = []
-                this.isScreenUpdate = false
+                // this.isScreenUpdate = false
                 await this.$ajax.get(`api/v1/cedar/device/${this.deviceId}/` +
                     '?fields=phone_model.id,phone_model.x_dpi,phone_model.y_dpi,phone_model.phone_model_name,phone_model.ply').then(
                     response => {
@@ -473,7 +473,6 @@
                 //获取边框坐标
                 this.$ajax.get("api/v1/cedar/devicecutcoordinate/" +
                     "?phone_model__device=" + this.deviceId +
-                    "&pane_view=" + this.paneId +
                     "&fields=inside_upper_left_x,inside_upper_left_y," +
                     "inside_under_right_x,inside_under_right_y,id"
                 ).then(response => {
@@ -566,7 +565,7 @@
                         this.areaInfo.inside_under_right_x = response.data.under_right_x
                         this.areaInfo.inside_under_right_y = response.data.under_right_y
                         this.showScreenArea = false
-                        this.isScreenUpdate = true
+                        // this.isScreenUpdate = true
                         this.$Message.success("边框获取成功")
                     }).catch(error=>{
                         this.$Message.error({content:error.response.data.description,duration:8})
@@ -602,7 +601,7 @@
                         this.areaInfo.inside_under_right_x = bottomRight.x
                         this.areaInfo.inside_under_right_y = bottomRight.y
                         this.showScreenArea = false
-                        this.isScreenUpdate = true
+                        // this.isScreenUpdate = true
                         break
                     case "point":
                         if(this.currentIndex===null){
@@ -742,7 +741,7 @@
                     })
                 }
                 // 边 框 信 息 修 改
-                if(this.isScreenUpdate&&isContinue){
+                if(isContinue){
                     await this.$ajax.post("api/v1/cedar/control_device_cut_coordinate/", Object.assign({
                         pane_view: this.paneId,
                         phone_model: phone_model_id
