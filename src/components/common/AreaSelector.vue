@@ -71,11 +71,14 @@ export default {
       switch (event.type) {
         case 'mousedown':
           this.isDragging = true
-          this.mouseStartX = event.pageX
-          this.mouseStartY = event.pageY
+          //距离浏览器窗口的距离
+          this.mouseStartX = event.clientX
+          this.mouseStartY = event.clientY
           this.selector = document.querySelector('.selector')
+          //getBoundingClientRect 方法返回元素的大小及其相对于视口（可视窗口、浏览器窗口）的位置
           this.selectorRect = this.selector.getBoundingClientRect()
           this.selectorImgRect = this.selectorImg.getBoundingClientRect()
+          //x,y（top,left）指的是距离浏览器窗口的距离
           if (event.target.classList.contains('selector__img')) {
             this.curArea.style.left = this.mouseStartX - this.selectorImgRect.x + (this.selectorRect.width - this.selectorImgRect.width) / 2.0 + 'px'
             this.curArea.style.top = this.mouseStartY - this.selectorImgRect.y + (this.selectorRect.height - this.selectorImgRect.height) / 2.0 + 'px'
@@ -103,10 +106,10 @@ export default {
           break
         case 'mousemove':
           if (this.isDragging) {
-            let moveX = event.pageX - this.mouseStartX
-            let moveY = event.pageY - this.mouseStartY
-            this.mouseStartX = event.pageX
-            this.mouseStartY = event.pageY
+            let moveX = event.clientX - this.mouseStartX
+            let moveY = event.clientY - this.mouseStartY
+            this.mouseStartX = event.clientX
+            this.mouseStartY = event.clientY
             let offsetX = (this.selectorRect.width - this.selectorImgRect.width) / 2.0
             let offsetY = (this.selectorRect.height - this.selectorImgRect.height) / 2.0
             let curAreaRect = this.curArea.getBoundingClientRect()
@@ -130,7 +133,7 @@ export default {
               this.curArea.style.top = top + 'px'
               let height = Math.min(this.selectorImgRect.height, curAreaRect.height - moveY)
               this.curArea.style.height = height + 'px'
-              
+
             }
             if (this.expandRight) {
               let width = Math.min(this.selectorImgRect.width, curAreaRect.width + moveX)

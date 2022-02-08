@@ -533,6 +533,7 @@
                 this.imgSrc = ''
                 this.showScreenArea = false
                 this.showTablePoint = false
+                let _this = this
 
                 let url = `http://${this.cabinetIP}:5000/pane/original_picture/?device_label=${this.deviceLabel}&high_exposure=${this.highExposureSwitch?'1':'0'}`
                 let xhr = new XMLHttpRequest()
@@ -540,6 +541,16 @@
                 xhr.responseType = 'blob'
                 xhr.send()
                 xhr.onload = () => {
+                    if(xhr.status===400){
+                        let data = xhr.response
+                        let reader = new FileReader()
+                        reader.readAsText(data,'utf-8')
+                        reader.addEventListener("loadend", function (){
+                            data = JSON.parse(reader.result )
+                            _this.$Message.error({content:"图片获取失败!"+data.description,duration:8})
+                        })
+                        return
+                    }
                     Utils.blobToDataURL(xhr.response).then(res => {
                         this.imgSrc = res
                     })
