@@ -69,7 +69,7 @@
                             localStorage.setItem("id", response.data["id"])
                             localStorage.setItem("username", response.data["username"])
                         }
-                        this.$router.push({name: "home"})
+                        this.$router.push({name: "tboard-management"})
                         this.$Message.success('成功登入!');
                         this.$Loading.finish()
                     })
