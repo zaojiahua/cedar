@@ -38,7 +38,7 @@
                         <Table stripe width="500" :columns="columns" :data="tableData"></Table>
                     </div>
                     <Row  v-show="showMsg" >
-                        <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 10px">测试用例</p>
+                        <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 10px">测试用例({{data.job.length}})</p>
                         <ButtonGroup>
                             <Tooltip v-for="(job,index) in data.job" :content="job.job_label" :key="index" placement="bottom" transfer>
                                 <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">
@@ -48,7 +48,7 @@
                         </ButtonGroup>
                     </Row>
                     <Row  v-show="showMsg" >
-                        <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin: 10px 0">测试设备</p>
+                        <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin: 10px 0">测试设备({{data.device.length}})</p>
                         <ButtonGroup>
                             <Tooltip v-for="(device,index) in data.device" :content="device.device_label" :key="index" placement="bottom" transfer>
                                 <Button @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
@@ -117,6 +117,12 @@
                     <Radio style="width: 100px;text-align: center;" :label="1">用例统计</Radio>
                     <Radio style="width: 100px;text-align: center;" :label="2">设备统计</Radio>
                 </RadioGroup>
+                <div style="float: right;">
+                    <span>任务名称：{{ data.board_name }}</span>
+                    <span style="margin: 0 20px">用例数量：{{data.job.length}}</span>
+                    <span>设备数量：{{data.device.length}}</span>
+                    <span style="margin:0 20px">RDS数量：{{rdsNum}}</span>
+                </div>
                 <comp-rds-tboard-job-statistic-switch v-show="groupTypeSwitch===1" :tboard="tboardId"
                                                       @rds-mouse-enter="onRdsMouseEnter"
                                                       @rds-mouse-leave="onRdsMouseLeave">
@@ -254,6 +260,7 @@
                 compJobUrl:"",
                 tipData:utils.validate(tipDataSerializer, null),
                 groupTypeSwitch:1,
+                rdsNum:0,
             }
         },
         methods:{
@@ -282,6 +289,7 @@
                         this.pieData = []
                         this.statistics = statistics_resp.data
                         this.pieData.push(statistics_resp.data.pass_rds_count,statistics_resp.data.fail_rds_count,statistics_resp.data.invalid_rds_count)
+                        this.rdsNum = statistics_resp.data.rds_count
                         this.tableData = [{
                             pass:statistics_resp.data.pass_rds_count,
                             fail:statistics_resp.data.fail_rds_count,
