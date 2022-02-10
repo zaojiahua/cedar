@@ -4,9 +4,12 @@
       <p style="font-weight: bold;">设备：关闭“自动亮度调节”，调整到适当亮度，并设置屏幕为常亮</p>
       <br>
       <b>机柜列表：</b>
-      <i-select v-model="CabinetSelected" style="width:150px">
-        <i-option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</i-option>
-      </i-select>
+      <Select v-model="CabinetSelected" style="width:150px">
+        <OptionGroup v-for="types in cabinetList" :label="types.type">
+          <Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id"
+                  @click.native="onCabinetSelectChange(cabinets.id,cabinets.ip_address)">{{ cabinets.cabinet_name }}</Option>
+        </OptionGroup>
+      </Select>
       <br>
       <br>
       <b>机柜内已有设备数量： </b>
@@ -187,14 +190,14 @@ export default {
       this.addedDeviceName = ""
     },
     getCabinetInfo() {
-      this.$ajax.get("api/v1/cedar/cabinet/?fields=ip_address,cabinet_name,id&is_delete=False")
-          .then(response => {
-            this.cabinetList = response.data.cabinets
-          })
-          .catch(error => {
-            if (config.DEBUG) console.log(error)
-            this.$Message.error("取得机柜信息出错")
-          })
+        this.$ajax.get("api/v1/cedar/get_cabinet_type_info/?data_type=cabinet_type_data")
+            .then(response => {
+                this.cabinetList = response.data
+            })
+            .catch(error => {
+                if (config.DEBUG) console.log(error)
+                this.$Message.error("取得机柜信息出错")
+            })
     },
     getPhoneModelList() {
       this.$ajax.get(
@@ -218,6 +221,17 @@ export default {
       }
       this.filterPhoneModelNameList = list
     },
+      onCabinetSelectChange(val,ip){
+          this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected + "&status__in=ReefList[idle{%,%}busy]")
+              .then(response => {
+                  this.deviceNum = response.data.devices.length
+              })
+              .catch(error => {
+                  if (config.DEBUG) console.log(error);
+                  this.$Message.error("获取设备数量出错")
+              });
+          this.CabinetIpSelected = ip
+      },
     async checkPhoneModelInfo(item)
     {
       if (this.phoneModelList.indexOf(item) !== -1) {
@@ -244,24 +258,6 @@ export default {
         })
       }
       this.phoneModel = item
-    }
-
-  },
-  watch: {
-    CabinetSelected: function (newId, oldId) {
-      this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected)
-          .then(response => {
-            this.deviceNum = response.data.devices.length
-          })
-          .catch(error => {
-            if (config.DEBUG) console.log(error);
-            this.$Message.error("获取设备数量出错")
-          });
-      for (let cabinet of this.cabinetList) {
-        if (cabinet.id === newId) {
-          this.CabinetIpSelected = cabinet.ip_address
-        }
-      }
     }
 
   },
