@@ -730,28 +730,25 @@
                 })
                 this.showLoading = true
                 let isContinue = true
-                // 表 格 按 键 坐 标 点 信 息
-                if(updateList.length>0||this.deleteList.length>0){
-                    await this.$ajax.post("api/v1/cedar/update_phone_model_custom_coordinate/", {
-                        create_or_update_list:updateList,
-                        delete_list: this.deleteList
-                    }) .then(res => {
-                        isContinue = true
-                        this.deleteList = []
-                        this.tableData.forEach(item=>{
-                            this.$delete(item,'update')
-                        })
-                        this.$Message.success("按键坐标保存成功")
-                    }).catch(error => {
-                        if (config.DEBUG) console.log(error)
-                        isContinue = false
-                        this.showLoading = false
-                        if(error.response.status>=500)
-                            this.$Message.error("服务器错误")
-                        else
-                            this.$Message.error({content:error.response.data.description,duration:6})
-                    })
-                }
+                // 机 型 厚 度
+                await this.$ajax.patch("api/v1/cedar/phone_model/"+phone_model_id+"/", {
+                    ply: this.phone_model.ply
+                }) .then(res => {
+                    this.showLoading = false
+                    isContinue = true
+                    if (this.isSendReq)
+                        this.onClose(this.isSendReq)
+                    else
+                        this.onClose(false)
+                }).catch(error => {
+                    this.showLoading = false
+                    isContinue = false
+                    if (config.DEBUG) console.log(error)
+                    if(error.response.status>=500)
+                        this.$Message.error("服务器错误")
+                    else
+                        this.$Message.error({content:error.response.data.description,duration:6})
+                })
                 // 边 框 信 息 修 改
                 if(isContinue){
                     await this.$ajax.post("api/v1/cedar/control_device_cut_coordinate/", Object.assign({
@@ -771,24 +768,26 @@
                                 this.$Message.error({content:error.response.data.description,duration:6})
                         })
                 }
-                // 机 型 厚 度
-                if(isContinue)
-                    await this.$ajax.patch("api/v1/cedar/phone_model/"+phone_model_id+"/", {
-                        ply: this.phone_model.ply
+                // 表 格 按 键 坐 标 点 信 息
+                if(updateList.length>0||this.deleteList.length>0&&isContinue){
+                    await this.$ajax.post("api/v1/cedar/update_phone_model_custom_coordinate/", {
+                        create_or_update_list:updateList,
+                        delete_list: this.deleteList
                     }) .then(res => {
-                        this.showLoading = false
-                        if (this.isSendReq)
-                            this.onClose(this.isSendReq)
-                        else
-                            this.onClose(false)
+                        this.deleteList = []
+                        this.tableData.forEach(item=>{
+                            this.$delete(item,'update')
+                        })
+                        this.$Message.success("按键坐标保存成功")
                     }).catch(error => {
-                        this.showLoading = false
                         if (config.DEBUG) console.log(error)
+                        this.showLoading = false
                         if(error.response.status>=500)
                             this.$Message.error("服务器错误")
                         else
                             this.$Message.error({content:error.response.data.description,duration:6})
                     })
+                }
             },
             //------   以 下 是 对 表 格 的 一 些 需 求 操 作 -----------
             onRowClick(row,index){
