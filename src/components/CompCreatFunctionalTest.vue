@@ -366,7 +366,7 @@
                                     this.showErrorInner = true
                                     return
                                 }
-                                if(error.response.data.data_info){
+                                if(error.response.data.data_info!==undefined){
                                     this.$Message.error({content:error.response.data.description,duration:7})
                                 }
                             }else

@@ -78,6 +78,7 @@
                 board_name: "string",
                 finished_flag: "boolean",
                 username:"",
+                tboard_type:"",
                 success_ratio: "number"
             }
         ]
@@ -297,6 +298,7 @@
                     "device,job,repeat_time," +
                     "finished_flag," +
                     "author,author.id,author.username," +
+                    "tboard_type," +
                     "success_ratio" +
                     "&ordering=-board_stamp" +
                     "&is_to_delete=False" +
@@ -479,6 +481,7 @@
                         job_label_list:this.againInfo.job_label_list,
                         repeat_time:this.againInfo.repeat_time,
                         board_name:this.againInfo.board_name,
+                        tboard_type:this.againInfo.tboard_type,
                         owner_label:sessionStorage.getItem('id')
                     })
                     .then(response=>{
