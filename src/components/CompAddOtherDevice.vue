@@ -37,12 +37,12 @@
         </FormItem>
          <FormItem>
             <b slot="label"><span class="need">*</span>Y 分辨率</b>
-            <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.device_height" placeholder="高度"></InputNumber>
+            <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.height_resolution" placeholder="高度"></InputNumber>
             <span>像素</span>
          </FormItem>
         <FormItem>
           <b slot="label"><span class="need">*</span>X 分辨率</b>
-          <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.device_width" placeholder="宽度"></InputNumber>
+          <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.width_resolution" placeholder="宽度"></InputNumber>
           <span>像素</span>
         </FormItem>
         <FormItem>
@@ -87,9 +87,9 @@ import config from "../lib/config"
 
 const addDeviceSerializer = {
   x_border: "number",
-  device_width: "number",
+  width_resolution: "number",
   y_border: "number",
-  device_height: "number",
+  height_resolution: "number",
   screen_size: "string",   //屏幕分辨率
   height:"number",
   width:"number",
@@ -136,8 +136,8 @@ export default {
     },
     addDevice() {
       if (this.addedDeviceName === "" || this.phoneModel === "" || this.deviceInfo.screen_size === ""
-          || this.deviceInfo.x_border === null || this.deviceInfo.device_width === null
-          || this.deviceInfo.y_border === null || this.deviceInfo.device_height === null || this.deviceInfo.ply === null) {
+          || this.deviceInfo.x_border === null || this.deviceInfo.width_resolution === null
+          || this.deviceInfo.y_border === null || this.deviceInfo.height_resolution === null || this.deviceInfo.ply === null) {
         this.$Message.warning("带*项信息不能为空！")
         return
       }
@@ -148,9 +148,9 @@ export default {
             device_name: this.addedDeviceName,
             phone_model_name: this.phoneModel,
             x_border: this.deviceInfo.x_border,
-            device_width: this.deviceInfo.device_width,
+            width_resolution: this.deviceInfo.width_resolution,
             y_border: this.deviceInfo.y_border,
-            device_height: this.deviceInfo.device_height,
+            height_resolution: this.deviceInfo.height_resolution,
             screen_size: this.deviceInfo.screen_size,
             width:this.deviceInfo.width,
             height:this.deviceInfo.height,
@@ -235,16 +235,8 @@ export default {
     async checkPhoneModelInfo(item)
     {
       if (this.phoneModelList.indexOf(item) !== -1) {
-        await this.$ajax.get(
-            `api/v1/cedar/device/?phone_model__phone_model_name=${item}&fields=device_width,device_height`
-        ).then(response => {
-          if (response.data.devices.length > 0) {
-            this.deviceInfo.device_width = response.data.devices[0].device_width
-            this.deviceInfo.device_height = response.data.devices[0].device_height
-          }
-        })
         this.$ajax.get(
-            `api/v1/cedar/phone_model/?phone_model_name=${item}&fields=x_border,y_border,x_dpi,width,height,ply`
+            `api/v1/cedar/phone_model/?phone_model_name=${item}&fields=x_border,y_border,x_dpi,width,height,ply,height_resolution,width_resolution`
         ).then(response => {
           if (response.data.phonemodels.length > 0){
             this.deviceInfo.x_border = response.data.phonemodels[0].x_border
@@ -252,7 +244,9 @@ export default {
             this.deviceInfo.width = response.data.phonemodels[0].width
             this.deviceInfo.height = response.data.phonemodels[0].height
             this.deviceInfo.ply = response.data.phonemodels[0].ply
-            let length = Math.sqrt(Math.pow(this.deviceInfo.device_height, 2) + Math.pow(this.deviceInfo.device_width, 2))
+            this.deviceInfo.width_resolution = response.data.phonemodels[0].width_resolution
+            this.deviceInfo.height_resolution = response.data.phonemodels[0].height_resolution
+            let length = Math.sqrt(Math.pow(this.deviceInfo.height_resolution, 2) + Math.pow(this.deviceInfo.width_resolution, 2))
             this.deviceInfo.screen_size = (length / response.data.phonemodels[0].x_dpi).toFixed(2)
           }
         })

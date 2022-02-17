@@ -197,6 +197,8 @@
                             y_border: deviceInfoDict.y_border,
                             x_dpi: deviceInfoDict.x_dpi,
                             y_dpi: deviceInfoDict.y_dpi,
+                            height_resolution:deviceInfoDict.height_resolution,
+                            width_resolution:deviceInfoDict.width_resolution
                         },
                         cabinet:this.CabinetId
                     }).then(response=>{
