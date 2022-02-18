@@ -8,12 +8,26 @@
             </CheckboxGroup>
         </Row>
         <Row style="margin-bottom: 16px">
-            <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
-                <span>机柜：</span>
-                <Select v-model="cabinetSelected"  style="width:200px;" clearable @on-change="onSelectedChange">
-                    <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</Option>
-                </Select>
-            </div>
+            <Col span="16">
+                <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
+                    <span>机柜：</span>
+                    <Select v-model="cabinetSelected"  style="width:200px;" clearable @on-change="onSelectedChange">
+                        <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</Option>
+                    </Select>
+                </div>
+            </Col>
+
+            <Col span="8">
+                <div style="float: right;width:300px;" v-click-outside="onClickOutSide">
+                    <Input v-model="deviceKeyword" clearable search enter-button="Search" placeholder="输入设备自定义名称" class="search-input"
+                           @on-focus="isShowHistory=true" @on-search="onDeviceSearch" @on-clear="deviceKeyword='';onPageChange(1)"/>
+                    <Card v-show="isShowHistory" style="position:absolute;width: 300px;z-index: 100;margin-top: 5px;">
+                        <Row>历史搜索<Icon style="float: right;" type="ios-trash-outline" size="18" @click="emptyHistory" /></Row>
+                        <div class="history-box" v-for="(item,index) in historyList" :key="index" @click="onSearchHistory(item)">{{ item }}</div>
+                        <Row v-show="historyList.length===0" style="margin-top: 10px;color: #cccccc;cursor: default;">暂无历史搜索记录</Row>
+                    </Card>
+                </div>
+            </Col>
         </Row>
         <Table ref="table" border :highlight-row="propHighLight" :columns="tableDeviceColumn" :data="data"
                @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
@@ -23,6 +37,7 @@
 
 <script>
     import CompDeviceDetail from "./CompDeviceDetail";
+    import clickOutside from '../../node_modules/view-design/src/directives/clickoutside';
 
 
     import utils from "../lib/utils"
@@ -55,6 +70,7 @@
     export default {
         name: "CompSubsidiaryDeviceList",
         components: { },
+        directives: { clickOutside },
         props:{
             propMultiSelect:{
                 type:Boolean,
@@ -158,6 +174,9 @@
                 phoneModelFilterList:[],
                 cabinetList:[],
                 cabinetSelected:null,
+                deviceKeyword:"",
+                isShowHistory:false,  //历史记录板块
+                historyList:[],  //历史记录数据（最多显示15条）
             }
         },
         methods: {
@@ -189,6 +208,10 @@
                     if(this.propCabinetId!==null)
                         cabinetCondition = "&cabinet=" + this.propCabinetId
                 }
+                let deviceKeywordCondition = ""
+                if(this.deviceKeyword.trim()!==""){
+                    deviceKeywordCondition = '&custom_name__icontains=' +  this.deviceKeyword.trim()
+                }
 
                 this.$ajax.get('api/v1/cedar/subsidiary_device/?fields=id,' +
                         'serial_number,' +
@@ -205,6 +228,7 @@
                         deviceStatusCondition +
                         phoneModelCondition +
                         cabinetCondition +
+                        deviceKeywordCondition +
                         "&ordering=id" )
                     .then(response=>{
                         this.dataTotal = parseInt(response.headers["total-count"])
@@ -306,6 +330,38 @@
                     this.cabinetSelected = null
                 this.onPageChange(1)
             },
+            onDeviceSearch(){
+                if(this.deviceKeyword.trim()===""){
+                    this.onPageChange(1)
+                    return
+                }
+                if(!this.historyList.includes(this.deviceKeyword.trim())){
+                    this.historyList.unshift(this.deviceKeyword.trim())
+                    if(this.historyList.length>15)
+                        this.historyList.pop()
+                    localStorage.setItem('subsidiary:historyList',JSON.stringify(this.historyList))
+                }else {
+                    let i = this.historyList.indexOf(this.deviceKeyword.trim())
+                    this.historyList.splice(i,1)
+                    this.historyList.unshift(this.deviceKeyword.trim())
+                    localStorage.setItem('subsidiary:historyList',JSON.stringify(this.historyList))
+                }
+                this.onPageChange(1)
+            },
+            //按自定义名称搜索部分  并且加上历史记录功能
+            onClickOutSide(e){
+                this.isShowHistory = false
+            },
+            //点击历史记录，直接搜索
+            onSearchHistory(item){
+                this.deviceKeyword = item
+                this.onPageChange(1)
+            },
+            //清空历史记录
+            emptyHistory(){
+                localStorage.removeItem('subsidiary:historyList');
+                this.historyList = []
+            }
 
         },
         watch:{
@@ -337,10 +393,23 @@
             this.deviceColumnChecked = localStorage.getItem("subsidiary-device-list:DEFAULT_DEVICE_COLUMN").split(",")
             this.onTableColumnChange()
             this.getCabinetList()
+            if(JSON.parse(localStorage.getItem('subsidiary:historyList'))){
+                this.historyList = JSON.parse(localStorage.getItem('subsidiary:historyList'))
+            }
         }
     }
 </script>
 
 <style scoped>
-
+    /deep/.search-input .ivu-input-icon-clear{
+        margin-right: 76px!important;
+    }
+    .history-box{
+        display: inline-block;
+        border-radius: 20px;
+        background: #f2f2f2;
+        padding:3px 10px;
+        margin: 10px 10px 0 0;
+        cursor: pointer;
+    }
 </style>

@@ -10,7 +10,7 @@
                 <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true" :prop-device-status="true" :propCabinetType="propCabinetType"
                                   @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
             </Modal>
-            <comp-device-list :prop-show-cabinet-select="false" :prop-show-select-number="false" ref="deviceList" :prop-add-mode="false" :prop-auto-load="false" :prop-filter-status="true"></comp-device-list>
+            <comp-device-list :prop-show-cabinet-select="false" :prop-show-select-number="false" :prop-show-search="false" ref="deviceList" :prop-add-mode="false" :prop-auto-load="false" :prop-filter-status="true"></comp-device-list>
             <Row type="flex" justify="center" style="margin-top: 16px;">
                 <Col>
                     <Button style="margin-right: 32px; width: 90px;" @click="onBackClick">返回</Button>
