@@ -23,8 +23,10 @@
             <Col span="16">
                 <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
                     <span>机柜：</span>
-                    <Select v-model="cabinetSelected"  style="width:200px;" clearable @on-change="onSelectedChange">
-                        <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</Option>
+                    <Select v-model="cabinetSelected" style="width:200px" clearable  @on-change="onSelectedChange">
+                        <OptionGroup v-for="types in cabinetList" :label="types.type">
+                            <Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id">{{ cabinets.cabinet_name }}</Option>
+                        </OptionGroup>
                     </Select>
                 </div>
                 <div v-show="propShowSelectNumber">
@@ -565,13 +567,17 @@
                 this.selection = selection;
             },
             getCabinetList() {
-                let tcabCondition = ""
-                if(this.propCabinetType){
-                    tcabCondition = '&type=' + this.propCabinetType
-                }
-                this.$ajax.get("api/v1/cedar/cabinet/?fields=cabinet_name,id&is_delete=False" + tcabCondition)
+                this.$ajax.get("api/v1/cedar/get_cabinet_type_info/?data_type=cabinet_type_data")
                     .then(response => {
-                        this.cabinetList = response.data.cabinets
+                        if(this.propCabinetType){
+                            for (let i = 0; i < response.data.length; i++) {
+                                if(response.data[i].type===this.propCabinetType){
+                                    this.cabinetList = [].concat(response.data[i])
+                                    break;
+                                }
+                            }
+                        } else
+                            this.cabinetList = response.data
                     })
                     .catch(error => {
                         if (config.DEBUG) console.log(error)

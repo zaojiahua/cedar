@@ -6,28 +6,25 @@
                            @on-change="onTableColumnChange">
                 <Checkbox v-for="item in deviceColumn" :label="item.key" :key="item.key">{{item.title}}</Checkbox>
             </CheckboxGroup>
+            <div style="float: right;width:300px;" v-click-outside="onClickOutSide">
+                <Input v-model="deviceKeyword" clearable search enter-button="Search" placeholder="输入设备自定义名称" class="search-input"
+                       @on-focus="isShowHistory=true" @on-search="onDeviceSearch" @on-clear="deviceKeyword='';onPageChange(1)"/>
+                <Card v-show="isShowHistory" style="position:absolute;width: 300px;z-index: 100;margin-top: 5px;">
+                    <Row>历史搜索<Icon style="float: right;" type="ios-trash-outline" size="18" @click="emptyHistory" /></Row>
+                    <div class="history-box" v-for="(item,index) in historyList" :key="index" @click="onSearchHistory(item)">{{ item }}</div>
+                    <Row v-show="historyList.length===0" style="margin-top: 10px;color: #cccccc;cursor: default;">暂无历史搜索记录</Row>
+                </Card>
+            </div>
         </Row>
         <Row style="margin-bottom: 16px">
-            <Col span="16">
-                <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
-                    <span>机柜：</span>
-                    <Select v-model="cabinetSelected"  style="width:200px;" clearable @on-change="onSelectedChange">
-                        <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</Option>
-                    </Select>
-                </div>
-            </Col>
-
-            <Col span="8">
-                <div style="float: right;width:300px;" v-click-outside="onClickOutSide">
-                    <Input v-model="deviceKeyword" clearable search enter-button="Search" placeholder="输入设备自定义名称" class="search-input"
-                           @on-focus="isShowHistory=true" @on-search="onDeviceSearch" @on-clear="deviceKeyword='';onPageChange(1)"/>
-                    <Card v-show="isShowHistory" style="position:absolute;width: 300px;z-index: 100;margin-top: 5px;">
-                        <Row>历史搜索<Icon style="float: right;" type="ios-trash-outline" size="18" @click="emptyHistory" /></Row>
-                        <div class="history-box" v-for="(item,index) in historyList" :key="index" @click="onSearchHistory(item)">{{ item }}</div>
-                        <Row v-show="historyList.length===0" style="margin-top: 10px;color: #cccccc;cursor: default;">暂无历史搜索记录</Row>
-                    </Card>
-                </div>
-            </Col>
+            <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
+                <span>机柜：</span>
+                <Select v-model="cabinetSelected" style="width:200px" clearable  @on-change="onSelectedChange">
+                    <OptionGroup v-for="types in cabinetList" :label="types.type">
+                        <Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id">{{ cabinets.cabinet_name }}</Option>
+                    </OptionGroup>
+                </Select>
+            </div>
         </Row>
         <Table ref="table" border :highlight-row="propHighLight" :columns="tableDeviceColumn" :data="data"
                @on-row-click="onRowClick" :loading="loading" @on-selection-change="onSelectionChange"></Table>
@@ -315,9 +312,9 @@
                 this.selection = selection;
             },
             getCabinetList() {
-                this.$ajax.get("api/v1/cedar/cabinet/?fields=cabinet_name,id")
+                this.$ajax.get("api/v1/cedar/get_cabinet_type_info/?data_type=cabinet_type_data")
                     .then(response => {
-                        this.cabinetList = response.data.cabinets
+                        this.cabinetList = response.data
                     })
                     .catch(error => {
                         if (config.DEBUG) console.log(error)
