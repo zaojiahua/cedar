@@ -298,7 +298,7 @@
                     "device,job,repeat_time," +
                     "finished_flag," +
                     "author,author.id,author.username," +
-                    "tboard_type," +
+                    "tboard_type,tboard_second_type," +
                     "success_ratio" +
                     "&ordering=-board_stamp" +
                     "&is_to_delete=False" +
@@ -482,6 +482,7 @@
                         repeat_time:this.againInfo.repeat_time,
                         board_name:this.againInfo.board_name,
                         tboard_type:this.againInfo.tboard_type,
+                        tboard_second_type:this.againInfo.tboard_second_type,
                         owner_label:sessionStorage.getItem('id')
                     })
                     .then(response=>{
