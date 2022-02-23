@@ -58,7 +58,8 @@
                 showJobDetail:false,
                 showDeviceDetail:false,
                 urlParam:{},
-                orderKey:"fail_num"
+                orderKey:"fail_num",
+                sortFlag:false,  //true为升序，false为降序
             }
         },
         methods:{
@@ -90,6 +91,7 @@
                 this.urlParam.tboard = this.propTboard
                 this.urlParam.offset = this.offset
                 this.urlParam.limit = this.pageSize
+                this.urlParam.reverse = this.sortFlag
                 // job 和 device 吃不同的参数
                 if(this.propType==='job'){
                     this.urlParam.filter_condition = "job"
@@ -143,9 +145,9 @@
             onSortChange(column){
                 this.orderKey = column.key
                 if(column.order==='desc'){  //倒 序
-                    this.urlParam.reverse = true
+                    this.sortFlag = true
                 }else {   // 正 序
-                    this.urlParam.reverse = false
+                    this.sortFlag = false
                 }
                 this.onPageChange(1)
             },
@@ -429,9 +431,9 @@
                 handler: function(val){
                     //重新获取值
                     if(this.propType==='job'){
-                        this.urlParam.reverse = false
+                        this.sortFlag = false
                     }else if(this.propType==='device'){
-                        this.urlParam.reverse = true
+                        this.sortFlag = true
                     }
                     this.onPageChange(1)
                 },
