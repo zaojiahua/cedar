@@ -172,6 +172,11 @@ export default {
 
       }).catch(reason => {
         this.spinShow = false;
+        if(reason.message==='Network Error'){
+          this.$Message.error({content:'添加失败！请检查电脑网络连接是否正确',duration: 10})
+          this.$Loading.error()
+          return
+        }
         if(reason.response.status>=500)
           this.$Message.error({content:'服务器错误',duration: 5})
         else
