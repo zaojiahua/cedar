@@ -75,6 +75,16 @@
                 <Button type="primary" :disabled="delJobIds.length===0" @click="continueDeleted">继续</Button>
             </Row>
         </Modal>
+
+        <Modal v-model="showImportFilter" :closable="false" :footer-hide="true" fullscreen>
+            <p style="margin-bottom: 10px"><b>导入以下用例将覆盖系统中已有的用例，请选择仍要继续导入的用例</b></p>
+            <Table :columns="tableColumns" :data="tableData" border ref="table"  :max-height="600"
+                   @on-row-click="onRowClick" @on-selection-change="onSelectChange"></Table>
+            <Row type="flex" justify="end" style="margin-top: 20px;">
+                <Button type="text" @click="cancelImport">取消</Button>
+                <Button type="primary" @click="importJob">导入( {{ jobImportCount }} )</Button>
+            </Row>
+        </Modal>
     </Card>
 </template>
 
@@ -106,6 +116,110 @@
                 showErrorInner:false,
                 errorInnerList:[],
                 delJobIds:[],
+                showImportFilter:false,
+                jobImportCount:0,
+                innerJobList:[],
+                jobList:[],
+                dirName :"",
+                tableColumns:[
+                    {
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+                    },
+                    {
+                        title: '导入用例',
+                        align: 'center',
+                        children: [
+                            {
+                                title: "状态",
+                                key: "contrast",
+                                width: 90,
+                                align: 'center',
+                                filters: [
+                                    {
+                                        label: '较新',
+                                        value: true
+                                    },
+                                    {
+                                        label: '较旧',
+                                        value: false
+                                    }
+                                ],
+                                filterMultiple: false,
+                                filterMethod (value, row) {
+                                    return row.contrast === value;
+                                }
+                            },
+                            {
+                                title: '用例类型',
+                                key: 'job_type',
+                                width: 120,
+                                align: 'center',
+                                filters: [
+                                    {
+                                        label: '功能',
+                                        value: 'Joblib'
+                                    },
+                                    {
+                                        label: '性能',
+                                        value: 'PerfJob'
+                                    },
+                                    {
+                                        label: '内嵌',
+                                        value: 'InnerJob'
+                                    }
+                                ],
+                                filterMultiple: false,
+                                filterMethod (value, row) {
+                                    return row.job_type === value;
+                                }
+                            },
+                            {
+                                title: '用例名称',
+                                key: 'import_job_name',
+                                align: 'center',
+                            },
+                            {
+                                title: '更新时间',
+                                width: 110,
+                                key: 'import_job_update_time',
+                                align: 'center',
+                            },
+                            {
+                                title: '维护人员',
+                                key: 'import_job_username',
+                                width: 120,
+                                align: 'center',
+                            },
+                        ]
+                    },
+                    {
+                        title: '已有用例',
+                        align: 'center',
+                        children: [
+                            {
+                                title: '用例名称',
+                                key: 'exist_job_name',
+                                align: 'center',
+                            },
+                            {
+                                title: '更新时间',
+                                width: 110,
+                                key: 'exist_job_update_time',
+                                align: 'center',
+                            },
+                            {
+                                title: '维护人员',
+                                width: 120,
+                                key: 'exist_job_username',
+                                align: 'center',
+                            }
+                        ]
+                    },
+                ],
+                tableData:[],
+                tableSelect:[]
             }
         },
         methods:{
@@ -240,13 +354,76 @@
             },
             handleUploadError( error, file){
                 if (config.DEBUG) console.log(error);
+                this.$refs.upload.clearFiles()
+                if(error.status>=500){
+                    this.$Message.error("服务器错误")
+                    return
+                }
                 this.$Message.error({content: file.description,duration: 6})
             },
             handleUploadSuccess(response, file, fileList){
+                if(response.diff_data.length>0){
+                    this.showImportFilter = true
+                    this.dirName = response.dir_name
+                    this.jobImportCount = response.no_diff_job_num
+                    this.innerJobList = response.no_diff_inner_job_list
+                    this.jobList = response.no_diff_job_list
+                    this.tableData = response.diff_data
+                    return
+                }
                 this.$Message.success("文件上传成功！")
                 setTimeout(function (){
                     location.reload()
                 },1000)
+            },
+            //导入冲突时，继续导入用例
+            importJob(){
+                let inner = []
+                let normal = []
+                this.tableSelect.forEach(item=>{
+                    if(item.job_type==='InnerJob')
+                        inner.push(item.import_job_name)
+                    else
+                        normal.push(item.import_job_name)
+                })
+                this.$ajax.post("api/v1/cedar/execute_job_import/",{
+                    dir_name:"fa",
+                    job_name_list:this.jobList.concat(normal),
+                    inner_job_name_list:this.innerJobList.concat(inner)
+                }).then(responsr=>{
+                    this.showImportFilter = false
+                    this.$Message.success("文件上传成功！")
+                    setTimeout(function (){
+                        location.reload()
+                    },1000)
+                }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error("服务器错误")
+                    else
+                        this.$Message.error({content: error.response.data.description,duration: 10})
+                })
+            },
+            //取消导入用例
+            cancelImport(){
+                this.showImportFilter = false
+                this.$refs.upload.clearFiles()
+                this.$ajax.post("api/v1/cedar/execute_job_import/",{
+                    dir_name:this.dirName,
+                    job_name_list:[],
+                    inner_job_name_list:[]
+                }).then(responsr=>{
+
+                }).catch(error=>{
+                    if(config.DEBUG) console.log(error)
+                })
+            },
+            // 表格的一些方法
+            onRowClick(row, index){
+                this.$refs.table.toggleSelect(index)
+            },
+            onSelectChange(select){
+                this.tableSelect = select
+                this.jobImportCount = this.jobImportCount + select.length
             },
             exportCase(){
                 let root = this;
