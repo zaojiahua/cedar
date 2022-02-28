@@ -179,6 +179,10 @@
             },
             propCabinetType:{
                 type:String,
+            },
+            propPerfCabinet:{
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -377,6 +381,9 @@
                 let cabinetTypeCondition = ""
                 if(this.propCabinetType){
                     cabinetTypeCondition = "&cabinet__type=" + this.propCabinetType
+                }
+                if(this.propPerfCabinet){
+                    cabinetTypeCondition = "&cabinet__type__in=ReefList[Tcab_5{%,%}Tcab_5L]"
                 }
                 let tboardCondition = ""
                 if(this.tboard.length>0)
