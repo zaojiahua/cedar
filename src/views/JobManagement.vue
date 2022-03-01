@@ -118,6 +118,7 @@
                 delJobIds:[],
                 showImportFilter:false,
                 jobImportCount:0,
+                no_diff_job_num:0,
                 innerJobList:[],
                 jobList:[],
                 dirName :"",
@@ -139,11 +140,11 @@
                                 filters: [
                                     {
                                         label: '较新',
-                                        value: true
+                                        value: '较新'
                                     },
                                     {
                                         label: '较旧',
-                                        value: false
+                                        value: '较旧'
                                     }
                                 ],
                                 filterMultiple: false,
@@ -159,15 +160,15 @@
                                 filters: [
                                     {
                                         label: '功能',
-                                        value: 'Joblib'
+                                        value: '功能'
                                     },
                                     {
                                         label: '性能',
-                                        value: 'PerfJob'
+                                        value: '性能'
                                     },
                                     {
                                         label: '内嵌',
-                                        value: 'InnerJob'
+                                        value: '内嵌'
                                     }
                                 ],
                                 filterMultiple: false,
@@ -362,32 +363,53 @@
                 this.$Message.error({content: file.description,duration: 6})
             },
             handleUploadSuccess(response, file, fileList){
+                this.dirName = response.dir_name
+                this.no_diff_job_num = response.no_diff_job_num
+                this.jobImportCount = response.no_diff_job_num
+                this.innerJobList = response.no_diff_inner_job_list
+                this.jobList = response.no_diff_job_list
                 if(response.diff_data.length>0){
                     this.showImportFilter = true
-                    this.dirName = response.dir_name
-                    this.jobImportCount = response.no_diff_job_num
-                    this.innerJobList = response.no_diff_inner_job_list
-                    this.jobList = response.no_diff_job_list
                     this.tableData = response.diff_data
+                    this.tableData.forEach(job=>{
+                        job.contrast = job.contrast ? '较新' : '较旧'
+                        if( job.job_type === "Joblib" )
+                            job.job_type = '功能'
+                        else if( job.job_type === "InnerJob" )
+                            job.job_type = '内嵌'
+                        else if( job.job_type === "PerfJob" )
+                            job.job_type = '性能'
+                    })
                     return
                 }
-                this.$Message.success("文件上传成功！")
-                setTimeout(function (){
-                    location.reload()
-                },1000)
+                this.$ajax.post("api/v1/cedar/execute_job_import/",{
+                    dir_name:this.dirName,
+                    job_name_list:this.jobList,
+                    inner_job_name_list:this.innerJobList
+                }).then(responsr=>{
+                    this.$Message.success("文件上传成功！")
+                    setTimeout(function (){
+                        location.reload()
+                    },1000)
+                }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error("服务器错误")
+                    else
+                        this.$Message.error({content: error.response.data.description,duration: 10})
+                })
             },
             //导入冲突时，继续导入用例
             importJob(){
                 let inner = []
                 let normal = []
                 this.tableSelect.forEach(item=>{
-                    if(item.job_type==='InnerJob')
+                    if(item.job_type==='内嵌')
                         inner.push(item.import_job_name)
                     else
                         normal.push(item.import_job_name)
                 })
                 this.$ajax.post("api/v1/cedar/execute_job_import/",{
-                    dir_name:"fa",
+                    dir_name:this.dirName,
                     job_name_list:this.jobList.concat(normal),
                     inner_job_name_list:this.innerJobList.concat(inner)
                 }).then(responsr=>{
@@ -423,7 +445,7 @@
             },
             onSelectChange(select){
                 this.tableSelect = select
-                this.jobImportCount = this.jobImportCount + select.length
+                this.jobImportCount = this.no_diff_job_num + select.length
             },
             exportCase(){
                 let root = this;
