@@ -240,9 +240,22 @@
                 </Row>
                 <p style="margin: 15px 0 30px 38px">{{ removeMsg }}</p>
                 <Row style="margin-left: 38px;">
-                    <Button type="primary" style="margin-right: 20px" @click="deleteAjax(device.device_label,true)">解绑资源后移除</Button>
-                    <Button type="info" style="margin-right: 20px" @click="deleteAjax(device.device_label,false)">仅移除设备</Button>
+                    <Button type="primary" style="margin-right: 20px" @click="deleteAjax(device.device_label,true,false)">解绑资源后移除</Button>
+                    <Button type="info" style="margin-right: 20px" @click="deleteAjax(device.device_label,false,false)">仅移除设备</Button>
                     <Button type="default" @click="showRemoveModal=false">取消</Button>
+                </Row>
+            </div>
+        </Modal>
+        <Modal v-model="showRemoveAgainModal" :closable="false" :footer-hide="true" width="420">
+            <div style="padding: 10px">
+                <Row>
+                    <Icon type="ios-help-circle" size="28" style="position: relative;top: 4px;color:#ff9900"/>
+                    <span style="font-size: 16px;margin-left: 10px;">提示！</span>
+                </Row>
+                <p style="margin: 15px 0 30px 38px">{{ removeAgainMsg }}</p>
+                <Row style="text-align: right">
+                    <Button type="text" @click="showRemoveAgainModal=false">取消</Button>
+                    <Button type="primary" @click="deleteAjax(device.device_label,false,true)">强制移除</Button>
                 </Row>
             </div>
         </Modal>
@@ -476,6 +489,8 @@
                 simOrder:null,
                 showRemoveModal:false,
                 removeMsg:"",
+                showRemoveAgainModal:false,
+                removeAgainMsg:"",
                 showRegisterModal:false,
                 registerDeviceInfo:{
                     android_version: "",
@@ -584,27 +599,37 @@
                         this.$Message.error({content:'请求失败',duration: 5})
                 })
             },
-            deleteAjax(device_id,unbind_flag=false){
+            deleteAjax(device_id,unbind_flag=false,force=false){
                 this.spinShow = true;
+                this.showRemoveAgainModal = false
                 this.$ajax.post("api/v1/coral/release_device/",{
                     ip_address:this.device.ip_address,
                     device_label:device_id,
                     unbind_resource:unbind_flag,
+                    force:force,
                     tempport:this.device.tempport
                 }).then(response=>{
                     this.spinShow = false;
                     if(response.data.status==="success"){
-                        this.$Message.success("该设备已从系统中移除");
+                        this.$Message.success({content:"该设备已从系统中移除",duration:3});
                         this.$emit('after-device-delete')
-                    } else{
-                        this.$Message.error("设备移除失败！");
                     }
                     this.showRemoveModal = false
                 }).catch(error=>{
+                    console.log(error.response)
                     this.spinShow = false;
                     this.showRemoveModal = false
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error({content:"设备移除失败！"+ error.response.data.message,duration:6});
+                    if( error.response.status === 400 ){
+                        if(error.response.data.custom_code==="102001"){
+                            this.showRemoveAgainModal = true
+                            this.removeAgainMsg = "设备无法连接"+ error.response.data.description +"服务器，需要强制从系统中移除吗"
+                            return
+                        }
+                        this.$Message.error({content:"设备移除失败",duration:3});
+                    }else {
+                        this.$Message.error({content:"设备移除失败",duration:3});
+                    }
                 })
             },
             // Load data
