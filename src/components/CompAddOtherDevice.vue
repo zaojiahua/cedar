@@ -36,28 +36,28 @@
           <b slot="label"><span class="need">*</span>屏幕尺寸</b>
           <Input style="width: 200px;margin-right: 5px" v-model="deviceInfo.screen_size"></Input><span>英寸</span>
         </FormItem>
-         <FormItem>
-            <b slot="label"><span class="need">*</span>Y 分辨率</b>
-            <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.height_resolution" placeholder="高度"></InputNumber>
-            <span>像素</span>
-         </FormItem>
-        <FormItem>
-          <b slot="label"><span class="need">*</span>X 分辨率</b>
-          <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.width_resolution" placeholder="宽度"></InputNumber>
-          <span>像素</span>
-        </FormItem>
-        <FormItem>
-          <b slot="label"><span class="need">*</span>X边框厚度</b>
-          <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.x_border" :min="0"
-                       placeholder="请输入手机左侧边框厚度"></InputNumber>
-          <span>毫米</span>
-        </FormItem>
-        <FormItem>
-          <b slot="label"><span class="need">*</span>Y边框厚度</b>
-          <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.y_border"
-                       placeholder="请输入手机顶部边框厚度"></InputNumber>
-          <span>毫米</span>
-        </FormItem>
+         <!--<FormItem>-->
+            <!--&lt;!&ndash;<b slot="label"><span class="need">*</span>Y 分辨率</b>&ndash;&gt;-->
+            <!--<InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.height_resolution" placeholder="高度"></InputNumber>-->
+            <!--<span>像素</span>-->
+         <!--</FormItem>-->
+        <!--<FormItem>-->
+          <!--<b slot="label"><span class="need">*</span>X 分辨率</b>-->
+          <!--<InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.width_resolution" placeholder="宽度"></InputNumber>-->
+          <!--<span>像素</span>-->
+        <!--</FormItem>-->
+        <!--<FormItem>-->
+          <!--<b slot="label"><span class="need">*</span>X边框厚度</b>-->
+          <!--<InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.x_border" :min="0"-->
+                       <!--placeholder="请输入手机左侧边框厚度"></InputNumber>-->
+          <!--<span>毫米</span>-->
+        <!--</FormItem>-->
+        <!--<FormItem>-->
+          <!--<b slot="label"><span class="need">*</span>Y边框厚度</b>-->
+          <!--<InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.y_border"-->
+                       <!--placeholder="请输入手机顶部边框厚度"></InputNumber>-->
+          <!--<span>毫米</span>-->
+        <!--</FormItem>-->
         <FormItem>
           <b slot="label"><span class="need">*</span>机型高度</b>
           <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.height"></InputNumber>
@@ -137,8 +137,8 @@ export default {
     },
     addDevice() {
       if (this.addedDeviceName === "" || this.phoneModel === "" || this.deviceInfo.screen_size === ""
-          || this.deviceInfo.x_border === null || this.deviceInfo.width_resolution === null
-          || this.deviceInfo.y_border === null || this.deviceInfo.height_resolution === null
+          // || this.deviceInfo.x_border === null || this.deviceInfo.width_resolution === null
+          // || this.deviceInfo.y_border === null || this.deviceInfo.height_resolution === null
           || this.deviceInfo.height === null || this.deviceInfo.width === null|| this.deviceInfo.ply === null) {
         this.$Message.warning("带*项信息不能为空！")
         return
@@ -149,10 +149,10 @@ export default {
           {
             device_name: this.addedDeviceName,
             phone_model_name: this.phoneModel,
-            x_border: this.deviceInfo.x_border,
-            width_resolution: this.deviceInfo.width_resolution,
-            y_border: this.deviceInfo.y_border,
-            height_resolution: this.deviceInfo.height_resolution,
+            // x_border: this.deviceInfo.x_border,
+            // width_resolution: this.deviceInfo.width_resolution,
+            // y_border: this.deviceInfo.y_border,
+            // height_resolution: this.deviceInfo.height_resolution,
             screen_size: this.deviceInfo.screen_size,
             width:this.deviceInfo.width,
             height:this.deviceInfo.height,
