@@ -25,7 +25,8 @@
           <b slot="label"><span class="need">*</span>自定义名称</b>
           <Input v-model="addedDeviceName"></Input>
         </FormItem>
-            <FormItem label="设备型号" prop="test_area">
+            <FormItem prop="test_area">
+              <b slot="label"><span class="need">*</span>设备型号</b>
               <Select  @on-change="checkPhoneModelInfo" placeholder="请选择或新建设备型号" filterable allow-create>
                 <Option v-for="item in phoneModelList" :value="item">{{ item}}</Option>
               </Select>
@@ -58,12 +59,12 @@
           <span>毫米</span>
         </FormItem>
         <FormItem>
-          <b slot="label">机型高度</b>
+          <b slot="label"><span class="need">*</span>机型高度</b>
           <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.height"></InputNumber>
           <span>毫米</span>
         </FormItem>
         <FormItem>
-          <b slot="label">机型宽度</b>
+          <b slot="label"><span class="need">*</span>机型宽度</b>
           <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.width"></InputNumber>
           <span>毫米</span>
         </FormItem>
@@ -137,7 +138,8 @@ export default {
     addDevice() {
       if (this.addedDeviceName === "" || this.phoneModel === "" || this.deviceInfo.screen_size === ""
           || this.deviceInfo.x_border === null || this.deviceInfo.width_resolution === null
-          || this.deviceInfo.y_border === null || this.deviceInfo.height_resolution === null || this.deviceInfo.ply === null) {
+          || this.deviceInfo.y_border === null || this.deviceInfo.height_resolution === null
+          || this.deviceInfo.height === null || this.deviceInfo.width === null|| this.deviceInfo.ply === null) {
         this.$Message.warning("带*项信息不能为空！")
         return
       }
