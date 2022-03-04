@@ -68,6 +68,7 @@
                     <FormItem>
                         <b slot="label">运行轮次</b>
                         <InputNumber v-model="tboardRepeatTime" :min="1" :precision="0"></InputNumber>
+                        <span style="margin: 0 10px 0 20px">用例顺序随机</span><i-switch v-model="isRandom"/>
                     </FormItem>
                     <FormItem>
                         <b slot="label">已选设备</b>
@@ -197,6 +198,7 @@
                 //已选定的device和job 的label集合
                 deviceLabelList:[],
                 jobLabelList:[],
+                isRandom:false,
             }
         },
         methods: {
@@ -349,6 +351,7 @@
                             job_label_list:this.jobLabelList,
                             repeat_time:this.tboardRepeatTime,
                             board_name:this.tboardName,
+                            job_random_order:this.isRandom,
                             owner_label:this.userId
                         })
                         .then(response=>{

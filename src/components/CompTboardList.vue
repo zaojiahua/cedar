@@ -297,6 +297,7 @@
                     "board_name," +
                     "device,job,repeat_time," +
                     "finished_flag," +
+                    "job_random_order," +
                     "author,author.id,author.username," +
                     "tboard_type,tboard_second_type," +
                     "success_ratio" +
@@ -483,6 +484,7 @@
                         board_name:this.againInfo.board_name,
                         tboard_type:this.againInfo.tboard_type,
                         tboard_second_type:this.againInfo.tboard_second_type,
+                        job_random_order:this.againInfo.job_random_order,
                         owner_label:sessionStorage.getItem('id')
                     })
                     .then(response=>{
