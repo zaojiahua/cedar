@@ -525,14 +525,14 @@
                         //未绑定附加资源
                         this.$Modal.confirm({
                             title: "警告！",
-                            content: "确认要移除设备吗？",
+                            content: "确认要移除设备吗？（"+ device_status +"状态）",
                             onOk() {
                                 detailComp.deleteAjax(device_id,false)
                             }
                         })
                     }else {
                         //绑定了附加资源
-                        this.removeMsg = "设备绑定了附加资源，请选择要进行的操作。"
+                        this.removeMsg = "设备绑定了附加资源，请选择要进行的操作。（"+ device_status +"状态）"
                         this.showRemoveModal = true
                     }
                 }
