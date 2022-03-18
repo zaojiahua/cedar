@@ -182,7 +182,7 @@
                 filterData: {},
                 checked: [],
                 defaultPhoneModelList:{},
-                filterType:true,
+                filterType:false,
             }
 
         },
@@ -294,21 +294,25 @@
                     "last_name" +
                     "&ordering=username"
                 ),
-                this.$ajax.get("api/v1/cedar/job_label_order/?label_name=JobTestArea"),
-                this.$ajax.get("api/v1/cedar/job_label_order/?label_name=CustomTag"),
+                this.$ajax.get(
+                    "api/v1/cedar/job_test_area/?fields=" +
+                    "id," +
+                    "description" +
+                    "&ordering=description"
+                ),
+                this.$ajax.get(
+                    "api/v1/cedar/custom_tag/?fields=" +
+                    "id," +
+                    "custom_tag_name" +
+                    "&ordering=custom_tag_name"
+                ),
                 this.$ajax.get('api/v1/cedar/get_cabinet_type_info/?data_type=cabinet_type_data')
             ]
 
             this.$ajax.all(requests)
                 .then(this.$ajax.spread((phone_model_resp, android_version_resp, rom_version_resp, reefuser_resp, job_test_area_resp, custom_tag_resp,cabinet_type_resp) => {
-                    let job_test_area_list = utils.validate(getOrderSerializer, job_test_area_resp.data)
-                    let custom_tag_list = utils.validate(getOrderSerializer, custom_tag_resp.data)
-                    job_test_area_list.forEach(item=>{
-                        item.description = item.name
-                    })
-                    custom_tag_list.forEach(item=>{
-                        item.custom_tag_name = item.name
-                    })
+                    let job_test_area_list = utils.validate(getJobTestAreaSerializer, job_test_area_resp.data).jobtestareas
+                    let custom_tag_list = utils.validate(getCustomTagSerializer, custom_tag_resp.data).customtags
                     this.filterData = {
                         phone_model: utils.validate(getPhoneModelSerializer, phone_model_resp.data).phonemodels,
                         job_test_area: job_test_area_list,
