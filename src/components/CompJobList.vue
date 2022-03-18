@@ -106,13 +106,13 @@
                         title: "用例名称",
                         key: "job_name",
                         sortable: true,
-                        width:200
+                        minWidth:200
                     },
-                    {
-                        title: "caseNo",
-                        key: "case_number",
-                        sortable: true
-                    },
+                    // {
+                    //     title: "caseNo",
+                    //     key: "case_number",
+                    //     sortable: true
+                    // },
                     this.propShowJobType ? {
                         title: "用例类型",
                         key: "job_type",
@@ -172,11 +172,15 @@
                         title: "自定义标签",
                         key: "display_custom_tag"
                     },
+                    // {
+                    //     title: "priority",
+                    //     key: "priority",
+                    //     sortable: true,
+                    //     width:105
+                    // },
                     {
-                        title: "priority",
-                        key: "priority",
-                        sortable: true,
-                        width:105
+                        title: "维护人员",
+                        key: "username",
                     },
                     {
                         title: "更新时间",
@@ -210,6 +214,7 @@
                 this.dataTotal = parseInt(response.headers["total-count"])
                 this.data = utils.validate(getJobSerializer, response.data).jobs
                 this.data.forEach(job => {
+                    job.username = job.author.username
                     if( job.job_type === "Joblib" )
                         job.job_type = '功能'
                     else if( job.job_type === "InnerJob" )
@@ -273,6 +278,7 @@
                     "custom_tag," +
                     "custom_tag.id," +
                     "custom_tag.custom_tag_name," +
+                    "author,author.username," +
                     "updated_time" +
                     "&job_deleted=False" +
                     this.filterUrlParam +
@@ -516,9 +522,10 @@
                 this.columns.push({
                     align: "center",
                     title: "删除",
+                    width:80,
                     slot: "delete"
                 })
-                this.columns.splice(3, 5)
+                this.columns.splice(2, 5)
             }
         },
         beforeCreate(){
