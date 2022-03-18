@@ -42,7 +42,7 @@
                         </Tag>
                     </Row>
                     <Row style="margin-top: 16px;">
-                        <Button @click="checked=[]; onChange()">清空</Button>
+                        <Button @click="onClearChange">清空</Button>
                     </Row>
                 </div>
             </div>
@@ -109,6 +109,10 @@
         name: "CompFilterSwitch",
         props:{
             propTboard:{
+                type:Number,
+                default:null
+            },
+            propTestGather:{
                 type:Number,
                 default:null
             }
@@ -191,6 +195,12 @@
             onChange() {
                 let selectedData = this.selectedParamsDetail(this._jobRender())
                 this.$emit('on-change', selectedData)
+                this.$emit('on-url-change', this.selectedUrlDetail(this._jobRender()))
+            },
+            // 清 空 筛 选 条 件
+            onClearChange(){
+                this.checked=[];
+                this.onChange()
             },
             //把选好的条件整理成url参数形式
             selectedParamsDetail(selected){
@@ -225,13 +235,55 @@
                     conditions.contains= this.keyword.trim()
                 return conditions
             },
+            //把选好的条件整理成url字符串形式  -->  通用接口
+            selectedUrlDetail(selected){
+                let conditions = []
+                Object.keys(selected).forEach(key=>{
+                    let condition = []  // store id data like [1,2,3]
+                    if(key==="type"){    //key = cabinet_type时，condition=>name
+                        selected[key].forEach(item=>{
+                            condition.push(item.type)
+                        })
+                    }else {
+                        selected[key].forEach(item=>{
+                            condition.push(item.id)
+                        })
+                    }
+                    // 不统一的命名额外处理
+                    if(key==="job_test_area") key = "test_area"
+                    else if(key==="phone_model") key = "phone_models"
+                    else if(key==="reefuser") key = "author"
+
+                    condition.forEach(item=>{
+                        item = key+"__id="+item
+                    })
+
+                    let conditionStr = ""
+                    if(key==="type"){
+                        conditionStr = "&cabinet_type__in=ReefList["+condition.join("{%,%}")+"]"
+                    }else {
+                        conditionStr = "&"+key+"__id__in="+"ReefList["+condition.join("{%,%}")+"]"
+                    }
+                    conditions.push(conditionStr)
+                })
+
+                if(this.keyword.trim())
+                    conditions.push("&job_name__icontains="+encodeURIComponent(this.keyword.trim()))
+                return conditions.join("")
+            },
             // 折叠/展开搜索框下方的标签页与筛选条件总览
             handleCollapse () {
                 this.collapseIsOpen = !this.collapseIsOpen
             },
             //获取筛选面板数据信息
             getFilterData(){
-                this.$ajax.get('api/v1/cedar/data_view_label_filter/?tboard='+this.propTboard)
+                let idCondition = ""
+                if(this.propTboard)
+                    idCondition = 'tboard='+this.propTboard
+                if(this.propTestGather)
+                    idCondition = 'test_gather='+this.propTestGather
+
+                this.$ajax.get('api/v1/cedar/data_view_label_filter/?'+idCondition)
                     .then(response=>{
                         this.filterData = {
                             phone_model: utils.validate(getPhoneModelSerializer.phonemodels, response.data.PhoneModel),
@@ -254,7 +306,14 @@
                     //重新获取筛选框的值
                     this.getFilterData()
                 },
-                immediate: true
+                // immediate: true
+            },
+            propTestGather:{
+                handler: function(val){
+                    //重新获取筛选框的值
+                    this.getFilterData()
+                },
+                // immediate: true
             }
         },
         created() {

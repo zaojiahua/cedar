@@ -1,12 +1,6 @@
 <template>
     <div>
-        <Table :columns="columns" :data="data" border @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
-            <template slot-scope="{row, index}" slot="delete">
-                <Button type="default" shape="circle" icon="md-trash"
-                        @click="deleteJob(index,row)">
-                </Button>
-            </template>
-        </Table>
+        <Table ref="table" :columns="columns" :data="data" border @on-row-click="onRowClick" @on-selection-change="onSelectionChange" @on-sort-change="onSortChange"></Table>
         <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
     </div>
 </template>
@@ -24,6 +18,9 @@
                     description: "string"
                 }
             ],
+            author:{
+                username:"string"
+            },
             custom_tag: [
                 {
                     id: "number",
@@ -39,10 +36,10 @@
     import config from "../lib/config"
     export default{
         props:{
-          propShowRemove:{
-              type:Boolean,
-              default:false
-          }
+            propMultiSelect:{
+                type:Boolean,
+                default:true
+            }
         },
         data(){
             return{
@@ -53,13 +50,8 @@
                         width:250
                     },
                     {
-                        title: "caseNo",
-                        key: "case_number",
-                    },
-                    {
                         title: "用例类型",
                         key: "job_type",
-                        sortable: true
                     },
                     {
                         title: "测试用途",
@@ -78,8 +70,13 @@
                         key: "cabinet_type",
                     },
                     {
+                        title: "维护人员",
+                        key: "username",
+                    },
+                    {
                         title: "更新时间",
                         key: "updated_time",
+                        sortable:'custom'
                     }
                 ],
                 data:[],
@@ -91,9 +88,14 @@
                 selectionList:{},
                 testSetId:null,
                 pageSize:config.DEFAULT_PAGE_SIZE,
+                urlParam:"",
+                sortCondition: "&ordering=-updated_time",
             }
         },
         methods:{
+            _setUrlParam(param){
+                this.urlParam = param
+            },
             refresh(id,reset){
                 if(reset){
                     this.offset = 0
@@ -111,14 +113,17 @@
                     "custom_tag," +
                     "custom_tag.id," +
                     "custom_tag.custom_tag_name," +
+                    "author,author.username," +
                     "updated_time," +
                     "process_time," +
                     "cabinet_type" +
                     "&testgather=" + id +
-                    "&ordering=-updated_time" +
+                    this.urlParam +
+                    this.sortCondition +
                     "&limit=" + this.pageSize +
                     "&offset=" + this.offset)
                     .then(response=>{
+                        this.currentPageSelection = {}
                         this.dataTotal = parseInt(response.headers["total-count"])
                         this.data = utils.validate(getJobSerializer, response.data.jobs)
                         this.data.forEach(job => {
@@ -133,6 +138,14 @@
 
                             job.display_job_test_area = job_test_areas.join(', ')
                             job.display_custom_tag = custom_tags.join(', ')
+                            job.username = job.author.username
+
+                            if( job.job_type === "Joblib" )
+                                job.job_type = '功能'
+                            else if( job.job_type === "InnerJob" )
+                                job.job_type = '内嵌'
+                            else if( job.job_type === "PerfJob" )
+                                job.job_type = '性能'
 
                             if(job.process_time){
                                 //计算分钟数
@@ -143,19 +156,39 @@
                                 job.process_time = minutes+" min "+seconds+" s"
                             }else
                                 job.process_time = "暂无数据"
+
+                            /* 将之前已经选中的选项重新勾选 */
+                            this.selection.forEach(selected=>{
+                                if (job.id === selected.id){
+                                    job._checked = true
+                                    this.$set(this.currentPageSelection, job.id, 'exist')
+                                }
+                            })
                         })
                     }).catch(error=>{
                         if (config.DEBUG) console.log(reason)
                         this.$Message.error("用例信息获取失败")
                 })
             },
-            onRowClick(row){
-                this.$emit("on-row-click",row)
+            onRowClick(row,index){
+                this.$emit("on-row-click",row,index)
             },
             onPageChange(page) {
                 this.offset = this.pageSize * (page-1)
                 this.currentPage = page
                 this.refresh(this.testSetId)
+            },
+            //排序
+            onSortChange(column){
+                if(column.order==='asc'){  //正 序
+                    this.sortCondition = "&ordering=updated_time"
+                }else {  // 倒 序
+                    this.sortCondition = "&ordering=-updated_time"
+                }
+                this.onPageChange(1)
+            },
+            toggleSelect(index){
+                this.$refs.table.toggleSelect(index)
             },
             getData() {
                 return this.data
@@ -163,7 +196,7 @@
             getSelection() {                   //转换成id对比以后可以不用forEach
                 return this.selection
             },
-            // 以后用例列表如果多选可能会用到 => 现在赞暂时不看
+            //  用例列表 多选
             onSelectionChange(selection){
                 selection.forEach((value) => {
                     if (this.selectionList[value.id] === undefined ) {
@@ -191,40 +224,27 @@
                 this.selection = _.values(this.selectionList)
                 this.$emit("get-job-count",this.selection.length)
             },
-            deleteJob(index,row){
-                let root = this
-                this.$Modal.confirm({
-                    title: "确认移除该用例吗?",
-                    onOk() {
-                        let id = []
-                        id.push(row.id)
-                        this.$ajax.post('api/v1/cedar/update_test_gather/',{
-                            id: root.testSetId,
-                            job_ids: id,
-                            operate: "delete"
-                        }).then(response=>{
-                            this.$Message.success("用例移除成功")
-                            root.data.splice(index, 1)
-                            root.$emit("on-remove-success")
-                        }).catch(error=>{
-                            if(config.DEBUG) console.log(error)
-                            this.$Message.error({content:"用例移除失败"+error.response.data.description,duration:6})
-                        })
-                    }
+            //取消全选
+            resetJobList(){
+                this.selectionList = {}
+                this.currentPageSelection = {}
+                this.selection = []
+                this.$emit("get-job-count",this.selection.length)
+                this.data.forEach(job=>{
+                    this.$set(job,"_checked",false)
+                    this.$delete(job, "_checked")
                 })
-            },
+            }
 
         },
         mounted(){
             this.pageSize = utils.getPageSize();
-            if (this.propShowRemove){
-                this.columns.push({
-                    title: "移除",
-                    slot: "delete",
-                    align:"center",
-                    width:100
+            if (this.propMultiSelect)
+                this.columns.splice(0, 0, {
+                    type: 'selection',
+                    width: 60,
+                    align: 'center'
                 })
-            }
         }
     }
 </script>

@@ -1,17 +1,34 @@
 <template>
     <div>
-        <Table :columns="columns" :data="data" border @on-row-click="onRowClick" @on-selection-change="onSelectionChange"></Table>
+        <Table :columns="columns" :data="data" border @on-row-click="onRowClick" @on-selection-change="onSelectionChange"
+               @on-cell-click="onCellClick" @on-sort-change="onSortChange"></Table>
         <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
 
         <Modal v-model="showViewModal" width="90" :mask-closable="false" :footer-hide="true">
-            <Row style="text-align-last: center;margin-top: 20px;">
-                <h2>测试集：{{ viewName }}</h2>
-            </Row>
-            <Row style="text-align: right;margin: 10px 0">
-                <Button @click="onRefreshJobList" style="margin-right: 16px">刷新列表</Button>
-                <Button type="primary" @click="openJobModal">添加用例</Button>
-            </Row>
-            <comp-test-set-job-table ref="testSetJobList" :prop-show-remove="true" @on-remove-success="onRemoveSuccess"></comp-test-set-job-table>
+            <div v-if="showViewModal">
+                <Row style="text-align-last: center;margin-bottom: 15px;">
+                    <h2>测试集：{{ viewName }}</h2>
+                </Row>
+                <comp-filter-switch ref="filterSwitch" :prop-test-gather="viewId" @on-url-change="onJobFilterParams"></comp-filter-switch>
+                <Row style=";margin: 10px 0">
+                    <Col style="text-align: right">
+                        <Button type="primary" @click="openJobModal">添加用例</Button>
+                        <Button  style="margin: 0 15px;" type="warning" @click="cancelJobList">取消选择（{{jobNumbers}}）</Button>
+                        <Dropdown trigger="click">
+                            <Button>
+                                更多操作
+                                <Icon type="ios-arrow-down"></Icon>
+                            </Button>
+                            <DropdownMenu slot="list" style="text-align: left;">
+                                <!--<span @click="onRefreshJobList"><DropdownItem>刷新列表</DropdownItem></span>-->
+                                <span @click="onRemoveJobs"><DropdownItem>批量移除</DropdownItem></span>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </Col>
+                </Row>
+                <comp-test-set-job-table ref="testSetJobList" :prop-show-remove="true" @get-job-count="getJobNumbers" @on-row-click="onSelectTestSetJobRowClick"></comp-test-set-job-table>
+            </div>
+
         </Modal>
 
         <Modal v-model="showSelectJobModal" v-if="showSelectJobModal" :fullscreen="true" :transfer="false" :closable="false">
@@ -29,9 +46,16 @@
     import config from "../lib/config"
     import CompTestSetJobTable from "../components/CompTestSetJobTable"
     import CompTestSetAddJob from "../components/CompTestSetAddJob"
+    import CompFilterSwitch from './CompFilterSwitch'
+
 
     export default{
-        components:{ CompTestSetJobTable, CompTestSetAddJob },
+        components:{ CompTestSetJobTable, CompTestSetAddJob, CompFilterSwitch },
+        props:{
+            propProject:{
+                type: Number,
+            }
+        },
         data(){
             return{
                 columns: [
@@ -46,6 +70,8 @@
                     },
                     {
                         title: '用例数量',
+                        width: 100,
+                        align: 'center',
                         key: 'job_count'
                     },
                     {
@@ -58,7 +84,8 @@
                     },
                     {
                         title: '更新时间',
-                        key: 'update_time'
+                        key: 'update_time',
+                        sortable:'custom'
                     },
                     {
                         title:"操作",
@@ -67,21 +94,12 @@
                         align: 'center',
                         render: (h, params) => {
                             return h('div', [
-                                h('span', {
+                                h('div', {
                                     style: {
                                         color:"#1bbc9c",
+                                        padding:"15px 0",
                                         cursor:"pointer"
                                     },
-                                    on: {
-                                        click: () => {
-                                            event.stopPropagation()
-                                            this.showViewModal = true
-                                            this.viewName = params.row.name
-                                            this.viewId = params.row.id
-                                            this.$refs.testSetJobList.refresh(params.row.id,true)
-                                            // this.showUserInfo(params.index);
-                                        }
-                                    }
                                 }, '查看用例')
                             ]);
                         }
@@ -101,16 +119,23 @@
                 selectJobCount:0,
                 pageSize:config.DEFAULT_PAGE_SIZE,
                 keywords: "",
+                jobNumbers: 0,
+                sortCondition:"&ordering=-update_time"
             }
         },
         methods:{
             refresh(){
+                let projectCondition = ""
+                if(this.propProject!==-1)
+                    projectCondition = "&testproject=" + this.propProject
                 let keyCondition = ""
                 if(this.keywords.length>0)
                     keyCondition = "&name__icontains=" +  this.keywords
-                this.$ajax.get("api/v1/cedar/test_gather/?ordering=-update_time" +
+                this.$ajax.get("api/v1/cedar/test_gather/?" +
                     "&limit=" + this.pageSize +
                     "&offset=" + this.offset +
+                    this.sortCondition +
+                    projectCondition +
                     keyCondition)
                     .then(response=>{
                         this.currentPageSelection = {}
@@ -141,6 +166,31 @@
             onRowClick(row){
                 this.$emit("on-row-click",row)
             },
+            onSortChange(column){
+                if(column.order==='asc'){  //正 序
+                    this.sortCondition = "&ordering=update_time"
+                }else {  // 倒 序
+                    this.sortCondition = "&ordering=-update_time"
+                }
+                this.onPageChange(1)
+            },
+            // 点 击 某 一 个 单 元 格
+            onCellClick(row,column){
+                if(column.key==="action"){
+                    event.stopPropagation()
+                    this.showViewModal = true
+                    this.viewName = row.name
+                    this.viewId = row.id
+                    this.jobNumbers = 0
+                    this.$nextTick(function () {
+                        this.$refs.testSetJobList.refresh(row.id,true)
+                    })
+                }
+            },
+            //  测 试 集 里 面 的 用 例 可 点 击 行 选 中
+            onSelectTestSetJobRowClick(data, index){
+                this.$refs.testSetJobList.toggleSelect(index)
+            },
             onPageChange(page) {
                 this.offset = this.pageSize * (page-1)
                 this.currentPage = page
@@ -156,6 +206,7 @@
                 this.selectionList = {}
                 this.currentPageSelection = {}
                 this.selection = []
+                this.$emit("get-test-count",0)
             },
             onSelectionChange(selection){
                 selection.forEach((value) => {
@@ -182,6 +233,7 @@
                 }
                 //对象提取所有的value
                 this.selection = _.values(this.selectionList)
+                this.$emit("get-test-count",this.selection.length)
             },
             getJobSelection(){
                 let jobSelectList = this.$refs.addJob.getSelection()
@@ -201,6 +253,7 @@
                     this.$Message.success("用例添加成功")
                     this.showSelectJobModal = false
                     this.$refs.testSetJobList.refresh(this.viewId)
+                    this.$refs.filterSwitch.getFilterData()
                     this.refresh()
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
@@ -211,15 +264,67 @@
                 this.showSelectJobModal = true
                 this.selectJobCount = 0
             },
-            // 用例移除以后刷新外层测试集列表
-            onRemoveSuccess(){
-                this.refresh()
-            },
             onRefreshJobList(){
                 this.$refs.testSetJobList.onPageChange(1)
             },
+            //添加job到测试集时显示的job数量
             getJobCount(count){
                 this.selectJobCount = count
+            },
+            //------------  分  界  线  ------------ 以下是对当前测试集中的job的操作
+            //当前用例集下要操作（删除）的job的数量
+            getJobNumbers(count){
+                this.jobNumbers = count
+            },
+            //取消全选 ==> 当前用例集下要操作（删除）的job
+            cancelJobList(){
+                this.$refs.testSetJobList.resetJobList()
+            },
+            // job 筛选
+            onJobFilterParams(params){
+                this.$refs.testSetJobList._setUrlParam(params)
+                this.$refs.testSetJobList.onPageChange(1)
+            },
+            // 批  量  移  除  用  例
+            onRemoveJobs(){
+                if(this.jobNumbers===0){
+                    this.$Message.info("至少选择一个用例！")
+                    return
+                }
+               let jobList = this.$refs.testSetJobList.getSelection();
+                let ids = [];
+                jobList.forEach(job=>{
+                    ids.push(job.id);
+                })
+                let root = this
+                this.$Modal.confirm({
+                    title: "确认移除选中的用例吗?",
+                    onOk() {
+                        this.$ajax.post('api/v1/cedar/update_test_gather/',{
+                            id: root.viewId,
+                            job_ids: ids,
+                            operate: "delete"
+                        }).then(response=>{
+                            root.$Message.success("用例移除成功")
+                            root.refresh()   // 用例移除以后刷新外层测试集列表
+                            root.$refs.testSetJobList.onPageChange(1)  //刷新当前的用例列表
+                            root.$refs.testSetJobList.resetJobList() //  重置当前用例列表的已选数据
+                            root.$refs.filterSwitch.onClearChange()
+                            root.$refs.filterSwitch.getFilterData() //刷新当前的筛选列表
+                        }).catch(error=>{
+                            if(config.DEBUG) console.log(error)
+                            this.$Message.error({content:"用例移除失败"+error.response.data.description,duration:6})
+                        })
+                    }
+                })
+            },
+        },
+        watch:{
+            propProject:{
+                handler:function () {
+                    this.resetSelection()
+                    this.onPageChange(1)
+                }
             }
         },
         mounted(){

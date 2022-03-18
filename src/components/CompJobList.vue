@@ -7,11 +7,11 @@
                            @on-select="jobSearch"
                            @on-search="handleSearch"
                            @on-clear="clearSearch"
-                           @keyup.enter.native="jobSearch(keyword)"
+                           @keyup.enter.native="jobSearch(keyword.trim())"
                            placeholder="Enter something...">
                 <Option v-for="(item,index) in filterJobNameList" :value="item" :key="index">{{ item }}</Option>
             </AutoComplete>
-            <Button style="height: 32px;" @click="jobSearch(keyword)" type="primary">search</Button>
+            <Button style="height: 32px;" @click="jobSearch(keyword.trim())" type="primary">search</Button>
         </Row>
         <Table ref="table" border :columns="columns" :data="data" @on-row-click="onRowClick" @on-selection-change="onSelectionChange">
             <template slot-scope="{row, index}" slot="counter">
@@ -136,7 +136,7 @@
                         filterRemote (value) {
                             this.jobType = value[0] || ''
                             localStorage.setItem('COMPJOBLIST:FILTER_JOB_TYPE', this.jobType)
-                            this.jobSearch(this.keyword)
+                            this.jobSearch(this.keyword.trim())
                         }
                     } :  this.propNotInner ? {
                         title: "用例类型",
@@ -157,7 +157,7 @@
                         filterRemote (value) {
                             this.jobType = value[0] || ''
                             console.log(this.jobType)
-                            this.jobSearch(this.keyword)
+                            this.jobSearch(this.keyword.trim())
                         }
                     } : {
                         title: "用例类型",
@@ -288,8 +288,8 @@
                         "&offset=" + this.offset
                 }
 
-                if(this.propShowSearch&&this.keyword!==""){
-                    url = url + "&job_name__icontains=" +  this.keyword;
+                if(this.propShowSearch&&this.keyword.trim()!==""){
+                    url = url + "&job_name__icontains=" +  encodeURIComponent(this.keyword.trim());
                 }
                 this.$ajax.get(url)
                     .then(this._responseHandle)

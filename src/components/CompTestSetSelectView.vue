@@ -6,7 +6,7 @@
         </div>
         <div class="container_right">
             <p style="margin-bottom: 5px">测试集名称：{{ testName }}</p>
-            <comp-test-set-job-table ref="jobTable"></comp-test-set-job-table>
+            <comp-test-set-job-table ref="jobTable" :prop-multi-select="false"></comp-test-set-job-table>
             <Row style="text-align: right;">
                 <Button style="margin-right: 20px;width: 90px;" @click="onBack">上一步</Button>
                 <Button type="primary" @click="nextStep" :loading="showLoadingBtn">下一步( {{ selectedSet.length }} )</Button>
@@ -32,39 +32,71 @@
         },
         methods:{
             refresh(){
-                this.$ajax.get("api/v1/cedar/test_gather/?fields=id,name,job_count&ordering=-update_time")
-                    .then(response=>{
-                        let data = response.data.test_gather
-                        // 去除空的测试集
-                        data = data.filter(item=>{
+                this.$ajax.all([
+                    this.$ajax.get("api/v1/cedar/test_gather/?fields=id,name,job_count&ordering=-update_time"),
+                    this.$ajax.get("api/v1/cedar/test_project/?fields=id,name,test_gather_count,test_gather.id,test_gather.name,test_gather.job_count"),
+                ]).then(this.$ajax.spread((all_resp,project_resp) => {
+                    //  处 理 全 部 测 试 集
+                    let data = all_resp.data.test_gather
+                    // 去除空的测试集
+                    data = data.filter(item=>{
+                        return item.job_count>0
+                    })
+                    let children = []
+                    data.forEach((item,index)=>{
+                        if(index===0)
+                            children.push({
+                                id:item.id,
+                                title:item.name,
+                                selected:true
+                            })
+                        else
+                            children.push({
+                                id:item.id,
+                                title:item.name
+                            })
+                    })
+
+                    //  处 理 项 目 层 级 的 测 试 集
+                    let project = project_resp.data.test_project
+                    // 去 除 空 的 项 目 里 面 空 的 测 试 集
+                    project.forEach(pro=>{
+                        pro.test_gather = pro.test_gather.filter(item=>{
                             return item.job_count>0
                         })
-                        let children = []
-                        data.forEach((item,index)=>{
-                            if(index===0)
-                                children.push({
-                                    id:item.id,
-                                    title:item.name,
-                                    selected:true
-                                })
-                            else
-                                children.push({
-                                    id:item.id,
-                                    title:item.name
-                                })
+                    })
+                    project = project.filter(item=>{
+                        return item.test_gather.length>0
+                    })
+                    let projectData = []
+                    project.forEach(item=>{
+                        let projectChildren = []
+                        item.test_gather.forEach(test=>{
+                            projectChildren.push({
+                                id:test.id,
+                                title:test.name
+                            })
                         })
-                        this.treeData = [{
-                            title: '全部测试集',
-                            expand: true,
-                            children: children
-                        }]
-                        this.testName = this.treeData[0].children[0].title
-                        this.$nextTick(()=>{
-                            this.$refs.jobTable.refresh(this.treeData[0].children[0].id)
+                        projectData.push({
+                            title: item.name,
+                            expand: false,
+                            children: projectChildren
                         })
-                    }).catch(error=>{
-                        if(config.DEBUG) console.log(error)
-                        this.$Message.error({content:"测试集信息获取失败"+error.response.data.description,duration:6})
+                    })
+
+                    this.treeData = [{
+                        title: '全部测试集',
+                        expand: true,
+                        children: children
+                    }].concat(projectData)
+                    this.testName = this.treeData[0].children[0].title
+                    this.$nextTick(()=>{
+                        this.$refs.jobTable.refresh(this.treeData[0].children[0].id)
+                    })
+                }))
+                .catch(error=>{
+                    if (config.DEBUG) console.log(error)
+                    this.$Message.error({content:"测试集信息获取失败",duration:5})
                 })
             },
             onTreeClick(select,item){
