@@ -136,7 +136,7 @@
                             <FormItem v-for="item in device.account">
                                 <b slot="label">账号</b>
                                 <Row>
-                                    <Input v-model="item.app_name+ ' / '+item.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
+                                    <Input v-model="item.app_name+ ' / '+item.name+ ' / '+item.username" style="width: 80%" :disabled="true" class="disabled-input"></Input>
                                     <Icon v-show="propSubsidiaryDevice" type="md-remove-circle" style="margin-left: 5px;cursor: pointer;" size="20" color="#666"
                                           @click="removeAppSource(item.id)"/>
                                 </Row>
@@ -379,6 +379,7 @@
                     id:"number",
                     app_name: "string",
                     name: "string",
+                    username:"string"
                 }],
                 simcard:[{
                     id:"number",
@@ -663,7 +664,7 @@
                             "monitor_index,monitor_index.id,monitor_index.port," +
                             "auto_test," +
                             'simcard,simcard.operator,simcard.phone_number,simcard.order,simcard.id,' +
-                            'account,account.app_name,account.name,account.id,' +
+                            'account,account.app_name,account.name,account.id,account.username,' +
                             "subsidiary_device_info," +
                             "subsidiarydevice,subsidiarydevice.id,subsidiarydevice.serial_number,subsidiarydevice.ip_address,subsidiarydevice.order,subsidiarydevice.custom_name"+
                             "&ordering=subsidiarydevice.order"
