@@ -3,7 +3,8 @@
         <div  class="demo-split">
             <Split v-model="split1">
                 <div slot="left" class="demo-split-pane rds-box scroll-bar">
-                    <comp-rds-dict-serialize :prop-data="content" :prop-pic-name="highLightFileName" style="width: 100%;" @on-pic-name-click="onPicNameClick"></comp-rds-dict-serialize>
+                    <comp-rds-dict-serialize :prop-data="content" :prop-pic-name="highLightFileName" :prop-pic-list="fileList" style="width: 100%;"
+                                             @on-pic-name-click="onPicNameClick"></comp-rds-dict-serialize>
                 </div>
                 <div slot="right" class="demo-split-pane rds-box" style="padding: 0 0 0 10px">
                     <gallery v-show="fileList.length>0" :pic-url="fileList" :pic-name="highLightFileName" @on-pic-click="afterGalleryClick"></gallery>

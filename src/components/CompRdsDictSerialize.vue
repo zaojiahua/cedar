@@ -22,7 +22,7 @@
                                                         {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
                                                     <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }} {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
                                                     <div class="pic" v-for="(pic,index) in unit_item.pictures" >
-                                                        <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps ? unit_item.timestamps[index] :'' }} {{ pic }}</p>
+                                                        <p :class="{'high-light-pic':propPicName===pic&&!isNotInclude(pic),'high-light':isNotInclude(pic)}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps ? unit_item.timestamps[index] :'' }} {{ pic }}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -37,7 +37,7 @@
                                                 {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
                                             <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }} {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】': ''}}</p>
                                             <div class="pic " v-for="(pic,index) in unit_item.pictures" >
-                                                <p :class="{'high-light-pic':propPicName===pic}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps ? unit_item.timestamps[index]:'' }} {{ pic }}</p>
+                                                <p :class="{'high-light-pic':propPicName===pic&&!isNotInclude(pic),'high-light':isNotInclude(pic)}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps ? unit_item.timestamps[index]:'' }} {{ pic }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -68,6 +68,12 @@
             propPicName:{
                 type:String,
                 default:""
+            },
+            propPicList:{
+                type:Array,
+                default:()=>{
+                    return []
+                }
             }
         },
         data(){
@@ -77,7 +83,15 @@
         },
         methods:{
             onPicClick(picName){
-                this.$emit("on-pic-name-click",picName)
+                if(!this.isNotInclude(picName))
+                    this.$emit("on-pic-name-click",picName)
+            },
+            isNotInclude(picName){
+                for (let i=0;i<this.propPicList.length;i++) {
+                    if(this.propPicList[i].file_name===picName)
+                        return false
+                }
+                return true
             }
         }
     }
