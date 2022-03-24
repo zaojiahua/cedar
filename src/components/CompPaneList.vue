@@ -77,8 +77,8 @@
       </div>
     </Modal>
 
-    <Modal v-model="openErrorDevice" v-if="openErrorDevice" fullscreen :mask-closable="false" :closable="false">
-      <comp-device-list ref="errorDevice" :prop-device-slot-error="true" :prop-add-mode="false"
+    <Modal v-model="openErrorDevice" fullscreen :mask-closable="false" :closable="false">
+      <comp-device-list v-if="openErrorDevice" ref="errorDevice" :prop-device-slot-error="true" :prop-add-mode="false"
                         @on-row-click="onErrorDeviceRowClick">
         <Drawer slot="detail" v-model="showDeviceDetail" :transfer="false" :inner="true" :draggable="true"
                 :closable="false" width="50">
