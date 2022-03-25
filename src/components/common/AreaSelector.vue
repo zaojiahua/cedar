@@ -169,6 +169,8 @@ export default {
           this.expandLeft = false
           this.curAreaRect = this.curArea.getBoundingClientRect()
           //以图片的左上角为原点，做计算，当前所选择的区域的两个点的坐标  //相对、绝对
+           //   console.log(this.selectorImgRect.width)   //页面显示的大小
+           //   console.log(this.imageWidth)  //原图大小
           let coordinate = {}
           coordinate.relativeCoordinate = {
             topLeft: {
@@ -190,7 +192,8 @@ export default {
               y: coordinate.relativeCoordinate.bottomRight.y * this.imageHeight
             }
           }
-          this.$emit('on-select', coordinate)
+          if(!event.target.className.includes('screenarea'))
+            this.$emit('on-select', coordinate)
           break
         case 'mouseleave':
           this.isDragging = false

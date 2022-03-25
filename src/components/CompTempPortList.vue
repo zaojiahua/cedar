@@ -38,7 +38,7 @@
                         title: "温度感应片编号",
                         key: "port",
                         sortable: true,
-                        width: 150
+                        width: 155
                     },
                     {
                         title: "备注",
