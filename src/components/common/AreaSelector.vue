@@ -190,7 +190,8 @@ export default {
               y: coordinate.relativeCoordinate.bottomRight.y * this.imageHeight
             }
           }
-          this.$emit('on-select', coordinate)
+          if(!event.target.className.includes('screenarea'))
+            this.$emit('on-select', coordinate)
           break
         case 'mouseleave':
           this.isDragging = false
@@ -248,20 +249,20 @@ export default {
     this.selectorImg = document.querySelector('.selector__img')
     this.curArea = document.querySelector('.selector__curarea')
 
-    this.selector.addEventListener('mousedown', this.selectLabelArea)
-    this.selector.addEventListener('mousemove', this.selectLabelArea)
-    this.selector.addEventListener('mouseup', this.selectLabelArea)
-    this.selector.addEventListener('mouseleave', this.selectLabelArea)
-    window.addEventListener('keydown', this.handleShowMask)
-    window.addEventListener('keyup', this.handleShowMask)
+            this.selector.addEventListener('mousedown', this.selectLabelArea)
+            this.selector.addEventListener('mousemove', this.selectLabelArea)
+            this.selector.addEventListener('mouseup', this.selectLabelArea)
+            this.selector.addEventListener('mouseleave', this.selectLabelArea)
+            window.addEventListener('keydown', this.handleShowMask)
+            window.addEventListener('keyup', this.handleShowMask)
 
-    if (this.imgSrc) this.setImg(this.imgSrc)
-  },
-  beforeDestroy () {
-    window.removeEventListener('keydown', this.handleShowMask)
-    window.removeEventListener('keyup', this.handleShowMask)
-  }
-}
+            if (this.imgSrc) this.setImg(this.imgSrc)
+        },
+        beforeDestroy () {
+            window.removeEventListener('keydown', this.handleShowMask)
+            window.removeEventListener('keyup', this.handleShowMask)
+        }
+    }
 </script>
 
 <style lang="less" scoped>

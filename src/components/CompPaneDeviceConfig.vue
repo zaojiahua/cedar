@@ -23,20 +23,22 @@
                         <InputNumber style="width: 100%" v-model="phone_model.ply" class="disabled-input" :min="0"></InputNumber>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">边框:</b>
+                        <b slot="label">设备外边框:</b>
                         <div class="input-box">
                             <Input disabled v-model="pointTopLeft" class="disabled-input"></Input>&mdash;
                             <Input disabled v-model="pointBottomRight" class="disabled-input"></Input>
                             <Icon type="md-add-circle" size="22" style="margin: 5px 5px 0 0" @click="setBorder('screen')" color="#1bbc9c"/>
                             <Button :icon="showScreenArea?'ios-eye-outline':'ios-eye-off-outline'"
                                     @click="showScreenArea=!showScreenArea"></Button>
-                            <Button type="primary" size="small" icon="ios-search" @click="getScreenArea" style="margin-left: 24px;margin-top: 3px">自动获取</Button>
+                            <!--<Button type="primary" size="small" icon="ios-search" @click="getScreenArea" style="margin-left: 24px;margin-top: 3px">自动获取</Button>-->
                         </div>
                     </FormItem>
                 </Form>
 
                 <div class="flex-table">
-                    <p style="margin-bottom: 5px;"> 屏幕水平面 z=0，屏幕朝向方向 z 为正(单位：mm)</p>
+                    <p></p>
+                    <p style="margin-bottom: 5px;font-size: 12px"> x,y 是基于设备外边框左上角点的相对坐标；屏幕水平面 z=0，屏幕朝向方向 z 为正(单位：mm)</p>
+
                     <Table :columns="tableColumns" :data="tableData" border highlight-row
                            @on-row-click="onRowClick" max-height="345" size="small">
                     </Table>
@@ -231,81 +233,11 @@
                     },
                     {
                         title: 'X',
-                        key: 'x',
-                        render: (h, params) => {
-                            if(params.row.$isEdit){
-                                return h('Input',{
-                                    props:{
-                                        type:"number",
-                                        value:params.row.x_coordinate,
-                                    },
-                                    on:{
-                                        "on-blur":event=>{
-                                            if(event.target.value===""){
-                                                this.$Message.warning({content:"该项不能为空",duration:3})
-                                                event.target.value = this.tableData[params.index].x_coordinate
-                                                return
-                                            }
-                                            if(params.row.x_coordinate===parseFloat(event.target.value)){
-                                                this.$set(params.row,"$isEdit",false)
-                                                return
-                                            }
-                                            params.row.x_coordinate = parseFloat(event.target.value);
-                                            this.tableData[params.index].x_coordinate = parseFloat(event.target.value)
-                                            this.tableData[params.index].update = true
-                                            this.$set(params.row,"$isEdit",false)
-                                        }
-                                    }
-                                })
-                            }else {
-                                return h('div',{
-                                    on:{
-                                        click:()=>{
-                                            this.$set(params.row,"$isEdit",true)
-                                        }
-                                    }
-                                },params.row.x_coordinate)
-                            }
-                        }
+                        key: 'x_coordinate',
                     },
                     {
                         title: 'Y',
-                        key: 'y',
-                        render: (h, params) => {
-                            if(params.row.$isEdit){
-                                return h('Input',{
-                                    props:{
-                                        type:"number",
-                                        value:params.row.y_coordinate,
-                                    },
-                                    on:{
-                                        "on-blur":event=>{
-                                            if(event.target.value===""){
-                                                this.$Message.warning({content:"该项不能为空",duration:3})
-                                                event.target.value = this.tableData[params.index].y_coordinate
-                                                return
-                                            }
-                                            if(params.row.y_coordinate===parseFloat(event.target.value)){
-                                                this.$set(params.row,"$isEdit",false)
-                                                return
-                                            }
-                                            params.row.y_coordinate = parseFloat(event.target.value);
-                                            this.tableData[params.index].y_coordinate = parseFloat(event.target.value)
-                                            this.tableData[params.index].update = true
-                                            this.$set(params.row,"$isEdit",false)
-                                        }
-                                    }
-                                })
-                            }else {
-                                return h('div',{
-                                    on:{
-                                        click:()=>{
-                                            this.$set(params.row,"$isEdit",true)
-                                        }
-                                    }
-                                },params.row.y_coordinate)
-                            }
-                        }
+                        key: 'y_coordinate',
                     },
                     {
                         title: 'Z [-10,10]',
@@ -614,20 +546,47 @@
                         this.areaInfo.inside_under_right_y = bottomRight.y
                         this.showScreenArea = false
                         // this.isScreenUpdate = true
+                        if(!this.showTablePoint){
+                            this.showTablePoint = true
+                        }else {
+                            this.$nextTick(function () {
+                                let selector1 = document.querySelector('.selector')
+                                let point1 = document.querySelectorAll('.point')
+                                if(point1)
+                                    point1.forEach(item=>{
+                                        selector1.removeChild(item)
+                                    })
+                                if (this.tableData.length>0) {
+                                    this.tableData.forEach(item=>{
+                                        this.showSelectedPoint(item.name, item.x_coordinate, item.y_coordinate)
+                                    })
+                                }
+                            })
+                        }
                         break
                     case "point":
                         if(this.currentIndex===null){
                             this.$Message.warning({content:"请先选择一条数据！",duration:3})
                             return
                         }
-                        this.areaPoint.x_coordinate = topLeft.x
-                        this.areaPoint.y_coordinate = topLeft.y
+                        if(!this.deviceCutCoordinate.inside_upper_left_x || !this.deviceCutCoordinate.inside_under_right_y){
+                            this.$Message.warning({content:"请先框选设备外边框！",duration:3})
+                            return
+                        }
+                        let screenWidth = this.deviceCutCoordinate.inside_under_right_x - this.deviceCutCoordinate.inside_upper_left_x
+                        let screenHeight = this.deviceCutCoordinate.inside_under_right_y - this.deviceCutCoordinate.inside_upper_left_y
+
+                        let x_coordinate = (topLeft.x - this.deviceCutCoordinate.inside_upper_left_x) / screenWidth
+                        let y_coordinate = (topLeft.y - this.deviceCutCoordinate.inside_upper_left_y) / screenHeight
+                        this.areaPoint.x_coordinate = parseFloat(x_coordinate.toFixed(4))
+                        this.areaPoint.y_coordinate = parseFloat(y_coordinate.toFixed(4))
                         let selector = document.querySelector('.selector')
                         let point = document.querySelectorAll('.point')
                         if(point)
                             point.forEach(item=>{
                                 selector.removeChild(item)
                             })
+                        this.showTablePoint = false
                         break
                 }
             },
@@ -675,8 +634,11 @@
                 // selectorImgRect：当前页面显示的图片的大小
                 let offsetX = (selectorRect.width - selectorImgRect.width) / 2
                 let offsetY = (selectorRect.height - selectorImgRect.height) / 2
-                let left = offsetX + tlx / this.imgInfo.width * selectorImgRect.width
-                let top = offsetY + tly / this.imgInfo.height * selectorImgRect.height
+                // 框 选 边 框 的 大 小
+                let screenWidth = this.deviceCutCoordinate.inside_under_right_x - this.deviceCutCoordinate.inside_upper_left_x
+                let screenHeight = this.deviceCutCoordinate.inside_under_right_y - this.deviceCutCoordinate.inside_upper_left_y
+                let left = offsetX + (tlx * screenWidth + this.deviceCutCoordinate.inside_upper_left_x) / this.imgInfo.width * selectorImgRect.width
+                let top = offsetY + (tly * screenHeight + this.deviceCutCoordinate.inside_upper_left_y) / this.imgInfo.height * selectorImgRect.height
                 let point = document.createElement('div')
                 point.classList.add('point')
                 // point.classList.add(text.toLowerCase())
