@@ -96,6 +96,7 @@
                     <FormItem>
                         <b slot="label">运行轮次</b>
                         <InputNumber v-model="tboardRepeatTime" :min="1" :precision="0"></InputNumber>
+                        <span style="margin: 0 10px 0 20px">用例顺序随机</span><i-switch v-model="isRandom"/>
                     </FormItem>
                     <FormItem>
                         <b slot="label">已选设备</b>
