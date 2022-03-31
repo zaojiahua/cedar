@@ -41,7 +41,7 @@
 
         <Divider></Divider>
         <Row>
-            <comp-job-list ref="jobList" :prop-multi-select="true" :prop-auto-load="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true" @get-job-count="getJobNumbers"></comp-job-list>
+            <comp-job-list class="job-box" ref="jobList" :prop-multi-select="true" :prop-auto-load="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true" @get-job-count="getJobNumbers"></comp-job-list>
         </Row>
         <Drawer v-model="showDetail" :draggable="true" :closable="false" width="50">
             <comp-job-detail ref="jobDetail" :prop-del-job="true" @closeDrawer="closeDrawer" @delJobOne="delJobOne"></comp-job-detail>
@@ -554,6 +554,12 @@
 </script>
 
 <style scoped>
+    /deep/.job-box .ivu-table > .ivu-table-overflowX {
+        overflow-x: hidden;
+    }
+    /deep/.job-box .ivu-table .ivu-table-tip {
+        overflow-x: hidden;
+    }
     .job-btn{
         margin-right: 15px;
     }
