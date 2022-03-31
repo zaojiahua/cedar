@@ -319,6 +319,8 @@
                 selectedDevice: [],
                 currentPage:1,
                 selection:[],
+                selectionDev:{},
+                currentPageSelection:{},
                 pageSize:config.DEFAULT_PAGE_SIZE,
                 statusFilterList:[],
                 phoneModelFilterList:[],
@@ -340,6 +342,7 @@
                     this.data = data
                     return
                 }
+                this.currentPageSelection = {}
                 let deviceKeywordCondition = ""
                 if(this.deviceKeyword.trim()!==""){
                     deviceKeywordCondition = '&device_name__icontains=' +  this.deviceKeyword.trim()
@@ -465,6 +468,14 @@
                     })
                     device.monitorport = monitorPortStr.substring(0, monitorPortStr.length-2)
                     deviceList.push(device.id);
+                    /* 将之前已经选中的选项重新勾选 */
+                    if(this.selection.length>0)
+                        this.selection.forEach(selected=>{
+                            if (device.id === selected.id){
+                                device._checked = true
+                                this.$set(this.currentPageSelection, device.id, 'exist')
+                            }
+                        })
                 })
                 if(deviceList.length>0)
                     this.$ajax.get("api/v1/cedar/get_device_power_battery_level/?device_id=" + deviceList.join(",") )
@@ -486,22 +497,6 @@
                     })
                 this.loading = false
 
-                /* 将之前已经选中的选项重新勾选 */
-                let arr = []
-                this.selection.forEach(selected=>{
-                    arr = arr.concat(selected)
-                })
-                if(arr.length>0){
-                    let ids = []
-                    arr.forEach(item=>{
-                        ids.push(item.id)
-                    })
-                    for(let i=0; i<this.data.length; ++i){
-                        if(ids.includes(this.data[i].id)){
-                            this.data[i]._checked = true
-                        }
-                    }
-                }
             },
             _requestErrorHandle(reason){
                 if (config.DEBUG) console.log(reason)
@@ -565,7 +560,31 @@
                 this.refresh()
             },
             onSelectionChange(selection){
-                this.selection[this.currentPage] = selection
+                selection.forEach((value) => {
+                    if (this.selectionDev[value.id] === undefined ) {
+                        //console.log('勾选了id为' + value.id + '的device')
+                        this.$set(this.selectionDev, value.id, value)    //所有的已选择device  包括新选择的device
+                        this.$set(this.currentPageSelection, value.id, 'exist')    //currentPageSelected  当前页已选择device
+                    }
+                })
+                //用上个步骤得到的当前页已选择的device-id 和 实际表格返回的 selection做比对，如果对上，则不做任何操作
+                // 如果对不上，则表示多了一个，即用户点击了一次取消，就用$delete方法将多出来的这条数据删除this.$delete(obj,key);
+                for (let item in this.currentPageSelection) {
+                    let i = 0
+                    for (i; i < selection.length; i++) {
+                        if (parseInt(item) === selection[i].id) {
+                            break
+                        }
+                    }
+                    if (i === selection.length) {
+                        //console.log('不再勾选id为' + item + '的job')
+                        this.$delete(this.selectionDev, item)
+                        this.$delete(this.currentPageSelection, item)
+                    }
+                }
+                //对象提取所有的value
+                this.selection = _.values(this.selectionDev)
+                this.$emit("selected-count",this.selection.length)
             },
             getThisSelection(){
                 return this.selection;
