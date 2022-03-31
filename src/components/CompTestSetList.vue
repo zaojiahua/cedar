@@ -309,8 +309,8 @@
                             root.refresh()   // 用例移除以后刷新外层测试集列表
                             root.$refs.testSetJobList.onPageChange(1)  //刷新当前的用例列表
                             root.$refs.testSetJobList.resetJobList() //  重置当前用例列表的已选数据
-                            root.$refs.filterSwitch.onClearChange()
-                            root.$refs.filterSwitch.getFilterData() //刷新当前的筛选列表
+                            // root.$refs.filterSwitch.onClearChange() //走了这一步以后就不需要走用例列表的onPageChange
+                            // root.$refs.filterSwitch.getFilterData() //刷新当前的筛选列表
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
                             this.$Message.error({content:"用例移除失败"+error.response.data.description,duration:6})
