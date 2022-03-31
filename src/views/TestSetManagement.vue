@@ -44,7 +44,7 @@
                             <span @click="menuClick(true)"><DropdownItem>复制</DropdownItem></span>
                             <span v-show="projectIndex!==-1" @click="menuClick(false)"><DropdownItem>移动</DropdownItem></span>
                             <span v-show="projectIndex!==-1" @click="removeTestSet"><DropdownItem>从当前项目移除</DropdownItem></span>
-                            <span @click="deleteTestSet"><DropdownItem>删除</DropdownItem></span>
+                            <span v-show="username==='admin'" @click="deleteTestSet"><DropdownItem>删除</DropdownItem></span>
                         </DropdownMenu>
                     </Dropdown>
                     <div style="float: right;width:250px;">
