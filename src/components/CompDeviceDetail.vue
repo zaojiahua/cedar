@@ -966,7 +966,7 @@
             onSourceAddSuccess(){
                 this.$ajax.get("api/v1/cedar/device/"+this.device.id+"/?fields=simcard,simcard.operator," +
                         "simcard.phone_number,simcard.order,simcard.id," +
-                        "account,account.app_name,account.name,account.id")
+                        "account,account.app_name,account.name,account.id,account.username")
                     .then(response=>{
                         response.data.simcard.forEach(item=>{
                             if(item.order===1){
