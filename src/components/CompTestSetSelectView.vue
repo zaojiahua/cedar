@@ -2,7 +2,8 @@
     <div>
         <div class="container_left">
             <b>测试集目录</b>
-            <Tree ref="tree" :data="treeData" show-checkbox @on-select-change="onTreeClick" @on-check-change="onTreeSelect"></Tree>
+            <Tree v-if="showTree" ref="tree" :data="treeData" show-checkbox @on-select-change="onTreeClick" @on-check-change="onTreeSelect"></Tree>
+            <p v-else style="color: #FF9900;margin-top: 10px">暂无数据</p>
         </div>
         <div class="container_right">
             <p style="margin-bottom: 5px">测试集名称：{{ testName }}</p>
@@ -28,6 +29,7 @@
                 testName:"",
                 selectedSet:[],
                 showLoadingBtn:false,
+                showTree:true,
             }
         },
         methods:{
@@ -89,10 +91,15 @@
                         expand: true,
                         children: children
                     }].concat(projectData)
-                    this.testName = this.treeData[0].children[0].title
-                    this.$nextTick(()=>{
-                        this.$refs.jobTable.refresh(this.treeData[0].children[0].id)
-                    })
+                    if(this.treeData[0].children.length>0){
+                        this.showTree = true
+                        this.testName = this.treeData[0].children[0].title
+                        this.$nextTick(()=>{
+                            this.$refs.jobTable.refresh(this.treeData[0].children[0].id)
+                        })
+                    }else {
+                        this.showTree = false
+                    }
                 }))
                 .catch(error=>{
                     if (config.DEBUG) console.log(error)
