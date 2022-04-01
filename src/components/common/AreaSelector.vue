@@ -269,6 +269,7 @@ export default {
 
 <style lang="less" scoped>
   .selector-container {
+    cursor: crosshair;
     width: 100%;
     height: 100%;
     .selector {

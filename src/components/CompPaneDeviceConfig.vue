@@ -86,7 +86,7 @@
                             <div class="loading__desc">正在努力获取图像...</div>
                         </div>
                     </div>
-                    <AreaSelector
+                    <AreaSelector ref="imgTool"
                             v-else
                             :imgSrc="imgSrc"
                             @on-select="selectArea"
@@ -587,6 +587,8 @@
                                 selector.removeChild(item)
                             })
                         this.showTablePoint = false
+                        this.showSelectedPoint(this.currentData.name, this.areaPoint.x_coordinate, this.areaPoint.y_coordinate)
+                        this.$refs.imgTool.closeArea()
                         break
                 }
             },
@@ -644,16 +646,16 @@
                 // point.classList.add(text.toLowerCase())
                 point.style.display = 'flex'
                 point.style.position = 'absolute'
-                point.style.left = `${left - 8}px`
-                point.style.top = `${top - 8}px`
-                point.style.width = `16px`
-                point.style.height = `16px`
+                point.style.left = `${left - 5}px`
+                point.style.top = `${top - 5}px`
+                point.style.width = `10px`
+                point.style.height = `10px`
                 point.style.borderRadius = `50%`
                 point.style.background = 'rgb(3,107,234)'
                 point.style.border = '1px solid white'
                 point.style.zIndex = 1000
                 point.innerText = text
-                point.style.paddingLeft = `14px`
+                point.style.paddingLeft = `7px`
                 point.style.color = `red`
                 selector.appendChild(point)
             },
