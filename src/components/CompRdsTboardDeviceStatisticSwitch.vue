@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Input search enter-button="Search" clearable v-model="keyword" @on-change="onChange" placeholder="输入设备名称..." style="margin-bottom: 16px" />
+        <Input class="search-x" search enter-button="Search" clearable v-model="keyword" @on-change="onChange" placeholder="输入设备名称..." style="margin-bottom: 16px" />
         <comp-rds-tboard-statistic-table ref="statisticTable" :prop-tboard="tboard" prop-type="device" @on-row-click="onRowClick"></comp-rds-tboard-statistic-table>
         <!-- RDS  数据 部分 -->
         <Divider orientation="left" style="margin-bottom: 16px" v-show="showRdsCard">测试结果</Divider>
@@ -93,5 +93,7 @@
 </script>
 
 <style scoped>
-
+    /deep/.search-x .ivu-input-icon-clear{
+        margin-right: 75px!important;
+    }
 </style>

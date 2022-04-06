@@ -12,12 +12,15 @@
             <Select v-model="filterType" v-show="resultRange.length===1&&resultRange[0]==='1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择失败类型">
                 <Option value="serious">严重失败</Option>
             </Select>
-            <p style="float: right">
+            <p style="float: right;margin-top: -2px;">
                 <Tag type="dot" color="#1bbc9c">成功</Tag>
                 <Tag type="dot" color="#FFAE25">失败</Tag>
                 <Tag type="dot" color="#F75F0D">严重失败</Tag>
                 <Tag type="dot" color="#BDC3C7">无效</Tag>
             </p>
+            <div style="float: right;margin-right:20px;width:230px;">
+                <Input class="search-box" v-model="rdsId" :number="true" search enter-button placeholder="输入RDS ID" @on-search="rdsIdentify" @on-clear="onClearIdentify" :clearable="true"/>
+            </div>
         </div>
         <comp-rds-card ref="rdsCard"
                        :prop-device-id="propDeviceId"
@@ -77,6 +80,7 @@
                 filterType:'',
                 scrollMore:false,
                 noMoreData:false,
+                rdsId:null,
             }
         },
         methods:{
@@ -95,10 +99,25 @@
                 this.scrollMore = true
                 this.$refs.rdsCard.loadMoreData(false)
             },
+            rdsIdentify(){
+                if(typeof this.rdsId !== 'number'){
+                    this.$Message.warning("请输入正确的 RDS ID")
+                    return
+                }
+                this.$refs.rdsCard._setSearchId(this.rdsId)
+                this.$refs.rdsCard.showRdsIdentity(this.rdsId)
+            },
+            onClearIdentify(){
+                this.rdsId = null
+                this.$refs.rdsCard._setSearchId(this.rdsId)
+                this.$refs.rdsCard.showRdsIdentity(this.rdsId)
+            },
         }
     }
 </script>
 
 <style scoped>
-
+/deep/.search-box .ivu-input-icon-clear{
+    margin-right: 45px!important;
+}
 </style>

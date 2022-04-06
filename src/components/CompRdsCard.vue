@@ -9,7 +9,9 @@
                 <div :class="loadingData ? 'opacity-row' : ''">
                     <div class="rds-box tooltip" :title="'ID：'+item.id+'\n设备名称：'+ item.device.device_name+'\n用例名称：'+item.job.job_name+'\n结果：'+item.job_assessment_value"
                          v-for="(item,index) in rdsData" :key="item.id" :class="[getRdsColorClass(item),{'select':index===rdsIndex&&cardIndex===Index}]"
-                         @click="onRdsBoxClick(item,Index,index)"></div>
+                         @click="onRdsBoxClick(item,Index,index)">
+                        <div class="point-box" v-if="index===rdsIdentityIndex&&cardIdentityIndex===Index"></div>
+                    </div>
                 </div>
             </Row>
         </Card>
@@ -124,6 +126,9 @@
                 jobSelection:[],
                 tboardSelection:[],
                 rdsDataList:[],
+                rdsIdentityIndex:null,
+                cardIdentityIndex:null,
+                searchRdsId:null,
             }
         },
         methods: {
@@ -231,6 +236,9 @@
                             // this.rdsData = this.rdsData.concat(utils.validate(getRdsSerializer, response.data).rdss)
                             this.rdsDataList.push(utils.validate(getRdsSerializer, response.data).rdss)
                         }
+                        if(typeof this.searchRdsId === 'number'){
+                            this.showRdsIdentity(this.searchRdsId)
+                        }
                         return this.$ajax
                             .get("api/v1/cedar/filter_rds_validity/?" +
                                 jobCondition +
@@ -256,6 +264,31 @@
                         this.$Message.error("数据加载失败!")
                         this.loadingData = false
                     })
+            },
+            _setSearchId(id){
+                this.searchRdsId = id
+            },
+            showRdsIdentity(searchRdsId){
+                if(this.rdsDataList.length===0){
+                    return
+                }
+                if(searchRdsId===null){
+                    this.cardIdentityIndex = null
+                    this.rdsIdentityIndex = null
+                    return
+                }
+                for (let i = 0; i < this.rdsDataList.length; i++) {
+                    let rdsList = this.rdsDataList[i]
+                    for (let j = 0; j < rdsList.length; j++) {
+                        if(rdsList[j].id === searchRdsId){
+                            this.cardIdentityIndex = i
+                            this.rdsIdentityIndex = j
+                            return
+                        }
+                    }
+                }
+                this.cardIdentityIndex = null
+                this.rdsIdentityIndex = null
             },
             openJobList(){
                 this.showJobSelector = true
@@ -316,19 +349,19 @@
                 handler: function(val){
                     this.tboards = _.cloneDeep(val)
                 },
-                immediate: true
+                // immediate: true
             },
             propDefaultJobs:{
                 handler: function(val){
                     this.jobs = _.cloneDeep(val)
                 },
-                immediate: true
+                // immediate: true
             },
             propTboardId:{
                 handler: function(val){
                     this.loadMoreData(true)
                 },
-                immediate: true
+                // immediate: true
             },
             propFilterDateRange:{
                 handler: function(){
@@ -389,6 +422,13 @@
 
     .rds-box:hover {
         border: #000000 1px solid;
+    }
+    .point-box{
+        width: 10px;
+        height: 10px;
+        background: #fff;
+        margin: 6px;
+        border-radius: 50%;
     }
     .select{
         border: #000000 1px solid;

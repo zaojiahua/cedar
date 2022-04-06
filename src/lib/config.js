@@ -14,7 +14,7 @@ export default {
     "WEBSOCKET":"8002",
     // Paging setting
     "DEFAULT_PAGE_SIZE": 10,
-    "LARGE_PAGE_SIZE": 500
+    "LARGE_PAGE_SIZE": 1000
 }
 
 /*
