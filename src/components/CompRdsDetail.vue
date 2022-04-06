@@ -2,6 +2,10 @@
     <Card dis-hover>
         <p>
             <Button type="error" @click="delRds()">删除</Button>
+            <ButtonGroup style="float: right;">
+                <Button @click="onBtnClick(true)">上一个</Button>
+                <Button @click="onBtnClick(false)">下一个</Button>
+            </ButtonGroup>
             <Button v-if="propPerfRds&&rdsInfo.job_duration!==null" type="primary" @click="goRdsPhotos" style="margin-left: 24px;">测试图集</Button>
             <Button v-if="rdsInfo.job.job_second_type==='SmoothJob'&&(rdsInfo.result!=='无效')" type="primary" @click="goRdsFramePhotos" style="margin-left: 24px;">测试图集</Button>
         </p>
@@ -486,13 +490,28 @@
                     this.$Message.error("数据保存失败")
                 })
             },
+            // 上一个下一个按钮 分发事件 true:上一个  false:下一个
+            onBtnClick(isPrev){
+                if(isPrev){
+                    this.$emit("on-left-rds")
+                }else {
+                    this.$emit("on-right-rds")
+                }
+            },
             //键盘左右切换事件
             onKeyUpEvent(event) {
+                console.log(":hhhhh ")
                 if(this.showImgModal){
                     if (event.keyCode === 37) {  //左 ←
                         this.prevBtn()
                     } else if (event.keyCode === 39) {  //右 →
                         this.nextBtn()
+                    }
+                }else {
+                    if (event.keyCode === 37) {  //左 ←
+                        this.$emit("on-left-rds")
+                    } else if (event.keyCode === 39) {  //右 →
+                        this.$emit("on-right-rds")
                     }
                 }
             }
@@ -501,6 +520,7 @@
             window.addEventListener('keyup', this.onKeyUpEvent)
         },
         beforeDestroy() {
+            console.log(1231231)
             window.removeEventListener('keyup', this.onKeyUpEvent)
         }
     }

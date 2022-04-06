@@ -1,7 +1,7 @@
 <template>
     <div>
         <Drawer v-model="showRdsDetail" :closable="false" width="50" :draggable="true" transfer>
-            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne" :prop-perf-rds="perfRds"></comp-rds-detail>
+            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne" :prop-perf-rds="perfRds" @on-left-rds="getLeftRds" @on-right-rds="getRightRds"></comp-rds-detail>
         </Drawer>
         <Card style="margin-bottom: 16px;" dis-hover v-for="(rdsData,Index) in rdsDataList" :key="Index">
             <Row type="flex">
@@ -342,6 +342,39 @@
                 if (type.job_assessment_value === "1" && type.filter!=="serious") return "failed"
                 if(type.job_assessment_value === "1" && type.filter==="serious") return "serious"
                 return "invalid"
+            },
+            //键盘左右控制上一个/下一个RDS
+            getLeftRds(){
+                if(!this.showRdsDetail)
+                    return
+                if(this.rdsIndex===0 && this.cardIndex===0){
+                    this.$Message.warning("已经是第一条数据")
+                }else if(this.rdsIndex===0 && this.cardIndex>0){
+                    this.cardIndex--
+                    this.rdsIndex = this.rdsDataList[this.cardIndex].length-1
+                    let rds = this.rdsDataList[this.cardIndex][this.rdsIndex]
+                    this.$refs.rdsDetail.refresh(rds.id,rds.job.id)
+                }else {
+                    this.rdsIndex--
+                    let rds = this.rdsDataList[this.cardIndex][this.rdsIndex]
+                    this.$refs.rdsDetail.refresh(rds.id,rds.job.id)
+                }
+            },
+            getRightRds(){
+                if(!this.showRdsDetail)
+                    return
+                if(this.rdsIndex+1===this.rdsDataList[this.cardIndex].length && (this.cardIndex+1===this.rdsDataList.length)){
+                    this.$Message.warning("已经是最后一条数据")
+                }else if(this.rdsIndex+1===this.rdsDataList[this.cardIndex].length && (this.cardIndex+1<this.rdsDataList.length)){
+                    this.cardIndex++
+                    this.rdsIndex = 0
+                    let rds = this.rdsDataList[this.cardIndex][this.rdsIndex]
+                    this.$refs.rdsDetail.refresh(rds.id,rds.job.id)
+                }else {
+                    this.rdsIndex++
+                    let rds = this.rdsDataList[this.cardIndex][this.rdsIndex]
+                    this.$refs.rdsDetail.refresh(rds.id,rds.job.id)
+                }
             },
         },
         watch:{
