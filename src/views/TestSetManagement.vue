@@ -121,7 +121,7 @@
 
         <Modal v-model="showNewModal" footer-hide :closable="false" :mask-closable="false" width="420">
             <p style="margin: 12px 0 10px 0"><b>请输入项目名称</b></p>
-            <Input v-model="projectName"></Input>
+            <Input v-model="projectName" maxlength="20"></Input>
             <Row style="text-align: right;margin-top: 30px;">
                 <Button @click="showNewModal=false;">取消</Button>
                 <Button type="primary" style="margin-left: 20px" @click="newProject">确认</Button>

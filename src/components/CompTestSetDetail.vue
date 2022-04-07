@@ -3,7 +3,7 @@
         <Form :label-width="120" :rules="validateRules" ref="form" :model="testInfo">
             <FormItem prop="name">
                 <b slot="label">测试集名称：</b>
-                <Input v-model="testInfo.name"></Input>
+                <Input v-model="testInfo.name" maxlength="50"></Input>
             </FormItem>
             <FormItem v-show="!isShowOther">
                 <b slot="label">项目：</b>
