@@ -6,11 +6,8 @@
             <Step title="填写信息"></Step>
         </Steps>
         <div v-if="current===0">
-            <Modal v-model="showSelectDeviceModal" :fullscreen="true" :transfer="false" :closable="false" @on-ok="getDeviceSelection">
-                <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true" :prop-device-status="true" :propCabinetType="propCabinetType"
-                                  @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
-            </Modal>
-            <comp-device-list :prop-show-cabinet-select="false" :prop-show-select-number="false" :prop-show-search="false" ref="deviceList" :prop-add-mode="false" :prop-auto-load="false" :prop-filter-status="true"></comp-device-list>
+            <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true" :prop-device-status="true" :propCabinetType="propCabinetType"
+                              @on-row-click="onSelectDeviceModalRowClick" @get-selection="getDeviceSelection"></comp-device-list>
             <Row type="flex" justify="center" style="margin-top: 16px;">
                 <Col>
                     <Button style="margin-right: 32px; width: 90px;" @click="onBackClick">返回</Button>
@@ -169,7 +166,7 @@
         components: {CompJobList, CompDeviceList, CompFilter,CompJobDetail, CompTestSetSelectView, CompInnerJobConnection},
         data() {
             return {
-                current: 0,
+                current: -1,
                 // Page "Choose device"
                 showSelectDeviceModal: false,
                 selectedDevice:[],
@@ -182,7 +179,6 @@
                 tboardRepeatTime: 1,
                 showJobDetail:false,
                 disableFlag:true,
-                deviceSelection:[],
                 showLoading:false,
                 showBeforeSelect:true,
                 selectCabinetType:"",
@@ -204,20 +200,14 @@
         },
         methods: {
             // Page "Choose device"
-            getDeviceSelection(){
-                if(this.$refs.selectDevice.getSelection().length>0){
-                    this.$refs.deviceList.refresh(this.$refs.selectDevice.getSelection())
-                    this.disableFlag = false;
-                    this.deviceSelection = this.$refs.selectDevice.getThisSelection()
-
-                    this.selectedDevice = this.$refs.deviceList.getData()
-                }
+            getDeviceSelection(selection){
+                this.selectedDevice = selection
+                this.disableFlag = selection.length <= 0;
             },
             onSelectDeviceModalRowClick(data, index){
                 this.$refs.selectDevice.toggleSelect(index)
             },
             toPageChooseJob(){
-                this.selectedDevice = this.$refs.deviceList.getData()
                 if(this.selectedDevice.length>0){
                     let ids = []
                     this.selectedDevice.forEach(item=>{
@@ -314,8 +304,7 @@
                 if(this.selectedDevice.length === 0)
                     this.disableFlag = true;
                 this.$nextTick(function () {
-                    this.$refs.deviceList.refresh(this.selectedDevice)
-                    this.$refs.selectDevice.setSelection(this.deviceSelection)
+                    this.$refs.selectDevice.setSelection(this.selectedDevice)
                 })
             },
             // Page "Fill info"
@@ -453,6 +442,7 @@
                     this.$Message.warning("请选择机柜类型！")
                     return
                 }
+                this.current = 0
                 this.propCabinetType = this.selectCabinetType
                 this.showBeforeSelect = false
             },

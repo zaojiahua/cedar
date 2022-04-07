@@ -585,6 +585,7 @@
                 //对象提取所有的value
                 this.selection = _.values(this.selectionDev)
                 this.$emit("selected-count",this.selection.length)
+                this.$emit("get-selection",this.selection)
             },
             getThisSelection(){
                 return this.selection;
