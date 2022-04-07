@@ -32,10 +32,10 @@
               </Select>
             </FormItem>
         <Divider/>
-        <FormItem>
-          <b slot="label"><span class="need">*</span>屏幕尺寸</b>
-          <Input style="width: 200px;margin-right: 5px" v-model="deviceInfo.screen_size"></Input><span>英寸</span>
-        </FormItem>
+        <!--<FormItem>-->
+          <!--<b slot="label"><span class="need">*</span>屏幕尺寸</b>-->
+          <!--<Input style="width: 200px;margin-right: 5px" v-model="deviceInfo.screen_size"></Input><span>英寸</span>-->
+        <!--</FormItem>-->
          <!--<FormItem>-->
             <!--&lt;!&ndash;<b slot="label"><span class="need">*</span>Y 分辨率</b>&ndash;&gt;-->
             <!--<InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.height_resolution" placeholder="高度"></InputNumber>-->
@@ -136,7 +136,8 @@ export default {
       });
     },
     addDevice() {
-      if (this.addedDeviceName === "" || this.phoneModel === "" || this.deviceInfo.screen_size === ""
+      if (this.addedDeviceName === "" || this.phoneModel === ""
+          // || this.deviceInfo.screen_size === ""
           // || this.deviceInfo.x_border === null || this.deviceInfo.width_resolution === null
           // || this.deviceInfo.y_border === null || this.deviceInfo.height_resolution === null
           || this.deviceInfo.height === null || this.deviceInfo.width === null|| this.deviceInfo.ply === null) {
@@ -153,7 +154,7 @@ export default {
             // width_resolution: this.deviceInfo.width_resolution,
             // y_border: this.deviceInfo.y_border,
             // height_resolution: this.deviceInfo.height_resolution,
-            screen_size: this.deviceInfo.screen_size,
+            // screen_size: this.deviceInfo.screen_size,
             width:this.deviceInfo.width,
             height:this.deviceInfo.height,
             ply:this.deviceInfo.ply,
@@ -253,8 +254,8 @@ export default {
             this.deviceInfo.ply = response.data.phonemodels[0].ply
             this.deviceInfo.width_resolution = response.data.phonemodels[0].width_resolution
             this.deviceInfo.height_resolution = response.data.phonemodels[0].height_resolution
-            let length = Math.sqrt(Math.pow(this.deviceInfo.height_resolution, 2) + Math.pow(this.deviceInfo.width_resolution, 2))
-            this.deviceInfo.screen_size = (length / response.data.phonemodels[0].x_dpi).toFixed(2)
+            // let length = Math.sqrt(Math.pow(this.deviceInfo.height_resolution, 2) + Math.pow(this.deviceInfo.width_resolution, 2))
+            // this.deviceInfo.screen_size = (length / response.data.phonemodels[0].x_dpi).toFixed(2)
           }
         })
       }
