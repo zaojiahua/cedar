@@ -500,7 +500,6 @@
             },
             //键盘左右切换事件
             onKeyUpEvent(event) {
-                console.log(":hhhhh ")
                 if(this.showImgModal){
                     if (event.keyCode === 37) {  //左 ←
                         this.prevBtn()
@@ -520,7 +519,6 @@
             window.addEventListener('keyup', this.onKeyUpEvent)
         },
         beforeDestroy() {
-            console.log(1231231)
             window.removeEventListener('keyup', this.onKeyUpEvent)
         }
     }
