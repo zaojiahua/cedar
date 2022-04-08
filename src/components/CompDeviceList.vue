@@ -23,11 +23,12 @@
             <Col span="16">
                 <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
                     <span>机柜：</span>
-                    <Select v-model="cabinetSelected" style="width:200px" clearable  @on-change="onSelectedChange">
-                        <OptionGroup v-for="types in cabinetList" :label="types.type">
-                            <Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id">{{ cabinets.cabinet_name }}</Option>
-                        </OptionGroup>
-                    </Select>
+                    <!--<Select v-model="cabinetSelected" style="width:200px" clearable  @on-change="onSelectedChange">-->
+                        <!--<OptionGroup v-for="types in cabinetList" :label="types.type">-->
+                            <!--<Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id">{{ cabinets.cabinet_name }}</Option>-->
+                        <!--</OptionGroup>-->
+                    <!--</Select>-->
+                    <Cascader style="display: inline-block" :data="cabinetList" change-on-select @on-change="onSelectedChange"></Cascader>
                 </div>
                 <div v-show="propShowSelectNumber">
                     <span>僚机数量：</span>
@@ -327,6 +328,7 @@
                 tboard:[],
                 cabinetList:[],
                 cabinetSelected:null,
+                cabinetTypeSelected:"",
                 subsidiaryDeviceSelected:null,
                 subsidiaryDeviceNum:[],
                 deviceKeyword:"",
@@ -384,9 +386,12 @@
                 let cabinetTypeCondition = ""
                 if(this.propCabinetType){
                     cabinetTypeCondition = "&cabinet__type=" + this.propCabinetType
-                }
-                if(this.propPerfCabinet){
+                }else if(this.propPerfCabinet){
                     cabinetTypeCondition = "&cabinet__type__in=ReefList[Tcab_5{%,%}Tcab_5L]"
+                }else {
+                    if(this.cabinetTypeSelected){
+                        cabinetTypeCondition = "&cabinet__type=" + this.cabinetTypeSelected
+                    }
                 }
                 let tboardCondition = ""
                 if(this.tboard.length>0)
@@ -596,15 +601,33 @@
             getCabinetList() {
                 this.$ajax.get("api/v1/cedar/get_cabinet_type_info/?data_type=cabinet_type_data")
                     .then(response => {
+                        let cabinetList = []
                         if(this.propCabinetType){
                             for (let i = 0; i < response.data.length; i++) {
                                 if(response.data[i].type===this.propCabinetType){
-                                    this.cabinetList = [].concat(response.data[i])
+                                    cabinetList = [].concat(response.data[i])
                                     break;
                                 }
                             }
                         } else
-                            this.cabinetList = response.data
+                            cabinetList = response.data
+                        // 拼 成 级 联 选 择 需 要 的 格 式
+                        let data = []
+                        cabinetList.forEach(item=>{
+                            let children = []
+                            item.val.forEach(cabinet=>{
+                                children.push({
+                                    value: cabinet.id,
+                                    label: cabinet.cabinet_name
+                                })
+                            })
+                            data.push({
+                                value: item.type,
+                                label: item.type,
+                                children: children
+                            })
+                        })
+                        this.cabinetList = data
                     })
                     .catch(error => {
                         if (config.DEBUG) console.log(error)
@@ -612,8 +635,16 @@
                     })
             },
             onSelectedChange(val){
-                if(val===undefined)
+                if(val.length===0){
+                    this.cabinetTypeSelected = ""
                     this.cabinetSelected = null
+                }else if(val.length===1){
+                    this.cabinetTypeSelected = val[0]
+                    this.cabinetSelected = null
+                }else if(val.length===2){
+                    this.cabinetTypeSelected = val[0]
+                    this.cabinetSelected = val[1]
+                }
                 this.onPageChange(1)
             },
             getSubsidiaryDeviceNum(){

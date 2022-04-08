@@ -19,11 +19,12 @@
         <Row style="margin-bottom: 16px">
             <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
                 <span>机柜：</span>
-                <Select v-model="cabinetSelected" style="width:200px" clearable  @on-change="onSelectedChange">
-                    <OptionGroup v-for="types in cabinetList" :label="types.type">
-                        <Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id">{{ cabinets.cabinet_name }}</Option>
-                    </OptionGroup>
-                </Select>
+                <!--<Select v-model="cabinetSelected" style="width:200px" clearable  @on-change="onSelectedChange">-->
+                    <!--<OptionGroup v-for="types in cabinetList" :label="types.type">-->
+                        <!--<Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id">{{ cabinets.cabinet_name }}</Option>-->
+                    <!--</OptionGroup>-->
+                <!--</Select>-->
+                <Cascader style="display: inline-block" :data="cabinetList" change-on-select @on-change="onSelectedChange"></Cascader>
             </div>
         </Row>
         <Table ref="table" border :highlight-row="propHighLight" :columns="tableDeviceColumn" :data="data"
@@ -171,6 +172,7 @@
                 phoneModelFilterList:[],
                 cabinetList:[],
                 cabinetSelected:null,
+                cabinetTypeSelected:"",
                 deviceKeyword:"",
                 isShowHistory:false,  //历史记录板块
                 historyList:[],  //历史记录数据（最多显示15条）
@@ -198,9 +200,13 @@
                 }
 
                 let cabinetCondition = ""
+                let cabinetTypeCondition = ""
                 if(this.propShowCabinetSelect){
                     if(this.cabinetSelected!==null)
                         cabinetCondition = "&cabinet=" + this.cabinetSelected
+                    if(this.cabinetTypeSelected){
+                        cabinetTypeCondition = "&cabinet__type=" + this.cabinetTypeSelected
+                    }
                 }else {
                     if(this.propCabinetId!==null)
                         cabinetCondition = "&cabinet=" + this.propCabinetId
@@ -226,6 +232,7 @@
                         phoneModelCondition +
                         cabinetCondition +
                         deviceKeywordCondition +
+                        cabinetTypeCondition +
                         "&ordering=id" )
                     .then(response=>{
                         this.dataTotal = parseInt(response.headers["total-count"])
@@ -314,7 +321,24 @@
             getCabinetList() {
                 this.$ajax.get("api/v1/cedar/get_cabinet_type_info/?data_type=cabinet_type_data")
                     .then(response => {
-                        this.cabinetList = response.data
+                        let cabinetList = response.data
+                        // 拼 成 级 联 选 择 需 要 的 格 式
+                        let data = []
+                        cabinetList.forEach(item=>{
+                            let children = []
+                            item.val.forEach(cabinet=>{
+                                children.push({
+                                    value: cabinet.id,
+                                    label: cabinet.cabinet_name
+                                })
+                            })
+                            data.push({
+                                value: item.type,
+                                label: item.type,
+                                children: children
+                            })
+                        })
+                        this.cabinetList = data
                     })
                     .catch(error => {
                         if (config.DEBUG) console.log(error)
@@ -323,8 +347,16 @@
             },
             //机柜筛选
             onSelectedChange(val){
-                if(val===undefined)
+                if(val.length===0){
+                    this.cabinetTypeSelected = ""
                     this.cabinetSelected = null
+                }else if(val.length===1){
+                    this.cabinetTypeSelected = val[0]
+                    this.cabinetSelected = null
+                }else if(val.length===2){
+                    this.cabinetTypeSelected = val[0]
+                    this.cabinetSelected = val[1]
+                }
                 this.onPageChange(1)
             },
             onDeviceSearch(){
