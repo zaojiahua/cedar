@@ -253,7 +253,7 @@
                 }
             },
             refreshWithParam(param){
-                this.keyword = "";
+                // this.keyword = "";
                 this._setUrlParam(param)
                 this.onPageChange(1)
             },
@@ -403,6 +403,7 @@
                     "custom_tag," +
                     "custom_tag.id," +
                     "updated_time," +
+                    "author,author.username," +
                     "custom_tag.custom_tag_name" +
                     "&job_deleted=False" +
                     "&draft=False" +
