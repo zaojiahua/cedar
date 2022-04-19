@@ -117,13 +117,11 @@
                     </FormItem>
                     <FormItem>
                         <b slot="label">测 试 集</b>
-
                         <ButtonGroup>
                             <Button v-for="item in selectedTestSet">
                                 {{item.title}}
                             </Button>
                         </ButtonGroup>
-
                     </FormItem>
                 </Form>
             </Card>
