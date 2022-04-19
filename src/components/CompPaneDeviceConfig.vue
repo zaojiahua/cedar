@@ -3,7 +3,18 @@
         <div class="container">
             <div class="panel">
                 <Row>
-                    <h5 style="font-weight: bold; font-size: 1.4rem;">机型信息</h5>
+                    <h5 style="font-weight: bold; font-size: 1.4rem;">机型信息
+                        <Dropdown v-show="showTestBtn" trigger="contextMenu" style="float: right;font-weight: normal;">
+                            <Button @click="distanceBtn('调试距离')">
+                                调试距离
+                                <Icon type="ios-arrow-down"></Icon>
+                            </Button>
+                            <DropdownMenu slot="list">
+                                <DropdownItem @click.native="imageMosaic('拼接图像')">拼接图像</DropdownItem>
+                                <DropdownItem @click.native="coordinateConverting('坐标换算')">坐标换算</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </h5>
                 </Row>
                 <Form :label-width="90">
                     <FormItem style="margin-top: 20px;">
@@ -300,6 +311,8 @@
                 currentIndex:null,
                 //高曝光开关
                 highExposureSwitch:false,
+                //测试调试距离按钮是否显示
+                showTestBtn:false,
             }
         },
         computed: {
@@ -369,6 +382,55 @@
             },
         },
         methods:{
+            //坐 标 换 算
+            coordinateConverting(){
+                this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/coordinate/?device_label=" + this.deviceLabel)
+                    .then(response=>{
+                        if(response.data.error_code===0){
+                            this.$Message.success({content:"请求成功",duration:3})
+                        }else{
+                            this.$Message.error({content:response.data.description,duration: 10})
+                        }
+                    }).catch(error=>{
+                        if(error.response.status>=500)
+                            this.$Message.error({content:'服务器错误',duration: 5})
+                        else
+                            this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
+            //拼 接 图 像
+            imageMosaic(){
+                this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/reset_h/")
+                    .then(response=>{
+                        if(response.data.error_code===0){
+                            this.$Message.success({content:"请求成功",duration:3})
+                            this.getImg()
+                        }else{
+                            this.$Message.error({content:response.data.description,duration: 10})
+                        }
+                    }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
+            //调 试 距 离
+            distanceBtn(){
+                this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/locate_device/")
+                    .then(response=>{
+                        if(response.data.error_code===0){
+                            this.$Message.success({content:"请求成功",duration:3})
+                        }else{
+                            this.$Message.error({content:response.data.description,duration: 10})
+                        }
+                    }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
             //从机型详情页进入到机型配置页面
             onConfig(device, index) {
                 this.resetCoordinateInfo()
@@ -378,11 +440,13 @@
                 this.isSendReq = false
                 this.getCoordinateInfo()
                 this.getImg()
+                this.showTestBtn = device.cabinet.type === "Tcab_5D";
             },
             setMsg(row){
                 this.deviceId = row.id
                 this.deviceLabel = row.device_label
                 this.cabinetIP = row.cabinet.ip_address
+                this.showTestBtn = row.cabinet.type === "Tcab_5D";
             },
             setPaneId(id){
                 this.paneId = id
