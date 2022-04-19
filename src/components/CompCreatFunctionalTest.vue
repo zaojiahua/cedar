@@ -68,13 +68,21 @@
                         <span style="margin: 0 10px 0 20px">用例顺序随机</span><i-switch v-model="isRandom"/>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">已选设备</b>
-                        <span> {{selectedDevice.length}} 台</span>
+                        <b slot="label">任务配置</b>
+                        <span> 设备 {{selectedDevice.length}} 台；用例 {{selectedJob.length}} 个 </span>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">已选用例</b>
-                        <span> {{selectedJob.length}} 个</span>
+                        <b slot="label">已选设备</b>
+                        <ButtonGroup>
+                            <Button v-for="device in selectedDevice" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
+                                {{device.device_name}}
+                            </Button>
+                        </ButtonGroup>
                     </FormItem>
+                    <!--<FormItem>-->
+                        <!--<b slot="label">已选用例</b>-->
+                        <!---->
+                    <!--</FormItem>-->
                 </Form>
             </Card>
             <Row type="flex" justify="center" style="margin-top: 32px;">
@@ -96,12 +104,26 @@
                         <span style="margin: 0 10px 0 20px">用例顺序随机</span><i-switch v-model="isRandom"/>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">已选设备</b>
-                        <span> {{selectedDevice.length}} 台</span>
+                        <b slot="label">任务配置</b>
+                        <span> 设备 {{selectedDevice.length}} 台；测试集 {{selectedTestSet.length}} 个；用例 {{selectedTestSetJobs.length}} 个 </span>
                     </FormItem>
                     <FormItem>
-                    <b slot="label">已选测试集</b>
-                    <span> {{selectedTestSet.length}} 个</span>
+                        <b slot="label">已选设备</b>
+                        <ButtonGroup>
+                            <Button v-for="device in selectedDevice" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
+                                {{device.device_name}}
+                            </Button>
+                        </ButtonGroup>
+                    </FormItem>
+                    <FormItem>
+                        <b slot="label">测 试 集</b>
+
+                        <ButtonGroup>
+                            <Button v-for="item in selectedTestSet">
+                                {{item.title}}
+                            </Button>
+                        </ButtonGroup>
+
                     </FormItem>
                 </Form>
             </Card>
@@ -147,11 +169,15 @@
             </div>
         </Modal>
 
+        <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
+            <comp-device-detail ref="deviceDetail"></comp-device-detail>
+        </Modal>
     </Card>
 </template>
 
 <script>
     import CompDeviceList from "../components/CompDeviceList";
+    import CompDeviceDetail from "./CompDeviceDetail";
     import CompFilter from "../components/CompFilter";
     import CompJobList from "../components/CompJobList";
     import CompJobDetail from  "../components/CompJobDetail"
@@ -163,7 +189,7 @@
 
 
     export default {
-        components: {CompJobList, CompDeviceList, CompFilter,CompJobDetail, CompTestSetSelectView, CompInnerJobConnection},
+        components: {CompJobList, CompDeviceList, CompFilter,CompJobDetail, CompTestSetSelectView, CompInnerJobConnection, CompDeviceDetail},
         data() {
             return {
                 current: -1,
@@ -196,6 +222,7 @@
                 deviceLabelList:[],
                 jobLabelList:[],
                 isRandom:false,
+                showDeviceDetail:false,
             }
         },
         methods: {
