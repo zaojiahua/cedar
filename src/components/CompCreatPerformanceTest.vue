@@ -19,8 +19,11 @@
             <!--<Tabs type="card">-->
                 <!--<TabPane label="启动时间"></TabPane>-->
             <!--</Tabs>-->
+            <Row>
+                <comp-filter @on-return-data="onDefaultJobList" ref="jobFilter" :prop-default-device="[].concat(selectedDevice)" @on-change="onJobFilterChange"></comp-filter>
+            </Row>
             <Row type="flex">
-                <Col span="12">
+                <Col span="14">
                     <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
                 </Col>
                 <Col span="2">
@@ -31,7 +34,7 @@
                         </Button>
                     </Row>
                 </Col>
-                <Col span="10">
+                <Col span="8">
                     <comp-job-list style="margin-top: 48px" ref="jobSelectedList" :prop-auto-load="false" :prop-show-search="false"
                                    :prop-show-counter="true" :prop-deletable="true" :prop-show-page="false"></comp-job-list>
                     <Row type="flex" justify="center" style="margin-top: 32px;">
@@ -81,11 +84,12 @@
     import CompDeviceList from "../components/CompDeviceList";
     import CompJobList from "../components/CompJobList";
     import CompJobDetail from  "../components/CompJobDetail"
+    import CompFilter from "../components/CompFilter";
     import config from "../lib/config";
     import utils from "../lib/utils";
 
     export default {
-        components: {CompJobList, CompDeviceList,CompJobDetail},
+        components: {CompJobList, CompDeviceList,CompJobDetail,CompFilter},
         data() {
             return {
                 current: 0,
@@ -98,7 +102,6 @@
                 tboardRepeatTime: 1,
                 showJobDetail:false,
                 disableFlag:true,
-                jobSelection:[],
                 showLoading:false,
             }
         },
@@ -111,12 +114,54 @@
                 this.selectedDevice = data
                 this.disableFlag = false
             },
+            onDefaultJobList(defaultSelection){
+                this.$refs.jobList.refreshWithParam("&job_type=PerfJob&" + this.selectedDetail(defaultSelection))
+            },
+            // Page "Choose job"
+            selectedDetail(selected){
+                let conditions = []
+                Object.keys(selected).forEach(key=>{
+                    let condition = []  // store id data like [1,2,3]
+                    if(key==="type"){    //key = cabinet_type时，condition=>name
+                        selected[key].forEach(item=>{
+                            condition.push(item.type)
+                        })
+                    }else {
+                        selected[key].forEach(item=>{
+                            condition.push(item.id)
+                        })
+                    }
+
+                    // 不统一的命名额外处理
+                    if(key==="job_test_area") key = "test_area"
+                    else if(key==="phone_model") key = "phone_models"
+                    else if(key==="reefuser") key = "author"
+
+                    condition.forEach(item=>{
+                        item = key+"__id="+item
+                    })
+
+                    let conditionStr = ""
+                    if(key==="type"){
+                        conditionStr = "cabinet_type__in=ReefList["+condition.join("{%,%}")+"]"
+                    }else {
+                        conditionStr = key+"__id__in="+"ReefList["+condition.join("{%,%}")+"]"
+                    }
+                    conditions.push(conditionStr)
+                })
+
+                let param = conditions.join("&")
+                return param
+            },
+            onJobFilterChange(selected){
+                this.$refs.jobList.refreshWithParam("&job_type=PerfJob&" + this.selectedDetail(selected))
+            },
             //next step to select job
             toPageChooseJob(){
                 this.current = 1
-                this.$nextTick(()=>{
-                    this.$refs.jobList.refreshWithParam("&job_type=PerfJob")
-                })
+                // this.$nextTick(()=>{
+                //     this.$refs.jobList.refreshWithParam("&job_type=PerfJob")
+                // })
             },
             // back step to select Device
             backToPageChooseDevice(){
@@ -127,7 +172,6 @@
             // next step to create Tboard
             toPageFillInfo(){
                 this.selectedJob = this.$refs.jobSelectedList.getData()
-                this.jobSelection = this.$refs.jobList.getThisSelection();
                 if(this.selectedJob.length>0){
                     this.current = 2
                 }else {
@@ -138,6 +182,8 @@
             selectJob(){
                 this.$refs.jobSelectedList.refreshWithData(_.cloneDeep(this.$refs.jobSelectedList.getData().concat(this.$refs.jobList.getSelection())))
                 this.selectedJob = this.$refs.jobSelectedList.getData()
+                this.$refs.jobList.clearSelection()
+                this.$refs.jobList.clearJobSelection()
             },
             // Page "Fill info"
             complete(){
@@ -213,7 +259,6 @@
                 this.current = 1
                 this.$nextTick(function () {
                     this.$refs.jobSelectedList.refreshWithData(this.selectedJob)
-                    this.$refs.jobList.setSelection(this.jobSelection);
                 })
             },
             JobOnRowClick(row){
