@@ -11,8 +11,8 @@
             <Row type="flex" justify="center" style="margin-top: 16px;">
                 <Col>
                     <Button style="margin-right: 32px; width: 90px;" @click="onBackClick">返回</Button>
-                    <Button style="margin-right: 32px; width: 90px;" @click="showSelectDeviceModal=true">选择设备
-                    </Button>
+                    <!--<Button style="margin-right: 32px; width: 90px;" @click="showSelectDeviceModal=true">选择设备-->
+                    <!--</Button>-->
                     <Button type="primary" style="width: 90px;" @click="toPageChooseJob" :disabled="disableFlag">下一步( {{selectedDevice.length}} )</Button>
                 </Col>
             </Row>
