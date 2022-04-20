@@ -5,6 +5,12 @@
                 <b slot="label">任务名称:</b>
                 <Input disabled class="disabled-input" :value="data.board_name"></Input>
             </FormItem>
+            <FormItem v-show="data.test_gather_name.length>0">
+                <b slot="label">测试集:</b>
+                <ButtonGroup>
+                    <Button v-for="(test_gather,index) in data.test_gather_name" :key="index">{{test_gather}}</Button>
+                </ButtonGroup>
+            </FormItem>
             <FormItem>
                 <b slot="label">用例数量:</b>
                 <Input disabled class="disabled-input" :value="getJobNum(data.job)"></Input>
@@ -17,7 +23,7 @@
                     </Tooltip>
                 </ButtonGroup>
             </FormItem>
-            <FormItem>
+            <FormItem>.
                 <b slot="label">设备数量:</b>
                 <Input disabled class="disabled-input" :value="data.device.length"></Input>
             </FormItem>
@@ -234,6 +240,7 @@
                         "author.id," +
                         "author.username," +
                         "author.last_name," +
+                        "test_gather_name," +
                         "board_stamp," +
                         "end_time"
                     ),
@@ -305,6 +312,7 @@
                         this.deviceStatisticData = utils.validate(statisticDataSerializer, statistic)
 
                         this.data = utils.validate(getTboardSerializer, rboard_resp.data)
+                        this.data.test_gather_name = this.data.test_gather_name ? this.data.test_gather_name.split(",") : []
                         // 刷新所有温度图表
                         let endTime = this.data.end_time;
                         if(this.data.end_time===null){

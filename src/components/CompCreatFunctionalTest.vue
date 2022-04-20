@@ -358,6 +358,11 @@
                         jobList = this.selectedTestSetJobs
                     this.jobLabelList = jobList
 
+                    let testGatherList = []
+                    this.selectedTestSet.forEach(item=>{
+                        testGatherList.push(item.title);
+                    })
+                    testGatherList = [...new Set(testGatherList)] //去重
                     this.showLoading = true;
                     utils._initDate();
                     this.$ajax
@@ -367,6 +372,7 @@
                             repeat_time:this.tboardRepeatTime,
                             board_name:this.tboardName,
                             job_random_order:this.isRandom,
+                            test_gather_name:testGatherList.join(","),
                             owner_label:this.userId
                         })
                         .then(response=>{
