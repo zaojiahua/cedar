@@ -387,7 +387,7 @@
                 if(this.propCabinetType){
                     cabinetTypeCondition = "&cabinet__type=" + this.propCabinetType
                 }else if(this.propPerfCabinet){
-                    cabinetTypeCondition = "&cabinet__type__in=ReefList[Tcab_5{%,%}Tcab_5L]"
+                    cabinetTypeCondition = "&cabinet__type__in=ReefList[Tcab_5{%,%}Tcab_5L{%,%}Tcab_5D]"
                 }else {
                     if(this.cabinetTypeSelected){
                         cabinetTypeCondition = "&cabinet__type=" + this.cabinetTypeSelected
