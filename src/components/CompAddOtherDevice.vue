@@ -28,7 +28,7 @@
             <FormItem prop="test_area">
               <b slot="label"><span class="need">*</span>设备型号</b>
               <Select  @on-change="checkPhoneModelInfo" placeholder="请选择或新建设备型号" filterable allow-create>
-                <Option v-for="item in phoneModelList" :value="item">{{ item}}</Option>
+                <Option v-for="item in phoneModelList" :value="item" :key="item">{{ item }}</Option>
               </Select>
             </FormItem>
         <Divider/>
