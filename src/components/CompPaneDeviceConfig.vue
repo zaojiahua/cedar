@@ -313,6 +313,8 @@
                 highExposureSwitch:false,
                 //测试调试距离按钮是否显示
                 showTestBtn:false,
+                //调试距离按钮是否可点击：发送请求以后返回较慢
+                isDisabled:false
             }
         },
         computed: {
@@ -384,51 +386,72 @@
         methods:{
             //坐 标 换 算
             coordinateConverting(){
+                if(this.isDisabled){
+                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    return
+                }
+                this.isDisabled = true
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/coordinate/?device_label=" + this.deviceLabel)
                     .then(response=>{
+                        this.isDisabled = false
                         if(response.data.error_code===0){
-                            this.$Message.success({content:"请求成功",duration:3})
+                            this.$Message.success({content:"坐标换算成功",duration:3})
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
-                        if(error.response.status>=500)
+                    this.isDisabled = false
+                    if(error.response.status>=500)
                             this.$Message.error({content:'服务器错误',duration: 5})
                         else
-                            this.$Message.error({content:'请求失败',duration: 5})
+                            this.$Message.error({content:'坐标换算失败',duration: 5})
                 })
             },
             //拼 接 图 像
             imageMosaic(){
+                if(this.isDisabled){
+                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    return
+                }
+                this.isDisabled = true
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/reset_h/")
                     .then(response=>{
+                        this.isDisabled = false
                         if(response.data.error_code===0){
-                            this.$Message.success({content:"请求成功",duration:3})
+                            this.$Message.success({content:"拼接图像成功",duration:3})
                             this.getImg()
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
+                    this.isDisabled = false
                     if(error.response.status>=500)
                         this.$Message.error({content:'服务器错误',duration: 5})
                     else
-                        this.$Message.error({content:'请求失败',duration: 5})
+                        this.$Message.error({content:'拼接图像失败',duration: 5})
                 })
             },
             //调 试 距 离
             distanceBtn(){
+                if(this.isDisabled){
+                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    return
+                }
+                this.isDisabled = true
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/locate_device/")
                     .then(response=>{
+                        this.isDisabled = false
                         if(response.data.error_code===0){
-                            this.$Message.success({content:"请求成功",duration:3})
+                            this.$Message.success({content:"调试距离成功",duration:3})
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
+                    this.isDisabled = false
                     if(error.response.status>=500)
                         this.$Message.error({content:'服务器错误',duration: 5})
                     else
-                        this.$Message.error({content:'请求失败',duration: 5})
+                        this.$Message.error({content:'调试距离失败',duration: 5})
                 })
             },
             //从机型详情页进入到机型配置页面
