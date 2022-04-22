@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div v-show="propData.length>0" style="padding: 10px">
-            <Collapse simple>
+        <div v-show="propData.length>0">
+            <Collapse>
                 <Panel v-for="flow in propData">
                     {{ flow.flow_name }} ( {{ flow.job_assessment_value }} )
                     <div slot="content">

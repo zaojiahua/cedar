@@ -3,7 +3,19 @@
         <div  class="demo-split">
             <Split v-model="split1">
                 <div slot="left" class="demo-split-pane rds-box scroll-bar">
-                    <comp-rds-dict-serialize :prop-data="content" :prop-pic-name="highLightFileName" :prop-pic-list="fileList" style="width: 100%;"
+                    <Card dis-hover>
+                        <Form :label-width="90">
+                            <FormItem style="margin-bottom: 5px;">
+                                <b slot="label">用例名称：</b>
+                                <Input v-model="rdsInfo.job.job_name" class="disabled-input" disabled></input>
+                            </FormItem>
+                            <FormItem>
+                                <b slot="label">设备信息：</b>
+                                <Input v-model="rdsInfo.device.device_name+'('+rdsInfo.device.device_label+')'" class="disabled-input" disabled></input>
+                            </FormItem>
+                        </Form>
+                    </Card>
+                    <comp-rds-dict-serialize :prop-data="content" :prop-pic-name="highLightFileName" :prop-pic-list="fileList" style="width: 100%;margin-top: 10px"
                                              @on-pic-name-click="onPicNameClick"></comp-rds-dict-serialize>
                 </div>
                 <div slot="right" class="demo-split-pane rds-box" style="padding: 0 0 0 10px">
@@ -13,15 +25,29 @@
                     </div>
                 </div>
             </Split>
-    </div>
+        </div>
 </template>
 
 
 <script>
     import config from "../lib/config"
+    import utils from "../lib/utils"
     import CompRdsDictSerialize from "../components/CompRdsDictSerialize"
     import Gallery from "../components/common/Gallery"
 
+    const rdsSerializer = {
+        device: {
+            id: "number",
+            device_name: "string",
+            device_label: "string"
+        },
+        id: "number",
+        job: {
+            id: "number",
+            job_label: "string",
+            job_name: "string",
+        },
+    }
     export default {
         components:{ CompRdsDictSerialize, Gallery },
         data(){
@@ -30,14 +56,18 @@
                 split1: 0.35,
                 fileList:[],
                 highLightFileName:"",
+                rdsInfo:utils.validate(rdsSerializer,{}),
             }
         },
         methods:{
             refresh(id){
                 this.$ajax
-                    .get("api/v1/cedar/rds/"+id+"/?fields=id,rds_dict")
+                    .get("api/v1/cedar/rds/"+id+"/?fields=id,rds_dict," +
+                        "device,device.id,device.device_name,device.device_label," +
+                        "job,job.job_name,job.id,job.job_label")
                     .then(response=>{
                         this.content = response.data.rds_dict
+                        this.rdsInfo = utils.validate(rdsSerializer,response.data)
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
                         let errorMsg = "";
@@ -100,6 +130,14 @@
     }
     .demo-split-pane{
         padding: 10px;
+    }
+    .disabled-input >>> input {
+        background-color: #0000;
+        color: #515a6e;
+        border: #eee dotted 1px;
+    }
+    /deep/.rds-box .ivu-form-item {
+        margin-bottom: 0;
     }
     .scroll-bar::-webkit-scrollbar {/*滚动条整体样式*/
         width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
