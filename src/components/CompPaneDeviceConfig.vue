@@ -106,7 +106,7 @@
                 </div>
             </div>
         </div>
-        <Spin size="large" fix v-if="showLoading"></Spin>
+        <Spin size="large" fix v-if="showLoading" style="z-index: 5000;"></Spin>
 
         <Modal v-model="showModal" :closable="false" :footer-hide="true" :mask-closable="false" width="550">
             <Card>
@@ -114,14 +114,6 @@
                     <FormItem>
                         <b slot="label">名称：</b>
                         <Input v-model="addInfo.name" placeholder="名称不能为空"></Input>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">X：</b>
-                        <Input v-model="addInfo.x_coordinate" type="number"></Input>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">Y：</b>
-                        <Input v-model="addInfo.y_coordinate" type="number"></Input>
                     </FormItem>
                     <FormItem>
                         <b slot="label">Z：</b>
@@ -303,8 +295,6 @@
                 //点击新建按钮初始化的数据
                 addInfo:{
                     name:"",
-                    x_coordinate:null,
-                    y_coordinate:null,
                     z_coordinate:null
                 },
                 currentData:{},
@@ -785,12 +775,7 @@
                 await this.$ajax.patch("api/v1/cedar/phone_model/"+phone_model_id+"/", {
                     ply: this.phone_model.ply
                 }) .then(res => {
-                    this.showLoading = false
                     isContinue = true
-                    if (this.isSendReq)
-                        this.onClose(this.isSendReq)
-                    else
-                        this.onClose(false)
                 }).catch(error => {
                     this.showLoading = false
                     isContinue = false
@@ -839,6 +824,11 @@
                             this.$Message.error({content:error.response.data.description,duration:6})
                     })
                 }
+                this.showLoading = false
+                if (this.isSendReq)
+                    this.onClose(this.isSendReq)
+                else
+                    this.onClose(false)
             },
             //------   以 下 是 对 表 格 的 一 些 需 求 操 作 -----------
             onRowClick(row,index){
@@ -857,8 +847,6 @@
                 this.showModal = true
                 this.addInfo = {
                     name:"",
-                    x_coordinate:null,
-                    y_coordinate:null,
                     z_coordinate:0
                 }
             },
@@ -882,8 +870,8 @@
                 }
                 this.tableData.push({
                     name:this.addInfo.name,
-                    x_coordinate:this.addInfo.x_coordinate,
-                    y_coordinate:this.addInfo.y_coordinate,
+                    x_coordinate:null,
+                    y_coordinate:null,
                     z_coordinate:this.addInfo.z_coordinate,
                     is_fixed:false,
                     update:true
