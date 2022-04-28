@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div v-show="showChart" :id="'histogram'+propCanvasId+'-'+jobId" style="height: 250px;"></div>
-        <div v-show="!showChart" style="font-size: 12px;text-align: center">暂无性能图表信息！</div>
+        <div v-if="showChart" :id="'histogram'+propCanvasId+'-'+jobId" style="height: 250px;"></div>
+        <div v-else style="font-size: 12px;text-align: center">暂无性能图表信息！</div>
     </div>
 </template>
 
