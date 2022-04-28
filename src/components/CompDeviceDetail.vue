@@ -1,6 +1,6 @@
 <template>
     <Card :title="device.device_name + ' (' + device.device_label + ')'" style="position: relative;" dis-hover>
-        <Form :model="device" :label-width="90">
+        <Form :model="device" :label-width="100">
             <FormItem>
                 <b slot="label">ID</b>
                 <Input v-model="device.id" :disabled="true" class="disabled-input"></Input>
@@ -36,6 +36,10 @@
             <FormItem>
                 <b slot="label">状态</b>
                 <Input v-model="device.status" :disabled="true" class="disabled-input"></Input>
+            </FormItem>
+            <FormItem>
+                <b slot="label">状态变更时间</b>
+                <Input v-model="device.status_update_time" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <Divider></Divider>
             <FormItem>
@@ -340,6 +344,7 @@
                 },
                 start_time_key: "date",
                 status: "string",
+                status_update_time:"date",
                 device_name: "string",
                 tempport: [
                     {
@@ -658,6 +663,7 @@
                             "rom_version,rom_version.id,rom_version.version," +
                             "start_time_key," +
                             "status," +
+                            "status_update_time," +
                             "device_name," +
                             "tempport,tempport.id,tempport.port,tempport.description," +
                             "powerport,powerport.id,powerport.port," +
