@@ -293,7 +293,7 @@
                 this.$ajax.get(
                     "api/v1/cedar/tboard/?fields=" +
                     "id," +
-                    "board_stamp," +
+                    "board_stamp,end_time," +
                     "board_name," +
                     "device,job,repeat_time," +
                     "finished_flag," +
@@ -440,7 +440,7 @@
             },
             showRepeatTboard(index){
                 let row = this.data[index]
-                return row.finished_flag && (new Date()-new Date(row.board_stamp)<=24*60*60*1000);
+                return row.finished_flag && (new Date()-new Date(row.end_time)<=24*60*60*1000);
             },
             repeatTboard(row){
                 //再来一次 API
