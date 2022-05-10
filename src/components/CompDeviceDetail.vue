@@ -173,8 +173,9 @@
         </Collapse>
         <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;" v-if="editable" v-show="device.status!=='offline'">
             <Col>
-                <Button type="error" style="margin-right: 16px;" @click="deleteDevice">移除设备</Button>
-                <Button type="primary" @click="reconnectDevice">重新连接</Button>
+                <Button type="error" @click="deleteDevice">移除设备</Button>
+                <Button type="primary" style="margin:0 16px;" @click="reconnectDevice">重新连接</Button>
+                <Button type="info" v-show="device.status==='busy'" @click="releaseTboardDevice">从任务中释放</Button>
             </Col>
             <Col v-show="device.status!=='error'">
                 <Button type="primary" style="margin-right: 16px;" @click="updateDevice">保存</Button>
@@ -534,6 +535,34 @@
                         this.showRemoveModal = true
                     }
                 }
+            },
+            // 从 任 务 中 释 放 设 备
+            releaseTboardDevice(){
+                let _this = this
+                this.$Modal.confirm({
+                    title: "提示！",
+                    content: "确认要从任务中释放该设备吗？",
+                    onOk() {
+                        _this.spinShow = true
+                        _this.$ajax.delete("http://" + _this.device.cabinet.ip_address + ":5000"+ "/tboard/stop_specific_device/"+  _this.device.device_label +"/")
+                        .then(response=>{
+                            _this.spinShow = false
+                            if(response.data.error_code===0){
+                                _this.refresh(_this.device.id)
+                                _this.$Message.success({content:"释放设备成功",duration:3})
+                                _this.$emit('after-device-delete')
+                            }else{
+                                _this.$Message.error({content:response.data.description,duration: 10})
+                            }
+                        }).catch(error=>{
+                            _this.spinShow = false
+                            if(error.response.status>=500)
+                                _this.$Message.error({content:'服务器错误',duration: 5})
+                            else
+                                _this.$Message.error({content:'请求失败',duration: 5})
+                        })
+                    }
+                })
             },
             reconnectDevice(){
                 if (this.device.status==="offline"){

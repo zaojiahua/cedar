@@ -414,7 +414,6 @@
                                 tboard_id:boardId
                             })
                         .then(response => {
-                            console.log(response)
                             let str = ""
                             if(response.data.fail_cabinet){
                                 response.data.fail_cabinet.forEach(item=>{
