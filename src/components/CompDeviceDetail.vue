@@ -56,20 +56,12 @@
                             <Input v-model="device.phone_model.phone_model_name" :disabled="true" class="disabled-input"></Input>
                         </FormItem>
                         <FormItem>
-                            <b slot="label"><span class="need">*</span>Xdpi</b>
-                            <InputNumber style="width: 100%" v-model="device.phone_model.x_dpi" :disabled="!editable" class="disabled-input"></InputNumber>
+                            <b slot="label">Xdpi</b>
+                            <InputNumber style="width: 100%" v-model="device.phone_model.x_dpi" :disabled="true" class="disabled-input"></InputNumber>
                         </FormItem>
                         <FormItem>
-                            <b slot="label"><span class="need">*</span>Ydpi</b>
-                            <InputNumber style="width: 100%" v-model="device.phone_model.y_dpi" :disabled="!editable" class="disabled-input"></InputNumber>
-                        </FormItem>
-                        <FormItem>
-                            <b slot="label"><span class="need">*</span>X边框厚度</b>
-                            <InputNumber style="width: 100%" v-model="device.phone_model.x_border" :disabled="!editable" class="disabled-input"></InputNumber>
-                        </FormItem>
-                        <FormItem>
-                            <b slot="label"><span class="need">*</span>Y边框厚度</b>
-                            <InputNumber style="width: 100%" v-model="device.phone_model.y_border" :disabled="!editable" class="disabled-input"></InputNumber>
+                            <b slot="label">Ydpi</b>
+                            <InputNumber style="width: 100%" v-model="device.phone_model.y_dpi" :disabled="true" class="disabled-input"></InputNumber>
                         </FormItem>
                     </Form>
                 </div>
@@ -777,10 +769,6 @@
             },
             // Update device
             updateDevice(){
-                if(this.device.phone_model.x_border===null||this.device.phone_model.y_border===null||this.device.phone_model.x_dpi===null||this.device.phone_model.y_dpi===null){
-                    this.$Message.warning("机型信息不能为空！*为必填项");
-                    return
-                }
                 let temperDict = [];
                 //将当前设备要配置的温感片提取出来
                 let configPorts = this.selectedTempPorts.filter(selectedPort=> {
@@ -812,25 +800,10 @@
                                 auto_test :this.openSwitch
                             }
                         ),
-                        this.$ajax.post("/api/v1/cedar/update_phone_model/",
-                            {
-                                phone_model_id:this.device.phone_model.id,
-                                phone_model_name:this.device.phone_model.phone_model_name,
-                                x_border: this.device.phone_model.x_border,
-                                y_border: this.device.phone_model.y_border,
-                                x_dpi: this.device.phone_model.x_dpi,
-                                y_dpi: this.device.phone_model.y_dpi
-                            }
-                        )
                     ]
-                ).then(this.$ajax.spread((configResponse, phoneModelResponse,)=>{
+                ).then(this.$ajax.spread((configResponse)=>{
                     this.spinShow = false;
                     if(config.DEBUG) console.log(configResponse.data)
-                    if(phoneModelResponse.status===200){
-                        this.$Message.success("机型信息保存成功!")
-                    }else {
-                        this.$Message.error("机型信息保存失败!")
-                    }
                     if(configResponse.status===200){
                         this.$Message.success("配置成功")
                         this.$emit('after-device-update', configResponse)
