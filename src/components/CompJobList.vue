@@ -326,6 +326,7 @@
                 this.currentPage = page
                 this.refresh()
             },
+            // 以下的两个方法以后基本都不用了
             clearSelection() {
                 this.$refs.table.selectAll(false)
             },
