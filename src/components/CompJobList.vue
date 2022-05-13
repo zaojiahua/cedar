@@ -385,9 +385,6 @@
                 this.filterJobNameList = list
             },
             jobSearch(value){
-                if(value.indexOf("&")!==-1){
-                    value = value.replace(/\&/g,"%26")
-                }
                 value= encodeURIComponent(value)
                 let deviceCountCondition = ""
                 if(this.propSubsidiaryDeviceCount)
