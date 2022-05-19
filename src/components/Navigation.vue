@@ -103,7 +103,7 @@
                         </MenuItem>
                         <MenuItem name="abnormal-statistics" :to="{name: 'abnormal-statistics'}">
                             <Tooltip content="异常统计" placement="right" :disabled="!isCollapsed">
-                                <Icon type="ios-battery-charging" size="24"/>
+                                <Icon type="ios-warning-outline" size="24"/>
                             </Tooltip>
                             <span>异常统计</span>
                         </MenuItem>
@@ -120,23 +120,11 @@
                 <Form :label-width="120">
                     <FormItem>
                         <b slot="label">Reef版本：</b>
-                        <p>{{ versionInfo.reef_version }}</p>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">Coral版本：</b>
-                        <p>{{ versionInfo.coral_version }}</p>
+                        <p>{{ reef_version }}</p>
                     </FormItem>
                     <FormItem>
                         <b slot="label">Cedar版本：</b>
-                        <p>{{ versionInfo.cedar_version }}</p>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">Pacific版本：</b>
-                        <p>{{ versionInfo.pacific_version }}</p>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">TMach版本：</b>
-                        <p>{{ versionInfo.TMach_version }}</p>
+                        <p>3.5.0</p>
                     </FormItem>
                 </Form>
                 <p slot="footer" style="text-align: center">
@@ -153,14 +141,6 @@
     import config from "../lib/config"
     import CompReefUsage from "./CompReefUsage"
 
-    const versionSerializer = {
-        TMach_version:"string",
-        cedar_version:"number",
-        coral_version:"number",
-        pacific_version:"string",
-        reef_version:"string",
-    }
-
     export default {
         components:{ CompReefUsage },
         data () {
@@ -168,7 +148,7 @@
                 isCollapsed: true,
                 notification: 0,
                 showModal:false,
-                versionInfo:utils.validate(versionSerializer,{}),
+                reef_version:"",
                 permissions:  sessionStorage.permissions === undefined ? "" : sessionStorage.permissions,
                 showVersionLoading:false,
                 username:sessionStorage.username,
@@ -207,12 +187,9 @@
                 this.showModal = true;
                 this.showVersionLoading = true;
                 this.$Loading.start();
-                let coralUrl = "http://"+config.UPDATE_HOST+":"+config.ADMIN_PORT;
-                this.$ajax.post(coralUrl,{
-                    requestName:'getTMachVersionInfo'
-                }).then(response=>{
+                this.$ajax.get("api/v1/cedar/get_reef_version/").then(response=>{
                     this.showVersionLoading = false;
-                    this.versionInfo = utils.validate(versionSerializer,response.data);
+                    this.reef_version = response.data;
                     this.$Loading.finish();
                 }).catch(error=>{
                     this.showVersionLoading = false;
