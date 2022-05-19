@@ -421,9 +421,6 @@
                 })
             },
             testSearch(value){  // 开始搜索
-                if(value.indexOf("&")!==-1){
-                    value = value.replace(/\&/g,"%26")
-                }
                 value= encodeURIComponent(value.trim())
                 this.$refs.testList.setKeywords(value)
             },

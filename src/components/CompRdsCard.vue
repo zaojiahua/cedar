@@ -101,6 +101,11 @@
                 type: Boolean,
                 default: true
             },
+            // 只有一个具体的RDS开始时间参数
+            propStartDateOne:{
+                type: Boolean,
+                default: false
+            },
             propOrder:{
                 type: Boolean,
                 default: false
@@ -179,6 +184,8 @@
                     else
                         dateRangeCondition = "&start_time__gte=" + this.propFilterDateRange[0].format("yyyy-MM-dd hh:mm:ss") +
                             "&end_time__lte=" + this.propFilterDateRange[1].format("yyyy-MM-dd hh:mm:ss")
+                    if(this.propStartDateOne)
+                        dateRangeCondition = "&start_time=" + this.propFilterDateRange[0].format("yyyy-MM-dd hh:mm:ss")
                 }
                 this.loadingData = true
                 if(reset){

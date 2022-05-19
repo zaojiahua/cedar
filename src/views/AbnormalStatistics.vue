@@ -9,7 +9,7 @@
                               @on-row-click="onSelectTboardModalRowClick"></comp-tboard-list>
         </Modal>
 
-        <Row style="margin-bottom: 5px;">异常统计   <Icon type="ios-help-circle-outline" color="#1296db" /></Row>
+        <Row style="margin-bottom: 5px;">异常统计</Row>
         <div v-show="!showContent" class="out-box">
             <Row style="padding-top: 150px;text-align: center">
                 <p style="color: rgb(170, 170, 170); font-size: larger; font-weight: bold;">请先选择任务或设备</p>
@@ -34,7 +34,7 @@
                     <DatePicker style="float: right;margin-right: 20px;width: 220px;" v-model="deviceFilterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
                 </Row>
                 <div style="max-height: 100px;overflow: auto;margin-top: 16px">
-                    <Tag type="border" v-for="(item,index) in devices" :key="index" style="margin: 0 5px 5px 0"> {{ item.device_label }} </Tag>
+                    <Tag type="border" v-for="(item,index) in devices" :key="index" style="margin: 0 5px 5px 0"> {{ item.device_name }} </Tag>
                 </div>
             </Card>
             <!-- 任务入口顶部差异 -->
@@ -75,35 +75,37 @@
             </Card>
             <!-- 统计部分概括 -->
             <Card :bordered="false" dis-hover style="box-shadow: 0 0 2px 1px #eee;margin: 16px 0;">
-                <div class="abs-tit" v-for="(item,index) in abnormalList" :key="item.abnm_id" :class="{ active: isActive===index }" @click="isActive=index;abnormalType=item.abnm_id">
+                <div class="abs-tit" v-for="(item,index) in abnormalList" :key="item.code" :class="{ active: isActive===index }" @click="isActive=index;abnormalType=item.code">
                     <p class="blue-tag"></p>
-                    <b>{{ item.abnm_type_name }} <Icon type="ios-help-circle-outline" /></b>
+                    <b>{{ item.abnm_type_name }}</b>
                     <p>{{ item.abnm_num }}</p>
                     <span>设备数  {{ item.abnm_device_num }}</span>
                 </div>
             </Card>
            <!-- 统计详情 -->
-            <comp-power-abnormal v-if="abnormalType===1"
+            <comp-power-abnormal v-if="abnormalType===1" :key="1"
                                  :prop-devices="devices"
                                  :prop-tboard-id="tboardId"
-                                 :prop-filter-date-range="deviceFilterDateRange"
-                                 @rds-mouse-enter="onRdsMouseEnter"
-                                 @rds-mouse-leave="onRdsMouseLeave">
+                                 :prop-filter-date-range="deviceFilterDateRange">
             </comp-power-abnormal>
-        </div>
-
-        <div v-show="tipData.id"  style="position: fixed;bottom: 16px;right: 0; background-color: #434343; border-radius: 5px;opacity: 0.9; color: #ebf7ff; padding: 8px;">
-            <span>ID：</span>
-            <span>{{tipData.id}}</span>
-            <br>
-            <span>设备名称：</span>
-            <span>{{tipData.device.device_name}}</span>
-            <br>
-            <span>用例名称：</span>
-            <span>{{tipData.job.job_name}}</span>
-            <br>
-            <span>结果：</span>
-            <span>{{tipData.job_assessment_value}}</span>
+            <comp-abnormal-other v-if="abnormalType===2" :key="2"
+                                 :prop-devices="devices"
+                                 :prop-tboard-id="tboardId"
+                                 :prop-abnormal-type="abnormalType"
+                                 :prop-filter-date-range="deviceFilterDateRange">
+            </comp-abnormal-other>
+            <comp-abnormal-other v-if="abnormalType===3" :key="3"
+                                 :prop-devices="devices"
+                                 :prop-tboard-id="tboardId"
+                                 :prop-abnormal-type="abnormalType"
+                                 :prop-filter-date-range="deviceFilterDateRange">
+            </comp-abnormal-other>
+            <comp-abnormal-other v-if="abnormalType===4" :key="4"
+                                 :prop-devices="devices"
+                                 :prop-tboard-id="tboardId"
+                                 :prop-abnormal-type="abnormalType"
+                                 :prop-filter-date-range="deviceFilterDateRange">
+            </comp-abnormal-other>
         </div>
 
         <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
@@ -123,6 +125,7 @@
     import CompJobDetail from "../components/CompJobDetail";
     import CompDeviceDetail from "../components/CompDeviceDetail";
     import CompPowerAbnormal from "../components/CompPowerAbnormal";
+    import CompAbnormalOther from "../components/CompAbnormalOther";
 
 
 
@@ -150,23 +153,13 @@
     const abnormalListSerializer = [{
         abnm_device_num: "number",
         abnm_id: "number",
+        code: "number",
         abnm_num: "number",
         abnm_type_name: "string"
     }]
-    const tipDataSerializer = {
-        id: "number",
-        device: {
-            device_name: "string"
-        },
-        job: {
-            job_name: "string"
-        },
-        job_assessment_value: "string"
-    }
-
 
     export default {
-        components:{ CompDeviceList, CompTboardList, CompJobDetail, CompDeviceDetail, CompPowerAbnormal  },
+        components:{ CompDeviceList, CompTboardList, CompJobDetail, CompDeviceDetail, CompPowerAbnormal, CompAbnormalOther  },
         data(){
             return{
                 showSelectDeviceModal:false,
@@ -184,7 +177,6 @@
                 isActive:0,
                 abnormalList:utils.validate(abnormalListSerializer, []),
                 abnormalType:null,
-                tipData:utils.validate(tipDataSerializer, null),
             }
         },
         methods:{
@@ -265,25 +257,20 @@
                 }
                 let url = ""
                 if((this.devices.length>0)&&(this.tboardId===null))
-                    url = "api/v1/cedar/get_abnormity_count/?devices="+ ids +"&start_time="+ this.deviceFilterDateRange[0].format("yyyy-MM-dd hh:mm:ss") +"&end_time="+this.deviceFilterDateRange[1].format("yyyy-MM-dd")+" 23:59:59"
+                    url = "api/v1/cedar/get_abnormity_count/?devices="+ ids +"&start_time="+ this.deviceFilterDateRange[0].format("yyyy-MM-dd hh:mm:ss")
+                        +"&end_time="+this.deviceFilterDateRange[1].format("yyyy-MM-dd")+" 23:59:59"
                 else if((this.devices.length===0)&&(this.tboardId!==null))
                     url = "api/v1/cedar/get_abnormity_count/?tboard="+ this.tboardId
 
                 this.$ajax.get(url)
                     .then(response=>{
                         this.abnormalList = utils.validate(abnormalListSerializer,response.data.results)
-                        this.abnormalType = this.abnormalList[0].abnm_id
+                        this.abnormalType = this.abnormalList[0].code
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
                         this.$Message.error("异常类型获取失败！")
                     })
-            },
-            onRdsMouseEnter(rds) {
-                this.tipData = utils.validate(tipDataSerializer, rds)
-            },
-            onRdsMouseLeave() {
-                this.tipData = utils.validate(tipDataSerializer, null)
             },
 
         },
