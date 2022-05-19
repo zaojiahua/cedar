@@ -47,18 +47,16 @@
                 this.$refs.statisticTable._setUrlParam(params)
                 this.$refs.statisticTable.onPageChange(1)
             },
-            onRowClick(row,index){
+            onRowClick(row1,row2){
+                //row1,row2代表一、二级表格数据，若row2===undefine，说明点击的是一级表格数据
                 this.showRdsCard = true
-                if(index===undefined){
-                    this.device = row
-                    this.job = {
-                        id: row.label_id,
-                        name:row.label_name
-                    }
+                if(row2===undefined){
+                    this.job = row1
+                    this.device = {}
                 }
                 else{
-                    this.job = row
-                    this.device = {}
+                    this.device = row2
+                    this.job = row1
                 }
                 this.getInvalidList()
                 this.updateRds =this.job.id + " "+ this.device.id
