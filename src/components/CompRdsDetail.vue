@@ -82,8 +82,12 @@
                 <b slot="label">日志文件：</b>
                 <p v-if="showLogTip" style="color: #FF9900">暂无日志文件信息</p>
                 <ButtonGroup v-show="rdsInfo.logList.length>0" style="margin-bottom: 8px">
-                    <Button v-for="files in rdsInfo.logList" style="margin-bottom: 8px;" :key="files.id" @click="viewLogFile(files.log_file,files.file_name)">{{ files.file_name }}</Button>
+                    <Button v-for="files in rdsInfo.logList" :key="files.id" @click="viewLogFile(files.log_file,files.file_name)">{{ files.file_name }}</Button>
                 </ButtonGroup>
+                <Row v-show="rdsInfo.logList.length>0">
+                    <Button size="small" type="primary" ghost @click="downloadAllFile">全部下载</Button>
+                </Row>
+                <Divider v-show="rdsInfo.logList.length>0"></Divider>
                 <Row v-show="rdsInfo.zipList.length>0">
                     <ButtonGroup>
                         <Button v-for="files in rdsInfo.zipList" style="margin-bottom: 8px;" :key="files.id" @click="downloadLog(files.log_file)">{{ files.file_name }}</Button>
@@ -409,6 +413,20 @@
                     window.URL.revokeObjectURL(url);
                 })
                 // window.open(this.baseUrl+this.path)
+            },
+            //一 键 全 部 下 载
+            downloadAllFile(){
+                this.rdsInfo.logList.forEach(item=>{
+                    this.$ajax.get(item.log_file, {responseType: 'blob'}).then(res => {
+                        let blob = new Blob([res.data]);
+                        let url = window.URL.createObjectURL(blob);
+                        let a = document.createElement("a");
+                        a.href = url;
+                        a.download = item.file_name;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    })
+                })
             },
             viewOriginalImg(img,index){
                 this.imgIndex = index
