@@ -32,7 +32,7 @@
                             this.totalText = "T"
                         }
                         if(response.data.used>=10240){
-                            this.capacity.used =  parseFloat((response.data.total/1024).toFixed(2));
+                            this.capacity.used =  parseFloat((response.data.used/1024).toFixed(2));
                             this.usedText = "T"
                         }
                     }).catch(error=>{
