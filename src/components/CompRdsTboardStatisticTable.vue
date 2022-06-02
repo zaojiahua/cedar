@@ -150,6 +150,7 @@
                 }
                 this.$ajax.post("api/v1/cedar/data_view_job_filter/",paramsObj)
                     .then(response=>{
+                        this.dataTotal2 = parseInt(response.headers["total-count"])
                         response.data.forEach(item=>{
                             item.success_rate = item.success_rate + '%'
                             item.invalid_rate = item.invalid_rate + '%'
@@ -685,6 +686,11 @@
             pageSize:{
                 handler:function () {
                     this.onPageChange(1)
+                }
+            },
+            pageSize2:{
+                handler:function () {
+                    this.onPageChange2(1)
                 }
             }
         }
