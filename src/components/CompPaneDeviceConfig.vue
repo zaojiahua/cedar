@@ -14,6 +14,17 @@
                                 <DropdownItem @click.native="coordinateConverting('坐标换算')">坐标换算</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
+                        <Dropdown v-show="showLocationBtn" trigger="contextMenu" style="float: right;font-weight: normal;">
+                            <Button @click="getMlocation">
+                                mlocation调试
+                                <!--<Icon type="ios-arrow-down"></Icon>-->
+                            </Button>
+                            <!--<DropdownMenu slot="list">-->
+                                <!--&lt;!&ndash;<DropdownItem @click.native="">点击准确性测试</DropdownItem>&ndash;&gt;-->
+                                <!--<DropdownItem @click.native="showValidationModal=true">点击有效性测试</DropdownItem>-->
+                                <!--&lt;!&ndash;<DropdownItem @click.native="">滑动有效性测试</DropdownItem>&ndash;&gt;-->
+                            <!--</DropdownMenu>-->
+                        </Dropdown>
                     </h5>
                 </Row>
                 <Form :label-width="90">
@@ -61,7 +72,15 @@
                         <Button style="border: none;font-size: 2em;margin: -7px 10px 0 0;box-shadow:none;"
                                 icon="ios-trash-outline"
                                 @click="onDeleteRow"></Button>
-                        <Button type="info" style="margin: 0 16px" @click="onCoordinateTestClick">测试点击</Button>
+                        <Dropdown trigger="contextMenu" style="margin: 0 16px">
+                            <Button type="info"  @click="onCoordinateTestClick">
+                                测试点击
+                                <Icon type="ios-arrow-down"></Icon>
+                            </Button>
+                            <DropdownMenu slot="list">
+                                <DropdownItem @click.native="onOpenTestCountModal">测试点击多次</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
                         <Button type="primary" @click="setBorder('point')">确认信息</Button>
                     </Row>
                 </div>
@@ -124,6 +143,38 @@
                     <Button @click="showModal=false" style="margin-right: 50px;">取消</Button>
                     <Button type="primary" @click="addTableData">添加</Button>
                 </p>
+            </Card>
+        </Modal>
+
+        <Modal v-model="showMlocationModal" :closable="false" :footer-hide="true" :mask-closable="false" width="550">
+            <Card>
+                <Row>
+                    <h3>mlocation 坐标 <span style="font-size:12px;">(精确到0.1mm)</span></h3>
+                </Row>
+                <Row class="location-box" style="display: flex;margin: 10px 0 30px 0">
+                    <InputNumber v-model="mlocation.x" :min="0" style="margin-right: 16px;" placeholder="x"></InputNumber>
+                    <InputNumber v-model="mlocation.y" :min="0" style="margin-right: 16px" placeholder="y"></InputNumber>
+                    <InputNumber v-model="mlocation.z" placeholder="z"></InputNumber>
+                </Row>
+                <Row>
+                    <Button type="info" @click="testMlocation" style="margin-right: 50px;">测试</Button>
+                    <div style="float: right;">
+                        <Button @click="showMlocationModal=false" style="margin-right: 24px;">取消</Button>
+                        <Button type="primary" @click="setMlocation">完成</Button>
+                    </div>
+
+                </Row>
+            </Card>
+        </Modal>
+
+        <Modal v-model="showValidationModal" :closable="false" :footer-hide="true" :mask-closable="false" width="450">
+            <Card>
+                <h3>测试点击次数</h3>
+                <InputNumber v-model="testCount" style="width: 380px;margin-top: 16px" :min="1" :max="100" :precision="0"></InputNumber>
+                <Row style="text-align: right;margin-top: 30px;">
+                    <Button @click="showValidationModal=false;testCount=50" style="margin-right: 30px;">取消</Button>
+                    <Button type="primary" @click="onValidationTest">测试</Button>
+                </Row>
             </Card>
         </Modal>
     </div>
@@ -228,6 +279,8 @@
                 //点击确认以后外层是否需要发送请求
                 isSendReq: true,
                 deviceLabel: null,
+                deviceCabinetType:'',
+                deviceCabinetId:'',
                 deviceId: null,
                 tableColumns:[
                     {
@@ -304,7 +357,18 @@
                 //测试调试距离按钮是否显示
                 showTestBtn:false,
                 //调试距离按钮是否可点击：发送请求以后返回较慢
-                isDisabled:false
+                isDisabled:false,
+                //测试有效性/mlocation按钮是否显示
+                showLocationBtn:false,
+                isDisabledBtn:false,
+                mlocation:{
+                    x:null,
+                    y:null,
+                    z:null,
+                },
+                showMlocationModal:false,
+                showValidationModal:false,
+                testCount:50,
             }
         },
         computed: {
@@ -444,22 +508,211 @@
                         this.$Message.error({content:'调试距离失败',duration: 5})
                 })
             },
+            //  mlocation 坐标点在x,y,z的值的校验
+            mlocationValidate(){
+                // mlocation 的x,y,z有默认值以及默认范围
+                // Tcab_5se,Tcab_5 左上角点对齐  30<x<45     8<y<50    -35<z<5
+                // Tcab_5L,中心点对齐       137<x<177,   180<y <  220,     -35<z<5
+                let rangeX = []
+                let rangeY = []
+                let rangeZ = []
+                if(["Tcab_5","Tcab_5se"].includes(this.deviceCabinetType)){
+                    rangeX = [30,45]
+                    rangeY = [8,50]
+                    rangeZ = [-35,5]
+                }else if(["Tcab_5L"].includes(this.deviceCabinetType)){
+                    rangeX = [137,177]
+                    rangeY = [180,220]
+                    rangeZ = [-35,5]
+                }
+                if(this.mlocation.x===null || this.mlocation.x==='' || this.mlocation.x>rangeX[1] || this.mlocation.x<rangeX[0]){
+                    this.$Message.warning({content:"x 的取值范围为("+rangeX[0]+","+rangeX[1]+")",duration:3})
+                    return true
+                }
+                if(this.mlocation.y===null || this.mlocation.y==='' || this.mlocation.y>rangeY[1]||this.mlocation.y<rangeY[0]){
+                    this.$Message.warning({content:"y 的取值范围为("+rangeY[0]+","+rangeY[1]+")",duration:3})
+                    return true
+                }
+                if(this.mlocation.z===null || this.mlocation.z==='' || this.mlocation.z>rangeZ[1]||this.mlocation.z<rangeZ[0]){
+                    this.$Message.warning({content:"z 的取值范围为("+rangeZ[0]+","+rangeZ[1]+")",duration:3})
+                    return true
+                }
+                return false
+            },
+            // 设置（保存） mlocation 坐标
+            setMlocation(){
+                if(this.mlocationValidate())
+                    return
+                this.$ajax.post("api/v1/cedar/update_cabinet_mlocation/",{
+                    device_label: this.deviceLabel,
+                    cabinet_id: this.deviceCabinetId,
+                    m_location_x: this.mlocation.x,
+                    m_location_y: this.mlocation.y,
+                    m_location_z: this.mlocation.z
+                }).then(response=>{
+                    this.$Message.success("mlocation保存成功")
+                    this.showMlocationModal = false
+                }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error("服务器错误")
+                    else
+                        this.$Message.error({content:error.response.data.description,duration:6})
+                })
+            },
+            // 点击测试 mlocation 的值
+            testMlocation(){
+                if(this.mlocationValidate())
+                    return
+                // ......
+                this.isDisabledBtn = true
+                this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/click_m_location/",{
+                    device_label: this.deviceLabel,
+                    m_location_x: this.mlocation.x,
+                    m_location_y: this.mlocation.y,
+                    m_location_z: this.mlocation.z
+                }).then(response=>{
+                    this.isDisabledBtn = false
+                    if(response.data.error_code===0){
+                        this.$Message.success({content:"请求成功",duration:3})
+                    }else{
+                        this.$Message.error({content:response.data.description,duration: 10})
+                    }
+                }).catch(error=>{
+                    this.isDisabledBtn = false
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
+            //  获取 mlocation 的坐标信息
+            getMlocation(){
+                if(this.isDisabledBtn){
+                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    return
+                }
+                this.mlocation = {
+                    x:null,
+                    y:null,
+                    z:null,
+                }
+                this.$ajax.get("api/v1/cedar/cabinet/?fields=id,m_location_x,m_location_y,m_location_z&id="+ this.deviceCabinetId)
+                    .then(response=>{
+                        this.mlocation = {
+                            x:response.data.cabinets[0].m_location_x,
+                            y:response.data.cabinets[0].m_location_y,
+                            z:response.data.cabinets[0].m_location_z,
+                        }
+                        this.showMlocationModal = true
+                    }).catch(error=>{
+                        if(error.response.status>=500)
+                            this.$Message.error("服务器错误")
+                        else
+                            this.$Message.error({content:error.response.data.description,duration:6})
+                    })
+            },
+            //点击有效性测试
+            onValidationTest(){
+                if(!this.testCount){
+                    this.$Message.warning("请输入点击次数")
+                    return
+                }
+                this.showValidationModal = false
+                let data = new FormData()
+                data.append('img', Utils.dataURLtoFile(this.imgSrc,"rawImage.jpg"))
+                data.append('device_label', this.deviceLabel)
+                data.append('inside_upper_left_x', this.deviceCutCoordinate.inside_upper_left_x)
+                data.append('inside_upper_left_y', this.deviceCutCoordinate.inside_upper_left_y)
+                data.append('inside_under_right_x', this.deviceCutCoordinate.inside_under_right_x)
+                data.append('inside_under_right_y', this.deviceCutCoordinate.inside_under_right_y)
+                data.append('x', this.currentData.x_coordinate)
+                data.append('y', this.currentData.y_coordinate)
+                data.append('z', this.currentData.z_coordinate)
+                data.append('click_count', this.testCount)
+
+                this.$ajax.post(`http://${this.cabinetIP}:5000/pane/coordinate_click_test/`,data)
+                    .then(response=>{
+                        if(response.data.error_code===0){
+                            this.$Message.success({content:"请求成功",duration:3})
+                        }else if(response.data.error_code===3013){
+                            let _this = this
+                            this.$Modal.confirm({
+                                title:"提示",
+                                content:"机械臂正在使用无法点击，确定要停止当前的动作吗？",
+                                onOk(){
+                                    data.append('stop_loop_flag', "1")
+                                    _this.$ajax.post(`http://${_this.cabinetIP}:5000/pane/coordinate_click_test/`,data)
+                                        .then(response=>{
+                                            if(response.data.error_code===0){
+                                                this.$Message.success({content:"停止成功",duration:3})
+                                            } else {
+                                                this.$Message.error({content:response.data.description,duration: 10})
+                                            }
+                                        }).catch(error=>{
+                                            if(error.response.status>=500)
+                                                this.$Message.error({content:'服务器错误',duration: 5})
+                                            else
+                                                this.$Message.error({content:'请求失败',duration: 5})
+                                        })
+                                }
+                            })
+                        } else {
+                            this.$Message.error({content:response.data.description,duration: 10})
+                        }
+                    }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
+            // 打开有效性测试模态框
+            onOpenTestCountModal(){
+                if (this.imgSrc === ''){
+                    this.$Message.warning("请先获取图片")
+                    return
+                }
+                if(this.currentIndex===null){
+                    this.$Message.warning({content: "请先选择一条数据！", duration: 3})
+                    return
+                }
+                if(this.currentData.x_coordinate===null||this.currentData.y_coordinate===null||this.currentData.z_coordinate===null){
+                    this.$Message.warning({content: "请将坐标信息填写完整！", duration: 3})
+                    return
+                }
+                if (!this.deviceCutCoordinate.inside_under_right_x || !this.deviceCutCoordinate.inside_under_right_y
+                    || !this.deviceCutCoordinate.inside_upper_left_x || !this.deviceCutCoordinate.inside_upper_left_y) {
+                    this.$Message.warning({content: "边框信息不能为空!", duration: 3})
+                    return
+                }
+                this.showValidationModal = true
+            },
             //从机型详情页进入到机型配置页面
             onConfig(device, index) {
                 this.resetCoordinateInfo()
                 this.deviceId = device.id
                 this.cabinetIP = device.cabinet.ip_address
                 this.deviceLabel = device.device_label
+                this.deviceCabinetType = device.cabinet.type
+                this.deviceCabinetId = device.cabinet.id
                 this.isSendReq = false
                 this.getCoordinateInfo()
                 this.getImg()
                 this.showTestBtn = device.cabinet.type === "Tcab_5D";
+                let user = sessionStorage.getItem('username')
+                let cabinetList = ['Tcab_5','Tcab_5L','Tcab_5se']
+                this.showLocationBtn = user==='admin' && cabinetList.includes(device.cabinet.type)
             },
             setMsg(row){
                 this.deviceId = row.id
                 this.deviceLabel = row.device_label
                 this.cabinetIP = row.cabinet.ip_address
+                this.deviceCabinetType = row.cabinet.type
+                this.deviceCabinetId = row.cabinet.id
                 this.showTestBtn = row.cabinet.type === "Tcab_5D";
+                let user = sessionStorage.getItem('username')
+                let cabinetList = ['Tcab_5','Tcab_5L','Tcab_5se']
+                this.showLocationBtn = user==='admin' && cabinetList.includes(row.cabinet.type)
             },
             setPaneId(id){
                 this.paneId = id
@@ -932,7 +1185,29 @@
                     .then(response=>{
                         if(response.data.error_code===0){
                             this.$Message.success({content:"请求成功",duration:3})
-                        }else{
+                        }else if(response.data.error_code===3013){
+                            let _this = this
+                            this.$Modal.confirm({
+                                title:"提示",
+                                content:"机械臂正在使用无法点击，确定要停止当前的动作吗？",
+                                onOk(){
+                                    data.append('stop_loop_flag', "1")
+                                    _this.$ajax.post(`http://${_this.cabinetIP}:5000/pane/coordinate_click_test/`,data)
+                                        .then(response=>{
+                                            if(response.data.error_code===0){
+                                                this.$Message.success({content:"停止成功",duration:5})
+                                            } else {
+                                                this.$Message.error({content:response.data.description,duration: 10})
+                                            }
+                                        }).catch(error=>{
+                                            if(error.response.status>=500)
+                                                this.$Message.error({content:'服务器错误',duration: 5})
+                                            else
+                                                this.$Message.error({content:'请求失败',duration: 5})
+                                        })
+                                }
+                            })
+                        } else{
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
@@ -957,6 +1232,12 @@
     }
     /deep/.ivu-table-overflowX {
         overflow-x: hidden;
+    }
+    .location-box >>> input{
+        text-align: center;
+    }
+    .location-box .ivu-input-number{
+        width: 150px;
     }
     .container {
         display: flex;
