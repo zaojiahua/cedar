@@ -22,6 +22,7 @@
                             <DropdownMenu slot="list" style="text-align: left;">
                                 <!--<span @click="onRefreshJobList"><DropdownItem>刷新列表</DropdownItem></span>-->
                                 <span @click="onRemoveJobs"><DropdownItem>批量移除</DropdownItem></span>
+                                <span @click="onExportJobs"><DropdownItem>导出用例</DropdownItem></span>
                             </DropdownMenu>
                         </Dropdown>
                     </Col>
@@ -58,6 +59,7 @@
         },
         data(){
             return{
+                baseUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT,
                 columns: [
                     {
                         type: 'selection',
@@ -317,6 +319,44 @@
                         })
                     }
                 })
+            },
+            // 导出用例
+            onExportJobs(){
+                if(this.jobNumbers===0){
+                    this.$Message.info("至少选择一个用例！")
+                    return
+                }
+                let jobList = this.$refs.testSetJobList.getSelection();
+                let ids = [];
+                jobList.forEach(job=>{
+                    ids.push(job.id);
+                })
+                let userId = sessionStorage.getItem('id')
+                let _this = this
+                this.$Modal.confirm({
+                    title: "提示",
+                    content: "您确定要导出这些用例吗?<p>普通用户只能导出自己的用例，管理员可以导出全部用例。</p>",
+                    onOk(){
+                        this.$ajax
+                            .post("api/v1/cedar/job_export/",{
+                                job_ids: ids,
+                                user_id:parseInt(userId)
+                            })
+                            .then(response=>{
+                                if(response.data.success){
+                                    window.location.href=_this.baseUrl + response.data.success;
+                                    _this.cancelJobList()
+                                    this.$Message.success({content:"正在导出用例...",duration: 3})
+                                }else {
+                                    this.$Message.error("导出用例失败!")
+                                }
+                            })
+                            .catch(error=>{
+                                if (config.DEBUG) console.log(error)
+                                this.$Message.error({content: error.response.data.description,duration: 6})
+                            })
+                    }
+                });
             },
         },
         watch:{
