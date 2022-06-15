@@ -25,6 +25,15 @@
                                 <!--&lt;!&ndash;<DropdownItem @click.native="">滑动有效性测试</DropdownItem>&ndash;&gt;-->
                             <!--</DropdownMenu>-->
                         </Dropdown>
+                        <Dropdown v-show="showProBtn" trigger="contextMenu" style="float: right;font-weight: normal;">
+                            <Button @click="imageMosaic">
+                                拼接图像
+                                <Icon v-show="user==='admin'" type="ios-arrow-down"></Icon>
+                            </Button>
+                            <DropdownMenu slot="list" v-show="user==='admin'">
+                                <DropdownItem @click.native="getMlocation">mlocation调试</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
                     </h5>
                 </Row>
                 <Form :label-width="90">
@@ -360,6 +369,7 @@
                 isDisabled:false,
                 //测试有效性/mlocation按钮是否显示
                 showLocationBtn:false,
+                showProBtn:false,
                 isDisabledBtn:false,
                 mlocation:{
                     x:null,
@@ -369,6 +379,7 @@
                 showMlocationModal:false,
                 showValidationModal:false,
                 testCount:50,
+                user:sessionStorage.getItem('username')
             }
         },
         computed: {
@@ -702,6 +713,7 @@
                 let user = sessionStorage.getItem('username')
                 let cabinetList = ['Tcab_5','Tcab_5L','Tcab_5se']
                 this.showLocationBtn = user==='admin' && cabinetList.includes(device.cabinet.type)
+                this.showProBtn = device.cabinet.type === "Tcab_5pro"
             },
             setMsg(row){
                 this.deviceId = row.id
@@ -713,6 +725,7 @@
                 let user = sessionStorage.getItem('username')
                 let cabinetList = ['Tcab_5','Tcab_5L','Tcab_5se']
                 this.showLocationBtn = user==='admin' && cabinetList.includes(row.cabinet.type)
+                this.showProBtn = row.cabinet.type === "Tcab_5pro"
             },
             setPaneId(id){
                 this.paneId = id
