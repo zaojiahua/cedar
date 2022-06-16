@@ -6,7 +6,7 @@
                 <Button @click="onBtnClick(true)">上一个</Button>
                 <Button @click="onBtnClick(false)">下一个</Button>
             </ButtonGroup>
-            <Button v-if="propPerfRds&&rdsInfo.job_duration!==null" type="primary" @click="goRdsPhotos" style="margin-left: 24px;">测试图集</Button>
+            <Button v-if="propPerfRds&&rdsInfo.job.job_second_type==='TimeJob'" type="primary" @click="goRdsPhotos" style="margin-left: 24px;">测试图集</Button>
             <Button v-if="rdsInfo.job.job_second_type==='SmoothJob'&&(rdsInfo.result!=='无效')" type="primary" @click="goRdsFramePhotos" style="margin-left: 24px;">测试图集</Button>
         </p>
         <Form :label-width="120">
