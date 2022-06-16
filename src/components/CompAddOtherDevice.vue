@@ -166,6 +166,7 @@ export default {
           this.$Notice.success({
             title: '设备即将重启,请稍侯...'
           });
+          this.getPhoneModelList()
           this.$emit('afterDeviceAddSuccess', response.data)
         }else {
               this.$Message.error({content: response.data.description, duration: 8})
