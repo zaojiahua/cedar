@@ -61,23 +61,24 @@ export default {
       startPoint: null,
       endPoint: null,
       job_duration: null,
+      rdsId:null,
+      baseUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT,
     }
   },
   methods: {
     refresh(id) {
       this.showLoading = true
+      this.rdsId = id
       this.$ajax.get("api/v1/cedar/rds/" + id + "/?fields=" +
           "job_duration," +
           "start_point," +
           "end_point," +
-          "url_prefix," +
           "picture_count," +
           "time_per_unit")
           .then(response => {
             this.showLoading = false
             this.rdsPhotosData = utils.validate(rdsPhotosSerializer, response.data)
             this.selectedIndex = this.rdsPhotosData.start_point
-            this.selectedUrl = this.rdsPhotosData.url_prefix + this.rdsPhotosData.start_point + ".jpg"
             this.startPoint = this.rdsPhotosData.start_point
             this.endPoint = this.rdsPhotosData.end_point
             this.job_duration = this.rdsPhotosData.job_duration
@@ -85,6 +86,18 @@ export default {
             this.$nextTick(function () {
               document.querySelector("#p" + this.rdsPhotosData.start_point).scrollIntoView(true);
             })
+            if(this.rdsPhotosData.picture_count!==0){
+                let showImgName = this.rdsPhotosData.start_point ? this.rdsPhotosData.start_point + ".jpg" : "1.jpg"
+                this.$ajax.get("api/v1/cedar/rds_screenshot/?rds="+id+"&is_resource_file=True&file_name="+showImgName+"&fields=file_name,img_file")
+                    .then(response=>{
+                        this.selectedUrl = this.baseUrl + response.data.rdsscreenshots[0].img_file
+                    }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error("服务器错误")
+                    else
+                        this.$Message.error("图片获取失败")
+                })
+            }
           }).catch(error => {
         if (config.DEBUG) console.log(error)
         this.$Message.error("图集信息获取失败")
@@ -93,7 +106,20 @@ export default {
     //点击列表出来大图
     onListClick(index) {
       this.selectedIndex = index;
-      this.selectedUrl = this.rdsPhotosData.url_prefix + this.selectedIndex + ".jpg"
+      let imgName = this.selectedIndex + ".jpg"
+      this.getPic(imgName)
+    },
+    //获取图片
+    getPic(imgName){
+        this.$ajax.get("api/v1/cedar/rds_screenshot/?rds="+this.rdsId+"&is_resource_file=True&file_name="+imgName+"&fields=file_name,img_file")
+            .then(response=>{
+                this.selectedUrl = this.baseUrl + response.data.rdsscreenshots[0].img_file
+            }).catch(error=>{
+            if(error.response.status>=500)
+                this.$Message.error("服务器错误")
+            else
+                this.$Message.error("图片获取失败")
+        })
     },
     //图片列表前面的小圆圈
     classObject(index) {
@@ -122,7 +148,8 @@ export default {
     //点击快捷跳转到起点终点，顶部底部
     quickJump(point) {
       this.selectedIndex = point
-      this.selectedUrl = this.rdsPhotosData.url_prefix + point + ".jpg"
+      let imgName = point + ".jpg"
+      this.getPic(imgName)
       document.querySelector("#p" + point).scrollIntoView(true);
     },
     getPointMsg() {
@@ -137,11 +164,13 @@ export default {
       if (event.keyCode === 38) {
         if (this.selectedIndex === 1) return
         this.selectedIndex--;
-        this.selectedUrl = this.rdsPhotosData.url_prefix + this.selectedIndex + ".jpg"
+        let imgName = this.selectedIndex + ".jpg"
+        this.getPic(imgName)
       } else if (event.keyCode === 40) {
         if (this.selectedIndex === this.rdsPhotosData.picture_count) return
         this.selectedIndex++;
-        this.selectedUrl = this.rdsPhotosData.url_prefix + this.selectedIndex + ".jpg"
+        let imgName = this.selectedIndex + ".jpg"
+        this.getPic(imgName)
       }
     }
   },
