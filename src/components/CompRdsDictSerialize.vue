@@ -83,15 +83,17 @@
         },
         methods:{
             onPicClick(picName){
-                if(!this.isNotInclude(picName))
-                    this.$emit("on-pic-name-click",picName)
+                // if(!this.isNotInclude(picName))
+                //     this.$emit("on-pic-name-click",picName)
+                this.$emit("on-pic-name-click",picName)
             },
             isNotInclude(picName){
-                for (let i=0;i<this.propPicList.length;i++) {
-                    if(this.propPicList[i].file_name===picName)
-                        return false
-                }
-                return true
+                // for (let i=0;i<this.propPicList.length;i++) {
+                //     if(this.propPicList[i].file_name===picName)
+                //         return false
+                // }
+                // return true
+                return false
             }
         }
     }

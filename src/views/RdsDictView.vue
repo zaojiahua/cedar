@@ -15,11 +15,11 @@
                             </FormItem>
                         </Form>
                     </Card>
-                    <comp-rds-dict-serialize :prop-data="content" :prop-pic-name="highLightFileName" :prop-pic-list="fileList" style="width: 100%;margin-top: 10px"
+                    <comp-rds-dict-serialize :prop-data="content" :prop-pic-name="highLightFileName" style="width: 100%;margin-top: 10px"
                                              @on-pic-name-click="onPicNameClick"></comp-rds-dict-serialize>
                 </div>
                 <div slot="right" class="demo-split-pane rds-box" style="padding: 0 0 0 10px">
-                    <gallery v-show="fileList.length>0" :pic-url="fileList" :pic-name="highLightFileName" @on-pic-click="afterGalleryClick"></gallery>
+                    <gallery v-show="fileList.length>0" :pic-name="highLightFileName" :img-file="imgFile" @on-pic-click="afterGalleryClick"></gallery>
                     <div v-show="fileList.length===0" style="text-align: center;margin-top: 200px">
                         <span style="font-size: 18px;">暂无图片!</span>
                     </div>
@@ -57,6 +57,9 @@
                 fileList:[],
                 highLightFileName:"",
                 rdsInfo:utils.validate(rdsSerializer,{}),
+                rdsId:null,
+                imgFile:"",
+                currentIndex:0,
             }
         },
         methods:{
@@ -84,8 +87,11 @@
                     .then(response=>{
                         this.fileList = response.data
                         this.highLightFileName = ""
-                        if(this.fileList.length>0)
+                        this.currentIndex = 0
+                        if(this.fileList.length>0){
                             this.highLightFileName = this.fileList[0].file_name
+                            this.getImg(this.highLightFileName)
+                        }
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
@@ -98,18 +104,73 @@
                         this.$Message.error(errorMsg)
                     })
             },
+            getImg(picName){
+                this.$ajax.get("api/v1/cedar/rds_screenshot/?fields=file_name,img_file&rds=" + this.rdsId + "&file_name=" +picName)
+                    .then(response=>{
+                        this.imgFile = response.data.rdsscreenshots[0].img_file
+                    })
+                    .catch(error=>{
+                        if (config.DEBUG) console.log(error)
+                        this.imgFile = ""
+                        let errorMsg = "";
+                        if (error.response.status >= 500) {
+                            errorMsg = "服务器错误！"
+                        } else {
+                            errorMsg = "图片获取失败！"
+                        }
+                        this.$Message.error(errorMsg)
+                    })
+            },
             afterGalleryClick(file){
                 this.highLightFileName = file.file_name
             },
             onPicNameClick(picName){
                 this.highLightFileName = picName
-            }
+                this.getImg(picName)
+                for (let i = 0; i < this.fileList.length; i++) {
+                    if(this.fileList[i].file_name===picName){
+                        this.currentIndex = i
+                        return
+                    }
+                }
+            },
+            //键盘左右切换事件
+            onKeyUpEvent(event) {
+                if(this.fileList.length>0){
+                    if (event.keyCode === 37) {  //左 ←
+                        this.prevBtn()
+                    } else if (event.keyCode === 39) {  //右 →
+                        this.nextBtn()
+                    }
+                }
+            },
+            nextBtn(){
+                if(this.fileList[this.currentIndex+1]){
+                    this.currentIndex++
+                    this.highLightFileName = this.fileList[this.currentIndex].file_name
+                    this.imgFile = this.fileList[this.currentIndex].img_file
+                }
+            },
+            prevBtn(){
+                if(this.currentIndex===0)
+                    return
+                this.currentIndex--
+                this.highLightFileName = this.fileList[this.currentIndex].file_name
+                this.imgFile = this.fileList[this.currentIndex].img_file
+            },
         },
         mounted(){
             if(this.$route.query.hasOwnProperty("id")) {
                 this.refresh(this.$route.query.id)
                 this.getFileList(this.$route.query.id)
+                this.rdsId = this.$route.query.id
             }
+        },
+        created() {
+            window.addEventListener('keyup', this.onKeyUpEvent)
+        },
+        beforeDestroy() {
+            window.removeEventListener('keyup', this.onKeyUpEvent)
         }
     }
 </script>

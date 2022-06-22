@@ -1,18 +1,18 @@
 <template>
     <div class="gallery" :class="mode">
-        <div class="thumbnail">
-            <ul>
-                <li v-for="(pic, idx) in picUrl" :key="pic.idx">
-                    <img :src="baseUrl+pic.thumbs_file" :alt="pic.file_name" :title="pic.file_name" @click="selectPic(pic, idx)" :class="idx === curPicIdx ? 'selected' : ''">
-                    <p :title="pic.file_name">{{ pic.file_name }}</p>
-                 </li>
-            </ul>
-        </div>
+        <!--<div class="thumbnail" v-show="false">-->
+            <!--<ul>-->
+                <!--<li v-for="(pic, idx) in picUrl" :key="pic.idx">-->
+                    <!--<img :alt="pic.file_name" :title="pic.file_name" @click="selectPic(pic, idx)" :class="idx === curPicIdx ? 'selected' : ''">-->
+                    <!--<p :title="pic.file_name">{{ pic.file_name }}</p>-->
+                 <!--</li>-->
+            <!--</ul>-->
+        <!--</div>-->
         <div class="picture">
-            <Icon type="ios-arrow-dropleft-circle" size="60"  style="position: absolute;top: 45%;left: 5%;cursor: pointer;" @click="prevBtn"/>
-            <img :src="baseUrl+curPic.img_file" :alt="curPic.file_name" style="object-fit:contain">
-            <Icon type="ios-arrow-dropright-circle" size="60" style="position: fixed;top: 45%;right: 5%;cursor: pointer;" @click="nextBtn"/>
-            <p style="margin-top: 5px">{{ curPic.file_name }}</p>
+            <!--<Icon type="ios-arrow-dropleft-circle" size="60"  style="position: absolute;top: 45%;left: 5%;cursor: pointer;" @click="prevBtn"/>-->
+            <img :src="baseUrl+imgFile" alt="图片走丢了" style="object-fit:contain">
+            <!--<Icon type="ios-arrow-dropright-circle" size="60" style="position: fixed;top: 45%;right: 5%;cursor: pointer;" @click="nextBtn"/>-->
+            <p style="margin-top: 15px;font-size: 18px">{{ picName }}</p>
         </div>
     </div>
 </template>
@@ -36,6 +36,10 @@
                 default () {
                     return []
                  }
+            },
+            imgFile:{   //需要展示的图片路径
+                type: String,
+                default: '',
             },
             picName:{
                 type: String,
@@ -120,10 +124,10 @@
             this.picDom = document.querySelector('.picture > img')
         },
         created() {
-            window.addEventListener('keyup', this.onKeyUpEvent)
+            // window.addEventListener('keyup', this.onKeyUpEvent)
         },
         beforeDestroy() {
-            window.removeEventListener('keyup', this.onKeyUpEvent)
+            // window.removeEventListener('keyup', this.onKeyUpEvent)
         }
     }
 </script>
