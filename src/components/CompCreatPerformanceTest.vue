@@ -71,7 +71,7 @@
                     <FormItem>
                         <b slot="label">已选设备</b>
                         <ButtonGroup>
-                            <Button v-for="device in selectedDevice">
+                            <Button v-for="device in selectedDevice" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
                                 {{device.device_name}}
                             </Button>
                         </ButtonGroup>
@@ -102,7 +102,7 @@
                     <FormItem>
                         <b slot="label">已选设备</b>
                         <ButtonGroup>
-                            <Button v-for="device in selectedDevice">
+                            <Button v-for="device in selectedDevice" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
                                 {{device.device_name}}
                             </Button>
                         </ButtonGroup>
@@ -146,6 +146,9 @@
                 <Button type="primary" @click="showJobConnectionModal = false">关闭</Button>
             </div>
         </Modal>
+        <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
+            <comp-device-detail ref="deviceDetail"></comp-device-detail>
+        </Modal>
         <Spin size="large" fix v-if="showLoading"></Spin>
     </Card>
 </template>
@@ -153,6 +156,7 @@
 <script>
     import CompDeviceList from "../components/CompDeviceList";
     import CompJobList from "../components/CompJobList";
+    import CompDeviceDetail from "./CompDeviceDetail";
     import CompJobDetail from  "../components/CompJobDetail"
     import CompTestSetSelectView from  "../components/CompTestSetSelectView"
     import CompInnerJobConnection from  "../components/CompInnerJobConnection"
@@ -160,7 +164,7 @@
     import utils from "../lib/utils";
 
     export default {
-        components: {CompJobList, CompDeviceList,CompJobDetail,CompTestSetSelectView,CompInnerJobConnection},
+        components: {CompJobList, CompDeviceList,CompJobDetail,CompTestSetSelectView,CompInnerJobConnection,CompDeviceDetail},
         data() {
             return {
                 current: 0,
@@ -185,6 +189,7 @@
                 deviceLabelList:[],
                 jobLabelList:[],
                 isRandom:false,
+                showDeviceDetail:false,
             }
         },
         methods: {
