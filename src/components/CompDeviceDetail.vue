@@ -495,6 +495,8 @@
                     android_version: "",
                     rom_version: "",
                     ip_address: "",
+                    width_resolution:null,
+                    height_resolution:null
                 }
             }
         },
@@ -573,6 +575,8 @@
                         android_version: "",
                         rom_version: "",
                         ip_address: "",
+                        width_resolution:null,
+                        height_resolution:null
                     }
                     this.spinShow = true
                     this.$ajax.post("http://" + this.device.cabinet.ip_address + ":5000"+"/door/wifi_port/",
@@ -608,6 +612,8 @@
                         android_version: this.registerDeviceInfo.android_version,
                         rom_version: this.registerDeviceInfo.rom_version,
                         ip_address: this.registerDeviceInfo.ip_address,
+                        width_resolution: this.registerDeviceInfo.width_resolution,
+                        height_resolution: this.registerDeviceInfo.height_resolution,
                         manufacturer: this.device.phone_model.manufacturer.manufacturer_name
                 }).then(response=>{
                     if(response.data.error_code===0){
