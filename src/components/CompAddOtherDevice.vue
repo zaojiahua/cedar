@@ -25,6 +25,10 @@
           <b slot="label"><span class="need">*</span>自定义名称</b>
           <Input v-model="addedDeviceName"></Input>
         </FormItem>
+        <FormItem>
+          <b slot="label">自定义编号</b>
+          <Input v-model="addCustomNumber"></Input>
+        </FormItem>
             <FormItem prop="test_area">
               <b slot="label"><span class="need">*</span>设备型号</b>
               <Select  @on-change="checkPhoneModelInfo" placeholder="请选择或新建设备型号" filterable allow-create>
@@ -103,6 +107,7 @@ export default {
     return {
       addDeviceStep: 1,
       addedDeviceName: "",
+      addCustomNumber: "",
       deviceInfo: utils.validate(addDeviceSerializer, {}),
       spinShow: false,
       cabinetList: [],
@@ -149,6 +154,7 @@ export default {
       this.$ajax.post("http://" + this.CabinetIpSelected + ":5000" + "/door/manual_registration/",
           {
             device_name: this.addedDeviceName,
+            custom_number: this.addCustomNumber,
             phone_model_name: this.phoneModel,
             // x_border: this.deviceInfo.x_border,
             // width_resolution: this.deviceInfo.width_resolution,
@@ -197,6 +203,7 @@ export default {
       this.addDeviceStep = 2;
       this.deviceInfo = utils.validate(addDeviceSerializer, {})
       this.addedDeviceName = ""
+      this.addCustomNumber = ""
     },
     getCabinetInfo() {
         this.$ajax.get("api/v1/cedar/get_cabinet_type_info/?data_type=cabinet_type_data")

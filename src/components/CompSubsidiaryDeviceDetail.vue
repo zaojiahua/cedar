@@ -10,6 +10,10 @@
                 <Input v-model="device.serial_number" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
+                <b slot="label">自定义编号</b>
+                <Input v-model="device.custom_number" :disabled="true" class="disabled-input"></Input>
+            </FormItem>
+            <FormItem>
                 <b slot="label">机柜</b>
                 <Input v-model="device.cabinet.cabinet_name+' ( '+device.cabinet.type +' )'" :disabled="true" class="disabled-input"></Input>
             </FormItem>
@@ -154,6 +158,7 @@
         deviceSerializer: {
             id: "number",
             custom_name: "string",
+            custom_number: "string",
             cabinet: {
                 id: "number",
                 cabinet_name: "string",
@@ -261,6 +266,7 @@
                 this.spinShow = true;
                 this.$ajax.get('api/v1/cedar/subsidiary_device/'+ device_id +'/?fields=id,' +
                     'serial_number,' +
+                    'custom_number,' +
                     'phone_model,' +
                     'phone_model.phone_model_name,' +
                     'phone_model.id,' +

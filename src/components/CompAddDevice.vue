@@ -45,6 +45,10 @@
                     <Input v-model="addedDeviceName"></Input>
                 </FormItem>
                 <FormItem>
+                    <b slot="label">自定义编号</b>
+                    <Input v-model="customNumber"></Input>
+                </FormItem>
+                <FormItem>
                     <b slot="label">设备编号</b>
                     <Input v-model="deviceInfo.device_label" class="disabled-input" :disabled="true"></Input>
                 </FormItem>
@@ -118,6 +122,7 @@
             return {
                 addDeviceStep: 1,
                 addedDeviceName: "",
+                customNumber:"",
                 deviceInfo: utils.validate(addDeviceSerializer, {}),
                 addBtn: true,
                 spinShow: false,
@@ -160,6 +165,7 @@
                 this.spinShow = true;
                 let deviceInfoDict = this.deviceInfo
                 deviceInfoDict["deviceName"] = this.addedDeviceName.trim()
+                deviceInfoDict["custom_number"] = this.customNumber.trim()
                 if(this.deviceType===1) {
                     this.$ajax.post("http://" + this.CabinetIpSelected + ":5000" + "/door/set_device_in_door/",
                         deviceInfoDict
@@ -190,6 +196,7 @@
                         serial_number: deviceInfoDict.device_label,
                         ip_address: deviceInfoDict.ip_address,
                         custom_name: deviceInfoDict.deviceName,
+                        custom_number: deviceInfoDict.custom_number,
                         manufacturer: deviceInfoDict.manufacturer,
                         phone_model: {
                             phone_model_name: deviceInfoDict.phone_model_name,
@@ -236,6 +243,7 @@
                     this.spinShow = true;
                     this.$Loading.start();
                     this.addedDeviceName = "";
+                    this.customNumber = "";
                     //分主机和僚机请求不同的接口获取不同的信息
                     if(this.deviceType===1){
                         this.$ajax

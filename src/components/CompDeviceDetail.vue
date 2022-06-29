@@ -10,6 +10,10 @@
                 <Input v-model="device.device_label" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
+                <b slot="label">自定义编号</b>
+                <Input v-model="device.custom_number" :disabled="true" class="disabled-input"></Input>
+            </FormItem>
+            <FormItem>
                 <b slot="label">安卓版本</b>
                 <Input v-model="device.android_version.version" :disabled="true" class="disabled-input"></Input>
             </FormItem>
@@ -307,6 +311,7 @@
                 id: "number",
                 auto_test: "boolean",
                 device_label: "string",
+                custom_number: "string",
                 android_version: {
                     id: "number",
                     version: "string"
@@ -692,6 +697,7 @@
                             "status," +
                             "status_update_time," +
                             "device_name," +
+                            "custom_number," +
                             "tempport,tempport.id,tempport.port,tempport.description," +
                             "powerport,powerport.id,powerport.port," +
                             "monitor_index,monitor_index.id,monitor_index.port," +

@@ -67,6 +67,10 @@
                 <Input v-model="rdsInfo.device.device_label" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
+                <b slot="label">自定义编号：</b>
+                <Input v-model="rdsInfo.device.custom_number" class="disabled-input" disabled></input>
+            </FormItem>
+            <FormItem>
                 <b slot="label">安卓版本：</b>
                 <Input v-model="rdsInfo.device.android_version.version" class="disabled-input" disabled></input>
             </FormItem>
@@ -272,7 +276,7 @@
                     .get("api/v1/cedar/rds/"+rdsId+"/?fields="+
                         "id,"+
                         "job,job.job_name,job.id,job.job_label,job.job_second_type,job.author,job.author.username," +
-                        "device,device.id,device.device_name,device.device_label,"+
+                        "device,device.id,device.device_name,device.device_label,device.custom_number,"+
                         "device.phone_model,device.phone_model.id,device.phone_model.phone_model_name,"+
                         "device.android_version,device.android_version.id,device.android_version.version,"+
                         "device.rom_version,device.rom_version.id,device.rom_version.version,"+
