@@ -75,6 +75,7 @@
             {
                 id: "number",
                 board_stamp: "date",
+                end_time: "date",
                 board_name: "string",
                 finished_flag: "boolean",
                 username:"",
@@ -604,6 +605,7 @@
                                 if(item.id === tboard.id) {
                                     this.$set(tboard, "success_ratio", (item.success_ratio * 100).toFixed(1) + "%")
                                     this.$set(tboard, "finished_flag", item.finished_flag)
+                                    this.$set(tboard, "end_time", item.end_time)
                                 }
                             })
                         })
