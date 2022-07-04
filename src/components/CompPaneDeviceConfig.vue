@@ -522,16 +522,16 @@
             //  mlocation 坐标点在x,y,z的值的校验
             mlocationValidate(){
                 // mlocation 的x,y,z有默认值以及默认范围
-                // Tcab_5se,Tcab_5 左上角点对齐  30<x<45     8<y<50    -35<z<5
-                // Tcab_5L,中心点对齐       137<x<177,   180<y <  220,     -35<z<5
+                // Tcab_5se, 左上角点对齐  30<x<45     8<y<50    -35<z<5
+                // Tcab_5L,Tcab_5 中心点对齐       137<x<177,   180<y <  220,     -35<z<5
                 let rangeX = []
                 let rangeY = []
                 let rangeZ = []
-                if(["Tcab_5","Tcab_5se"].includes(this.deviceCabinetType)){
+                if(["Tcab_5se"].includes(this.deviceCabinetType)){
                     rangeX = [30,45]
                     rangeY = [8,50]
                     rangeZ = [-35,5]
-                }else if(["Tcab_5L"].includes(this.deviceCabinetType)){
+                }else if(["Tcab_5L","Tcab_5"].includes(this.deviceCabinetType)){
                     rangeX = [137,177]
                     rangeY = [180,220]
                     rangeZ = [-35,5]
