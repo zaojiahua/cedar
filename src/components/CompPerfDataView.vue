@@ -1,7 +1,7 @@
 <template>
     <div>
         <Drawer v-model="showTboardDetail" width="60" :closable="false" transfer>
-            <Comp-perf-tboard-detail ref="perfTboardDetail"></Comp-perf-tboard-detail>
+            <Comp-perf-tboard-detail ref="perfTboardDetail"  v-if="showTboardDetail"></Comp-perf-tboard-detail>
         </Drawer>
         <Modal v-model="showJobDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
             <comp-job-detail ref="jobDetail" :prop-close-btn="false"></comp-job-detail>
@@ -105,7 +105,9 @@
             },
             onTboardRowClick(row, index) {
                 this.showTboardDetail = true
-                this.$refs.perfTboardDetail.refresh(row.id)
+                this.$nextTick(function () {
+                    this.$refs.perfTboardDetail.refresh(row.id)
+                })
             },
             //选取任务  下一步
             onTboardSelect(){
