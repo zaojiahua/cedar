@@ -149,6 +149,14 @@ export default {
         this.$Message.warning("带*项信息不能为空！")
         return
       }
+      let reg = [' ','\/','\\','`','~','!','#','$','%','^','&','*','(',')','+','=','<','>','?',':','"','{','}','|','！','￥','…','（','）',
+         '《','》','？','：','“','”','【','】','、','；','‘','’','，','。']
+       for(let i = 0;i < reg.length;i++ ){
+          if(this.phoneModel.indexOf(reg[i])===-1){
+              this.$Message.warning({content:"设备型号不允许输入空格、/、\\ 等特殊字符",duration:5})
+              return
+          }
+       }
       this.$Loading.start()
       this.spinShow = true;
       this.$ajax.post("http://" + this.CabinetIpSelected + ":5000" + "/door/manual_registration/",
