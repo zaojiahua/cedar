@@ -149,10 +149,10 @@ export default {
         this.$Message.warning("带*项信息不能为空！")
         return
       }
-      let reg = [' ','\/','\\','`','~','!','#','$','%','^','&','*','(',')','+','=','<','>','?',':','"','{','}','|','！','￥','…','（','）',
+      let reg = ['\/','\\',' ','`','~','!','#','$','%','^','&','*','(',')','+','=','<','>','?',':','"','{','}','|','！','￥','…','（','）',
          '《','》','？','：','“','”','【','】','、','；','‘','’','，','。']
        for(let i = 0;i < reg.length;i++ ){
-          if(this.phoneModel.indexOf(reg[i])===-1){
+          if(this.phoneModel.indexOf(reg[i])!==-1){
               this.$Message.warning({content:"设备型号不允许输入空格、/、\\ 等特殊字符",duration:5})
               return
           }
@@ -275,7 +275,7 @@ export default {
           }
         })
       }
-      this.phoneModel = item
+      this.phoneModel = item.trim()
     }
 
   },
