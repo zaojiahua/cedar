@@ -202,6 +202,33 @@ export default {
           this.expandRight = false
           this.expandBottom = false
           this.expandLeft = false
+          this.curAreaRect = this.curArea.getBoundingClientRect()
+          //以图片的左上角为原点，做计算，当前所选择的区域的两个点的坐标  //相对、绝对
+          //   console.log(this.selectorImgRect.width)   //页面显示的大小
+          //   console.log(this.imageWidth)  //原图大小
+          coordinate = {}
+          coordinate.relativeCoordinate = {
+            topLeft: {
+              x: (this.curAreaRect.x - this.selectorImgRect.x) / this.selectorImgRect.width,
+              y: (this.curAreaRect.y - this.selectorImgRect.y) / this.selectorImgRect.height
+            },
+            bottomRight: {
+              x: (this.curAreaRect.x + this.curAreaRect.width - this.selectorImgRect.x) / this.selectorImgRect.width,
+              y: (this.curAreaRect.y + this.curAreaRect.height - this.selectorImgRect.y) / this.selectorImgRect.height
+            }
+          }
+          coordinate.absoluteCoordinate = {
+            topLeft: {
+              x: coordinate.relativeCoordinate.topLeft.x * this.imageWidth,
+              y: coordinate.relativeCoordinate.topLeft.y * this.imageHeight
+            },
+            bottomRight: {
+              x: coordinate.relativeCoordinate.bottomRight.x * this.imageWidth,
+              y: coordinate.relativeCoordinate.bottomRight.y * this.imageHeight
+            }
+          }
+          if(!event.target.className.includes('screenarea'))
+            this.$emit('on-select', coordinate)
       }
     },
     handleShowMask (event) {

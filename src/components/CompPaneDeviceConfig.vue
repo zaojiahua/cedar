@@ -384,24 +384,24 @@
         },
         computed: {
             pointTopLeft: function () {
-                if (this.deviceCutCoordinate.inside_upper_left_x && this.deviceCutCoordinate.inside_upper_left_y)
+                if (this.deviceCutCoordinate.inside_upper_left_x!==null && this.deviceCutCoordinate.inside_upper_left_y!==null)
                     return this.deviceCutCoordinate.inside_upper_left_x + ',' + this.deviceCutCoordinate.inside_upper_left_y
             },
             pointBottomRight() {
-                if (this.deviceCutCoordinate.inside_under_right_x && this.deviceCutCoordinate.inside_under_right_y)
+                if (this.deviceCutCoordinate.inside_under_right_x!==null && this.deviceCutCoordinate.inside_under_right_y!==null)
                     return this.deviceCutCoordinate.inside_under_right_x + ',' + this.deviceCutCoordinate.inside_under_right_y
             }
         },
         watch: {
             areaInfo: {
                 handler: function (val) {
-                    if (this.areaInfo.inside_upper_left_x !== 0 && this.areaInfo.inside_under_right_x !== 0 && this.areaInfo.inside_upper_left_x !== null) {
+                    if (this.areaInfo.inside_under_right_x !== null && this.areaInfo.inside_upper_left_x !== null) {
                         this.deviceCutCoordinate.inside_upper_left_x = val.inside_upper_left_x
                         this.deviceCutCoordinate.inside_upper_left_y = val.inside_upper_left_y
                         this.deviceCutCoordinate.inside_under_right_x = val.inside_under_right_x
                         this.deviceCutCoordinate.inside_under_right_y = val.inside_under_right_y
                     }else {
-                        this.$Message.warning({content:"边框获取失败",duration:3})
+                        this.$Message.warning({content:"请框选正确的屏幕边框！",duration:3})
                     }
                 },
                 deep: true,
