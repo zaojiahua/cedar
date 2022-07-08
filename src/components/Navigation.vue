@@ -124,7 +124,7 @@
                     </FormItem>
                     <FormItem>
                         <b slot="label">Cedar版本：</b>
-                        <p>3.6</p>
+                        <p>3.7</p>
                     </FormItem>
                 </Form>
                 <p slot="footer" style="text-align: center">
