@@ -691,8 +691,8 @@
                     this.$Message.warning({content: "请将坐标信息填写完整！", duration: 3})
                     return
                 }
-                if (this.deviceCutCoordinate.inside_under_right_x!==null || this.deviceCutCoordinate.inside_under_right_y!==null
-                    || this.deviceCutCoordinate.inside_upper_left_x!==null || this.deviceCutCoordinate.inside_upper_left_y!==null) {
+                if (this.deviceCutCoordinate.inside_under_right_x===null || this.deviceCutCoordinate.inside_under_right_y===null
+                    || this.deviceCutCoordinate.inside_upper_left_x===null || this.deviceCutCoordinate.inside_upper_left_y===null) {
                     this.$Message.warning({content: "边框信息不能为空!", duration: 3})
                     return
                 }
@@ -1016,8 +1016,8 @@
                     inside_upper_left_y: this.deviceCutCoordinate.inside_upper_left_y,
                 }
                 let phone_model_id = this.phone_model.id
-                if (!paramsObj.inside_under_right_x || !paramsObj.inside_under_right_y
-                    || !paramsObj.inside_upper_left_x || !paramsObj.inside_upper_left_y) {
+                if (paramsObj.inside_under_right_x===null || paramsObj.inside_under_right_y===null
+                    || paramsObj.inside_upper_left_x===null || paramsObj.inside_upper_left_y===null) {
                     this.$Message.warning({content: "边框信息不能为空", duration: 3})
                     return
                 }
@@ -1178,8 +1178,8 @@
                     this.$Message.warning({content: "请将坐标信息填写完整！", duration: 3})
                     return
                 }
-                if (this.deviceCutCoordinate.inside_under_right_x!==null || this.deviceCutCoordinate.inside_under_right_y!==null
-                    || this.deviceCutCoordinate.inside_upper_left_x!==null || this.deviceCutCoordinate.inside_upper_left_y!==null) {
+                if (this.deviceCutCoordinate.inside_under_right_x===null || this.deviceCutCoordinate.inside_under_right_y===null
+                    || this.deviceCutCoordinate.inside_upper_left_x===null || this.deviceCutCoordinate.inside_upper_left_y===null) {
                     this.$Message.warning({content: "边框信息不能为空!", duration: 3})
                     return
                 }
