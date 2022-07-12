@@ -691,8 +691,8 @@
                     this.$Message.warning({content: "请将坐标信息填写完整！", duration: 3})
                     return
                 }
-                if (!this.deviceCutCoordinate.inside_under_right_x || !this.deviceCutCoordinate.inside_under_right_y
-                    || !this.deviceCutCoordinate.inside_upper_left_x || !this.deviceCutCoordinate.inside_upper_left_y) {
+                if (this.deviceCutCoordinate.inside_under_right_x!==null || this.deviceCutCoordinate.inside_under_right_y!==null
+                    || this.deviceCutCoordinate.inside_upper_left_x!==null || this.deviceCutCoordinate.inside_upper_left_y!==null) {
                     this.$Message.warning({content: "边框信息不能为空!", duration: 3})
                     return
                 }
@@ -1178,8 +1178,8 @@
                     this.$Message.warning({content: "请将坐标信息填写完整！", duration: 3})
                     return
                 }
-                if (!this.deviceCutCoordinate.inside_under_right_x || !this.deviceCutCoordinate.inside_under_right_y
-                    || !this.deviceCutCoordinate.inside_upper_left_x || !this.deviceCutCoordinate.inside_upper_left_y) {
+                if (this.deviceCutCoordinate.inside_under_right_x!==null || this.deviceCutCoordinate.inside_under_right_y!==null
+                    || this.deviceCutCoordinate.inside_upper_left_x!==null || this.deviceCutCoordinate.inside_upper_left_y!==null) {
                     this.$Message.warning({content: "边框信息不能为空!", duration: 3})
                     return
                 }
