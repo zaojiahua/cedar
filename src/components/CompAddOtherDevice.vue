@@ -149,6 +149,10 @@ export default {
         this.$Message.warning("带*项信息不能为空！")
         return
       }
+      if (!this.addedDeviceName.match(/^[\u4E00-\u9FA5a-zA-Z0-9_\-]+$/)) {
+         this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字和中下划线",duration:5})
+         return
+      }
       let reg = ['\/','\\',' ','`','~','!','#','$','%','^','&','*','(',')','+','=','<','>','?',':','"','{','}','|','！','￥','…','（','）',
          '《','》','？','：','“','”','【','】','、','；','‘','’','，','。']
        for(let i = 0;i < reg.length;i++ ){

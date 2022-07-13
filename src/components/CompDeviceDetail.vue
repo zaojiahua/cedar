@@ -612,6 +612,10 @@
                     this.$Message.warning("请将信息填写完整！")
                     return
                 }
+                if (!this.device.device_name.match(/^[\u4E00-\u9FA5a-zA-Z0-9_\-]+$/)) {
+                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字和中下划线",duration:5})
+                    return
+                }
                 this.$ajax.post("http://" + this.device.cabinet.ip_address + ":5000"+"/door/device_info/", {
                         device_label: this.device.device_label,
                         android_version: this.registerDeviceInfo.android_version,
@@ -810,6 +814,10 @@
             },
             // Update device
             updateDevice(){
+                if (!this.device.device_name.match(/^[\u4E00-\u9FA5a-zA-Z0-9_\-]+$/)) {
+                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字和中下划线",duration:5})
+                    return
+                }
                 let temperDict = [];
                 //将当前设备要配置的温感片提取出来
                 let configPorts = this.selectedTempPorts.filter(selectedPort=> {
