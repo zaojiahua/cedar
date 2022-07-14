@@ -174,7 +174,7 @@
                 showMsg:false,
                 showJobDetail:false,
                 showDeviceDetail:false,
-                isActive:0,
+                isActive:-1,
                 abnormalList:utils.validate(abnormalListSerializer, []),
                 abnormalType:null,
             }
@@ -265,7 +265,7 @@
                 this.$ajax.get(url)
                     .then(response=>{
                         this.abnormalList = utils.validate(abnormalListSerializer,response.data.results)
-                        this.abnormalType = this.abnormalList[0].code
+                        // this.abnormalType = this.abnormalList[0].code
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
@@ -322,6 +322,10 @@
         margin-right: 40px;
         border: 4px solid transparent;
         cursor: default;
+    }
+    .abs-tit:hover{
+        cursor: pointer;
+        border: 4px solid #d1f2eb;
     }
     .abs-tit b{
         font-size: 16px;

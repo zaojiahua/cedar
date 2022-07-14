@@ -4,7 +4,7 @@
             <comp-device-detail ref="deviceDetail"></comp-device-detail>
         </Modal>
         <Card :bordered="false" dis-hover style="box-shadow: 0 0 2px 2px #eee;">
-            <div style="margin-right: 200px;" v-if="abnormalKey!==null">
+            <div style="margin-right: 200px;min-height: 769px" v-if="abnormalKey!==null">
                  <p style="margin-bottom: 10px"><b>设备名称：</b>{{ abnormalData.device_name }}<a href="javascript:" style="margin-left: 10px" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(abnormalData.device_id)">设备详情</a></p>
                  <p style="margin-bottom: 10px"><b>异常时间：</b>{{ abnormalData.abnm_start_time }}</p>
                  <p style="margin-bottom: 10px"><b>app包名：</b>{{ abnormalData.result_data.pkg_name.join(",") }}</p>
