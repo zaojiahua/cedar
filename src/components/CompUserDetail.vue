@@ -1,6 +1,6 @@
 <template>
     <Card>
-        <Form  v-model="userInfo" :label-width="80">
+        <Form  v-model="userInfo" :label-width="90">
             <FormItem label="登录名：">
                 <Input v-model="userInfo.username" :disabled="propEdit" placeholder="Enter username..." @on-keyup="usernameVerifyFeedback" :class="{'disabled-input':propEdit}"></Input>
                 <p v-show="showNameTip" style="color: red;">{{ nameTipMsg }}</p>
