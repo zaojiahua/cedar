@@ -42,26 +42,33 @@
                         <Input disabled v-model="phone_model.phone_model_name" class="disabled-input"></Input>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">Xdpi:</b>
-                        <Input disabled v-model="phone_model.x_dpi" class="disabled-input"></Input>
-                    </FormItem>
-                    <FormItem>
-                        <b slot="label">Ydpi:</b>
-                        <Input disabled v-model="phone_model.y_dpi" class="disabled-input"></Input>
-                    </FormItem>
-                    <FormItem>
                         <b slot="label">机型厚度:</b>
                         <InputNumber style="width: 100%" v-model="phone_model.ply" class="disabled-input" :min="0"></InputNumber>
                     </FormItem>
                     <FormItem>
                         <b slot="label">设备外边框:</b>
+                        <!--<div class="input-box">-->
+                            <!--<Input disabled v-model="pointTopLeft" class="disabled-input"></Input>&mdash;-->
+                            <!--<Input disabled v-model="pointBottomRight" class="disabled-input"></Input>-->
+                            <!--<Icon type="md-add-circle" size="22" style="margin: 5px 5px 0 0" @click="setBorder('screen')" color="#1bbc9c"/>-->
+                            <!--<Button :icon="showScreenArea?'ios-eye-outline':'ios-eye-off-outline'"-->
+                                    <!--@click="showScreenArea=!showScreenArea"></Button>-->
+                            <!--&lt;!&ndash;<Button type="primary" size="small" icon="ios-search" @click="getScreenArea" style="margin-left: 24px;margin-top: 3px">自动获取</Button>&ndash;&gt;-->
+                        <!--</div>-->
                         <div class="input-box">
-                            <Input disabled v-model="pointTopLeft" class="disabled-input"></Input>&mdash;
-                            <Input disabled v-model="pointBottomRight" class="disabled-input"></Input>
-                            <Icon type="md-add-circle" size="22" style="margin: 5px 5px 0 0" @click="setBorder('screen')" color="#1bbc9c"/>
+                            x1:<InputNumber v-model="deviceCutCoordinate.inside_upper_left_x" style="margin-right:12px"
+                                            :editable="false" :min="0" :max="deviceCutCoordinate.inside_under_right_x-1" @on-change="onCoordinateChange"></InputNumber>
+                            y1:<InputNumber v-model="deviceCutCoordinate.inside_upper_left_y" :editable="false"
+                                            :min="0" :max="deviceCutCoordinate.inside_under_right_y-1" @on-change="onCoordinateChange"></InputNumber>
+                        </div>
+                        <div class="input-box" style="margin-top: 12px">
+                            x2:<InputNumber v-model="deviceCutCoordinate.inside_under_right_x" style="margin-right:10px" :editable="false"
+                                            :min="0" @on-change="onCoordinateChange"></InputNumber>
+                            y2:<InputNumber v-model="deviceCutCoordinate.inside_under_right_y" :editable="false"
+                                            :min="0" @on-change="onCoordinateChange"></InputNumber>
+                            <Icon type="md-add-circle" size="22" style="margin: 5px 0 0 10px" @click="setBorder('screen')" color="#1bbc9c"/>
                             <Button :icon="showScreenArea?'ios-eye-outline':'ios-eye-off-outline'"
                                     @click="showScreenArea=!showScreenArea"></Button>
-                            <!--<Button type="primary" size="small" icon="ios-search" @click="getScreenArea" style="margin-left: 24px;margin-top: 3px">自动获取</Button>-->
                         </div>
                     </FormItem>
                 </Form>
@@ -81,16 +88,6 @@
                         <Button style="border: none;font-size: 2em;margin: -7px 10px 0 0;box-shadow:none;"
                                 icon="ios-trash-outline"
                                 @click="onDeleteRow"></Button>
-                        <Dropdown trigger="contextMenu" style="margin: 0 16px">
-                            <Button type="info"  @click="onCoordinateTestClick">
-                                测试点击
-                                <Icon type="ios-arrow-down"></Icon>
-                            </Button>
-                            <DropdownMenu slot="list">
-                                <DropdownItem @click.native="onOpenTestCountModal">测试点击多次</DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
-                        <Button type="primary" @click="setBorder('point')">确认信息</Button>
                     </Row>
                 </div>
                 <div class="panel__footer">
@@ -299,14 +296,99 @@
                     {
                         title: 'X',
                         key: 'x_coordinate',
+                        render: (h, params) => {
+                            if(params.row.$isEdit){
+                                return h('Input',{
+                                    props:{
+                                        // type:"number",
+                                        value:params.row.x_coordinate,
+                                    },
+                                    on:{
+                                        "on-blur":event=>{
+                                            if(event.target.value===""){
+                                                this.$Message.warning({content:"该项不能为空",duration:3})
+                                                event.target.value = this.tableData[params.index].x_coordinate
+                                                return
+                                            }
+                                            if(params.row.x_coordinate===parseFloat(event.target.value)){
+                                                this.$set(params.row,"$isEdit",false)
+                                                return
+                                            }
+                                            params.row.x_coordinate = parseFloat(event.target.value);
+                                            this.tableData[params.index].x_coordinate = parseFloat(event.target.value)
+                                            this.tableData[params.index].update = true
+                                            this.$set(params.row,"$isEdit",false)
+                                            let selector = document.querySelector('.selector')
+                                            let point = document.querySelectorAll('.point')
+                                            if(point)
+                                                point.forEach(item=>{
+                                                    selector.removeChild(item)
+                                                })
+                                            this.showSelectedPoint(params.row.name, params.row.x_coordinate, params.row.y_coordinate,)
+                                        }
+                                    }
+                                })
+                            }else {
+                                return h('div',{
+                                    on:{
+                                        dblclick:()=>{
+                                            this.$set(params.row,"$isEdit",true)
+                                        }
+                                    }
+                                },params.row.x_coordinate)
+                            }
+                        }
                     },
                     {
                         title: 'Y',
                         key: 'y_coordinate',
+                        render: (h, params) => {
+                            if(params.row.$isEdit){
+                                return h('Input',{
+                                    props:{
+                                        // type:"number",
+                                        value:params.row.y_coordinate,
+                                    },
+                                    on:{
+                                        "on-blur":event=>{
+                                            if(event.target.value===""){
+                                                this.$Message.warning({content:"该项不能为空",duration:3})
+                                                event.target.value = this.tableData[params.index].y_coordinate
+                                                return
+                                            }
+                                            if(params.row.y_coordinate===parseFloat(event.target.value)){
+                                                this.$set(params.row,"$isEdit",false)
+                                                return
+                                            }
+                                            params.row.y_coordinate = parseFloat(event.target.value);
+                                            this.tableData[params.index].y_coordinate = parseFloat(event.target.value)
+                                            this.tableData[params.index].update = true
+                                            this.$set(params.row,"$isEdit",false)
+                                            let selector = document.querySelector('.selector')
+                                            let point = document.querySelectorAll('.point')
+                                            if(point)
+                                                point.forEach(item=>{
+                                                    selector.removeChild(item)
+                                                })
+                                            this.showSelectedPoint(params.row.name, params.row.x_coordinate, params.row.y_coordinate,)
+                                        }
+                                    }
+                                })
+                            }else {
+                                return h('div',{
+                                    on:{
+                                        dblclick:()=>{
+                                            this.$set(params.row,"$isEdit",true)
+                                        }
+                                    }
+                                },params.row.y_coordinate)
+                            }
+                        }
                     },
                     {
                         title: 'Z [-10,10]',
                         key: 'z',
+                        maxWidth:90,
                         render: (h, params) => {
                             if(params.row.$isEdit){
                                 return h('Input',{
@@ -340,7 +422,7 @@
                             }else {
                                 return h('div',{
                                     on:{
-                                        click:()=>{
+                                        dblclick:()=>{
                                             this.$set(params.row,"$isEdit",true)
                                         }
                                     }
@@ -348,6 +430,51 @@
                             }
                         }
                     },
+                    {
+                        title: "操作",
+                        key: "action",
+                        align: 'center',
+                        width:120,
+                        render: (h, params) => {
+                            return h('div', [
+                                h('span', {
+                                    class: 'mouse-hover',
+                                    style: {
+                                        marginRight: '15px',
+                                        cursor: 'pointer',
+                                    },
+                                    on: {
+                                        click: (event) => {
+                                            event.stopPropagation()
+                                            this.currentData = params.row
+                                            this.currentIndex = params.index
+                                            this.setBorder('point')
+                                        }
+                                    }
+                                }, '确认'),
+                                h('span', {
+                                    class: 'mouse-hover',
+                                    style: {
+                                        cursor: 'pointer'
+                                    },
+                                    on: {
+                                        click: (event) => {
+                                            event.stopPropagation()
+                                            this.currentData = params.row
+                                            this.currentIndex = params.index
+                                            this.onCoordinateTestClick()
+                                        },
+                                        contextmenu:(event)=>{
+                                            event.preventDefault()
+                                            this.currentData = params.row
+                                            this.currentIndex = params.index
+                                            this.onOpenTestCountModal()
+                                        }
+                                    }
+                                }, '测试')
+                            ]);
+                        }
+                    }
                 ],
                 tableData:[],
                 deleteList:[],
@@ -628,6 +755,7 @@
                     this.$Message.warning("请输入点击次数")
                     return
                 }
+                this.$Message.info({content:"正在发送请求..."})
                 this.showValidationModal = false
                 let data = new FormData()
                 data.append('img', Utils.dataURLtoFile(this.imgSrc,"rawImage.jpg"))
@@ -807,8 +935,8 @@
             },
             getImg() {
                 this.imgSrc = ''
-                this.showScreenArea = false
-                this.showTablePoint = false
+                // this.showScreenArea = false
+                // this.showTablePoint = false
                 let _this = this
 
                 let url = `http://${this.cabinetIP}:5000/pane/original_picture/?device_label=${this.deviceLabel}&high_exposure=${this.highExposureSwitch?'1':'0'}`
@@ -829,6 +957,22 @@
                     }
                     Utils.blobToDataURL(xhr.response).then(res => {
                         this.imgSrc = res
+                        this.$nextTick(function () {
+                            setTimeout(()=>{
+                                if (this.showScreenArea) {
+                                    if (this.deviceCutCoordinate.inside_upper_left_x !== this.deviceCutCoordinate.inside_under_right_x) {
+                                        this.showSelectedArea("ScreenArea", this.deviceCutCoordinate.inside_upper_left_x, this.deviceCutCoordinate.inside_upper_left_y, this.deviceCutCoordinate.inside_under_right_x, this.deviceCutCoordinate.inside_under_right_y)
+                                    }
+                                }
+                                if (this.showTablePoint) {
+                                    if (this.tableData.length>0) {
+                                        this.tableData.forEach(item=>{
+                                            this.showSelectedPoint(item.name, item.x_coordinate, item.y_coordinate)
+                                        })
+                                    }
+                                }
+                            })
+                        })
                     })
                 }
                 xhr.onerror = (err) => {
@@ -857,6 +1001,41 @@
                     }).catch(error=>{
                         this.$Message.error({content:error.response.data.description,duration:8})
                     })
+            },
+            //手动微调屏幕边框，并在调整后显示新的屏幕边框
+            onCoordinateChange(){
+                if(this.deviceCutCoordinate.inside_upper_left_x>=this.deviceCutCoordinate.inside_under_right_x){
+                    this.$Message.warning({content:"x1的值必须小于x2的值",duration:3})
+                    return false
+                }
+                if(this.deviceCutCoordinate.inside_upper_left_y>this.deviceCutCoordinate.inside_under_right_y){
+                    this.$Message.warning({content:"y1的值必须小于y2的值",duration:3})
+                    return false
+                }
+                if(!this.showScreenArea)
+                    this.showScreenArea = true
+                else {
+                    let selector = document.querySelector('.selector')
+                    let point = document.querySelectorAll('.point')
+                    let area = document.querySelector('.screenarea')
+                    if (area) selector.removeChild(area)
+                    if(point)
+                        point.forEach(item=>{
+                            selector.removeChild(item)
+                        })
+                    if (this.showScreenArea) {
+                        if (this.deviceCutCoordinate.inside_upper_left_x !== this.deviceCutCoordinate.inside_under_right_x) {
+                            this.showSelectedArea("ScreenArea", this.deviceCutCoordinate.inside_upper_left_x, this.deviceCutCoordinate.inside_upper_left_y, this.deviceCutCoordinate.inside_under_right_x, this.deviceCutCoordinate.inside_under_right_y)
+                        }
+                    }
+                    if (this.showTablePoint) {
+                        if (this.tableData.length>0) {
+                            this.tableData.forEach(item=>{
+                                this.showSelectedPoint(item.name, item.x_coordinate, item.y_coordinate)
+                            })
+                        }
+                    }
+                }
             },
 
             setBorder(type) {
@@ -912,7 +1091,7 @@
                             this.$Message.warning({content:"请先选择一条数据！",duration:3})
                             return
                         }
-                        if(!this.deviceCutCoordinate.inside_upper_left_x || !this.deviceCutCoordinate.inside_under_right_y){
+                        if(this.deviceCutCoordinate.inside_upper_left_x===null || this.deviceCutCoordinate.inside_under_right_y===null){
                             this.$Message.warning({content:"请先框选设备外边框！",duration:3})
                             return
                         }
@@ -1183,6 +1362,7 @@
                     this.$Message.warning({content: "边框信息不能为空!", duration: 3})
                     return
                 }
+                this.$Message.info({content:"正在发送请求..."})
                 let data = new FormData()
                 data.append('img', Utils.dataURLtoFile(this.imgSrc,"rawImage.jpg"))
                 data.append('device_label', this.deviceLabel)
@@ -1277,7 +1457,7 @@
 
     .input-box {
         display: flex;
-        justify-content: space-between;
+        /*justify-content: space-between;*/
     }
     .flex-table{
 
@@ -1363,6 +1543,9 @@
         text-align: center;
         line-height: 1.4;
         border-radius: 50%;
+    }
+    .mouse-hover:hover{
+        color: #1bbc9c;
     }
 
     @keyframes turn {
