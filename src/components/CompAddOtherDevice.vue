@@ -280,6 +280,9 @@ export default {
         })
       }
       this.phoneModel = item.trim()
+      this.deviceInfo.width = null
+      this.deviceInfo.height = null
+      this.deviceInfo.ply = null
     }
 
   },
