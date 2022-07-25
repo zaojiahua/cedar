@@ -84,6 +84,10 @@
             isMin:{
                 type: Boolean,
                 default: false
+            },
+            propAutoLoad: {
+                type: Boolean,
+                default: true
             }
         },
         data: function () {
@@ -153,7 +157,7 @@
                     if(this.isMin)
                         durationCondition = "&job_duration__gte="+ this.propTimeRange.split("-")[0]+"&job_duration__lte=" + this.propTimeRange.split("-")[1]
                     else
-                        durationCondition = "&job_duration__gt="+ this.propTimeRange.split("-")[0]+"&job_duration__lte=" + this.propTimeRange.split("-")[1]
+                        durationCondition = "&job_duration__gte="+ this.propTimeRange.split("-")[0]+"&job_duration__lt=" + this.propTimeRange.split("-")[1]
 
                 this.$ajax.get("api/v1/cedar/rds/?" +
                     jobCondition +
@@ -233,7 +237,8 @@
             }
         },
         created() {
-            this.loadMoreData(true)
+            if(this.propAutoLoad)
+                this.loadMoreData(true)
         }
     }
 </script>

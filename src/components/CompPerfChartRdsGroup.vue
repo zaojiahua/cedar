@@ -30,22 +30,22 @@
         data(){
             return{
                 timeRange:"",
-                isMin:false,
-                minTime:null,
+                isMin:false,  //已修改：表示是否是最大值=> 图表取值左闭右开，最后一条左闭右闭
+                maxTime:null,
             }
         },
         methods:{
             afterLoadData(item){
                 this.timeRange = item
                 if(this.timeRange){
-                    this.minTime = parseFloat(this.timeRange.split("-")[0])
+                    this.maxTime = parseFloat(this.timeRange.split("-")[1])
                     this.isMin = true
                 }
             },
             onChartClick(item){
                 this.timeRange = item
-                let min = parseFloat(this.timeRange.split("-")[0])
-                this.isMin = this.minTime===min
+                let max = parseFloat(this.timeRange.split("-")[1])
+                this.isMin = this.maxTime===max
             },
         }
     }

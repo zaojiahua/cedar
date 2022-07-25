@@ -81,7 +81,7 @@
                         })
                         this.histogram.hideLoading()
                         if(response.data.length>0)
-                            this.$emit("after-load-data",response.data[0][0])
+                            this.$emit("after-load-data",response.data[response.data.length-1][0])
                         else
                             this.$emit("after-load-data",null)
 
