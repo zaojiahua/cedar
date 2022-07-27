@@ -34,11 +34,11 @@
                         <Dropdown v-show="showProBtn" trigger="contextMenu" style="float: right;font-weight: normal;">
                             <Button @click="coordinateConverting">
                                 坐标换算
-                                <Icon v-show="user==='admin'" type="ios-arrow-down"></Icon>
+                                <Icon type="ios-arrow-down"></Icon>
                             </Button>
-                            <DropdownMenu slot="list" v-show="user==='admin'">
+                            <DropdownMenu slot="list">
                                 <DropdownItem @click.native="imageMosaic">拼接图像</DropdownItem>
-                                <DropdownItem @click.native="getMlocation">mlocation调试</DropdownItem>
+                                <DropdownItem v-show="user==='admin'" @click.native="getMlocation">mlocation调试</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                     </h5>
