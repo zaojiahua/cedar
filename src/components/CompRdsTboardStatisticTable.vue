@@ -7,7 +7,7 @@
             </RadioGroup>
         </Row>
         <!-- 第一层级表格数据 -->
-        <Table :columns="columns" :data="data" border highlight-row
+        <Table :columns="columns" :data="data" border highlight-row :loading="loading1"
                @on-sort-change="onSortChange" @on-row-click="onRowClick" ></Table>
         <Row style="margin-top:20px;text-align: center ">
             <Page :current="currentPage" :total="dataTotal" :page-size="pageSize" simple @on-change="onPageChange" style="display: inline-flex"/>
@@ -27,7 +27,7 @@
             <span v-show="!showTableChild" style="float: right;color: #1296db;cursor: pointer" @click="showTableChild=true"><Icon type="ios-arrow-down" />展开</span>
         </Row>
         <div v-show="showTableChild&&rowData.name">
-            <Table :columns="columns2" :data="data2" border highlight-row style="margin-top: 16px"
+            <Table :columns="columns2" :data="data2" border highlight-row style="margin-top: 16px" :loading="loading2"
                    @on-sort-change="onSortChange2" @on-row-click="onRowClick2" ></Table>
             <Row style="margin-top:20px;text-align: center ">
                 <Page :current="currentPage2" :total="dataTotal2" :page-size="pageSize2" simple @on-change="onPageChange2" style="display: inline-flex"/>
@@ -93,6 +93,8 @@
                 sortFlag2:false,  //true为升序，false为降序
                 showTableChild:true,
                 rowData:{},  //一层表格选中的数据
+                loading1:false,
+                loading2:false,
             }
         },
         methods:{
@@ -101,6 +103,7 @@
             },
             _requestErrorHandle(error) {
                 if (config.DEBUG) console.log(error)
+                this.loading1 = false
                 this.$Message.error({content:error.response.data.description,duration:8})
             },
             _responseHandle(response) {
@@ -112,6 +115,7 @@
                     item.fail_rate = item.fail_rate + '%'
                 })
                 this.data = response.data
+                this.loading1 = false
             },
             //  一 级 数 据
             refresh() {
@@ -128,6 +132,7 @@
                 if(this.propType==='device'){
                     this.urlParam.filter_condition = "device"
                 }
+                this.loading1 = true
                 this.$ajax.post("api/v1/cedar/data_view_job_filter/",this.urlParam)
                     .then(this._responseHandle)
                     .catch(this._requestErrorHandle)
@@ -148,6 +153,7 @@
                     paramsObj.filter_condition = "device"
                     paramsObj.device = row.id
                 }
+                this.loading2 = true
                 this.$ajax.post("api/v1/cedar/data_view_job_filter/",paramsObj)
                     .then(response=>{
                         this.dataTotal2 = parseInt(response.headers["total-count"])
@@ -157,9 +163,11 @@
                             item.fail_rate = item.fail_rate + '%'
                         })
                         this.data2 = response.data
+                        this.loading2 = false
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
+                        this.loading2 = false
                         this.$Message.error({content:error.response.data.description,duration:8})
                     })
             },
