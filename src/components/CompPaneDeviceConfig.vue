@@ -4,6 +4,7 @@
             <div class="panel">
                 <Row>
                     <h5 style="font-weight: bold; font-size: 1.4rem;">机型信息
+                        <!--    5D    -->
                         <Dropdown v-show="showTestBtn" trigger="contextMenu" style="float: right;font-weight: normal;">
                             <Button @click="distanceBtn('调试距离')">
                                 调试距离
@@ -14,23 +15,29 @@
                                 <DropdownItem @click.native="coordinateConverting('坐标换算')">坐标换算</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
+                        <!--  5，5L，5se -->
                         <Dropdown v-show="showLocationBtn" trigger="contextMenu" style="float: right;font-weight: normal;">
-                            <Button @click="getMlocation">
-                                mlocation调试
-                                <!--<Icon type="ios-arrow-down"></Icon>-->
+                            <Button @click="coordinateConverting">
+                                坐标换算
+                                <Icon v-show="user==='admin'" type="ios-arrow-down"></Icon>
                             </Button>
+                            <DropdownMenu slot="list" v-show="user==='admin'">
+                                <DropdownItem @click.native="getMlocation">mlocation调试</DropdownItem>
+                            </DropdownMenu>
                             <!--<DropdownMenu slot="list">-->
                                 <!--&lt;!&ndash;<DropdownItem @click.native="">点击准确性测试</DropdownItem>&ndash;&gt;-->
                                 <!--<DropdownItem @click.native="showValidationModal=true">点击有效性测试</DropdownItem>-->
                                 <!--&lt;!&ndash;<DropdownItem @click.native="">滑动有效性测试</DropdownItem>&ndash;&gt;-->
                             <!--</DropdownMenu>-->
                         </Dropdown>
+                        <!--   5pro   -->
                         <Dropdown v-show="showProBtn" trigger="contextMenu" style="float: right;font-weight: normal;">
-                            <Button @click="imageMosaic">
-                                拼接图像
+                            <Button @click="coordinateConverting">
+                                坐标换算
                                 <Icon v-show="user==='admin'" type="ios-arrow-down"></Icon>
                             </Button>
                             <DropdownMenu slot="list" v-show="user==='admin'">
+                                <DropdownItem @click.native="imageMosaic">拼接图像</DropdownItem>
                                 <DropdownItem @click.native="getMlocation">mlocation调试</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
@@ -333,6 +340,8 @@
                                     on:{
                                         dblclick:()=>{
                                             this.$set(params.row,"$isEdit",true)
+                                            this.coordinate = {}
+                                            this.$refs.imgTool.closeArea()
                                         }
                                     }
                                 },params.row.x_coordinate)
@@ -379,6 +388,8 @@
                                     on:{
                                         dblclick:()=>{
                                             this.$set(params.row,"$isEdit",true)
+                                            this.coordinate = {}
+                                            this.$refs.imgTool.closeArea()
                                         }
                                     }
                                 },params.row.y_coordinate)
@@ -424,6 +435,8 @@
                                     on:{
                                         dblclick:()=>{
                                             this.$set(params.row,"$isEdit",true)
+                                            this.coordinate = {}
+                                            this.$refs.imgTool.closeArea()
                                         }
                                     }
                                 },params.row.z_coordinate)
@@ -838,9 +851,8 @@
                 this.getCoordinateInfo()
                 this.getImg()
                 this.showTestBtn = device.cabinet.type === "Tcab_5D";
-                let user = sessionStorage.getItem('username')
                 let cabinetList = ['Tcab_5','Tcab_5L','Tcab_5se']
-                this.showLocationBtn = user==='admin' && cabinetList.includes(device.cabinet.type)
+                this.showLocationBtn = cabinetList.includes(device.cabinet.type)
                 this.showProBtn = device.cabinet.type === "Tcab_5pro"
             },
             setMsg(row){
@@ -850,9 +862,8 @@
                 this.deviceCabinetType = row.cabinet.type
                 this.deviceCabinetId = row.cabinet.id
                 this.showTestBtn = row.cabinet.type === "Tcab_5D";
-                let user = sessionStorage.getItem('username')
                 let cabinetList = ['Tcab_5','Tcab_5L','Tcab_5se']
-                this.showLocationBtn = user==='admin' && cabinetList.includes(row.cabinet.type)
+                this.showLocationBtn = cabinetList.includes(row.cabinet.type)
                 this.showProBtn = row.cabinet.type === "Tcab_5pro"
             },
             setPaneId(id){

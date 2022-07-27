@@ -206,6 +206,11 @@ export default {
           //以图片的左上角为原点，做计算，当前所选择的区域的两个点的坐标  //相对、绝对
           //   console.log(this.selectorImgRect.width)   //页面显示的大小
           //   console.log(this.imageWidth)  //原图大小
+          // this.curAreaRect 出圈的情况
+          if(this.curAreaRect.x===0&&this.curAreaRect.y===0){
+            this.$emit('on-select', {})
+            return
+          }
           coordinate = {}
           coordinate.relativeCoordinate = {
             topLeft: {
