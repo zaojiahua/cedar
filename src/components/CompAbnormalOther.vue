@@ -169,8 +169,8 @@
                 },
                 abnormalKey:null,
                 showDeviceDetail:false,
-                isActive1:1,
-                isActive2:1,
+                isActive1:3,
+                isActive2:3,
                 beforeAbnormalFilterDate:[],
                 abnormalFilterDate:[],
                 afterAbnormalFilterDate:[],
@@ -304,8 +304,8 @@
                 this.abnormalKey = item.id
                 this.abnormalData = item
                 this.abnormalFilterDate = [new Date(this.abnormalData.abnm_start_time),new Date(this.abnormalData.abnm_start_time)]
-                this.beforeAbnormalDateClick(1,5)
-                this.afterAbnormalDateClick(1,-5)
+                this.beforeAbnormalDateClick(3,30)
+                this.afterAbnormalDateClick(3,-30)
             },
             //异常数据时间切换  5/15/60   rds数据加载部分
             beforeAbnormalDateClick(i,minutes){
