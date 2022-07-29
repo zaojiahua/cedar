@@ -905,10 +905,11 @@
                 this.$ajax.get("api/v1/cedar/phone_model_custom_coordinate/" +
                     "?exclude=pk&phone_model__device=" + this.deviceId
                 ).then(response => {
-                    if (response.data.phonemodelcustomcoordinate.length > 0)
+                    if (response.data.phonemodelcustomcoordinate.length > 0){
                         this.tableData = response.data.phonemodelcustomcoordinate
+                    }
                     else{
-                        this.tableData = defaultTableDate
+                        this.tableData = _.cloneDeep(defaultTableDate)
                     }
                 }).catch(error => {
                     if (config.DEBUG) console.log(error)
