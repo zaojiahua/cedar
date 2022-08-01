@@ -424,7 +424,7 @@
                         'paneslot.col,' +
                         'paneslot.paneview,' +
                         'paneslot.paneview.name,' +
-                        'cabinet,cabinet.ip_address,cabinet.type,' +
+                        'cabinet,cabinet.ip_address,cabinet.type,cabinet.id,' +
                         'subsidiary_device_count' +
                         '&limit=' + this.pageSize +
                         "&offset=" + this.offset +
