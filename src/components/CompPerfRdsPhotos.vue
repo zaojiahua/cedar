@@ -115,6 +115,7 @@ export default {
             .then(response=>{
                 this.selectedUrl = this.baseUrl + response.data.rdsscreenshots[0].img_file
             }).catch(error=>{
+            this.selectedUrl = ""
             if(error.response.status>=500)
                 this.$Message.error("服务器错误")
             else
