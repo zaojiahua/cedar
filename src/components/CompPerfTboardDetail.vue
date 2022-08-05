@@ -40,7 +40,7 @@
 
         <Row style="margin-top: 40px">
             测试设备：
-            <Select v-model="deviceSelected" style="width:200px"  title="device" @on-change="onDeviceSelectChange">
+            <Select v-model="deviceSelected" style="width:200px"  title="device">
                 <Option v-for="(id,index) in data.device_id" :value="id" :key="index">{{ data.device_name[index] }}</Option>
             </Select>
         </Row>
@@ -141,11 +141,7 @@
                         this.$Message.error("载入失败")
                         this.showLoading = false;
                 })
-            },
-            onDeviceSelectChange(device){
-                console.log("option改变")
-                console.log(device)
-            },
+            }
         }
     }
 </script>
