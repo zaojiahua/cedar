@@ -88,6 +88,21 @@
                 },
                 immediate: true
             },
+            deviceId:{
+                handler:function (val) {
+                    if(this.groupView===1){
+                        this.$nextTick(function () {
+                            this.$refs.tarckRdsGroup.$refs.histogram.refresh(this.tboardId)
+                        })
+                    }
+                    if(this.groupView===2){
+                        this.$nextTick(function () {
+                            this.$refs.chartRdsGroup.$refs.histogram.refresh(this.tboardId)
+                        })
+                    }
+                },
+                immediate: true
+            },
         }
     }
 

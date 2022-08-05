@@ -12,19 +12,15 @@
                 <FormItem>
                     <b slot="label">测试用例:</b>
                     <ButtonGroup>
-                        <Tooltip v-for="job in data.job_data" :content="job.job_num" :key="job.job_id" placement="top" transfer>
-                            <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.job_id)">{{job.job_num}}</Button>
-                        </Tooltip>
+                        <Button v-for="job in data.job_data" :key="job.job_id" @click="showJobDetail=true;$refs.jobDetail.refresh(job.job_id)">{{job.job_num}}</Button>
                     </ButtonGroup>
                 </FormItem>
                 <FormItem>
                     <b slot="label">测试设备:</b>
                     <ButtonGroup>
-                        <Tooltip :content="data.device_name" placement="bottom" transfer>
-                            <Button @click="showDeviceDetail=true;$refs.deviceDetail.refresh(data.device_id)">
-                                {{data.device_name}}
-                            </Button>
-                        </Tooltip>
+                        <Button v-for="(id,index) in data.device_id" :key="index" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(id)">
+                            {{data.device_name[index]}}
+                        </Button>
                     </ButtonGroup>
                 </FormItem>
                 <FormItem>
@@ -42,9 +38,15 @@
             </Form>
         </Card>
 
+        <Row style="margin-top: 40px">
+            测试设备：
+            <Select v-model="deviceSelected" style="width:200px"  title="device" @on-change="onDeviceSelectChange">
+                <Option v-for="(id,index) in data.device_id" :value="id" :key="index">{{ data.device_name[index] }}</Option>
+            </Select>
+        </Row>
         <Card v-for="(job,index) in data.job_data" :key="job.job_id" style="margin-top: 20px;">
             <Divider orientation="left">测试用例{{ index+1 }}：{{ job.job_num }}</Divider>
-            <comp-perf-group-view-list ref="perfViewList" :index="index" :job="job" :tboard-id="data.id" :device-id="data.device_id"></comp-perf-group-view-list>
+            <comp-perf-group-view-list ref="perfViewList" :index="index" :job="job" :tboard-id="data.id" :device-id="deviceSelected"></comp-perf-group-view-list>
         </Card>
 
         <div></div>
@@ -104,6 +106,7 @@
                     },
                 ],
                 groupView:1,
+                deviceSelected:'',
             }
         },
         computed:{
@@ -117,7 +120,9 @@
                 this.$ajax.get("api/v1/cedar/get_tboard_perf_dtail_data/?tboard=" + tboardId)
                     .then(response => {
                         this.data = response.data
+                        this.deviceSelected = this.data.device_id[0]
                         let hash = {};
+                        // job_data 用例信息去重
                         this.data.job_data = response.data.job_data.reduce(function(item, next) {
                             hash[next.job_num] ? '' : hash[next.job_num] = true && item.push(next);
                             return item
@@ -136,6 +141,10 @@
                         this.$Message.error("载入失败")
                         this.showLoading = false;
                 })
+            },
+            onDeviceSelectChange(device){
+                console.log("option改变")
+                console.log(device)
             },
         }
     }
