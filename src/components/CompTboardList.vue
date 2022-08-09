@@ -440,7 +440,7 @@
             },
             showRepeatTboard(index){
                 let row = this.data[index]
-                return row.finished_flag && (new Date()-new Date(row.end_time)<=24*60*60*1000);
+                return row.finished_flag;
             },
             repeatTboard(row){
                 //再来一次 API
