@@ -851,9 +851,9 @@
                 this.getCoordinateInfo()
                 this.getImg()
                 this.showTestBtn = device.cabinet.type === "Tcab_5D";
-                let cabinetList = ['Tcab_5','Tcab_5L','Tcab_5se']
+                let cabinetList = ['Tcab_5L','Tcab_5se']
                 this.showLocationBtn = cabinetList.includes(device.cabinet.type)
-                this.showProBtn = device.cabinet.type === "Tcab_5pro"
+                this.showProBtn = ['Tcab_5','Tcab_5pro'].includes(device.cabinet.type)
             },
             setMsg(row){
                 this.deviceId = row.id
@@ -862,9 +862,9 @@
                 this.deviceCabinetType = row.cabinet.type
                 this.deviceCabinetId = row.cabinet.id
                 this.showTestBtn = row.cabinet.type === "Tcab_5D";
-                let cabinetList = ['Tcab_5','Tcab_5L','Tcab_5se']
+                let cabinetList = ['Tcab_5L','Tcab_5se']
                 this.showLocationBtn = cabinetList.includes(row.cabinet.type)
-                this.showProBtn = row.cabinet.type === "Tcab_5pro"
+                this.showProBtn = ['Tcab_5','Tcab_5pro'].includes(row.cabinet.type)
             },
             setPaneId(id){
                 this.paneId = id
