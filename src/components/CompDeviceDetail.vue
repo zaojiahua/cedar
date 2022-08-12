@@ -612,6 +612,13 @@
                     this.$Message.warning("请将信息填写完整！")
                     return
                 }
+                if(!this.device.device_name||!this.device.device_label||
+                    !this.device.phone_model.manufacturer.manufacturer_name||
+                    !this.registerDeviceInfo.android_version||!this.registerDeviceInfo.rom_version||
+                    !this.registerDeviceInfo.ip_address){
+                    this.$Message.warning("请将信息填写完整！")
+                    return
+                }
                 if (!this.device.device_name.match(/^[\u4E00-\u9FA5a-zA-Z0-9_\-]+$/)) {
                     this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字和中下划线",duration:5})
                     return
