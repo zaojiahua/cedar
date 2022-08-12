@@ -185,7 +185,7 @@
                         dateRangeCondition = "&start_time__gte=" + this.propFilterDateRange[0].format("yyyy-MM-dd hh:mm:ss") +
                             "&end_time__lte=" + this.propFilterDateRange[1].format("yyyy-MM-dd hh:mm:ss")
                     if(this.propStartDateOne)
-                        dateRangeCondition = "&start_time=" + this.propFilterDateRange[0].format("yyyy-MM-dd hh:mm:ss")
+                        dateRangeCondition = "&start_time__lte=" + this.propFilterDateRange[0].format("yyyy-MM-dd hh:mm:ss") + "&end_time__gte=" + this.propFilterDateRange[0].format("yyyy-MM-dd hh:mm:ss")
                 }
                 this.loadingData = true
                 if(reset){
