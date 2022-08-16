@@ -79,14 +79,14 @@
                     <b slot="label"><span class="need">*</span>Ydpi</b>
                     <InputNumber style="width: 324px" v-model="deviceInfo.y_dpi"></InputNumber>
                 </FormItem>
-                <FormItem>
-                    <b slot="label"><span class="need">*</span>X边框厚度</b>
-                    <InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.x_border"  :min="0" placeholder="请输入手机左侧边框厚度"></InputNumber><span>毫米</span>
-                </FormItem>
-                <FormItem>
-                    <b slot="label"><span class="need">*</span>Y边框厚度</b>
-                    <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.y_border" placeholder="请输入手机顶部边框厚度"></InputNumber><span>毫米</span>
-                </FormItem>
+                <!--<FormItem>-->
+                    <!--<b slot="label"><span class="need">*</span>X边框厚度</b>-->
+                    <!--<InputNumber style="width: 200px;margin-right: 5px" v-model="deviceInfo.x_border"  :min="0" placeholder="请输入手机左侧边框厚度"></InputNumber><span>毫米</span>-->
+                <!--</FormItem>-->
+                <!--<FormItem>-->
+                    <!--<b slot="label"><span class="need">*</span>Y边框厚度</b>-->
+                    <!--<InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.y_border" placeholder="请输入手机顶部边框厚度"></InputNumber><span>毫米</span>-->
+                <!--</FormItem>-->
             </Form>
             <Row type="flex" justify="center">
                 <Button type="primary" v-if="addBtn" @click="addDevice()">添加</Button>
@@ -156,13 +156,13 @@
                 });
             },
             addDevice() {
-                if(this.addedDeviceName.trim().length===0||this.deviceInfo.x_border===null||this.deviceInfo.x_dpi===null
-                    ||this.deviceInfo.y_border===null||this.deviceInfo.y_dpi===null||this.deviceInfo.manufacturer===""){
+                if(this.addedDeviceName.trim().length===0||this.deviceInfo.x_dpi===null
+                    ||this.deviceInfo.y_dpi===null||this.deviceInfo.manufacturer===""){
                     this.$Message.warning("带*项信息不能为空！")
                     return
                 }
-                if (!this.addedDeviceName.match(/^[\u4E00-\u9FA5a-zA-Z0-9_\-]+$/)) {
-                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字和中下划线",duration:5})
+                if (!this.addedDeviceName.match(/^[\u4E00-\u9FA5a-zA-Z0-9()_\-]+$/)) {
+                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字、括号和中下划线",duration:5})
                     return
                 }
                 this.$Loading.start()
@@ -204,8 +204,8 @@
                         manufacturer: deviceInfoDict.manufacturer,
                         phone_model: {
                             phone_model_name: deviceInfoDict.phone_model_name,
-                            x_border: deviceInfoDict.x_border,
-                            y_border: deviceInfoDict.y_border,
+                            // x_border: deviceInfoDict.x_border,
+                            // y_border: deviceInfoDict.y_border,
                             x_dpi: deviceInfoDict.x_dpi,
                             y_dpi: deviceInfoDict.y_dpi,
                             height_resolution:deviceInfoDict.height_resolution,

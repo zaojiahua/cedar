@@ -62,16 +62,16 @@
                        <!--placeholder="请输入手机顶部边框厚度"></InputNumber>-->
           <!--<span>毫米</span>-->
         <!--</FormItem>-->
-        <FormItem>
-          <b slot="label"><span class="need">*</span>机型高度</b>
-          <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.height"></InputNumber>
-          <span>毫米</span>
-        </FormItem>
-        <FormItem>
-          <b slot="label"><span class="need">*</span>机型宽度</b>
-          <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.width"></InputNumber>
-          <span>毫米</span>
-        </FormItem>
+        <!--<FormItem>-->
+          <!--<b slot="label"><span class="need">*</span>机型高度</b>-->
+          <!--<InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.height"></InputNumber>-->
+          <!--<span>毫米</span>-->
+        <!--</FormItem>-->
+        <!--<FormItem>-->
+          <!--<b slot="label"><span class="need">*</span>机型宽度</b>-->
+          <!--<InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.width"></InputNumber>-->
+          <!--<span>毫米</span>-->
+        <!--</FormItem>-->
         <FormItem>
           <b slot="label"><span class="need">*</span>机型厚度</b>
           <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.ply"></InputNumber>
@@ -145,12 +145,13 @@ export default {
           // || this.deviceInfo.screen_size === ""
           // || this.deviceInfo.x_border === null || this.deviceInfo.width_resolution === null
           // || this.deviceInfo.y_border === null || this.deviceInfo.height_resolution === null
-          || this.deviceInfo.height === null || this.deviceInfo.width === null|| this.deviceInfo.ply === null) {
+          // || this.deviceInfo.height === null || this.deviceInfo.width === null
+          || this.deviceInfo.ply === null) {
         this.$Message.warning("带*项信息不能为空！")
         return
       }
-      if (!this.addedDeviceName.match(/^[\u4E00-\u9FA5a-zA-Z0-9_\-]+$/)) {
-         this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字和中下划线",duration:5})
+      if (!this.addedDeviceName.match(/^[\u4E00-\u9FA5a-zA-Z0-9()_\-]+$/)) {
+         this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字、括号和中下划线",duration:5})
          return
       }
       let reg = ['\/','\\',' ','`','~','!','#','$','%','^','&','*','(',')','+','=','<','>','?',':','"','{','}','|','！','￥','…','（','）',
@@ -173,8 +174,8 @@ export default {
             // y_border: this.deviceInfo.y_border,
             // height_resolution: this.deviceInfo.height_resolution,
             // screen_size: this.deviceInfo.screen_size,
-            width:this.deviceInfo.width,
-            height:this.deviceInfo.height,
+            // width:this.deviceInfo.width,
+            // height:this.deviceInfo.height,
             ply:this.deviceInfo.ply,
 
           }
@@ -269,8 +270,8 @@ export default {
           if (response.data.phonemodels.length > 0){
             this.deviceInfo.x_border = response.data.phonemodels[0].x_border
             this.deviceInfo.y_border = response.data.phonemodels[0].y_border
-            this.deviceInfo.width = response.data.phonemodels[0].width
-            this.deviceInfo.height = response.data.phonemodels[0].height
+            // this.deviceInfo.width = response.data.phonemodels[0].width
+            // this.deviceInfo.height = response.data.phonemodels[0].height
             this.deviceInfo.ply = response.data.phonemodels[0].ply
             this.deviceInfo.width_resolution = response.data.phonemodels[0].width_resolution
             this.deviceInfo.height_resolution = response.data.phonemodels[0].height_resolution
