@@ -53,7 +53,7 @@
                         <InputNumber style="width: 100%" v-model="phone_model.ply" class="disabled-input" :min="0"></InputNumber>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">设备外边框:</b>
+                        <b slot="label">边框信息:</b>
                         <!--<div class="input-box">-->
                             <!--<Input disabled v-model="pointTopLeft" class="disabled-input"></Input>&mdash;-->
                             <!--<Input disabled v-model="pointBottomRight" class="disabled-input"></Input>-->
@@ -82,7 +82,7 @@
 
                 <div class="flex-table">
                     <p></p>
-                    <p style="margin-bottom: 5px;font-size: 12px"> x,y 是基于设备外边框左上角点的相对坐标；屏幕水平面 z=0，屏幕朝向方向 z 为正(单位：mm)</p>
+                    <p style="margin-bottom: 5px;font-size: 12px"> x,y 是基于边框左上角点的相对坐标；屏幕水平面 z=0，屏幕朝向方向 z 为正(单位：mm)</p>
 
                     <Table :columns="tableColumns" :data="tableData" border highlight-row
                            @on-row-click="onRowClick" max-height="345" size="small">
@@ -105,7 +105,7 @@
             <div class="area-selector">
                 <div class="area-selector__header">
                     <Row>
-                        <h5 style="font-weight: bold; font-size: 1.4rem;">请在图中框选屏幕边框或选取坐标点</h5>
+                        <h5 style="font-weight: bold; font-size: 1.4rem;">请在图中框选边框或选取坐标点</h5>
                         <div style="float: right;margin-top: -33px;">
                             <!--<span>高曝光：</span>-->
                             <i-switch v-model="highExposureSwitch" false-color="#999">
@@ -541,7 +541,7 @@
                         this.deviceCutCoordinate.inside_under_right_x = val.inside_under_right_x
                         this.deviceCutCoordinate.inside_under_right_y = val.inside_under_right_y
                     }else {
-                        this.$Message.warning({content:"请框选正确的屏幕边框！",duration:3})
+                        this.$Message.warning({content:"请框选正确的边框信息！",duration:3})
                     }
                 },
                 deep: true,
@@ -1104,7 +1104,7 @@
                             return
                         }
                         if(this.deviceCutCoordinate.inside_upper_left_x===null || this.deviceCutCoordinate.inside_under_right_y===null){
-                            this.$Message.warning({content:"请先框选设备外边框！",duration:3})
+                            this.$Message.warning({content:"请先框选边框信息！",duration:3})
                             return
                         }
                         let screenWidth = this.deviceCutCoordinate.inside_under_right_x - this.deviceCutCoordinate.inside_upper_left_x
