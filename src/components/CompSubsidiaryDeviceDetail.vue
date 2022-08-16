@@ -306,6 +306,10 @@
                     this.$Message.warning("自定义名称不能为空！");
                     return
                 }
+                if (!this.device.custom_name.match(/^[\u4E00-\u9FA5a-zA-Z0-9()_\-]+$/)) {
+                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字、括号和中下划线",duration:5})
+                    return
+                }
                 this.$ajax.patch("/api/v1/cedar/subsidiary_device/"+ this.device.id + "/",
                     {
                         custom_name: this.device.custom_name.trim()

@@ -619,8 +619,8 @@
                     this.$Message.warning("请将信息填写完整！")
                     return
                 }
-                if (!this.device.device_name.match(/^[\u4E00-\u9FA5a-zA-Z0-9_\-]+$/)) {
-                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字和中下划线",duration:5})
+                if (!this.device.device_name.match(/^[\u4E00-\u9FA5a-zA-Z0-9()_\-]+$/)) {
+                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字、括号和中下划线",duration:5})
                     return
                 }
                 this.$ajax.post("http://" + this.device.cabinet.ip_address + ":5000"+"/door/device_info/", {
@@ -719,33 +719,9 @@
                             "subsidiarydevice,subsidiarydevice.id,subsidiarydevice.serial_number,subsidiarydevice.ip_address,subsidiarydevice.order,subsidiarydevice.custom_name"+
                             "&ordering=subsidiarydevice.order"
                         ),
-                        ajax.get("api/v1/cedar/temp_port/?fields=" +
-                            "id," +
-                            "port," +
-                            "description," +
-                            "device," +
-                            "device.id," +
-                            "status" +
-                            "&ordering=port"),
-                        ajax.get("api/v1/cedar/power_port/?fields=" +
-                            "id," +
-                            "port," +
-                            "device," +
-                            "device.id," +
-                            "status"+
-                            "&ordering=port"),
-                        ajax.get("api/v1/cedar/monitor_port/?fields=" +
-                            "id," +
-                            "port," +
-                            "device," +
-                            "device.id" +
-                            "&ordering=port")
                     ]
-                ).then(ajax.spread((deviceResponse, tempPortResponse, powerPortResponse, monitorPortResponse)=>{
+                ).then(ajax.spread((deviceResponse)=>{
                     this.device = utils.validate(serializer.deviceSerializer, deviceResponse.data)
-                    this.tempPorts = utils.validate(serializer.tempPortSerializer, tempPortResponse.data).tempports
-                    this.powerPorts = utils.validate(serializer.powerPortSerializer, powerPortResponse.data).powerports
-                    this.monitorPorts = utils.validate(serializer.monitorPortSerializer, monitorPortResponse.data).monitorports
 
                     this.subsidiaryOrderList=[]
                     //获取已有僚机的位置列表
@@ -762,49 +738,85 @@
                             this.device.sim2.name = item.operator + "_" + item.phone_number
                         }
                     })
-                    //tempPort Detail
-                    let deviceTempPorts = []     //当前device下选中的port， 可选中,可取消状态
-                    this.device.tempport.forEach(port=>{
-                        deviceTempPorts.push(port.port)
-                    })
-
-                    this.tempPorts.forEach(port=>{
-                        if(deviceTempPorts.includes(port.port)){
-                            this.selectedTempPorts.push(port.port);
-                        }
-                        else if (port.status==="busy"){
-                            this.disableTempPorts.push(port.port);
-                            this.selectedTempPorts.push(port.port);
-                        }
-                    })
-
-                    //powerPort Detail
-                    this.devicePowerPorts = this.device.powerport.id
-                    let devicePowerPorts = []     //当前device下选中的port， 可选中,可取消状态
-                    devicePowerPorts.push(this.device.powerport.id)
-                    this.powerPorts.forEach(port=>{
-                        if(devicePowerPorts.includes(port.id)){
-                            this.selectedPowerPorts.push(port.id);
-                        }else if(port.status==="busy"){
-                            this.disablePowerPorts.push(port.id);
-                            this.selectedPowerPorts.push(port.id);
-                        }
-                    })
-                    this.selectedPowerPorts_copy = this.selectedPowerPorts
-
-                    //monitorPort Detail
-                     this.device.monitor_index.forEach(port=>{
-                         this.selectedMonitorPorts.push(port.id)
-                         this.deviceMonitorPorts = port.id;
-                    })
-                    this.selectedMonitorPorts_copy = this.selectedMonitorPorts
-
                     //对取回的僚机数据按照order进行排序
                     this.device.subsidiarydevice.sort(this.orderSort)
 
                     //aiTester
                     this.openSwitch = this.device.auto_test
                     this.spinShow = false;
+
+                    this.$ajax.all(
+                        [
+                            ajax.get("api/v1/cedar/temp_port/?fields=" +
+                                "id," +
+                                "port," +
+                                "description," +
+                                "device," +
+                                "device.id," +
+                                "status" +
+                                "&woodenbox__cabinet=" + this.device.cabinet.id +
+                                "&ordering=port"),
+                            ajax.get("api/v1/cedar/power_port/?fields=" +
+                                "id," +
+                                "port," +
+                                "device," +
+                                "device.id," +
+                                "status"+
+                                "&woodenbox__cabinet=" + this.device.cabinet.id +
+                                "&ordering=port"),
+                            ajax.get("api/v1/cedar/monitor_port/?fields=" +
+                                "id," +
+                                "port," +
+                                "device," +
+                                "device.id" +
+                                "&ordering=port")
+                        ]
+                    ).then(ajax.spread(( tempPortResponse, powerPortResponse, monitorPortResponse)=>{
+                        this.tempPorts = utils.validate(serializer.tempPortSerializer, tempPortResponse.data).tempports
+                        this.powerPorts = utils.validate(serializer.powerPortSerializer, powerPortResponse.data).powerports
+                        this.monitorPorts = utils.validate(serializer.monitorPortSerializer, monitorPortResponse.data).monitorports
+                        //tempPort Detail
+                        let deviceTempPorts = []     //当前device下选中的port， 可选中,可取消状态
+                        this.device.tempport.forEach(port=>{
+                            deviceTempPorts.push(port.port)
+                        })
+
+                        this.tempPorts.forEach(port=>{
+                            if(deviceTempPorts.includes(port.port)){
+                                this.selectedTempPorts.push(port.port);
+                            }
+                            else if (port.status==="busy"){
+                                this.disableTempPorts.push(port.port);
+                                this.selectedTempPorts.push(port.port);
+                            }
+                        })
+
+                        //powerPort Detail
+                        this.devicePowerPorts = this.device.powerport.id
+                        let devicePowerPorts = []     //当前device下选中的port， 可选中,可取消状态
+                        devicePowerPorts.push(this.device.powerport.id)
+                        this.powerPorts.forEach(port=>{
+                            if(devicePowerPorts.includes(port.id)){
+                                this.selectedPowerPorts.push(port.id);
+                            }else if(port.status==="busy"){
+                                this.disablePowerPorts.push(port.id);
+                                this.selectedPowerPorts.push(port.id);
+                            }
+                        })
+                        this.selectedPowerPorts_copy = this.selectedPowerPorts
+
+                        //monitorPort Detail
+                        this.device.monitor_index.forEach(port=>{
+                            this.selectedMonitorPorts.push(port.id)
+                            this.deviceMonitorPorts = port.id;
+                        })
+                        this.selectedMonitorPorts_copy = this.selectedMonitorPorts
+
+                    })).catch(reason => {
+                        if(config.DEBUG) console.log(reason)
+                        let status = reason.response?reason.response.status : "Network error!"
+                        this.$Message.error("读取硬件端口数据时出错! "+status)
+                    })
                 })).catch(reason => {
                     this.spinShow = false;
                     if(config.DEBUG) console.log(reason)
@@ -821,8 +833,8 @@
             },
             // Update device
             updateDevice(){
-                if (!this.device.device_name.match(/^[\u4E00-\u9FA5a-zA-Z0-9_\-]+$/)) {
-                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字和中下划线",duration:5})
+                if (!this.device.device_name.match(/^[\u4E00-\u9FA5a-zA-Z0-9()_\-]+$/)) {
+                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字、括号和中下划线",duration:5})
                     return
                 }
                 let temperDict = [];
