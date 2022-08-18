@@ -5,40 +5,45 @@
                 <Row>
                     <h5 style="font-weight: bold; font-size: 1.4rem;">机型信息
                         <!--    5D    -->
-                        <Dropdown v-show="showTestBtn" trigger="contextMenu" style="float: right;font-weight: normal;">
-                            <Button @click="distanceBtn('调试距离')">
-                                调试距离
+                        <Dropdown v-show="showTestBtn" trigger="click" style="float: right;font-weight: normal;">
+                            <Button>
+                                更多操作
                                 <Icon type="ios-arrow-down"></Icon>
                             </Button>
                             <DropdownMenu slot="list">
+                                <DropdownItem @click.native="distanceBtn('调试距离')">调试距离</DropdownItem>
                                 <DropdownItem @click.native="imageMosaic('拼接图像')">拼接图像</DropdownItem>
                                 <DropdownItem @click.native="coordinateConverting('坐标换算')">坐标换算</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
-                        <!--  5，5L，5se -->
-                        <Dropdown v-show="showLocationBtn" trigger="contextMenu" style="float: right;font-weight: normal;">
-                            <Button @click="coordinateConverting">
-                                坐标换算
-                                <Icon v-show="user==='admin'" type="ios-arrow-down"></Icon>
+                        <!--  5L，5se -->
+                        <Dropdown v-show="showLocationBtn" trigger="click" style="float: right;font-weight: normal;">
+                            <Button>
+                                更多操作
+                                <Icon type="ios-arrow-down"></Icon>
                             </Button>
-                            <DropdownMenu slot="list" v-show="user==='admin'">
-                                <DropdownItem @click.native="getMlocation">mlocation调试</DropdownItem>
+                            <DropdownMenu slot="list">
+                                <DropdownItem @click.native="coordinateConverting">坐标换算</DropdownItem>
                             </DropdownMenu>
+                            <!--<DropdownMenu slot="list" v-show="user==='admin'">-->
+                                <!--<DropdownItem @click.native="getMlocation">mlocation调试</DropdownItem>-->
+                            <!--</DropdownMenu>-->
                             <!--<DropdownMenu slot="list">-->
                                 <!--&lt;!&ndash;<DropdownItem @click.native="">点击准确性测试</DropdownItem>&ndash;&gt;-->
                                 <!--<DropdownItem @click.native="showValidationModal=true">点击有效性测试</DropdownItem>-->
                                 <!--&lt;!&ndash;<DropdownItem @click.native="">滑动有效性测试</DropdownItem>&ndash;&gt;-->
                             <!--</DropdownMenu>-->
                         </Dropdown>
-                        <!--   5pro   -->
-                        <Dropdown v-show="showProBtn" trigger="contextMenu" style="float: right;font-weight: normal;">
-                            <Button @click="coordinateConverting">
-                                坐标换算
+                        <!--  5， 5pro   -->
+                        <Dropdown v-show="showProBtn" trigger="click" style="float: right;font-weight: normal;">
+                            <Button>
+                                更多操作
                                 <Icon type="ios-arrow-down"></Icon>
                             </Button>
                             <DropdownMenu slot="list">
                                 <DropdownItem @click.native="imageMosaic">拼接图像</DropdownItem>
-                                <DropdownItem v-show="user==='admin'" @click.native="getMlocation">mlocation调试</DropdownItem>
+                                <DropdownItem @click.native="coordinateConverting">坐标换算</DropdownItem>
+                                <!--<DropdownItem v-show="user==='admin'" @click.native="getMlocation">mlocation调试</DropdownItem>-->
                             </DropdownMenu>
                         </Dropdown>
                     </h5>
