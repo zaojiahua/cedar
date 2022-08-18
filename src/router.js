@@ -19,6 +19,7 @@ import PerfDataManagement from "./views/PerfDataManagement"
 import RdsDictView from "./views/RdsDictView"
 import TGuardManagement from "./views/TGuardManagement"
 import TestSetManagement from "./views/TestSetManagement"
+import draw from "./views/draw"
 
 
 Vue.use(Router)
@@ -123,13 +124,18 @@ let router = new Router({
             path: '*',
             name: '404',
             component: Page404
+        },
+        {
+            path: '/draw',
+            name: 'draw',
+            component: draw
         }
     ]
 })
 
 // 免验证页面
 let whiteList = [
-    'login'
+    'login','draw'
 ]
 
 router.beforeEach((to, from, next) => {
