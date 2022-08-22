@@ -11,7 +11,7 @@
             </FormItem>
             <FormItem>
                 <b slot="label">自定义编号</b>
-                <Input v-model="device.custom_number" :disabled="true" class="disabled-input"></Input>
+                <Input v-model="device.custom_number" :disabled="!editable" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">安卓版本</b>
@@ -862,6 +862,7 @@
                             {
                                 device_label:this.device.device_label,
                                 device_name:this.device.device_name,
+                                custom_number:this.device.custom_number.trim(),
                                 tempport:temperDict,
                                 monitor_index:this.selectedMonitorPorts.length===0 ? null : parseInt(this.selectedMonitorPorts.join(",")),
                                 powerport:configPowerPorts.length===0 ? null : parseInt(configPowerPorts.join(",")),

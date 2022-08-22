@@ -11,7 +11,8 @@
             </FormItem>
             <FormItem>
                 <b slot="label">自定义编号</b>
-                <Input v-model="device.custom_number" :disabled="true" class="disabled-input"></Input>
+                <Input v-model="device.custom_number" style="width: 80%"></Input>
+                <Button type="primary" @click="updateCustomNumber">修改</Button>
             </FormItem>
             <FormItem>
                 <b slot="label">机柜</b>
@@ -320,6 +321,20 @@
                 }).catch(reason => {
                     if(config.DEBUG) console.log(reason)
                     this.$Message.error("自定义名称修改失败")
+                })
+            },
+            // Update device custom_cumber
+            updateCustomNumber(){
+                this.$ajax.patch("/api/v1/cedar/subsidiary_device/"+ this.device.id + "/",
+                    {
+                        custom_number: this.device.custom_number.trim()
+                    }
+                ).then(response=>{
+                    this.$Message.success("自定义编号修改成功")
+                    this.$emit('after-device-action',)
+                }).catch(reason => {
+                    if(config.DEBUG) console.log(reason)
+                    this.$Message.error("自定义编号修改失败")
                 })
             },
             cancelConfig(){
