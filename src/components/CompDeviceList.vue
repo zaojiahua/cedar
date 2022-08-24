@@ -215,7 +215,8 @@
                                 });
                            }else {
                                this.phoneModelFilterList = value
-                               this.onPageChange(1)                            }
+                               this.onPageChange(1)
+                           }
                         }
                     },
                     "rom_version": {
@@ -438,7 +439,7 @@
                         deviceNumCondition +
                         cabinetTypeCondition +
                         deviceKeywordCondition +
-                        "&ordering=id"
+                        "&ordering=-id"
                     )
                     .then(response => {
                         this._responseHandle(response);
@@ -710,6 +711,10 @@
         },
         created() {
             this.pageSize = utils.getPageSize();
+            if(!this.propDeviceStatus&&!this.propFilterStatus){
+                this.statusFilterList = ["idle","busy","occupied","error"]
+                this.deviceColumn.status.filteredValue = this.statusFilterList
+            }
             if(this.propAutoLoad)
                 this.refresh()
             this.$ajax.get("api/v1/cedar/get_device_phone_model/")
