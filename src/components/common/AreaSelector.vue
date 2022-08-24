@@ -35,6 +35,7 @@ export default {
   data () {
     return {
       isDragging: false,
+      //当前鼠标点的位置（包括滑动）
       mouseStartX: null,
       mouseStartY: null,
       selector: null,
@@ -113,6 +114,7 @@ export default {
             let offsetX = (this.selectorRect.width - this.selectorImgRect.width) / 2.0
             let offsetY = (this.selectorRect.height - this.selectorImgRect.height) / 2.0
             let curAreaRect = this.curArea.getBoundingClientRect()
+            this.curAreaRect = this.curArea.getBoundingClientRect()
             if (this.moveArea) {
               let top = Math.max(offsetY, parseInt(this.curArea.style.top) + moveY)
               let left = Math.max(offsetX, parseInt(this.curArea.style.left) + moveX)
@@ -202,7 +204,8 @@ export default {
           this.expandRight = false
           this.expandBottom = false
           this.expandLeft = false
-          this.curAreaRect = this.curArea.getBoundingClientRect()
+          // 这里不能重新获取元素的位置，不然会导致点的数据不对（需要获取的话就需要所有元素都重新获取）
+          // this.curAreaRect = this.curArea.getBoundingClientRect()
           //以图片的左上角为原点，做计算，当前所选择的区域的两个点的坐标  //相对、绝对
           //   console.log(this.selectorImgRect.width)   //页面显示的大小
           //   console.log(this.imageWidth)  //原图大小
