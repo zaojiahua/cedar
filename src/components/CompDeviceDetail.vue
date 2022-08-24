@@ -745,6 +745,7 @@
                     this.openSwitch = this.device.auto_test
                     this.spinShow = false;
 
+                    if(!this.device.cabinet.id) return
                     this.$ajax.all(
                         [
                             ajax.get("api/v1/cedar/temp_port/?fields=" +
