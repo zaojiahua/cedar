@@ -144,6 +144,27 @@
                         sortable: true
                     },
                     {
+                        title: "任务类型",
+                        key: "tboard_type",
+                        filters: [
+                            {
+                                label: '功能',
+                                value: 'Joblib'
+                            },
+                            {
+                                label: '性能',
+                                value: 'PerfJob'
+                            },
+                        ],
+                        filterMultiple: false,
+                        // 最外层使用的Card不知道为什么使得filterRemote的this指向不对
+                        // （需使用箭头函数改变this指向），若最外层使用div则指向正常
+                        filterRemote:(value)=>{
+                            this.tboardTypeFilter = value[0] || '';
+                            this.onPageChange(1)
+                        }
+                    },
+                    {
                         title:"任务进度",
                         key:"progress",
                         align: 'center',
@@ -179,6 +200,27 @@
                         title: "任务名称",
                         key: "board_name",
                         sortable: true
+                    },
+                    {
+                        title: "任务类型",
+                        key: "tboard_type",
+                        filters: [
+                            {
+                                label: '功能',
+                                value: 'Joblib'
+                            },
+                            {
+                                label: '性能',
+                                value: 'PerfJob'
+                            },
+                        ],
+                        filterMultiple: false,
+                        // 最外层使用的Card不知道为什么使得filterRemote的this指向不对
+                        // （需使用箭头函数改变this指向），若最外层使用div则指向正常
+                        filterRemote:(value)=>{
+                            this.hisTboardTypeFilter = value[0] || '';
+                            this.onPageChange(1)
+                        }
                     },
                     {
                         title:"任务进度",
@@ -219,6 +261,8 @@
                 path:"ws://"+config.REEF_HOST+":"+config.WEBSOCKET+"/ws/tboard_delete/",
                 showTestAgain:false,
                 userFilterList:[],
+                tboardTypeFilter:"",
+                hisTboardTypeFilter:"",
                 hisUserFilterList:[],
                 keyword:"",
                 againInfo:{
@@ -290,6 +334,15 @@
                 } else
                     userCondition = "&author__id=" + userId
 
+                let tboardTypeCondition = ""
+                if (this.filterCondition === "history") {
+                    if (this.hisTboardTypeFilter)
+                        tboardTypeCondition = "&tboard_type=" + this.hisTboardTypeFilter
+                }else {
+                    if (this.tboardTypeFilter)
+                        tboardTypeCondition = "&tboard_type=" + this.tboardTypeFilter
+                }
+
                 this.showLoading = true;
                 this.$ajax.get(
                     "api/v1/cedar/tboard/?fields=" +
@@ -311,12 +364,14 @@
                     dateRangeCondition +
                     perfCondition +
                     keywordCondition +
+                    tboardTypeCondition +
                     tboardCondition
                 ).then(response => {
                     this.tboardIdList=[];
                     this.dataTotal = parseInt(response.headers["total-count"])
                     this.data = utils.validate(getTboardSerializer, response.data).tboards
                     this.data.forEach(item=>{
+                        item.tboard_type = item.tboard_type === "Joblib" ? "功能" : "性能"
                         item.username = item.author.username
                         item.success_ratio = (item.success_ratio *100).toFixed(1) + "%";
                         this.tboardIdList.push(item.id)
