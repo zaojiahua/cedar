@@ -332,10 +332,15 @@
                                             this.$set(params.row,"$isEdit",false)
                                             let selector = document.querySelector('.selector')
                                             let point = document.querySelectorAll('.point')
-                                            if(point)
+                                            let content = document.querySelectorAll('.content')
+                                            if(point){
                                                 point.forEach(item=>{
                                                     selector.removeChild(item)
                                                 })
+                                                content.forEach(item=>{
+                                                    selector.removeChild(item)
+                                                })
+                                            }
                                             this.showSelectedPoint(params.row.name, params.row.x_coordinate, params.row.y_coordinate,)
                                         }
                                     }
@@ -380,10 +385,15 @@
                                             this.$set(params.row,"$isEdit",false)
                                             let selector = document.querySelector('.selector')
                                             let point = document.querySelectorAll('.point')
-                                            if(point)
+                                            let content = document.querySelectorAll('.content')
+                                            if(point){
                                                 point.forEach(item=>{
                                                     selector.removeChild(item)
                                                 })
+                                                content.forEach(item=>{
+                                                    selector.removeChild(item)
+                                                })
+                                            }
                                             this.showSelectedPoint(params.row.name, params.row.x_coordinate, params.row.y_coordinate,)
                                         }
                                     }
@@ -586,10 +596,15 @@
                 } else {
                     let selector = document.querySelector('.selector')
                     let point = document.querySelectorAll('.point')
-                    if(point)
+                    let content = document.querySelectorAll('.content')
+                    if(point){
                         point.forEach(item=>{
                             selector.removeChild(item)
                         })
+                        content.forEach(item=>{
+                            selector.removeChild(item)
+                        })
+                    }
                 }
             },
         },
@@ -1035,11 +1050,16 @@
                     let selector = document.querySelector('.selector')
                     let point = document.querySelectorAll('.point')
                     let area = document.querySelector('.screenarea')
+                    let content = document.querySelectorAll('.content')
                     if (area) selector.removeChild(area)
-                    if(point)
+                    if(point){
                         point.forEach(item=>{
                             selector.removeChild(item)
                         })
+                        content.forEach(item=>{
+                            selector.removeChild(item)
+                        })
+                    }
                     if (this.showScreenArea) {
                         if (this.deviceCutCoordinate.inside_upper_left_x !== this.deviceCutCoordinate.inside_under_right_x) {
                             this.showSelectedArea("ScreenArea", this.deviceCutCoordinate.inside_upper_left_x, this.deviceCutCoordinate.inside_upper_left_y, this.deviceCutCoordinate.inside_under_right_x, this.deviceCutCoordinate.inside_under_right_y)
@@ -1091,10 +1111,15 @@
                             this.$nextTick(function () {
                                 let selector1 = document.querySelector('.selector')
                                 let point1 = document.querySelectorAll('.point')
-                                if(point1)
+                                let content1 = document.querySelectorAll('.content')
+                                if(point1){
                                     point1.forEach(item=>{
                                         selector1.removeChild(item)
                                     })
+                                    content1.forEach(item=>{
+                                        selector1.removeChild(item)
+                                    })
+                                }
                                 if (this.tableData.length>0) {
                                     this.tableData.forEach(item=>{
                                         this.showSelectedPoint(item.name, item.x_coordinate, item.y_coordinate)
@@ -1121,10 +1146,15 @@
                         this.areaPoint.y_coordinate = parseFloat(y_coordinate.toFixed(4))
                         let selector = document.querySelector('.selector')
                         let point = document.querySelectorAll('.point')
-                        if(point)
+                        let content = document.querySelectorAll('.content')
+                        if(point){
                             point.forEach(item=>{
                                 selector.removeChild(item)
                             })
+                            content.forEach(item=>{
+                                selector.removeChild(item)
+                            })
+                        }
                         this.showTablePoint = false
                         this.showSelectedPoint(this.currentData.name, this.areaPoint.x_coordinate, this.areaPoint.y_coordinate)
                         this.$refs.imgTool.closeArea()
@@ -1193,10 +1223,21 @@
                 point.style.background = 'rgb(3,107,234)'
                 point.style.border = '1px solid white'
                 point.style.zIndex = 1000
-                point.innerText = text
-                point.style.paddingLeft = `7px`
+                // point.innerText = text
+                // point.style.paddingLeft = `7px`
                 point.style.color = `red`
+                let content = document.createElement('div')
+                content.classList.add('content')
+                content.style.display = 'flex'
+                content.style.position = 'absolute'
+                content.style.left = `${left + 10}px`
+                content.style.top = `${top - 10}px`
+                content.style.height = `auto`
+                content.innerText = text
+                content.style.color = `red`
+                content.style.zIndex = 1000
                 selector.appendChild(point)
+                selector.appendChild(content)
             },
             async saveAreaInfo() {
                 for(let i=0;i<this.tableData.length;i++){
@@ -1298,10 +1339,15 @@
                 this.currentIndex = index
                 let selector = document.querySelector('.selector')
                 let point = document.querySelectorAll('.point')
-                if(point)
+                let content = document.querySelectorAll('.content')
+                if(point){
                     point.forEach(item=>{
                         selector.removeChild(item)
                     })
+                    content.forEach(item=>{
+                        selector.removeChild(item)
+                    })
+                }
                 this.showSelectedPoint(row.name, row.x_coordinate, row.y_coordinate,)
             },
             // 点击新建按钮，重置信息。
