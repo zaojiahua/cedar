@@ -37,6 +37,7 @@
                                 <comp-rds-card ref="rdsCard1"
                                                :prop-device-id="abnormalData.device_id"
                                                :prop-filter-date-range="beforeAbnormalFilterDate"
+                                               :prop-tboard-id="propTboardId"
                                                :prop-full-date="false"
                                                @after-load-data="afterRdsLoadData">
                                 </comp-rds-card>
@@ -65,6 +66,7 @@
                                 <comp-rds-card ref="rdsCard2"
                                                :prop-device-id="abnormalData.device_id"
                                                :prop-filter-date-range="abnormalFilterDate"
+                                               :prop-tboard-id="propTboardId"
                                                :prop-start-date-one="true"
                                                :prop-full-date="false"
                                                @after-load-data="afterRdsLoadData2">
@@ -101,6 +103,7 @@
                                 <comp-rds-card ref="rdsCard3"
                                                :prop-device-id="abnormalData.device_id"
                                                :prop-filter-date-range="afterAbnormalFilterDate"
+                                               :prop-tboard-id="propTboardId"
                                                :prop-full-date="false"
                                                @after-load-data="afterRdsLoadData3">
                                 </comp-rds-card>
