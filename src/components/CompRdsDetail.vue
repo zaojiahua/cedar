@@ -24,6 +24,10 @@
                 <Input v-model="rdsInfo.end_time" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
+                <b slot="label">运行时长：</b>
+                <Input v-model="rdsInfo.runTime" class="disabled-input" disabled></input>
+            </FormItem>
+            <FormItem>
                 <b slot="label">测试结果：</b>
                 <Input v-model="rdsInfo.result" class="disabled-input" disabled></input>
             </FormItem>
@@ -177,6 +181,7 @@
             }
         },
         end_time: "string",
+        runTime: "string",
         id: "number",
         job: {
             id: "number",
@@ -326,6 +331,7 @@
                         this.$nextTick(function () {
                             this.$refs.histogram.refresh(this.rdsInfo.start_time,endTime)
                         })
+                        this.rdsInfo.runTime = this.diffTime(this.rdsInfo.start_time,this.rdsInfo.end_time)
                     })
                     .catch(error=>{
                         this.showSpin=false;
@@ -523,18 +529,37 @@
             //键盘左右切换事件
             onKeyUpEvent(event) {
                 if(this.showImgModal){
+                    // 查看参考图
                     if (event.keyCode === 37) {  //左 ←
                         this.prevBtn()
                     } else if (event.keyCode === 39) {  //右 →
                         this.nextBtn()
                     }
                 }else {
-                    if (event.keyCode === 37) {  //左 ←
-                        this.$emit("on-left-rds")
-                    } else if (event.keyCode === 39) {  //右 →
-                        this.$emit("on-right-rds")
+                    // 切换 RDS
+                    if(!this.showRdsPhotosModal&&!this.showRdsFramePhotosModal){
+                        if (event.keyCode === 37) {  //左 ←
+                            this.$emit("on-left-rds")
+                        } else if (event.keyCode === 39) {  //右 →
+                            this.$emit("on-right-rds")
+                        }
                     }
                 }
+            },
+            // 计算 RDS 运行时长
+            diffTime(start,end){
+                if(end===null)
+                    end = new Date()
+                let date = new Date(end).getTime() - new Date(start).getTime();   //时间差的毫秒数
+                // //计算出小时数
+                let hours=Math.floor(date/(3600*1000))
+                //计算相差分钟数
+                let leave=date%(3600*1000)        //计算小时数后剩余的毫秒数
+                let minutes=Math.floor(leave/(60*1000))
+                //计算相差秒数
+                let leave2=leave%(60*1000)      //计算分钟数后剩余的毫秒数
+                let seconds=Math.round(leave2/1000)
+                return (hours ? hours +" 小时 " : "") + (minutes ? minutes+" 分钟 " : "") + (seconds? seconds+" 秒": "")
             }
         },
         created() {
