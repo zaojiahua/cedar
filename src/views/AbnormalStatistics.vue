@@ -167,6 +167,7 @@
                 deviceSelection:[],
                 showSelectTboardModal:false,
                 tboardId:null,
+                tboard:null,
                 showContent:false,
                 deviceFilterDateRange:[new Date(new Date(new Date().getTime()-24*60*60*1000*2).setHours(0,0,0,0)), new Date()],
                 tboardData:utils.validate(getTboardSerializer, {}),
@@ -198,9 +199,10 @@
             },
             //  选取tboard
             onSelectTboardModalRowClick(row, index){
-                this.tboardId = row.id
+                this.tboard = row
             },
             getTboardSelection(){
+                this.tboardId = this.tboard.id
                 this.showContent = this.tboardId!==null
                 this.getAbnormalTypeList()
                 let requests = [
