@@ -537,7 +537,7 @@
                         job_label_list:this.againInfo.job_label_list,
                         repeat_time:this.againInfo.repeat_time,
                         board_name:this.againInfo.board_name,
-                        tboard_type:this.againInfo.tboard_type,
+                        tboard_type:this.againInfo.tboard_type==="功能" ? "Joblib" : "PerfJob",
                         tboard_second_type:this.againInfo.tboard_second_type,
                         job_random_order:this.againInfo.job_random_order,
                         owner_label:sessionStorage.getItem('id')
