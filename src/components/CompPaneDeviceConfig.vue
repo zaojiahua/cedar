@@ -227,27 +227,27 @@
             y_coordinate: null,
             z_coordinate: 0
         },
-        {
-            is_fixed: true,
-            name: "电源键",
-            x_coordinate: null,
-            y_coordinate: null,
-            z_coordinate: 0
-        },
-        {
-            is_fixed: true,
-            name: "音量+",
-            x_coordinate: null,
-            y_coordinate: null,
-            z_coordinate: 0
-        },
-        {
-            is_fixed: true,
-            name: "音量-",
-            x_coordinate: null,
-            y_coordinate: null,
-            z_coordinate: 0
-        }
+        // {
+        //     is_fixed: true,
+        //     name: "电源键",
+        //     x_coordinate: null,
+        //     y_coordinate: null,
+        //     z_coordinate: 0
+        // },
+        // {
+        //     is_fixed: true,
+        //     name: "音量+",
+        //     x_coordinate: null,
+        //     y_coordinate: null,
+        //     z_coordinate: 0
+        // },
+        // {
+        //     is_fixed: true,
+        //     name: "音量-",
+        //     x_coordinate: null,
+        //     y_coordinate: null,
+        //     z_coordinate: 0
+        // }
     ]
 
     export default {
