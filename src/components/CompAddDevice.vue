@@ -140,6 +140,15 @@
         methods: {
             reset() {
                 this.addDeviceStep = 1
+                if(this.CabinetSelected)
+                    this.$ajax.get("api/v1/cedar/device/?fields=id&cabinet=" + this.CabinetSelected + "&status__in=ReefList[idle{%,%}busy]")
+                        .then(response => {
+                            this.deviceNum = response.data.devices.length
+                        })
+                        .catch(error => {
+                            if (config.DEBUG) console.log(error);
+                            this.$Message.error("获取设备数量出错")
+                        });
             },
             setManufacturer(item){
               this.deviceInfo.manufacturer = item
