@@ -46,7 +46,7 @@
                 </FormItem>
                 <FormItem>
                     <b slot="label">自定义编号</b>
-                    <Input v-model="customNumber"></Input>
+                    <Input v-model="customNumber" :maxlength="100"></Input>
                 </FormItem>
                 <FormItem>
                     <b slot="label">设备编号</b>

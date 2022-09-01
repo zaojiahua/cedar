@@ -11,7 +11,7 @@
             </FormItem>
             <FormItem>
                 <b slot="label">自定义编号</b>
-                <Input v-model="device.custom_number" style="width: 80%"></Input>
+                <Input v-model="device.custom_number" :maxlength="100" style="width: 80%"></Input>
                 <Button type="primary" @click="updateCustomNumber">修改</Button>
             </FormItem>
             <FormItem>

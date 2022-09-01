@@ -27,7 +27,7 @@
         </FormItem>
         <FormItem>
           <b slot="label">自定义编号</b>
-          <Input v-model="addCustomNumber"></Input>
+          <Input v-model="addCustomNumber" :maxlength="100"></Input>
         </FormItem>
             <FormItem prop="test_area">
               <b slot="label"><span class="need">*</span>设备型号</b>

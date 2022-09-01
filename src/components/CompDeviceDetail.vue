@@ -11,7 +11,7 @@
             </FormItem>
             <FormItem>
                 <b slot="label">自定义编号</b>
-                <Input v-model="device.custom_number" :disabled="!editable" class="disabled-input"></Input>
+                <Input v-model="device.custom_number" :maxlength="100" :disabled="!editable" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
                 <b slot="label">安卓版本</b>
