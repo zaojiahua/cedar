@@ -188,7 +188,7 @@
         </Row>
         <Row align="middle" type="flex" style="margin-top: 32px;" v-if="propDeviceSlot">
             <Button type="error" @click="releaseDeviceSlot">解除设备关联</Button>
-            <Button type="primary" v-show="(device.status!=='busy'||device.status!=='offline')&&propShowConfig" style="margin-left: 20px;" @click="onConfigClick">配置机型信息</Button>
+            <Button type="primary" v-show="((device.status!=='busy')&&(device.status!=='offline'))&&propShowConfig" style="margin-left: 20px;" @click="onConfigClick">配置机型信息</Button>
         </Row>
         <Spin size="large" fix v-if="spinShow"></Spin>
         <Modal v-model="openOrderModal" :closable="false" :mask-closable="false" footer-hide width="450">
