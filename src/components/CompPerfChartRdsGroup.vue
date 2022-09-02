@@ -30,7 +30,7 @@
         data(){
             return{
                 timeRange:"",
-                isMin:false,  //已修改：表示是否是最大值=> 图表取值左闭右开，最后一条左闭右闭
+                isMin:false,  //修改=> 图表取值左开右闭，第一条一条左闭右闭
                 maxTime:null,
             }
         },
