@@ -201,7 +201,7 @@
             onAddTestSet(){
                 this.showDetail = true
                 this.$refs.testDetail.showOther(false)
-                this.$refs.testDetail.reset()
+                this.$refs.testDetail.reset(this.projectIndex)
                 this.$refs.testDetail.getAllProjectList()
             },
             onSaveClick(flag){

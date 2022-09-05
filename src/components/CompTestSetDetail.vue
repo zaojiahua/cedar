@@ -72,10 +72,10 @@
             }
         },
         methods:{
-            reset(){
+            reset(projectId){
                 this.$refs.form.resetFields()
                 this.testInfo = utils.validate(testSetSerializer,{})
-                this.selectProject = null
+                this.selectProject = projectId!==-1 ? projectId : null
             },
             refresh(id){
                 this.reset()
