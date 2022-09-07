@@ -12,6 +12,7 @@
                 lastX:null,
                 lastY:null,
                 ctx:null,
+                radius:8,
             }
         },
         methods:{
@@ -39,7 +40,7 @@
              drawRound(x,y) {
                  this.ctx.fillStyle="#FF0000";
                  this.ctx.beginPath();
-                 this.ctx.arc(x,y,8,0,Math.PI*2,true);
+                 this.ctx.arc(x,y,this.radius,0,Math.PI*2,true);
                  this.ctx.closePath();
                  this.ctx.fill();
              },
@@ -58,6 +59,11 @@
             this.canvas.width = window.innerWidth;
             this.canvas.height = window.innerHeight;
 
+            // 根据url是否有传参来改变画点的大小
+            if(this.$route.query.hasOwnProperty("radius")) {
+                this.radius = _.parseInt(this.$route.query.radius)
+            }
+
             //是否支持触摸
             let touchable = 'ontouchstart' in document;
             if (touchable) {
@@ -67,7 +73,7 @@
                 alert("当前设备不支持触屏");
             }
             this.ctx = this.canvas.getContext("2d");
-            this.ctx.lineWidth=16;//画笔粗细
+            this.ctx.lineWidth = 2 * this.radius;//画笔粗细
             this.ctx.strokeStyle="#FF0000";//画笔颜色
         }
     }
