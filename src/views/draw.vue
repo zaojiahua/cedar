@@ -12,7 +12,7 @@
                 lastX:null,
                 lastY:null,
                 ctx:null,
-                radius:8,
+                radius:6,
             }
         },
         methods:{
