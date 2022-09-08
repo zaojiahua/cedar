@@ -97,6 +97,10 @@
             propNotInner:{
                 type: Boolean,
                 default: false
+            },
+            propAcceptParam:{
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -264,6 +268,9 @@
                 let deviceCountCondition = ""
                 if(this.propSubsidiaryDeviceCount)
                     deviceCountCondition = "&subsidiary_device_count__lte=" + this.propSubsidiaryDeviceCount
+                let jobParamCondition = ""
+                if(this.propAcceptParam)  //是否只要 不接受参数 的用例
+                    jobParamCondition = "&is_support_parameter=False"
                 let url =
                     "api/v1/cedar/job/?fields=" +
                     "id," +
@@ -286,6 +293,7 @@
                     "&draft=False" +
                     tboardCondition +
                     deviceCountCondition +
+                    jobParamCondition +
                     this.urlParam
 
                 if(this.propShowPage){

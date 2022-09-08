@@ -11,7 +11,7 @@
                 <comp-filter ref="jobFilter"  @on-change="onJobFilterChange"></comp-filter>
             </Row>
             <Row>
-                <comp-job-list ref="jobList" :prop-multi-select="true" :prop-auto-load="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true" @get-job-count="getJobNumbers"></comp-job-list>
+                <comp-job-list ref="jobList" :prop-multi-select="true" :prop-auto-load="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true" @get-job-count="getJobNumbers" :prop-accept-param="true"></comp-job-list>
             </Row>
             <Row type="flex" justify="center" style="margin-top: 32px;">
                 <Button style="width: 90px;" @click="onBackClick">返回</Button>

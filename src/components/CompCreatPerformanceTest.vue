@@ -27,7 +27,7 @@
             <div v-show="groupType===1">
                 <Row type="flex">
                     <Col span="12">
-                        <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick"></comp-job-list>
+                        <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-accept-param="true"></comp-job-list>
                     </Col>
                     <Col span="2">
                         <Row type="flex" justify="center" style="margin-top: 48px;">

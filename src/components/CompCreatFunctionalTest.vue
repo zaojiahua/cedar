@@ -29,7 +29,7 @@
                 </Row>
                 <Row type="flex">
                     <Col span="14">
-                        <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true"></comp-job-list>
+                        <comp-job-list ref="jobList" :prop-multi-select="true" @on-row-click="JobOnRowClick" :prop-show-job-type="true" :prop-accept-param="true"></comp-job-list>
                     </Col>
                     <Col span="2">
                         <Row type="flex" justify="center" style="margin-top: 48px;">
