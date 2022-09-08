@@ -49,7 +49,7 @@
                 <Form :label-width="90">
                     <FormItem>
                         <b slot="label">任务名称</b>
-                        <Input v-model="againInfo.board_name"></Input>
+                        <Input v-model="againInfo.board_name" :maxlength="32"></Input>
                     </FormItem>
                     <FormItem>
                         <b slot="label">轮次</b>
