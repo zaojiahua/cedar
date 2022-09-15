@@ -1401,6 +1401,17 @@
                     title:"提示",
                     content:"确定要删除这条数据吗？",
                     onOk(){
+                        let selector = document.querySelector('.selector')
+                        let point = document.querySelectorAll('.point')
+                        let content = document.querySelectorAll('.content')
+                        if(point) {
+                            point.forEach(item => {
+                                selector.removeChild(item)
+                            })
+                            content.forEach(item=>{
+                                selector.removeChild(item)
+                            })
+                        }
                         _this.deleteList.push(_this.currentData)
                         _this.tableData.splice(_this.currentIndex,1)
                     }
