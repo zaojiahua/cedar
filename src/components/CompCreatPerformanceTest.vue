@@ -327,14 +327,14 @@
                         content:str,
                         onOk(){
                             root.$router.push({
-                                name: "tboard-management",
+                                name: "perf-data-management",
                             })
                         }
                     })
                 }else if(response.data.status==="success"){
                     this.$Message.success("任务启动成功！")
                     this.$router.push({
-                        name: "tboard-management",
+                        name: "perf-data-management",
                     })
                 }
                 this.showLoading = false;
