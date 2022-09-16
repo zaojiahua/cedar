@@ -138,7 +138,7 @@
             <comp-view-log-file ref="viewLogFile"></comp-view-log-file>
         </Modal>
         <Modal v-model="showRdsPhotosModal" :fullscreen="true" :closable="false">
-            <comp-perf-rds-photos v-if="showRdsPhotosModal" ref="rdsPhotos"></comp-perf-rds-photos>
+            <comp-perf-rds-photos v-if="showRdsPhotosModal" :prop-rds-id="rdsInfo.id" ref="rdsPhotos"></comp-perf-rds-photos>
             <div slot="footer">
                 <Button type="text" @click="showRdsPhotosModal=false">取消</Button>
                 <Button type="primary" @click="savePoint">确定</Button>
@@ -146,7 +146,7 @@
         </Modal>
         <!-- 丢帧点 -->
         <Modal v-model="showRdsFramePhotosModal" :fullscreen="true" :closable="false">
-            <comp-perf-frame-rds-photos v-if="showRdsFramePhotosModal" ref="rdsFramePhotos"></comp-perf-frame-rds-photos>
+            <comp-perf-frame-rds-photos v-if="showRdsFramePhotosModal" :prop-rds-id="rdsInfo.id" ref="rdsFramePhotos"></comp-perf-frame-rds-photos>
             <div slot="footer">
                 <Button type="text" @click="showRdsFramePhotosModal=false">取消</Button>
                 <Button type="primary" @click="saveFramePoint">确定</Button>
@@ -537,13 +537,13 @@
                     }
                 }else {
                     // 切换 RDS
-                    if(!this.showRdsPhotosModal&&!this.showRdsFramePhotosModal){
+                    // if(!this.showRdsPhotosModal&&!this.showRdsFramePhotosModal){
                         if (event.keyCode === 37) {  //左 ←
                             this.$emit("on-left-rds")
                         } else if (event.keyCode === 39) {  //右 →
                             this.$emit("on-right-rds")
                         }
-                    }
+                    // }
                 }
             },
             // 计算 RDS 运行时长

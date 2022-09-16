@@ -1,7 +1,7 @@
 <template>
     <div>
         <Drawer v-model="showRdsDetail" :closable="false" width="50" transfer>
-            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne" :prop-perf-rds="true"></comp-rds-detail>
+            <comp-rds-detail ref="rdsDetail" @delRdsOne="delRdsOne" :prop-perf-rds="true" @on-left-rds="getLeftRds" @on-right-rds="getRightRds"></comp-rds-detail>
         </Drawer>
         <Card style="margin-bottom: 16px;" dis-hover v-if="rdsData.length>0">
             <Row type="flex">
@@ -217,6 +217,29 @@
                 if (type === "0") return "success"
                 if (type === "1") return "failed"
                 return "invalid"
+            },
+            //键盘左右控制上一个/下一个RDS
+            getLeftRds(){
+                if(!this.showRdsDetail)
+                    return
+                if(this.rdsIndex===0){
+                    this.$Message.warning("已经是第一条数据")
+                }else {
+                    this.rdsIndex--
+                    let rds = this.rdsData[this.rdsIndex]
+                    this.$refs.rdsDetail.refresh(rds.id,rds.job.id)
+                }
+            },
+            getRightRds(){
+                if(!this.showRdsDetail)
+                    return
+                if(this.rdsIndex+1===this.rdsData.length){
+                    this.$Message.warning("已经是最后一条数据")
+                }else {
+                    this.rdsIndex++
+                    let rds = this.rdsData[this.rdsIndex]
+                    this.$refs.rdsDetail.refresh(rds.id,rds.job.id)
+                }
             },
         },
         watch:{

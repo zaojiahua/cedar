@@ -21,11 +21,16 @@
       </div>
     </div>
     <div class="photo-right">
-      <Row style="text-align: right">
-        <Button type="primary" style="margin-right: 16px;" :disabled="!isDisabled('start')" @click="setPoint(true)">
-          设为起点
-        </Button>
-        <Button type="error" :disabled="!isDisabled('end')" @click="setPoint(false)">设为终点</Button>
+      <Row>
+        <Col span="6">
+          <span>rdsID：{{ propRdsId }}</span>
+        </Col>
+        <Col style="text-align: right">
+          <Button type="primary" style="margin-right: 16px;" :disabled="!isDisabled('start')" @click="setPoint(true)">
+            设为起点
+          </Button>
+          <Button type="error" :disabled="!isDisabled('end')" @click="setPoint(false)">设为终点</Button>
+        </Col>
       </Row>
       <div style="height: calc(100vh - 165px);text-align: center">
         <img :src="selectedUrl" alt="图片走丢了" style="max-height: 92%;max-width: 100%;">
@@ -52,6 +57,11 @@ const rdsPhotosSerializer = {
 
 export default {
   name: "CompPerfRdsPhotos",
+    props:{
+        propRdsId:{
+            type:Number
+        }
+    },
   data() {
     return {
       showLoading: false,
@@ -174,6 +184,13 @@ export default {
         this.getPic(imgName)
       }
     }
+  },
+  watch:{
+      propRdsId:{
+          handler: function(val){
+              this.refresh(val)
+          },
+      }
   },
   created() {
     window.addEventListener('keyup', this.onKeyUpList)

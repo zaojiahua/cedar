@@ -21,10 +21,15 @@
         </div>
         <div class="photo-right">
             <Row style="text-align: right">
-                <Button type="primary" v-show="isShowBtn()" @click="setPoint(true)">
-                    设为丢帧点
-                </Button>
-                <Button v-show="!isShowBtn()"style="margin-left: 16px;"  @click="setPoint(false)">设为正常点</Button>
+                <Col span="6">
+                    <span>rdsID：{{ propRdsId }}</span>
+                </Col>
+                <Col style="text-align: right">
+                    <Button type="primary" v-show="isShowBtn()" @click="setPoint(true)">
+                        设为丢帧点
+                    </Button>
+                    <Button v-show="!isShowBtn()"style="margin-left: 16px;"  @click="setPoint(false)">设为正常点</Button>
+                </Col>
             </Row>
             <div style="height: calc(100vh - 165px);text-align: center">
                 <img :src="selectedUrl" alt="图片走丢了" style="max-height: 92%;max-width: 100%;">
@@ -47,6 +52,11 @@
 
     export default {
         name: "CompPerfRdsPhotosFrame",
+        props:{
+            propRdsId:{
+                type:Number
+            }
+        },
         data() {
             return {
                 showLoading: false,
@@ -153,6 +163,13 @@
                     let imgName = this.selectedIndex + ".jpg"
                     this.getPic(imgName)
                 }
+            }
+        },
+        watch:{
+            propRdsId:{
+                handler: function(val){
+                    this.refresh(val)
+                },
             }
         },
         created() {
