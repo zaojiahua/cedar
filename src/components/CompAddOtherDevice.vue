@@ -182,9 +182,6 @@ export default {
       ).then(response => {
           if (response.data.error_code === 0) {
           this.$Message.success("添加成功")
-          this.$Notice.success({
-            title: '设备即将重启,请稍侯...'
-          });
           this.getPhoneModelList()
           this.$emit('afterDeviceAddSuccess', response.data)
         }else {
