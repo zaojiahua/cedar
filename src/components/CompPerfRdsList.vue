@@ -5,7 +5,7 @@
             <!--<Radio style="width: 100px;text-align: center;margin-bottom: 12px" :label="1">失败RDS</Radio>-->
         <!--</RadioGroup>-->
 
-        <comp-perf-rds-card v-show="groupType===0" :is-min="isMin" :prop-job-id="propJobId" :prop-tboard-id="propTboardId" :prop-tboard-id-list="propTboardIdList" :prop-time-range="propTimeRange" :prop-auto-load="false"></comp-perf-rds-card>
+        <comp-perf-rds-card ref="perfRdsCard" v-show="groupType===0" :is-min="isMin" :prop-job-id="propJobId" :prop-tboard-id="propTboardId" :prop-tboard-id-list="propTboardIdList" :prop-time-range="propTimeRange" :prop-auto-load="false"></comp-perf-rds-card>
         <!--<comp-perf-rds-card v-show="groupType===1" :is-min="isMin" :propResult="1" :prop-job-id="propJobId" :prop-tboard-id="propTboardId" :prop-tboard-id-list="propTboardIdList"></comp-perf-rds-card>-->
     </div>
 

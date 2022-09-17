@@ -7,8 +7,10 @@
             <Row type="flex">
                 <Spin v-show="loadingData" size="large" style="position: absolute; width: 100%; height: inherit; left: 50%;"></Spin>
                 <div :class="loadingData ? 'opacity-row' : ''">
-                    <div class="rds-box"
-                         v-for="(item,index) in rdsData" :key="item.id" :class="[getRdsColorClass(item.job_assessment_value),{selected : index===rdsIndex}]" @click="onRdsBoxClick(item,index)"></div>
+                    <div class="rds-box" :title="'ID：'+item.id"
+                         v-for="(item,index) in rdsData" :key="item.id" :class="[getRdsColorClass(item.job_assessment_value),{selected : index===rdsIndex}]" @click="onRdsBoxClick(item,index)">
+                        <div class="point-box" v-if="index===rdsIdentityIndex"></div>
+                    </div>
                 </div>
             </Row>
             <Row v-if="showMore" style="text-align: center;margin-top: 5px;">
@@ -98,6 +100,8 @@
                 loadingData: false,
                 showRdsDetail: false,
                 rdsIndex:null,
+                rdsIdentityIndex:null,
+                searchRdsId:null,
             }
         },
         methods: {
@@ -178,6 +182,9 @@
                         else{
                             this.rdsData = this.rdsData.concat(utils.validate(getRdsSerializer, response.data).rdss)
                         }
+                        if(typeof this.searchRdsId === 'number'){
+                            this.showRdsIdentity(this.searchRdsId)
+                        }
                         return this.$ajax
                             .get("api/v1/cedar/rds/?" +
                                 jobCondition +
@@ -203,6 +210,25 @@
                         this.$Message.error("数据加载失败!")
                         this.loadingData = false
                     })
+            },
+            _setSearchId(id){
+                this.searchRdsId = id
+            },
+            showRdsIdentity(searchRdsId){
+                if(this.rdsData.length===0){
+                    return
+                }
+                if(searchRdsId===null){
+                    this.rdsIdentityIndex = null
+                    return
+                }
+                for (let i = 0; i < this.rdsData.length; i++) {
+                    if(this.rdsData[i].id === searchRdsId){
+                        this.rdsIdentityIndex = i
+                        return
+                    }
+                }
+                this.rdsIdentityIndex = null
             },
             onRdsBoxClick(rds,rdsIndex){
                 this.showRdsDetail = true
@@ -275,7 +301,13 @@
         cursor: pointer;
         border: #00000000 1px solid;
     }
-
+    .point-box{
+        width: 10px;
+        height: 10px;
+        background: #fff;
+        margin: 6px;
+        border-radius: 50%;
+    }
     .rds-box:hover {
         border: #000000 1px solid;
     }

@@ -5,6 +5,9 @@
                 <Radio style="width: 100px;text-align: center;" :label="1">测试轨迹</Radio>
                 <Radio style="width: 100px;text-align: center;" :label="2">统计视图</Radio>
             </RadioGroup>
+            <div style="float: right;margin-right:20px;width:230px;">
+                <Input class="search-box" v-model="rdsId" :number="true" search enter-button placeholder="输入RDS ID" @on-search="rdsIdentify" @on-clear="onClearIdentify" :clearable="true"/>
+            </div>
         </Row>
         <div v-show="groupView===1">
             <comp-perf-chart-rds-track-group v-if="groupView===1" ref="tarckRdsGroup" :job="job" :tboard-id="tboardId" :index="index" :device-id="deviceId"></comp-perf-chart-rds-track-group>
@@ -67,10 +70,43 @@
                         align: 'center'
                     },
                 ],
+                rdsId:null,
             }
         },
         methods:{
-
+            rdsIdentify(){
+                if(typeof this.rdsId !== 'number'){
+                    this.$Message.warning("请输入正确的 RDS ID")
+                    return
+                }
+                if(this.groupView===1){
+                    this.$nextTick(function () {
+                        this.$refs.tarckRdsGroup.$refs.rdsCard._setSearchId(this.rdsId)
+                        this.$refs.tarckRdsGroup.$refs.rdsCard.showRdsIdentity(this.rdsId)
+                    })
+                }
+                if(this.groupView===2){
+                    this.$nextTick(function () {
+                        this.$refs.chartRdsGroup.$refs.perfRdsList.$refs.perfRdsCard._setSearchId(this.rdsId)
+                        this.$refs.chartRdsGroup.$refs.perfRdsList.$refs.perfRdsCard.showRdsIdentity(this.rdsId)
+                    })
+                }
+            },
+            onClearIdentify(){
+                this.rdsId = null
+                if(this.groupView===1){
+                    this.$nextTick(function () {
+                        this.$refs.tarckRdsGroup.$refs.rdsCard._setSearchId(this.rdsId)
+                        this.$refs.tarckRdsGroup.$refs.rdsCard.showRdsIdentity(this.rdsId)
+                    })
+                }
+                if(this.groupView===2){
+                    this.$nextTick(function () {
+                        this.$refs.chartRdsGroup.$refs.perfRdsList.$refs.perfRdsCard._setSearchId(this.rdsId)
+                        this.$refs.chartRdsGroup.$refs.perfRdsList.$refs.perfRdsCard.showRdsIdentity(this.rdsId)
+                    })
+                }
+            },
         },
         watch:{
             groupView:{
@@ -85,6 +121,7 @@
                             this.$refs.chartRdsGroup.$refs.histogram.refresh(this.tboardId)
                         })
                     }
+                    this.rdsId = null
                 },
                 immediate: true
             },
@@ -107,3 +144,8 @@
     }
 
 </script>
+<style scoped>
+    /deep/.search-box .ivu-input-icon-clear{
+        margin-right: 45px!important;
+    }
+</style>
