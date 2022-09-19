@@ -101,9 +101,9 @@
                         trigger: "axis",
                     },
                     grid:{
-                        left:"40px",
+                        left:"43px",
                         right:"20px",
-                        top: "10px",
+                        top: "15px",
                         bottom: "41px"
                     },
                     xAxis: {
@@ -116,7 +116,7 @@
                         type: "value",
                         name:"启动时间出现频数",
                         nameLocation:"middle",
-                        nameGap:23,
+                        nameGap:29,
                         show: true,
                         axisLine: {
                             show: false
@@ -168,10 +168,21 @@
             this.histogram = echarts.init(document.getElementById("histogram"+this.propCanvasId+"-"+this.jobId))
             this.setDefaultOption()
             window.addEventListener('resize', this.onResize);
-            this.histogram.on('click',params=> {
-                this.prevIndex = params.dataIndex
-                this.onStyleRender();
-                this.$emit("on-chart-click",params.data[0])
+            //getZr()方法可以监听到整个画布的点击事件
+            this.histogram.getZr().on('click',params=> {
+                let pointInPixel = [params.offsetX, params.offsetY];
+                if (this.histogram.containPixel("grid", pointInPixel)) {
+                    // containPixel:判断给定的点是否在指定的坐标系或者系列上
+                    // convertFromPixel:转换像素坐标值到逻辑坐标系上的点
+                    //点击第几个柱子   (pointInGrid：鼠标点击时对应坐标系x,y所在的位置)
+                    let pointInGrid = this.histogram.convertFromPixel({ seriesIndex: 0 }, pointInPixel);
+                    //x轴索引此处取[0]
+                    let xIndex = pointInGrid[0]
+
+                    this.prevIndex = xIndex
+                    this.onStyleRender();
+                    this.$emit("on-chart-click",this.series[0].data[xIndex][0])
+                }
             })
         },
         beforeDestroy(){
