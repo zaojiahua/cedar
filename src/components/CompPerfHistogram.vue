@@ -70,6 +70,7 @@
                                 label: {
                                     show: true,
                                     position:"top",
+                                    distance:3,
                                     color:"#333"
                                 },
                                 data:response.data
