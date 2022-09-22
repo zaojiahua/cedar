@@ -14,6 +14,7 @@
                                 <DropdownItem @click.native="distanceBtn('调试距离')">调试距离</DropdownItem>
                                 <DropdownItem @click.native="imageMosaic('拼接图像')">拼接图像</DropdownItem>
                                 <DropdownItem @click.native="coordinateConverting('坐标换算')">坐标换算</DropdownItem>
+                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                         <!--  5L，5se -->
@@ -24,6 +25,7 @@
                             </Button>
                             <DropdownMenu slot="list">
                                 <DropdownItem @click.native="coordinateConverting">坐标换算</DropdownItem>
+                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                             </DropdownMenu>
                             <!--<DropdownMenu slot="list" v-show="user==='admin'">-->
                                 <!--<DropdownItem @click.native="getMlocation">mlocation调试</DropdownItem>-->
@@ -43,7 +45,7 @@
                             <DropdownMenu slot="list">
                                 <DropdownItem @click.native="imageMosaic">拼接图像</DropdownItem>
                                 <DropdownItem @click.native="coordinateConverting">坐标换算</DropdownItem>
-                                <!--<DropdownItem v-show="user==='admin'" @click.native="getMlocation">mlocation调试</DropdownItem>-->
+                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                     </h5>
@@ -181,6 +183,37 @@
                         <Button type="primary" @click="setMlocation">完成</Button>
                     </div>
 
+                </Row>
+            </Card>
+        </Modal>
+
+        <!--    调节z值模态框    -->
+        <Modal v-model="showAdjustZModel" :closable="false" :footer-hide="true" :mask-closable="false" width="450">
+            <Card>
+                <Row style="margin-bottom: 20px;">
+                    <p>按压过轻时，请调大机械臂z值，范围：{{ adjustTitle }}</p>
+                </Row>
+                <!--   5D  双机械臂  -->
+                <div v-show="showTestBtn">
+                    <Row>
+                        <InputNumber v-model="robotArm.x1" :min="0" style="width:300px;margin-right: 16px;" placeholder="左机械臂z值"></InputNumber>
+                        <Button type="info" @click="onTestRobotArm(true,false)">测试</Button>
+                    </Row>
+                    <Row style="margin-top: 16px;">
+                        <InputNumber v-model="robotArm.x2" :min="0" style="width:300px;margin-right: 16px;" placeholder="右机械臂z值"></InputNumber>
+                        <Button type="info" @click="onTestRobotArm(false,true)">测试</Button>
+                    </Row>
+                </div>
+                <!--   非5D  单个机械臂  -->
+                <Row v-show="!showTestBtn">
+                    <InputNumber v-model="robotArm.x" :min="0" style="width:300px;margin-right: 16px;" placeholder="机械臂z值"></InputNumber>
+                    <Button type="info" @click="onTestRobotArm(false,false)">测试</Button>
+                </Row>
+                <Row>
+                    <div style="text-align:left;margin-top: 30px">
+                        <Button @click="showAdjustZModel=false" style="margin-right: 24px;width: 80px">取消</Button>
+                        <Button type="primary" @click="onSaveRobotArm" style="width: 80px;">完成</Button>
+                    </div>
                 </Row>
             </Card>
         </Modal>
@@ -534,7 +567,14 @@
                 showMlocationModal:false,
                 showValidationModal:false,
                 testCount:50,
-                user:sessionStorage.getItem('username')
+                user:sessionStorage.getItem('username'),
+                showAdjustZModel:false,
+                adjustTitle:"",
+                robotArm:{
+                    x:null,
+                    x1:null,
+                    x2:null
+                },
             }
         },
         computed: {
@@ -781,6 +821,162 @@
                         else
                             this.$Message.error({content:error.response.data.description,duration:6})
                     })
+            },
+            //  对调节z值范围的校验  测试时x1和x2只需一个校验
+            robotArmValidate(check_x1=true,check_x2=true){
+                /*  不同测试柜的 z 值范围  */
+                // Tcab-5se：【15，27】
+                // Tcab-5,5pro：【15， 30】
+                // Tcab-5L：【15， 30】
+                // Tcab-5D：【15， 45】
+                let rangeZ = []
+                if(["Tcab_5D"].includes(this.deviceCabinetType)){
+                    rangeZ = [15,45]
+                }else if(["Tcab_5L","Tcab_5","Tcab_5pro"].includes(this.deviceCabinetType)){
+                    rangeZ = [15,30]
+                }
+                else if(["Tcab_5se"].includes(this.deviceCabinetType)){
+                    rangeZ = [15,27]
+                }
+                if(this.showTestBtn){  //5D 双机械臂
+                    if(check_x1){
+                        if(this.robotArm.x1===null || this.robotArm.x1===''){
+                            this.$Message.warning({content:"左机械臂 z 值不能为空",duration:3})
+                            return true
+                        }
+                        if(this.robotArm.x1>rangeZ[1] || this.robotArm.x1<rangeZ[0]){
+                            this.$Message.warning({content:"左机械臂 z 的取值范围为("+rangeZ[0]+","+rangeZ[1]+")",duration:3})
+                            return true
+                        }
+                    }
+                    if(check_x2){
+                        if(this.robotArm.x2===null || this.robotArm.x2===''){
+                            this.$Message.warning({content:"右机械臂 z 值不能为空",duration:3})
+                            return true
+                        }
+                        if(this.robotArm.x2>rangeZ[1] || this.robotArm.x2<rangeZ[0]){
+                            this.$Message.warning({content:"右机械臂 z 的取值范围为("+rangeZ[0]+","+rangeZ[1]+")",duration:3})
+                            return true
+                        }
+                    }
+                }else {
+                    if(this.robotArm.x===null || this.robotArm.x===''){
+                        this.$Message.warning({content:"z 值不能为空",duration:3})
+                        return true
+                    }
+                    if(this.robotArm.x>rangeZ[1] || this.robotArm.x<rangeZ[0]){
+                        this.$Message.warning({content:"机械臂 z 的取值范围为("+rangeZ[0]+","+rangeZ[1]+")",duration:3})
+                        return true
+                    }
+                }
+                return false
+            },
+            //打开调节z值模态框并且获取现有的z值信息
+            onOpenAdjustZModel(){
+                this.robotArm = {
+                    x:null,
+                    x1:null,
+                    x2:null,
+                }
+                this.showAdjustZModel = true
+                if(this.showTestBtn){   // 5D
+                    this.adjustTitle = "[15,45]"
+                }
+                if(this.deviceCabinetType==='Tcab_5L'){   //'Tcab_5L','Tcab_5se'
+                    this.adjustTitle = "[15,30]"
+                }
+                if(this.deviceCabinetType==='Tcab_5se'){   //'Tcab_5L','Tcab_5se'
+                    this.adjustTitle = "[15,27]"
+                }
+                if(this.showProBtn) {  //['Tcab_5','Tcab_5pro']
+                    this.adjustTitle = "[15,30]"
+                }
+                this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/get_z_down/").then(response=>{
+                    if(response.data.error_code===0){
+                        this.showAdjustZModel = true
+                        if(Object.keys(response.data.data).length===1){
+                            this.robotArm.x = response.data.data.z_down
+                        }else {
+                            this.robotArm.x1 = response.data.data.z_down
+                            this.robotArm.x2 = response.data.data.z_down_1
+                        }
+                    }else{
+                        this.$Message.error({content:response.data.description,duration: 10})
+                    }
+                }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
+            // 测试机械臂z值
+            onTestRobotArm(check_x1,check_x2){
+                if(this.robotArmValidate(check_x1,check_x2)) return
+                let param = {}
+                if(check_x1&&!check_x2){  //true  false => 左机械臂
+                    param = {
+                        device_label:this.deviceLabel,
+                        z_down: this.robotArm.x1,
+                        arm_num: 0
+                    }
+                }else if(!check_x1&&check_x2){ // false  true =>右机械臂
+                    param = {
+                        device_label:this.deviceLabel,
+                        z_down: this.robotArm.x2,
+                        arm_num: 1
+                    }
+                }else if(!check_x1&&!check_x2){  // false  false => 非5D
+                    param = {
+                        device_label:this.deviceLabel,
+                        z_down: this.robotArm.x,
+                        arm_num: 0
+                    }
+                }
+                this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/click_z_down/",param)
+                .then(response=>{
+                    if(response.data.error_code===0){
+                        this.$Message.success({content:"请求成功",duration:3})
+                    }else{
+                        this.$Message.error({content:response.data.description,duration: 10})
+                    }
+                }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
+            //保存z值
+            onSaveRobotArm(){
+                if(this.robotArmValidate()) return
+                let param = {}
+                if(this.showTestBtn){ // 5D  双机械臂
+                    param = {
+                        device_label:this.deviceLabel,
+                        z_down: this.robotArm.x1,
+                        z_down_1: this.robotArm.x2
+                    }
+                }else {
+                    param = {
+                        device_label:this.deviceLabel,
+                        z_down: this.robotArm.x,
+                    }
+                }
+                this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/update_z_down/",param)
+                    .then(response=>{
+                        if(response.data.error_code===0){
+                            this.showAdjustZModel = false
+                            this.$Message.success({content:"机械臂z值保存成功",duration:3})
+                        }else{
+                            this.$Message.error({content:response.data.description,duration: 10})
+                        }
+                    }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
             },
             //点击有效性测试
             onValidationTest(){
