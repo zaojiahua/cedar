@@ -5,7 +5,8 @@
                 <Radio style="width: 100px;text-align: center;" :label="1">测试轨迹</Radio>
                 <Radio style="width: 100px;text-align: center;" :label="2">统计视图</Radio>
             </RadioGroup>
-            <div style="float: right;margin-right:20px;width:230px;">
+            <Button style="float: right;" @click="refreshData">刷新</Button>
+            <div style="float: right;margin-right:16px;width:230px;">
                 <Input class="search-box" v-model="rdsId" :number="true" search enter-button placeholder="输入RDS ID" @on-search="rdsIdentify" @on-clear="onClearIdentify" :clearable="true"/>
             </div>
         </Row>
@@ -13,7 +14,7 @@
             <comp-perf-chart-rds-track-group v-if="groupView===1" ref="tarckRdsGroup" :job="job" :tboard-id="tboardId" :index="index" :device-id="deviceId"></comp-perf-chart-rds-track-group>
         </div>
         <div v-show="groupView===2">
-            <Table border :columns="jobColumn" :data="[].concat(job)"></Table>
+            <Table border :columns="jobColumn" :data="jobData"></Table>
             <comp-perf-chart-rds-group v-if="groupView===2" ref="chartRdsGroup" :job="job" :tboard-id="tboardId"></comp-perf-chart-rds-group>
         </div>
     </div>
@@ -22,6 +23,7 @@
 <script>
     import CompPerfChartRdsGroup from "../components/CompPerfChartRdsGroup";
     import CompPerfChartRdsTrackGroup from "./CompPerfChartRdsTrackGroup";
+    import config from "../lib/config";
 
     export default {
         components:{ CompPerfChartRdsGroup, CompPerfChartRdsTrackGroup, },
@@ -71,9 +73,46 @@
                     },
                 ],
                 rdsId:null,
+                jobData:[],
             }
         },
         methods:{
+            //刷新当前数据
+            refreshData(){
+                if(this.groupView===1){
+                    this.$nextTick(function () {
+                        this.$refs.tarckRdsGroup.$refs.histogram.refresh(this.tboardId)
+                    })
+                }
+                if(this.groupView===2){
+                    this.$nextTick(function () {
+                        this.getJobData()
+                        this.$refs.chartRdsGroup.$refs.histogram.refresh(this.tboardId)
+                    })
+                }
+                this.rdsId = null
+            },
+            //获取中位数等信息
+            getJobData(){
+                this.$ajax.get("api/v1/cedar/get_tboard_perf_dtail_data/?tboard=" + this.tboardId)
+                    .then(response => {
+                        this.data = response.data
+                        let hash = {};
+                        // job_data 用例信息去重
+                        let jobDataList = response.data.job_data.reduce(function(item, next) {
+                            hash[next.job_num] ? '' : hash[next.job_num] = true && item.push(next);
+                            return item
+                        }, [])
+                        jobDataList.forEach(item=>{
+                            if(item.job_id===this.job.job_id){
+                                this.jobData = [].concat(item)
+                            }
+                        })
+                    }).catch(reason => {
+                    if (config.DEBUG) console.log(reason)
+                    this.$Message.error("平均值获取失败")
+                })
+            },
             rdsIdentify(){
                 if(typeof this.rdsId !== 'number'){
                     this.$Message.warning("请输入正确的 RDS ID")
@@ -118,6 +157,7 @@
                     }
                     if(val===2){
                         this.$nextTick(function () {
+                            this.getJobData()
                             this.$refs.chartRdsGroup.$refs.histogram.refresh(this.tboardId)
                         })
                     }
@@ -134,6 +174,7 @@
                     }
                     if(this.groupView===2){
                         this.$nextTick(function () {
+                            this.getJobData()
                             this.$refs.chartRdsGroup.$refs.histogram.refresh(this.tboardId)
                         })
                     }
