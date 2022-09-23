@@ -575,6 +575,7 @@
                     x1:null,
                     x2:null
                 },
+                isSentTestReq:false,
             }
         },
         computed: {
@@ -913,6 +914,10 @@
             // 测试机械臂z值
             onTestRobotArm(check_x1,check_x2){
                 if(this.robotArmValidate(check_x1,check_x2)) return
+                if(this.isSentTestReq){
+                    this.$Message.info({content:"请等待当前指令执行完成..."})
+                    return
+                }
                 let param = {}
                 if(check_x1&&!check_x2){  //true  false => 左机械臂
                     param = {
@@ -933,14 +938,18 @@
                         arm_num: 0
                     }
                 }
+                this.$Message.info({content:"正在发送请求..."})
+                this.isSentTestReq = true
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/click_z_down/",param)
                 .then(response=>{
+                    this.isSentTestReq = false
                     if(response.data.error_code===0){
                         this.$Message.success({content:"请求成功",duration:3})
                     }else{
                         this.$Message.error({content:response.data.description,duration: 10})
                     }
                 }).catch(error=>{
+                    this.isSentTestReq = false
                     if(error.response.status>=500)
                         this.$Message.error({content:'服务器错误',duration: 5})
                     else
@@ -984,7 +993,12 @@
                     this.$Message.warning("请输入点击次数")
                     return
                 }
+                if(this.isSentTestReq){
+                    this.$Message.info({content:"请等待当前指令执行完成..."})
+                    return
+                }
                 this.$Message.info({content:"正在发送请求..."})
+                this.isSentTestReq = true
                 this.showValidationModal = false
                 let data = new FormData()
                 data.append('img', Utils.dataURLtoFile(this.imgSrc,"rawImage.jpg"))
@@ -1000,6 +1014,7 @@
 
                 this.$ajax.post(`http://${this.cabinetIP}:5000/pane/coordinate_click_test/`,data)
                     .then(response=>{
+                        this.isSentTestReq = false
                         if(response.data.error_code===0){
                             this.$Message.success({content:"请求成功",duration:3})
                         }else if(response.data.error_code===3013){
@@ -1028,6 +1043,7 @@
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
+                    this.isSentTestReq = false
                     if(error.response.status>=500)
                         this.$Message.error({content:'服务器错误',duration: 5})
                     else
@@ -1615,6 +1631,10 @@
             },
             // 测 试 点 击 坐 标
             onCoordinateTestClick(){
+                if(this.isSentTestReq){
+                    this.$Message.info({content:"请等待当前指令执行完成..."})
+                    return
+                }
                 if (this.imgSrc === ''){
                     this.$Message.warning("请先获取图片")
                     return
@@ -1633,6 +1653,7 @@
                     return
                 }
                 this.$Message.info({content:"正在发送请求..."})
+                this.isSentTestReq = true
                 let data = new FormData()
                 data.append('img', Utils.dataURLtoFile(this.imgSrc,"rawImage.jpg"))
                 data.append('device_label', this.deviceLabel)
@@ -1646,6 +1667,7 @@
 
                 this.$ajax.post(`http://${this.cabinetIP}:5000/pane/coordinate_click_test/`,data)
                     .then(response=>{
+                        this.isSentTestReq = false
                         if(response.data.error_code===0){
                             this.$Message.success({content:"请求成功",duration:3})
                         }else if(response.data.error_code===3013){
@@ -1674,6 +1696,7 @@
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
+                        this.isSentTestReq = false
                         if(error.response.status>=500)
                             this.$Message.error({content:'服务器错误',duration: 5})
                         else
