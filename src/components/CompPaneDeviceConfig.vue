@@ -11,7 +11,7 @@
                                 <Icon type="ios-arrow-down"></Icon>
                             </Button>
                             <DropdownMenu slot="list">
-                                <DropdownItem @click.native="distanceBtn('调试距离')">调试距离</DropdownItem>
+                                <!--<DropdownItem @click.native="distanceBtn('调试距离')">调试距离</DropdownItem>-->
                                 <DropdownItem @click.native="imageMosaic('拼接图像')">拼接图像</DropdownItem>
                                 <DropdownItem @click.native="coordinateConverting('坐标换算')">坐标换算</DropdownItem>
                                 <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
