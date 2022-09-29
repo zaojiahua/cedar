@@ -5,28 +5,40 @@
                 <b slot="label">任务名称:</b>
                 <Input disabled class="disabled-input" :value="data.board_name"></Input>
             </FormItem>
+            <FormItem>
+                <b slot="label">任务信息:</b>
+                <div style="border: #eee dotted 1px;padding-left: 7px;">
+                    <span style="margin-right: 16px;">用例数量：{{ getJobNum(data.job) }}</span>
+                    <span style="margin-right: 16px;">设备数量：{{ data.device.length }}</span>
+                    <span>运行轮次：{{ data.repeat_time }}</span>
+                </div>
+            </FormItem>
             <FormItem v-show="data.test_gather_List.length>0">
                 <b slot="label">测试集:</b>
                 <ButtonGroup>
                     <Button v-for="(test_gather,index) in data.test_gather_List" :key="index">{{test_gather}}</Button>
                 </ButtonGroup>
             </FormItem>
-            <FormItem>
-                <b slot="label">用例数量:</b>
-                <Input disabled class="disabled-input" :value="getJobNum(data.job)"></Input>
-            </FormItem>
-            <FormItem>
+            <!--<FormItem>-->
+                <!--<b slot="label">用例数量:</b>-->
+                <!--<Input disabled class="disabled-input" :value="getJobNum(data.job)"></Input>-->
+            <!--</FormItem>-->
+            <FormItem style="margin-bottom: 0;">
                 <b slot="label">测试用例:</b>
-                <ButtonGroup>
+                <ButtonGroup :class="{'hide-btn':!showMsg}">
                     <Tooltip v-for="(job,index) in data.job" :content="job.job_label" :key="index" placement="top" transfer>
                         <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">{{job.job_name}}</Button>
                     </Tooltip>
                 </ButtonGroup>
+                <Row>
+                    <span v-show="showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=false"><Icon type="ios-arrow-up" />收起</span>
+                    <span v-show="!showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=true"><Icon type="ios-arrow-down" />展开</span>
+                </Row>
             </FormItem>
-            <FormItem>
-                <b slot="label">设备数量:</b>
-                <Input disabled class="disabled-input" :value="data.device.length"></Input>
-            </FormItem>
+            <!--<FormItem>-->
+                <!--<b slot="label">设备数量:</b>-->
+                <!--<Input disabled class="disabled-input" :value="data.device.length"></Input>-->
+            <!--</FormItem>-->
             <FormItem>
                 <b slot="label">测试设备:</b>
                 <ButtonGroup>
@@ -37,10 +49,10 @@
                     </Tooltip>
                 </ButtonGroup>
             </FormItem>
-            <FormItem>
-                <b slot="label">运行轮次:</b>
-                <Input disabled class="disabled-input" :value="data.repeat_time"></Input>
-            </FormItem>
+            <!--<FormItem>-->
+                <!--<b slot="label">运行轮次:</b>-->
+                <!--<Input disabled class="disabled-input" :value="data.repeat_time"></Input>-->
+            <!--</FormItem>-->
             <FormItem>
                 <b slot="label">操作人员:</b>
                 <Input disabled class="disabled-input" :value="data.author.username"></Input>
@@ -51,7 +63,7 @@
             </FormItem>
             <Divider orientation="left">总体运行结果</Divider>
             <Card style="cursor: pointer;" @click.native="onTotalResultClick">
-                <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
+                <Row type="flex" align="middle" style="margin: 10px 16px 10px 16px;">
                     <Col>
                         <i-circle :percent="(totalStatisticData.pass/totalStatisticData.total*100)">
                             <p style="font-size:24px;font-weight: bold">{{(totalStatisticData.pass/totalStatisticData.total*100).toFixed(1)}}%</p>
@@ -210,7 +222,7 @@
                 showJobDetail: false,
                 showLoading:false,
                 jobStatisticData:utils.validate(jobStatisticDataSerializer, []),
-
+                showMsg:false,
             }
         },
         methods: {
@@ -372,5 +384,9 @@
         background-color: #0000;
         color: #515a6e;
         border: #eee dotted 1px;
+    }
+    .hide-btn{
+        max-height: 67px;
+        overflow: hidden;
     }
 </style>
