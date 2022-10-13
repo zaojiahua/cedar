@@ -110,9 +110,7 @@
         ip_address: "string",
         phone_model_name:"string",
         manufacturer:"string",
-        x_border:"number",
         x_dpi:"number",
-        y_border:"number",
         y_dpi:"number"
     }
 
