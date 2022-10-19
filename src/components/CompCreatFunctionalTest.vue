@@ -342,6 +342,7 @@
                 if(this.tboardRepeatTime===null){
                     this.$Message.warning("请输入运行轮次！")
                 }else{
+                    this.showLoading = true;
                     let deviceList = [];
                     this.selectedDevice.forEach(device=>{
                         deviceList.push(device.device_label);
@@ -362,7 +363,6 @@
                         testGatherList.push(item.title);
                     })
                     testGatherList = [...new Set(testGatherList)] //去重
-                    this.showLoading = true;
                     utils._initDate();
                     this.$ajax
                         .post("api/v1/coral/insert_tboard/ ",{
