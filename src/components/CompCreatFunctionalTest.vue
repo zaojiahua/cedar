@@ -392,6 +392,8 @@
                                 if(error.response.data.data_info!==undefined){
                                     this.$Message.error({content:error.response.data.description,duration:7})
                                 }
+                            }else if(error.response.status>=500){
+                                this.$Message.error("服务器错误")
                             }else
                                 this.$Message.error({content:error.response.data.description,duration:7})
                         })
