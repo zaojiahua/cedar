@@ -13,7 +13,7 @@
                             <DropdownMenu slot="list">
                                 <!--<DropdownItem @click.native="distanceBtn('调试距离')">调试距离</DropdownItem>-->
                                 <DropdownItem @click.native="imageMosaic('拼接图像')">拼接图像</DropdownItem>
-                                <DropdownItem @click.native="coordinateConverting('坐标换算')">坐标换算</DropdownItem>
+                                <DropdownItem @click.native="onOpenCoordinateModal('坐标换算')">坐标换算</DropdownItem>
                                 <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
@@ -24,7 +24,7 @@
                                 <Icon type="ios-arrow-down"></Icon>
                             </Button>
                             <DropdownMenu slot="list">
-                                <DropdownItem @click.native="coordinateConverting">坐标换算</DropdownItem>
+                                <DropdownItem @click.native="onOpenCoordinateModal">坐标换算</DropdownItem>
                                 <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                             </DropdownMenu>
                             <!--<DropdownMenu slot="list" v-show="user==='admin'">-->
@@ -44,7 +44,7 @@
                             </Button>
                             <DropdownMenu slot="list">
                                 <DropdownItem @click.native="imageMosaic">拼接图像</DropdownItem>
-                                <DropdownItem @click.native="coordinateConverting">坐标换算</DropdownItem>
+                                <DropdownItem @click.native="onOpenCoordinateModal">坐标换算</DropdownItem>
                                 <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
@@ -225,6 +225,27 @@
                 <Row style="text-align: right;margin-top: 30px;">
                     <Button @click="showValidationModal=false;testCount=50" style="margin-right: 30px;">取消</Button>
                     <Button type="primary" @click="onValidationTest">测试</Button>
+                </Row>
+            </Card>
+        </Modal>
+        <!--   坐 标 换 算  -->
+        <Modal v-model="showCoordinateModal" :closable="false" :footer-hide="true" :mask-closable="false" width="520">
+            <Card>
+                <p style="margin-top: 16px;">两个换算点的物理x坐标和y坐标，单位mm</p>
+                <p>x向右为正，范围[{{coordinateRangeX[0]}}，{{coordinateRangeX[1]}}]，y向下为负，范围[{{coordinateRangeY[0]}}，{{coordinateRangeY[1]}}]</p>
+                <Row style="margin-top: 24px">
+                    <InputNumber v-model="coordinateChange.x1" style="width:180px;margin-right: 16px;"></InputNumber>
+                    <InputNumber v-model="coordinateChange.y" style="width:180px;margin-right: 16px;"></InputNumber>
+                    <Button type="info" @click="onTestCoordinateChange(coordinateChange.x1,coordinateChange.y)">测试</Button>
+                </Row>
+                <Row style="margin-top: 16px">
+                    <InputNumber v-model="coordinateChange.x2" style="width:180px;margin-right: 16px;"></InputNumber>
+                    <InputNumber v-model="coordinateChange.y" style="width:180px;margin-right: 16px;"></InputNumber>
+                    <Button type="info" @click="onTestCoordinateChange(coordinateChange.x2,coordinateChange.y)">测试</Button>
+                </Row>
+                <Row style="margin-top: 30px;">
+                    <Button @click="showCoordinateModal=false" style="margin-right: 30px;">取消</Button>
+                    <Button type="primary" @click="coordinateConverting">坐标换算</Button>
                 </Row>
             </Card>
         </Modal>
@@ -558,7 +579,7 @@
                 //测试有效性/mlocation按钮是否显示
                 showLocationBtn:false,
                 showProBtn:false,
-                isDisabledBtn:false,
+                isDisabledBtn:false,  //mlocation按钮是否可点击
                 mlocation:{
                     x:null,
                     y:null,
@@ -576,6 +597,14 @@
                     x2:null
                 },
                 isSentTestReq:false,
+                showCoordinateModal:false,
+                coordinateChange:{
+                    x1:null,
+                    x2:null,
+                    y:null,
+                },
+                coordinateRangeX:[],
+                coordinateRangeY:[],
             }
         },
         computed: {
@@ -650,27 +679,117 @@
             },
         },
         methods:{
-            //坐 标 换 算
-            coordinateConverting(){
-                if(this.isDisabled){
-                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
-                    return
+            // 打开坐标换算模态框，并获取坐标信息
+            onOpenCoordinateModal(){
+                this.showCoordinateModal = true
+                if(["Tcab_5se"].includes(this.deviceCabinetType)){
+                    this.coordinateRangeX = [35,130]
+                    this.coordinateRangeY = [-210,-50]
+                }else if(["Tcab_5","Tcab_5L","Tcab_5pro"].includes(this.deviceCabinetType)){
+                    this.coordinateRangeX = [25, 235]
+                    this.coordinateRangeY = [-300, -130]
+                }else if(["Tcab_5D"].includes(this.deviceCabinetType)){
+                    this.coordinateRangeX = [50, 280]
+                    this.coordinateRangeY = [-200, 0]
                 }
-                this.isDisabled = true
-                this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/coordinate/?device_label=" + this.deviceLabel)
+                this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/get_coordinate/")
                     .then(response=>{
-                        this.isDisabled = false
                         if(response.data.error_code===0){
-                            this.$Message.success({content:"坐标换算成功",duration:3})
+                            this.coordinateChange.x1 = response.data.data.start_point[0]
+                            this.coordinateChange.x2 = response.data.data.end_point[0]
+                            this.coordinateChange.y = response.data.data.end_point[1]
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
-                    this.isDisabled = false
-                    if(error.response.status>=500)
+                        if(error.response.status>=500)
                             this.$Message.error({content:'服务器错误',duration: 5})
                         else
-                            this.$Message.error({content:'坐标换算失败',duration: 5})
+                            this.$Message.error({content:'坐标获取失败',duration: 5})
+                    })
+            },
+            // 测试坐标点
+            onTestCoordinateChange(x,y){
+                if(this.isDisabled||this.isSentTestReq){
+                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    return
+                }
+                if(x===null||x===''||y===null||y===''){
+                    this.$Message.info("坐标点x，y值不能为空！")
+                    return
+                }
+                if( x>this.coordinateRangeX[1] || x<this.coordinateRangeX[0] ||  y>this.coordinateRangeY[1] || y<this.coordinateRangeY[0]){
+                    this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                    return
+                }
+                this.$Message.info({content:"正在发送请求..."})
+                this.isDisabled = true
+                this.isSentTestReq = true
+                this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/click_coordinate/",{
+                    device_label: this.deviceLabel,
+                    point: [x,y]
+                }).then(response=>{
+                    this.isDisabled = false
+                    this.isSentTestReq = false
+                    if(response.data.error_code===0){
+                        this.$Message.success({content:"请求成功",duration:3})
+                    }else{
+                        this.$Message.error({content:response.data.description,duration: 10})
+                    }
+                }).catch(error=>{
+                    this.isDisabled = false
+                    this.isSentTestReq = false
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
+            //坐 标 换 算
+            coordinateConverting(){
+                if(this.coordinateChange.x1===null||this.coordinateChange.x1===''
+                    ||this.coordinateChange.x2===null||this.coordinateChange.x2===''
+                    ||this.coordinateChange.y===null||this.coordinateChange.y===''){
+                    this.$Message.info("坐标点x，y值不能为空！")
+                    return
+                }
+                if(this.coordinateChange.x1===this.coordinateChange.x2){
+                    this.$Message.info("两个物理坐标点x坐标不能相同！")
+                    return
+                }
+                if( this.coordinateChange.x1>this.coordinateRangeX[1] || this.coordinateChange.x1<this.coordinateRangeX[0]
+                    || this.coordinateChange.x2>this.coordinateRangeX[1] || this.coordinateChange.x2<this.coordinateRangeX[0]
+                    || this.coordinateChange.y>this.coordinateRangeY[1] || this.coordinateChange.y<this.coordinateRangeY[0]){
+                    this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                    return
+                }
+                if(this.isDisabled||this.isSentTestReq){
+                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    return
+                }
+                this.$Message.info({content:"正在发送请求..."})
+                this.isDisabled = true
+                this.isSentTestReq = true
+                this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/coordinate/",{
+                    device_label: this.deviceLabel,
+                    start_point: [this.coordinateChange.x1,this.coordinateChange.y],
+                    end_point: [this.coordinateChange.x2,this.coordinateChange.y],
+                }).then(response=>{
+                    this.showCoordinateModal = false
+                    this.isDisabled = false
+                    this.isSentTestReq = false
+                    if(response.data.error_code===0){
+                        this.$Message.success({content:response.data.description,duration:8})
+                    }else{
+                        this.$Message.error({content:response.data.description,duration: 8})
+                    }
+                }).catch(error=>{
+                    this.isDisabled = false
+                    this.isSentTestReq = false
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'坐标换算失败',duration: 5})
                 })
             },
             //拼 接 图 像
