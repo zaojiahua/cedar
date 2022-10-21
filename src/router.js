@@ -151,6 +151,11 @@ router.beforeEach((to, from, next) => {
         return
     }
 
+    if(to.name === 'home'){
+        next({name: "tboard-management"})
+        return
+    }
+
     // Has logged in.
     next()
 })
