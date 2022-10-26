@@ -945,18 +945,18 @@
             //  对调节z值范围的校验  测试时x1和x2只需一个校验
             robotArmValidate(check_x1=true,check_x2=true){
                 /*  不同测试柜的 z 值范围  */
-                // Tcab-5se：【15，27】
+                // Tcab-5se：【15，35】
                 // Tcab-5,5pro：【15， 30】
-                // Tcab-5L：【15， 30】
+                // Tcab-5L：【15， 45】
                 // Tcab-5D：【15， 45】
                 let rangeZ = []
                 if(["Tcab_5D"].includes(this.deviceCabinetType)){
                     rangeZ = [15,45]
                 }else if(["Tcab_5L","Tcab_5","Tcab_5pro"].includes(this.deviceCabinetType)){
-                    rangeZ = [15,30]
+                    rangeZ = [15,45]
                 }
                 else if(["Tcab_5se"].includes(this.deviceCabinetType)){
-                    rangeZ = [15,27]
+                    rangeZ = [15,35]
                 }
                 if(this.showTestBtn){  //5D 双机械臂
                     if(check_x1){
