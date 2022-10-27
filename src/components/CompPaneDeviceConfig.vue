@@ -1003,13 +1003,13 @@
                     this.adjustTitle = "[15,45]"
                 }
                 if(this.deviceCabinetType==='Tcab_5L'){   //'Tcab_5L','Tcab_5se'
-                    this.adjustTitle = "[15,30]"
+                    this.adjustTitle = "[15,45]"
                 }
                 if(this.deviceCabinetType==='Tcab_5se'){   //'Tcab_5L','Tcab_5se'
-                    this.adjustTitle = "[15,27]"
+                    this.adjustTitle = "[15,35]"
                 }
                 if(this.showProBtn) {  //['Tcab_5','Tcab_5pro']
-                    this.adjustTitle = "[15,30]"
+                    this.adjustTitle = "[15,45]"
                 }
                 this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/get_z_down/").then(response=>{
                     if(response.data.error_code===0){
