@@ -775,10 +775,10 @@
                     start_point: [this.coordinateChange.x1,this.coordinateChange.y],
                     end_point: [this.coordinateChange.x2,this.coordinateChange.y],
                 }).then(response=>{
-                    this.showCoordinateModal = false
                     this.isDisabled = false
                     this.isSentTestReq = false
                     if(response.data.error_code===0){
+                        this.showCoordinateModal = false
                         this.$Message.success({content:response.data.description,duration:8})
                     }else{
                         this.$Message.error({content:response.data.description,duration: 8})
