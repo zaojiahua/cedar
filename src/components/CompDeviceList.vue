@@ -387,6 +387,9 @@
                 let cabinetTypeCondition = ""
                 if(this.propCabinetType){
                     cabinetTypeCondition = "&cabinet__type=" + this.propCabinetType
+                    if(['Tcab_5','Tcab_5L','Tcab_5D','Tcab_5se','Tcab_5pro'].includes(this.propCabinetType)){
+                        cabinetTypeCondition = cabinetTypeCondition + "&paneslot__paneview__type=test_box"
+                    }
                 }else if(this.propPerfCabinet){
                     cabinetTypeCondition = "&cabinet__type__in=ReefList[Tcab_5{%,%}Tcab_5L{%,%}Tcab_5D{%,%}Tcab_5se{%,%}Tcab_5pro]"
                 }else {
