@@ -16,6 +16,9 @@
             jobId:{
                 type: Number
             },
+            deviceId:{
+                type: Number
+            },
             propPhoneModels:{
                 type: Array,
                 default: ()=>{return []}
@@ -51,7 +54,7 @@
                     this.histogram.clear()
                     this.setDefaultOption()
                     this.histogram.showLoading()
-                    this.$ajax.get("api/v1/cedar/get_perf_data_bar_chart/?tboard="+ tboardIds +"&job="+ this.jobId + phoneModelsCondition
+                    this.$ajax.get("api/v1/cedar/get_perf_data_bar_chart/?tboard="+ tboardIds +"&job="+ this.jobId + phoneModelsCondition +"&devices="+this.deviceId
                     ).then(response=>{
                         if(response.data.length===0)
                             this.showChart =  false;

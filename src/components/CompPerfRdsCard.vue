@@ -76,6 +76,10 @@
                 type: Number,
                 default: null
             },
+            propDeviceId: {
+                type: Number,
+                default: null
+            },
             propTimeRange:{
                 type: String,
             },
@@ -149,6 +153,10 @@
                 if(this.propJobId){
                     jobCondition = "&job=" + this.propJobId
                 }
+                let deviceCondition = ""
+                if(this.propDeviceId){
+                    deviceCondition ="&device=" + this.propDeviceId
+                }
                 let tboardCondition = ""
                 if(this.propTboardId){
                     tboardCondition =  "&tboard_id__in=ReefList[" + this.propTboardId + "]"
@@ -165,6 +173,7 @@
 
                 this.$ajax.get("api/v1/cedar/rds/?" +
                     jobCondition +
+                    deviceCondition +
                     tboardCondition +
                     dateRangeCondition +
                     resultRangeCondition +

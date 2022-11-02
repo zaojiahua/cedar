@@ -15,7 +15,7 @@
         </div>
         <div v-show="groupView===2">
             <Table border :columns="jobColumn" :data="jobData"></Table>
-            <comp-perf-chart-rds-group v-if="groupView===2" ref="chartRdsGroup" :job="job" :tboard-id="tboardId"></comp-perf-chart-rds-group>
+            <comp-perf-chart-rds-group v-if="groupView===2" ref="chartRdsGroup" :job="job" :tboard-id="tboardId" :device-id="deviceId"></comp-perf-chart-rds-group>
         </div>
     </div>
 </template>
@@ -94,7 +94,7 @@
             },
             //获取中位数等信息
             getJobData(){
-                this.$ajax.get("api/v1/cedar/get_tboard_perf_dtail_data/?tboard=" + this.tboardId)
+                this.$ajax.get("api/v1/cedar/get_tboard_perf_dtail_data/?tboard=" + this.tboardId +"&devices="+this.deviceId)
                     .then(response => {
                         this.data = response.data
                         let hash = {};

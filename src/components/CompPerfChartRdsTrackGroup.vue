@@ -1,7 +1,7 @@
 <template>
     <div>
         <comp-perf-histogram-time-track style="margin: 20px 0;" ref="histogram"
-                                        :job-id="job.job_id" :prop-canvas-id="index"
+                                        :job-id="job.job_id" :prop-canvas-id="index" :device-id="deviceId"
                                         ></comp-perf-histogram-time-track>
         <div>
             <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 5px;">测试结果</p>

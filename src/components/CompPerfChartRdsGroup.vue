@@ -1,10 +1,10 @@
 <template>
     <div>
-        <comp-perf-histogram style="margin: 20px 0;" ref="histogram" :job-id="job.job_id"
+        <comp-perf-histogram style="margin: 20px 0;" ref="histogram" :job-id="job.job_id" :device-id="deviceId"
                              @on-chart-click="onChartClick" @after-load-data="afterLoadData"
         ></comp-perf-histogram>
 
-        <comp-perf-rds-list v-show="timeRange" ref="perfRdsList" :is-min="isMin" :prop-job-id="job.job_id" :prop-tboard-id="tboardId" :prop-time-range="timeRange"></comp-perf-rds-list>
+        <comp-perf-rds-list v-show="timeRange" ref="perfRdsList" :is-min="isMin" :prop-job-id="job.job_id" :prop-tboard-id="tboardId" :device-id="deviceId" :prop-time-range="timeRange"></comp-perf-rds-list>
     </div>
 </template>
 
@@ -21,6 +21,9 @@
                 default: ()=>{
                     return {}
                 }
+            },
+            deviceId:{
+                type: Number
             },
             tboardId:{
                 type: Number,
