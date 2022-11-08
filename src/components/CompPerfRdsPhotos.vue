@@ -144,7 +144,7 @@ export default {
     //按钮是否可点击
     isDisabled(point) {
       if (point === "start")       //设为起点
-        return (this.selectedIndex !== this.startPoint) && (this.selectedIndex < this.endPoint)
+        return (this.selectedIndex !== this.startPoint) && ((this.selectedIndex < this.endPoint)||this.endPoint===null)
       if (point === "end")
         return (this.selectedIndex !== this.endPoint) && (this.selectedIndex > this.startPoint)
     },
