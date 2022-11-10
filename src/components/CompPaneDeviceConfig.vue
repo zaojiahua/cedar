@@ -188,25 +188,32 @@
         </Modal>
 
         <!--    调节z值模态框    -->
-        <Modal v-model="showAdjustZModel" :closable="false" :footer-hide="true" :mask-closable="false" width="450">
+        <Modal v-model="showAdjustZModel" :closable="false" :footer-hide="true" :mask-closable="false" width="500">
             <Card>
                 <Row style="margin-bottom: 20px;">
                     <p>按压过轻时，请调大机械臂z值，范围：{{ adjustTitle }}</p>
+                    <p>x向右为正，范围：[{{adjustTitleX[0]}},{{adjustTitleX[1]}}]，y向下为负，范围：[{{adjustTitleY[0]}},{{adjustTitleY[1]}}]</p>
                 </Row>
                 <!--   5D  双机械臂  -->
                 <div v-show="showTestBtn">
                     <Row>
-                        <InputNumber v-model="robotArm.x1" :min="0" style="width:300px;margin-right: 16px;" placeholder="左机械臂z值"></InputNumber>
+                        <InputNumber v-model="robotArm.click_xy1[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
+                        <InputNumber v-model="robotArm.click_xy1[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
+                        <InputNumber v-model="robotArm.x1" :min="0" style="width:100px;margin-right: 16px;" placeholder="左机械臂z值"></InputNumber>
                         <Button type="info" @click="onTestRobotArm(true,false)">测试</Button>
                     </Row>
                     <Row style="margin-top: 16px;">
-                        <InputNumber v-model="robotArm.x2" :min="0" style="width:300px;margin-right: 16px;" placeholder="右机械臂z值"></InputNumber>
+                        <InputNumber v-model="robotArm.click_xy2[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
+                        <InputNumber v-model="robotArm.click_xy2[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
+                        <InputNumber v-model="robotArm.x2" :min="0" style="width:100px;margin-right: 16px;" placeholder="右机械臂z值"></InputNumber>
                         <Button type="info" @click="onTestRobotArm(false,true)">测试</Button>
                     </Row>
                 </div>
                 <!--   非5D  单个机械臂  -->
                 <Row v-show="!showTestBtn">
-                    <InputNumber v-model="robotArm.x" :min="0" style="width:300px;margin-right: 16px;" placeholder="机械臂z值"></InputNumber>
+                    <InputNumber v-model="robotArm.click_xy[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
+                    <InputNumber v-model="robotArm.click_xy[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
+                    <InputNumber v-model="robotArm.x" :min="0" style="width:100px;margin-right: 16px;" placeholder="机械臂z值"></InputNumber>
                     <Button type="info" @click="onTestRobotArm(false,false)">测试</Button>
                 </Row>
                 <Row>
@@ -591,10 +598,15 @@
                 user:sessionStorage.getItem('username'),
                 showAdjustZModel:false,
                 adjustTitle:"",
+                adjustTitleX:"",
+                adjustTitleY:"",
                 robotArm:{
                     x:null,
                     x1:null,
-                    x2:null
+                    x2:null,
+                    click_xy:[],
+                    click_xy1:[],
+                    click_xy2:[],
                 },
                 isSentTestReq:false,
                 showCoordinateModal:false,
@@ -946,7 +958,7 @@
             robotArmValidate(check_x1=true,check_x2=true){
                 /*  不同测试柜的 z 值范围  */
                 // Tcab-5se：【15，35】
-                // Tcab-5,5pro：【15， 30】
+                // Tcab-5,5pro：【15， 45】
                 // Tcab-5L：【15， 45】
                 // Tcab-5D：【15， 45】
                 let rangeZ = []
@@ -960,65 +972,82 @@
                 }
                 if(this.showTestBtn){  //5D 双机械臂
                     if(check_x1){
-                        if(this.robotArm.x1===null || this.robotArm.x1===''){
-                            this.$Message.warning({content:"左机械臂 z 值不能为空",duration:3})
+                        if(this.robotArm.x1===null || this.robotArm.x1==='' || this.robotArm.click_xy1[0]===null || this.robotArm.click_xy1[0]===''
+                            || this.robotArm.click_xy1[1]===null || this.robotArm.click_xy1[1]===''){
+                            this.$Message.warning({content:"左机械臂值不能为空",duration:3})
                             return true
                         }
-                        if(this.robotArm.x1>rangeZ[1] || this.robotArm.x1<rangeZ[0]){
-                            this.$Message.warning({content:"左机械臂 z 的取值范围为("+rangeZ[0]+","+rangeZ[1]+")",duration:3})
+                        if(this.robotArm.x1>rangeZ[1] || this.robotArm.x1<rangeZ[0]
+                            || this.robotArm.click_xy1[0]>this.adjustTitleX[1] || this.robotArm.click_xy1[0]<this.adjustTitleX[0]
+                            || this.robotArm.click_xy1[1]>this.adjustTitleY[1] || this.robotArm.click_xy1[1]<this.adjustTitleY[0]){
+                            this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
                             return true
                         }
                     }
                     if(check_x2){
-                        if(this.robotArm.x2===null || this.robotArm.x2===''){
-                            this.$Message.warning({content:"右机械臂 z 值不能为空",duration:3})
+                        if(this.robotArm.x2===null || this.robotArm.x2==='' || this.robotArm.click_xy2[0]===null || this.robotArm.click_xy2[0]===''
+                            || this.robotArm.click_xy2[1]===null || this.robotArm.click_xy2[1]===''){
+                            this.$Message.warning({content:"右机械臂值不能为空",duration:3})
                             return true
                         }
-                        if(this.robotArm.x2>rangeZ[1] || this.robotArm.x2<rangeZ[0]){
-                            this.$Message.warning({content:"右机械臂 z 的取值范围为("+rangeZ[0]+","+rangeZ[1]+")",duration:3})
+                        if(this.robotArm.x2>rangeZ[1] || this.robotArm.x2<rangeZ[0]
+                            || this.robotArm.click_xy2[0]>this.adjustTitleX[1] || this.robotArm.click_xy2[0]<this.adjustTitleX[0]
+                            || this.robotArm.click_xy2[1]>this.adjustTitleY[1] || this.robotArm.click_xy2[1]<this.adjustTitleY[0]){
+                            this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
                             return true
                         }
                     }
                 }else {
-                    if(this.robotArm.x===null || this.robotArm.x===''){
-                        this.$Message.warning({content:"z 值不能为空",duration:3})
+                    if(this.robotArm.x===null || this.robotArm.x==='' || this.robotArm.click_xy[0]===null || this.robotArm.click_xy[0]===''
+                        || this.robotArm.click_xy[1]===null || this.robotArm.click_xy[1]===''){
+                        this.$Message.warning({content:"机械臂值不能为空",duration:3})
                         return true
                     }
-                    if(this.robotArm.x>rangeZ[1] || this.robotArm.x<rangeZ[0]){
-                        this.$Message.warning({content:"机械臂 z 的取值范围为("+rangeZ[0]+","+rangeZ[1]+")",duration:3})
+                    if(this.robotArm.x>rangeZ[1] || this.robotArm.x<rangeZ[0]
+                        || this.robotArm.click_xy[0]>this.adjustTitleX[1] || this.robotArm.click_xy[0]<this.adjustTitleX[0]
+                        || this.robotArm.click_xy[1]>this.adjustTitleY[1] || this.robotArm.click_xy[1]<this.adjustTitleY[0]){
+                        this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
                         return true
                     }
                 }
                 return false
             },
-            //打开调节z值模态框并且获取现有的z值信息
+            //打开调节z值模态框并且获取现有的z值信息  以及 x，y的信息
             onOpenAdjustZModel(){
                 this.robotArm = {
                     x:null,
                     x1:null,
                     x2:null,
+                    click_xy:[],
+                    click_xy1:[],
+                    click_xy2:[],
                 }
                 this.showAdjustZModel = true
-                if(this.showTestBtn){   // 5D
-                    this.adjustTitle = "[15,45]"
-                }
-                if(this.deviceCabinetType==='Tcab_5L'){   //'Tcab_5L','Tcab_5se'
-                    this.adjustTitle = "[15,45]"
-                }
-                if(this.deviceCabinetType==='Tcab_5se'){   //'Tcab_5L','Tcab_5se'
+                if(["Tcab_5se"].includes(this.deviceCabinetType)){
                     this.adjustTitle = "[15,35]"
-                }
-                if(this.showProBtn) {  //['Tcab_5','Tcab_5pro']
+                    this.adjustTitleX = [35,130]
+                    this.adjustTitleY = [-210,-50]
+                }else if(["Tcab_5","Tcab_5L","Tcab_5pro"].includes(this.deviceCabinetType)){
                     this.adjustTitle = "[15,45]"
+                    this.adjustTitleX = [25, 235]
+                    this.adjustTitleY = [-300, -130]
+                }else if(["Tcab_5D"].includes(this.deviceCabinetType)){
+                    this.adjustTitle = "[15,45]"
+                    this.adjustTitleX = [50, 280]
+                    this.adjustTitleY = [-200, 0]
                 }
                 this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/get_z_down/").then(response=>{
                     if(response.data.error_code===0){
                         this.showAdjustZModel = true
-                        if(Object.keys(response.data.data).length===1){
+                        console.log(response.data.data.click_xy)
+                        if(Object.keys(response.data.data).length===2){
                             this.robotArm.x = response.data.data.z_down
+                            this.robotArm.click_xy = response.data.data.click_xy
                         }else {
                             this.robotArm.x1 = response.data.data.z_down
                             this.robotArm.x2 = response.data.data.z_down_1
+                            this.robotArm.click_xy1 = response.data.data.click_xy
+                            this.robotArm.click_xy2 = response.data.data.click_xy_1
                         }
                     }else{
                         this.$Message.error({content:response.data.description,duration: 10})
@@ -1042,18 +1071,21 @@
                     param = {
                         device_label:this.deviceLabel,
                         z_down: this.robotArm.x1,
+                        point:this.robotArm.click_xy1,
                         arm_num: 0
                     }
                 }else if(!check_x1&&check_x2){ // false  true =>右机械臂
                     param = {
                         device_label:this.deviceLabel,
                         z_down: this.robotArm.x2,
+                        point:this.robotArm.click_xy2,
                         arm_num: 1
                     }
                 }else if(!check_x1&&!check_x2){  // false  false => 非5D
                     param = {
                         device_label:this.deviceLabel,
                         z_down: this.robotArm.x,
+                        point:this.robotArm.click_xy,
                         arm_num: 0
                     }
                 }
@@ -1083,19 +1115,22 @@
                     param = {
                         device_label:this.deviceLabel,
                         z_down: this.robotArm.x1,
-                        z_down_1: this.robotArm.x2
+                        z_down_1: this.robotArm.x2,
+                        click_xy:this.robotArm.click_xy1,
+                        click_xy_1:this.robotArm.click_xy2,
                     }
                 }else {
                     param = {
                         device_label:this.deviceLabel,
                         z_down: this.robotArm.x,
+                        click_xy:this.robotArm.click_xy,
                     }
                 }
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/update_z_down/",param)
                     .then(response=>{
                         if(response.data.error_code===0){
                             this.showAdjustZModel = false
-                            this.$Message.success({content:"机械臂z值保存成功",duration:3})
+                            this.$Message.success({content:"机械臂的值保存成功",duration:3})
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
