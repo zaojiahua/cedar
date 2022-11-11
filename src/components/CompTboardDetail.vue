@@ -1,5 +1,6 @@
 <template>
     <Card :title="'Tboard(' + data.id + ')'" dis-hover>
+        <Button v-show="data.finished_flag&&data.belong==='coolpad'" slot="extra" style="float:right;margin-top: -5px;" @click="exportExcel" type="primary">导出数据</Button>
         <Form :label-width="80">
             <FormItem>
                 <b slot="label">任务名称:</b>
@@ -255,6 +256,8 @@
                         "author.last_name," +
                         "test_gather_name," +
                         "board_stamp," +
+                        "finished_flag,"+
+                        "belong,"+
                         "end_time"
                     ),
                     this.$ajax.get(
@@ -365,6 +368,20 @@
             },
             onJobCellClick(statistic){
                 this.$emit('on-job-cell-click', this.data.id, statistic)
+            },
+            exportExcel(){
+                this.$ajax.get("api/v1/cedar/tboard_statistics_result/?tboard="+ this.data.id +"&ordering=-create_time&limit=1")
+                    .then(response=>{
+                        if(response.data.tboardstatisticsresult.length===0){
+                            this.$Message.error("导出异常")
+                            return
+                        }
+                        window.open("http://"+config.REEF_HOST+":"+config.REEF_PORT +'/media/'+ response.data.tboardstatisticsresult[0].file_path)
+                        this.$Message.success("正在导出...")
+                    }).catch(error=>{
+                        if (config.DEBUG) console.log(error)
+                        this.$Message.error({content:"导出失败",duration:3})
+                    })
             },
             //去重后的job数量
             getJobNum(arr){
