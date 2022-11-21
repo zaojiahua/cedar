@@ -1,9 +1,10 @@
 <template>
     <div>
         <Card :title="data.board_name + '(' + data.id + ')'" dis-hover>
-            <a :href="xls_url" slot="extra" style="float:right;margin-top: -5px;">
-                <Button type="primary">导出数据</Button>
-            </a>
+            <!--<a :href="xls_url" slot="extra" style="float:right;margin-top: -5px;">-->
+                <!--<Button type="primary">导出数据</Button>-->
+            <!--</a>-->
+            <Button slot="extra" style="float:right;margin-top: -5px;" type="primary" @click="onOpenExportData">数据预览</Button>
             <Form :label-width="80">
                 <FormItem>
                     <b slot="label">任务名称:</b>
@@ -51,6 +52,13 @@
 
         <div></div>
 
+        <Modal v-model="showExport" transfer :closable="false" fullscreen>
+            <comp-perf-tboard-export-list ref="exportList"></comp-perf-tboard-export-list>
+            <div slot="footer">
+                <Button type="text" @click="showExport=false">取消</Button>
+                <Button type="primary" @click="exportPerfExcel">导出</Button>
+            </div>
+        </Modal>
         <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
             <comp-device-detail ref="deviceDetail"></comp-device-detail>
         </Modal>
@@ -65,12 +73,13 @@
     import CompDeviceDetail from "../components/CompDeviceDetail";
     import CompJobDetail from "../components/CompJobDetail";
     import CompPerfGroupViewList from "../components/CompPerfGroupViewList";
+    import CompPerfTboardExportList from "../components/CompPerfTboardExportList";
 
     import config from "../lib/config";
     import utils from "../lib/utils";
 
     export default {
-        components: { CompDeviceDetail, CompJobDetail, CompPerfGroupViewList, },
+        components: { CompDeviceDetail, CompJobDetail, CompPerfGroupViewList, CompPerfTboardExportList, },
         data() {
             return {
                 data:{},
@@ -107,6 +116,7 @@
                 ],
                 groupView:1,
                 deviceSelected:'',
+                showExport:false,
             }
         },
         computed:{
@@ -140,6 +150,37 @@
                         if (config.DEBUG) console.log(reason)
                         this.$Message.error("载入失败")
                         this.showLoading = false;
+                })
+            },
+            onOpenExportData(){
+                this.showExport = true
+                this.$refs.exportList.refresh(this.data.id)
+            },
+            exportPerfExcel(){
+                //  要导出的数据
+                let dataList = this.$refs.exportList.getData()
+                if(dataList.length===0){
+                    this.$Message.warning("暂无可导出的数据")
+                    return
+                }
+                let exportData = {}
+                dataList.forEach(item=>{
+                    if(exportData[item.job_name]){
+                        exportData[item.job_name] = Object.assign(exportData[item.job_name],{[item.data_name] : item.rule})
+                    }else {
+                        exportData[item.job_name]={[item.data_name] : item.rule}
+                    }
+                })
+                this.$ajax.get("api/v1/cedar/get_xls_data/?tboard="+this.data.id+"&job_res_rule="+JSON.stringify(exportData))
+                    .then(response=>{
+                        this.showExport = false
+                        window.open("http://"+config.REEF_HOST+":"+config.REEF_PORT +'/media/'+ response.data)
+                        this.$Message.success("正在导出...")
+                    }).catch(error=>{
+                        if(error.response.status>=500)
+                            this.$Message.error({content:'服务器错误'})
+                        else
+                            this.$Message.error({content:error.response.data.description,duration:3})
                 })
             }
         }
