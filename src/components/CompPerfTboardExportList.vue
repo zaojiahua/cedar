@@ -34,9 +34,9 @@
     import utils from "../lib/utils"
     const exportDataSerializer = [
         {
-            job_name: "String",
-            data_name: "String",
-            rule: "String",
+            job_name: "string",
+            data_name: "string",
+            rule: "string",
         }
     ]
 
@@ -84,6 +84,9 @@
                     .then(response=>{
                         this.loading = false
                         this.data = utils.validate(exportDataSerializer,response.data)
+                        this.data.forEach(item=>{
+                            item.rule = item.rule ? item.rule : ""
+                        })
                     }).catch(error=>{
                         this.loading = false
                         if(error.response.status>=500)
