@@ -79,6 +79,7 @@
         methods:{
             // 获取当前tboard 需要导出的数据
             refresh(tboardId){
+                this.selectionJob = []
                 this.loading = true
                 this.$ajax.get("api/v1/cedar/perf_data_preview/?tboard="+tboardId)
                     .then(response=>{
