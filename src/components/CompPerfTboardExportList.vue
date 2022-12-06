@@ -18,7 +18,7 @@
                         <Option value="<="> <= </Option>
                         <Option value="="> = </Option>
                     </Select>
-                    <InputNumber :min="0" v-model="rules.number" style="margin-left: 16px" />
+                    <InputNumber :min="0" v-model="rules.number" :max="1000000" style="margin-left: 16px;width: 120px" />
                 </Row>
                 <Row style="margin-top: 30px;">
                     <Button @click="showStandardModal=false" style="margin-right: 30px;">取消</Button>
