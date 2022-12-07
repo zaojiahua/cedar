@@ -160,7 +160,7 @@
     import utils from "../lib/utils";
     import CompTemperatureHistogram from "./CompTemperatureHistogram";
     import CompViewLogFile from "./CompViewLogFile";
-    import CompPerfRdsPhotos from "./CompPerfRdsPhotos";
+    import CompPerfRdsPhotos from "./CompPerfRdsPhotos_1";
     import CompPerfFrameRdsPhotos from "./CompPerfRdsPhotosFrame";
 
     const rdsSerializer = {
