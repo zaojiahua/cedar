@@ -18,7 +18,8 @@
                         <Option value="<="> <= </Option>
                         <Option value="="> = </Option>
                     </Select>
-                    <InputNumber :min="0" v-model="rules.number" :max="1000000" style="margin-left: 16px;width: 120px" />
+                    <InputNumber :precision="3" :min="0" v-model="rules.number" :max="1000000"  style="margin-left: 16px;width: 120px"
+                                 :formatter="value => `${parseFloat(Math.floor(value*1000)/1000)}`" />
                 </Row>
                 <Row style="margin-top: 30px;">
                     <Button @click="showStandardModal=false" style="margin-right: 30px;">取消</Button>
