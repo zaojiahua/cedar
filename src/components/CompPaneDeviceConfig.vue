@@ -15,6 +15,7 @@
                                 <DropdownItem @click.native="imageMosaic('拼接图像')">拼接图像</DropdownItem>
                                 <DropdownItem @click.native="onOpenCoordinateModal('坐标换算')">坐标换算</DropdownItem>
                                 <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
+                                <DropdownItem @click.native="onOpenStandbyModel">待命位置</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                         <!--  5L，5se -->
@@ -26,6 +27,7 @@
                             <DropdownMenu slot="list">
                                 <DropdownItem @click.native="onOpenCoordinateModal">坐标换算</DropdownItem>
                                 <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
+                                <DropdownItem @click.native="onOpenStandbyModel">待命位置</DropdownItem>
                             </DropdownMenu>
                             <!--<DropdownMenu slot="list" v-show="user==='admin'">-->
                                 <!--<DropdownItem @click.native="getMlocation">mlocation调试</DropdownItem>-->
@@ -46,6 +48,7 @@
                                 <DropdownItem @click.native="imageMosaic">拼接图像</DropdownItem>
                                 <DropdownItem @click.native="onOpenCoordinateModal">坐标换算</DropdownItem>
                                 <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
+                                <DropdownItem @click.native="onOpenStandbyModel">待命位置</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                     </h5>
@@ -220,6 +223,43 @@
                     <div style="text-align:left;margin-top: 30px">
                         <Button @click="showAdjustZModel=false" style="margin-right: 24px;width: 80px">取消</Button>
                         <Button type="primary" @click="onSaveRobotArm" style="width: 80px;">完成</Button>
+                    </div>
+                </Row>
+            </Card>
+        </Modal>
+        <!--待命位置 模态框-->
+        <Modal v-model="showStandbyModel" :closable="false" :footer-hide="true" :mask-closable="false" width="500">
+            <Card>
+                <Row style="margin-bottom: 20px;">
+                    <p>机械臂的待命位置</p>
+                    <p>x向右为正，范围：[{{standbyRangeX[0]}},{{standbyRangeX[1]}}]，y向下为负，范围：[{{standbyRangeY[0]}},{{standbyRangeY[1]}}]，z向上为正，范围：[{{standbyRangeZ[0]}},{{standbyRangeZ[1]}}]</p>
+                </Row>
+                <!--   5D  双机械臂  -->
+                <div v-show="showTestBtn">
+                    <Row>
+                        <InputNumber v-model="robotArmStandby.xyz[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
+                        <InputNumber v-model="robotArmStandby.xyz[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
+                        <InputNumber v-model="robotArmStandby.xyz[2]" :min="0" style="width:100px;margin-right: 16px;" placeholder="左机械臂z值"></InputNumber>
+                        <Button type="info" @click="onTestWaitPosition(true,false)">测试</Button>
+                    </Row>
+                    <Row style="margin-top: 16px;">
+                        <InputNumber v-model="robotArmStandby.xyz_1[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
+                        <InputNumber v-model="robotArmStandby.xyz_1[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
+                        <InputNumber v-model="robotArmStandby.xyz_1[2]" :min="0" style="width:100px;margin-right: 16px;" placeholder="右机械臂z值"></InputNumber>
+                        <Button type="info" @click="onTestWaitPosition(false,true)">测试</Button>
+                    </Row>
+                </div>
+                <!--   非5D  单个机械臂  -->
+                <Row v-show="!showTestBtn">
+                    <InputNumber v-model="robotArmStandby.xyz[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
+                    <InputNumber v-model="robotArmStandby.xyz[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
+                    <InputNumber v-model="robotArmStandby.xyz[2]" :min="0" style="width:100px;margin-right: 16px;" placeholder="机械臂z值"></InputNumber>
+                    <Button type="info" @click="onTestWaitPosition(false,false)">测试</Button>
+                </Row>
+                <Row>
+                    <div style="text-align:left;margin-top: 30px">
+                        <Button @click="showStandbyModel=false" style="margin-right: 24px;width: 80px">取消</Button>
+                        <Button type="primary" @click="onSaveStandby" style="width: 80px;">完成</Button>
                     </div>
                 </Row>
             </Card>
@@ -608,6 +648,15 @@
                     click_xy1:[],
                     click_xy2:[],
                 },
+                showStandbyModel:false,
+                // 待命位置z，y，z的信息
+                robotArmStandby:{
+                    xyz:[],
+                    xyz_1:[],
+                },
+                standbyRangeX:[],
+                standbyRangeY:[],
+                standbyRangeZ:[],
                 isSentTestReq:false,
                 showCoordinateModal:false,
                 coordinateChange:{
@@ -1039,7 +1088,6 @@
                 this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/get_z_down/").then(response=>{
                     if(response.data.error_code===0){
                         this.showAdjustZModel = true
-                        console.log(response.data.data.click_xy)
                         if(Object.keys(response.data.data).length===2){
                             this.robotArm.x = response.data.data.z_down
                             this.robotArm.click_xy = response.data.data.click_xy
@@ -1130,6 +1178,164 @@
                     .then(response=>{
                         if(response.data.error_code===0){
                             this.showAdjustZModel = false
+                            this.$Message.success({content:"机械臂的值保存成功",duration:3})
+                        }else{
+                            this.$Message.error({content:response.data.description,duration: 10})
+                        }
+                    }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
+            //打开【待命位置】模态框并且获取现有的 x，y，z的信息
+            onOpenStandbyModel(){
+                this.robotArmStandby = {
+                    xyz:[],
+                    xyz_1:[],
+                }
+                this.showStandbyModel = true
+                if(["Tcab_5D"].includes(this.deviceCabinetType)){
+                    this.standbyRangeX = [0, 160]
+                    this.standbyRangeY = [-200, 0]
+                    this.standbyRangeZ = [-35, 0]
+                }else if(["Tcab_5L","Tcab_5","Tcab_5pro"].includes(this.deviceCabinetType)){
+                    this.standbyRangeX = [0, 235]
+                    this.standbyRangeY = [-380, 0]
+                    this.standbyRangeZ = [-15, 0]
+                }
+                else if(["Tcab_5se"].includes(this.deviceCabinetType)){
+                    this.standbyRangeX = [0, 130]
+                    this.standbyRangeY = [-210, 0]
+                    this.standbyRangeZ = [-15, 0]
+                }
+                this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/wait_position/").then(response=>{
+                    if(response.data.error_code===0){
+                        this.showStandbyModel = true
+                        if(Object.keys(response.data.data).length===1){
+                            this.robotArmStandby.xyz = response.data.data.arm_wait_point
+                        }else {
+                            this.robotArmStandby.xyz = response.data.data.arm_wait_point
+                            this.robotArmStandby.xyz_1 = response.data.data.arm_wait_point_1
+                        }
+                    }else{
+                        this.$Message.error({content:response.data.description,duration: 10})
+                    }
+                }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
+            //  对 待命位置 范围的校验  测试时x1和x2只需一个校验
+            standbyValidate(check_x1=true,check_x2=true){
+                if(this.showTestBtn){  //5D 双机械臂
+                    if(check_x1){
+                        if(this.robotArmStandby.xyz[0]===null || this.robotArmStandby.xyz[0]==='' || this.robotArmStandby.xyz[1]===null || this.robotArmStandby.xyz[1]===''
+                            || this.robotArmStandby.xyz[2]===null || this.robotArmStandby.xyz[2]===''){
+                            this.$Message.warning({content:"左机械臂值不能为空",duration:3})
+                            return true
+                        }
+                        if(this.robotArmStandby.xyz[0]>this.standbyRangeX[1] || this.robotArmStandby.xyz[0]<this.standbyRangeX[0]
+                            || this.robotArmStandby.xyz[1]>this.standbyRangeY[1] || this.robotArmStandby.xyz[1]<this.standbyRangeY[0]
+                            || this.robotArmStandby.xyz[2]>this.standbyRangeZ[1] || this.robotArmStandby.xyz[2]<this.standbyRangeZ[0]){
+                            this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                            return true
+                        }
+                    }
+                    if(check_x2){
+                        if(this.robotArmStandby.xyz_1[0]===null || this.robotArmStandby.xyz_1[0]==='' || this.robotArmStandby.xyz_1[1]===null || this.robotArmStandby.xyz_1[1]===''
+                            || this.robotArmStandby.xyz_1[2]===null || this.robotArmStandby.xyz_1[2]===''){
+                            this.$Message.warning({content:"右机械臂值不能为空",duration:3})
+                            return true
+                        }
+                        if(this.robotArmStandby.xyz_1[0]>this.standbyRangeX[1] || this.robotArmStandby.xyz_1[0]<this.standbyRangeX[0]
+                            || this.robotArmStandby.xyz_1[1]>this.standbyRangeY[1] || this.robotArmStandby.xyz_1[1]<this.standbyRangeY[0]
+                            || this.robotArmStandby.xyz_1[2]>this.standbyRangeZ[1] || this.robotArmStandby.xyz_1[2]<this.standbyRangeZ[0]){
+                            this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                            return true
+                        }
+                    }
+                }else {
+                    if(this.robotArmStandby.xyz[0]===null || this.robotArmStandby.xyz[0]==='' || this.robotArmStandby.xyz[1]===null || this.robotArmStandby.xyz[1]===''
+                        || this.robotArmStandby.xyz[2]===null || this.robotArmStandby.xyz[2]===''){
+                        this.$Message.warning({content:"机械臂值不能为空",duration:3})
+                        return true
+                    }
+                    if(this.robotArmStandby.xyz[0]>this.standbyRangeX[1] || this.robotArmStandby.xyz[0]<this.standbyRangeX[0]
+                        || this.robotArmStandby.xyz[1]>this.standbyRangeY[1] || this.robotArmStandby.xyz[1]<this.standbyRangeY[0]
+                        || this.robotArmStandby.xyz[2]>this.standbyRangeZ[1] || this.robotArmStandby.xyz[2]<this.standbyRangeZ[0]){
+                        this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                        return true
+                    }
+                }
+                return false
+            },
+            // 测试 【 待命位置 】
+            onTestWaitPosition(check_x1,check_x2){
+                if(this.standbyValidate(check_x1,check_x2)) return
+                if(this.isSentTestReq){
+                    this.$Message.info({content:"请等待当前指令执行完成..."})
+                    return
+                }
+                let param = {}
+                if(check_x1&&!check_x2){  //true  false => 左机械臂
+                    param = {
+                        device_label:this.deviceLabel,
+                        arm_wait_point:this.robotArmStandby.xyz,
+                        arm_num: 0
+                    }
+                }else if(!check_x1&&check_x2){ // false  true =>右机械臂
+                    param = {
+                        device_label:this.deviceLabel,
+                        arm_wait_point:this.robotArmStandby.xyz_1,
+                        arm_num: 1
+                    }
+                }else if(!check_x1&&!check_x2){  // false  false => 非5D
+                    param = {
+                        device_label:this.deviceLabel,
+                        arm_wait_point:this.robotArmStandby.xyz,
+                        arm_num: 0
+                    }
+                }
+                this.$Message.info({content:"正在发送请求..."})
+                this.isSentTestReq = true
+                this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/wait_position/",param)
+                    .then(response=>{
+                        this.isSentTestReq = false
+                        if(response.data.error_code===0){
+                            this.$Message.success({content:"请求成功",duration:3})
+                        }else{
+                            this.$Message.error({content:response.data.description,duration: 10})
+                        }
+                    }).catch(error=>{
+                    this.isSentTestReq = false
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'请求失败',duration: 5})
+                })
+            },
+            //保存 待命位置
+            onSaveStandby(){
+                if(this.standbyValidate()) return
+                let param = {}
+                if(this.showTestBtn){ // 5D  双机械臂
+                    param = {
+                        arm_wait_point:this.robotArmStandby.xyz,
+                        arm_wait_point_1:this.robotArmStandby.xyz_1,
+                    }
+                }else {
+                    param = {
+                        arm_wait_point:this.robotArmStandby.xyz,
+                    }
+                }
+                this.$ajax.put("http://"+ this.cabinetIP +":5000/pane/wait_position/",param)
+                    .then(response=>{
+                        if(response.data.error_code===0){
+                            this.showStandbyModel = false
                             this.$Message.success({content:"机械臂的值保存成功",duration:3})
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
@@ -1374,7 +1580,6 @@
                     })
                 }
                 xhr.onerror = (err) => {
-                    console.log(err)
                     this.$Message.error("图片获取失败")
                 }
             },
