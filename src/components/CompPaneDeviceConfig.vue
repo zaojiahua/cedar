@@ -232,7 +232,7 @@
             <Card>
                 <Row style="margin-bottom: 20px;">
                     <p>机械臂的待命位置</p>
-                    <p>x向右为正，范围：[{{standbyRangeX[0]}},{{standbyRangeX[1]}}]，y向下为负，范围：[{{standbyRangeY[0]}},{{standbyRangeY[1]}}]，z向上为正，范围：[{{standbyRangeZ[0]}},{{standbyRangeZ[1]}}]</p>
+                    <p>x向右为正，范围：[{{standbyRangeX[0]}},{{standbyRangeX[1]}}]，y向下为负，范围：[{{standbyRangeY[0]}},{{standbyRangeY[1]}}]，z向上为正，范围：[{{standbyRangeZ[0]}},{{standbyRangeZ[1]}}]；默认值：[{{ defaultWaitPoint.join(",") }}]</p>
                 </Row>
                 <!--   5D  双机械臂  -->
                 <div v-show="showTestBtn">
@@ -654,6 +654,7 @@
                     xyz:[],
                     xyz_1:[],
                 },
+                defaultWaitPoint:[],
                 standbyRangeX:[],
                 standbyRangeY:[],
                 standbyRangeZ:[],
@@ -1200,15 +1201,18 @@
                     this.standbyRangeX = [0, 160]
                     this.standbyRangeY = [-200, 0]
                     this.standbyRangeZ = [-35, 0]
+                    this.defaultWaitPoint = [0,0,0]
                 }else if(["Tcab_5L","Tcab_5","Tcab_5pro"].includes(this.deviceCabinetType)){
                     this.standbyRangeX = [0, 235]
                     this.standbyRangeY = [-380, 0]
                     this.standbyRangeZ = [-15, 0]
+                    this.defaultWaitPoint = [10,-175,0]
                 }
                 else if(["Tcab_5se"].includes(this.deviceCabinetType)){
                     this.standbyRangeX = [0, 130]
                     this.standbyRangeY = [-210, 0]
                     this.standbyRangeZ = [-15, 0]
+                    this.defaultWaitPoint = [10,-95,0]
                 }
                 this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/wait_position/").then(response=>{
                     if(response.data.error_code===0){
