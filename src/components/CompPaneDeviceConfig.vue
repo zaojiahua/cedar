@@ -239,13 +239,13 @@
                     <Row>
                         <InputNumber v-model="robotArmStandby.xyz[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                         <InputNumber v-model="robotArmStandby.xyz[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
-                        <InputNumber v-model="robotArmStandby.xyz[2]" :min="0" style="width:100px;margin-right: 16px;" placeholder="左机械臂z值"></InputNumber>
+                        <InputNumber v-model="robotArmStandby.xyz[2]" style="width:100px;margin-right: 16px;" placeholder="左机械臂z值"></InputNumber>
                         <Button type="info" @click="onTestWaitPosition(true,false)">测试</Button>
                     </Row>
                     <Row style="margin-top: 16px;">
                         <InputNumber v-model="robotArmStandby.xyz_1[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                         <InputNumber v-model="robotArmStandby.xyz_1[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
-                        <InputNumber v-model="robotArmStandby.xyz_1[2]" :min="0" style="width:100px;margin-right: 16px;" placeholder="右机械臂z值"></InputNumber>
+                        <InputNumber v-model="robotArmStandby.xyz_1[2]" style="width:100px;margin-right: 16px;" placeholder="右机械臂z值"></InputNumber>
                         <Button type="info" @click="onTestWaitPosition(false,true)">测试</Button>
                     </Row>
                 </div>
@@ -253,7 +253,7 @@
                 <Row v-show="!showTestBtn">
                     <InputNumber v-model="robotArmStandby.xyz[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                     <InputNumber v-model="robotArmStandby.xyz[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
-                    <InputNumber v-model="robotArmStandby.xyz[2]" :min="0" style="width:100px;margin-right: 16px;" placeholder="机械臂z值"></InputNumber>
+                    <InputNumber v-model="robotArmStandby.xyz[2]" style="width:100px;margin-right: 16px;" placeholder="机械臂z值"></InputNumber>
                     <Button type="info" @click="onTestWaitPosition(false,false)">测试</Button>
                 </Row>
                 <Row>
