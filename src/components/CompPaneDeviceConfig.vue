@@ -1209,7 +1209,7 @@
                 }else if(["Tcab_5L","Tcab_5","Tcab_5pro"].includes(this.deviceCabinetType)){
                     this.standbyRangeX = [0, 235]
                     this.standbyRangeY = [-380, 0]
-                    this.standbyRangeZ = [-15, 0]
+                    this.standbyRangeZ = [-10, 0]
                     this.defaultWaitPoint = [10,-175,0]
                 }
                 else if(["Tcab_5se"].includes(this.deviceCabinetType)){
