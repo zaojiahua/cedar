@@ -259,7 +259,10 @@
                 <Row>
                     <div style="text-align:left;margin-top: 30px">
                         <Button @click="showStandbyModel=false" style="margin-right: 24px;width: 80px">取消</Button>
-                        <Button type="primary" @click="onSaveStandby" style="width: 80px;">完成</Button>
+                        <Button type="primary" @click="onSaveStandby" :loading="isLoading" style="width: 100px;">
+                            <span v-if="!isLoading">完成</span>
+                            <span v-else>正在发送...</span>
+                        </Button>
                     </div>
                 </Row>
             </Card>
@@ -359,6 +362,7 @@
         },
         data(){
             return{
+                isLoading: false,
                 phone_model: {
                     id: null,
                     phone_model_name: "",
@@ -1336,8 +1340,10 @@
                         arm_wait_point:this.robotArmStandby.xyz,
                     }
                 }
+                this.isLoading = true
                 this.$ajax.put("http://"+ this.cabinetIP +":5000/pane/wait_position/",param)
                     .then(response=>{
+                        this.isLoading = false
                         if(response.data.error_code===0){
                             this.showStandbyModel = false
                             this.$Message.success({content:"机械臂的值保存成功",duration:3})
@@ -1345,11 +1351,12 @@
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
-                    if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
-                    else
-                        this.$Message.error({content:'请求失败',duration: 5})
-                })
+                        this.isLoading = false
+                        if(error.response.status>=500)
+                            this.$Message.error({content:'服务器错误',duration: 5})
+                        else
+                            this.$Message.error({content:'请求失败',duration: 5})
+                    })
             },
             //点击有效性测试
             onValidationTest(){
