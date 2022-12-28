@@ -215,7 +215,10 @@
             ></comp-subsidiary-device-list>
             <div slot="footer">
                 <Button type="text" @click="showAddModal=false">取消</Button>
-                <Button type="primary" @click="addSubsidiary">确定</Button>
+                <Button type="primary" :loading="isLoading" @click="addSubsidiary">
+                    <span v-if="!isLoading">确定</span>
+                    <span v-else>正在添加...</span>
+                </Button>
             </div>
         </Modal>
         <!-- 资源信息 -->
@@ -464,6 +467,7 @@
         },
         data(){
             return {
+                isLoading:false,
                 // Device data
                 device: utils.validate(serializer.deviceSerializer, {}),
                 tempPorts: utils.validate(serializer.tempPortSerializer, {}).tempports,
@@ -984,17 +988,20 @@
                     this.$Message.warning("请选择僚机位置")
                     return
                 }
+                this.isLoading = true
                 this.$ajax.post('api/v1/cedar/bind_subsidiary_device/',{
                     device_id: this.device.id,
                     subsidiary_device_id: this.subsidiaryDeviceSelected.id,
                     order: this.subsidiaryNumber
                 }).then(response=>{
+                    this.isLoading = false
                     this.onDeviceAddSuccess()
                     this.showAddModal = false
                     this.$Message.success("添加僚机成功")
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     this.$Message.error({content:"僚机添加失败！" + error.response.message,duration:6})
+                    this.isLoading = false
                 })
             },
             //僚机添加成功以后的操作(在device详情页展示出来)
