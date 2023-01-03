@@ -46,7 +46,7 @@
                             </Button>
                             <DropdownMenu slot="list">
                                 <DropdownItem @click.native="imageMosaic">拼接图像</DropdownItem>
-                                <DropdownItem v-show="deviceCabinetType==='Tcab_5'" @click.native="onOpenExposureModal">相机设置</DropdownItem>
+                                <DropdownItem @click.native="onOpenExposureModal">相机设置</DropdownItem>
                                 <DropdownItem @click.native="onOpenCoordinateModal">坐标换算</DropdownItem>
                                 <DropdownItem @click.native="onOpenStandbyModel">待命位置</DropdownItem>
                                 <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
@@ -305,7 +305,7 @@
             <Card>
                 <h3 style="margin-bottom:12px;">相机设置</h3>
                 <Form :label-width="85">
-                    <!--<FormItem>-->
+                    <!--<FormItem v-show="deviceCabinetType==='Tcab_5'">-->
                         <!--<b slot="label">曝光模式：</b>-->
                         <!--<RadioGroup v-model="exposure">-->
                             <!--<Radio :label="1">标准曝光</Radio>-->
@@ -800,7 +800,7 @@
             setExposure(){
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/eblock/camera_config/",{
                     camera_rotate: this.rotate,
-                    exposure: this.exposure
+                    // exposure: this.exposure
                 }).then(response=>{
                     if(response.data.error_code===0){
                         this.$Message.success({content:"相机设置保存成功",duration: 3})
