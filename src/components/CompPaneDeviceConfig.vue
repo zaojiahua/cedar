@@ -14,8 +14,8 @@
                                 <!--<DropdownItem @click.native="distanceBtn('调试距离')">调试距离</DropdownItem>-->
                                 <DropdownItem @click.native="imageMosaic('拼接图像')">拼接图像</DropdownItem>
                                 <DropdownItem @click.native="onOpenCoordinateModal('坐标换算')">坐标换算</DropdownItem>
-                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                                 <DropdownItem @click.native="onOpenStandbyModel">待命位置</DropdownItem>
+                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                         <!--  5L，5se -->
@@ -26,8 +26,8 @@
                             </Button>
                             <DropdownMenu slot="list">
                                 <DropdownItem @click.native="onOpenCoordinateModal">坐标换算</DropdownItem>
-                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                                 <DropdownItem @click.native="onOpenStandbyModel">待命位置</DropdownItem>
+                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                             </DropdownMenu>
                             <!--<DropdownMenu slot="list" v-show="user==='admin'">-->
                                 <!--<DropdownItem @click.native="getMlocation">mlocation调试</DropdownItem>-->
@@ -46,9 +46,10 @@
                             </Button>
                             <DropdownMenu slot="list">
                                 <DropdownItem @click.native="imageMosaic">拼接图像</DropdownItem>
+                                <DropdownItem v-show="deviceCabinetType==='Tcab_5'" @click.native="onOpenExposureModal">相机设置</DropdownItem>
                                 <DropdownItem @click.native="onOpenCoordinateModal">坐标换算</DropdownItem>
-                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                                 <DropdownItem @click.native="onOpenStandbyModel">待命位置</DropdownItem>
+                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                     </h5>
@@ -296,6 +297,35 @@
                 <Row style="margin-top: 30px;">
                     <Button @click="showCoordinateModal=false" style="margin-right: 30px;">取消</Button>
                     <Button type="primary" @click="coordinateConverting">坐标换算</Button>
+                </Row>
+            </Card>
+        </Modal>
+        <!--   相 机 设 置  -->
+        <Modal v-model="showExposureModal" :closable="false" :footer-hide="true" :mask-closable="false" width="350">
+            <Card>
+                <h3 style="margin-bottom:12px;">相机设置</h3>
+                <Form :label-width="85">
+                    <!--<FormItem>-->
+                        <!--<b slot="label">曝光模式：</b>-->
+                        <!--<RadioGroup v-model="exposure">-->
+                            <!--<Radio :label="1">标准曝光</Radio>-->
+                            <!--<Radio style="margin-left: 24px" :label="2">高曝光</Radio>-->
+                        <!--</RadioGroup>-->
+                    <!--</FormItem>-->
+                    <FormItem>
+                        <b slot="label">旋转角度：</b>
+                        <Select v-model="rotate" style="width:80px">
+                            <Option :value="0">0</Option>
+                            <Option :value="90">90</Option>
+                            <Option :value="180">180</Option>
+                            <Option :value="270">270</Option>
+                        </Select>
+                    </FormItem>
+                </Form>
+
+                <Row style="margin-top: 30px;text-align: right">
+                    <Button @click="showExposureModal=false" style="margin-right: 30px;">取消</Button>
+                    <Button type="primary" @click="setExposure">确认</Button>
                 </Row>
             </Card>
         </Modal>
@@ -671,6 +701,9 @@
                 },
                 coordinateRangeX:[],
                 coordinateRangeY:[],
+                showExposureModal:false,
+                exposure:1,  //曝光模式 1：标准 2：高曝光
+                rotate:0,    // 旋转角度
             }
         },
         computed: {
@@ -745,6 +778,43 @@
             },
         },
         methods:{
+            // 打开【相机设置】模态框
+            onOpenExposureModal(){
+                this.showExposureModal = true
+                this.$ajax.get("http://"+ this.cabinetIP +":5000/eblock/camera_config/")
+                    .then(response=>{
+                        if(response.data.error_code===0){
+                            this.exposure = response.data.data.exposure
+                            this.rotate = response.data.data.camera_rotate
+                        }else{
+                            this.$Message.error({content:response.data.description,duration: 10})
+                        }
+                    }).catch(error=>{
+                        if(error.response.status>=500)
+                            this.$Message.error({content:'服务器错误',duration: 5})
+                        else
+                            this.$Message.error({content:'相机信息获取失败',duration: 5})
+                    })
+            },
+            // 保存设置曝光等信息
+            setExposure(){
+                this.$ajax.post("http://"+ this.cabinetIP +":5000/eblock/camera_config/",{
+                    camera_rotate: this.rotate,
+                    exposure: this.exposure
+                }).then(response=>{
+                    if(response.data.error_code===0){
+                        this.$Message.success({content:"相机设置保存成功",duration: 3})
+                        this.showExposureModal = false
+                    }else{
+                        this.$Message.error({content:response.data.description,duration: 10})
+                    }
+                }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:'服务器错误',duration: 5})
+                    else
+                        this.$Message.error({content:'相机信息获取失败',duration: 5})
+                })
+            },
             // 打开坐标换算模态框，并获取坐标信息
             onOpenCoordinateModal(){
                 this.showCoordinateModal = true
