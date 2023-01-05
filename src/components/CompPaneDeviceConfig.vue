@@ -307,13 +307,13 @@
             <Card>
                 <h3 style="margin-bottom:12px;">相机设置</h3>
                 <Form :label-width="85">
-                    <!--<FormItem v-show="deviceCabinetType==='Tcab_5'">-->
-                        <!--<b slot="label">曝光模式：</b>-->
-                        <!--<RadioGroup v-model="exposure">-->
-                            <!--<Radio :label="1">标准曝光</Radio>-->
-                            <!--<Radio style="margin-left: 24px" :label="2">高曝光</Radio>-->
-                        <!--</RadioGroup>-->
-                    <!--</FormItem>-->
+                    <FormItem>
+                        <b slot="label">曝光模式：</b>
+                        <RadioGroup v-model="exposure">
+                            <Radio :label="1">标准曝光</Radio>
+                            <Radio style="margin-left: 24px" :label="2">高曝光</Radio>
+                        </RadioGroup>
+                    </FormItem>
                     <FormItem>
                         <b slot="label">旋转角度：</b>
                         <Select v-model="rotate" style="width:80px">
@@ -802,7 +802,7 @@
             setExposure(){
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/eblock/camera_config/",{
                     camera_rotate: this.rotate,
-                    // exposure: this.exposure
+                    exposure: this.exposure
                 }).then(response=>{
                     if(response.data.error_code===0){
                         this.$Message.success({content:"相机设置保存成功",duration: 3})
