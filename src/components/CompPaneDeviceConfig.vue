@@ -826,7 +826,7 @@
                 }else if(["Tcab_5","Tcab_5L","Tcab_5pro"].includes(this.deviceCabinetType)){
                     this.coordinateRangeX = [25, 235]
                     this.coordinateRangeY = [-300, -130]
-                }else if(["Tcab_5D"].includes(this.deviceCabinetType)){
+                }else if(["Tcab_5D","ABot"].includes(this.deviceCabinetType)){
                     this.coordinateRangeX = [50, 280]
                     this.coordinateRangeY = [-200, 0]
                 }
@@ -1088,7 +1088,7 @@
                 // Tcab-5L：【15， 45】
                 // Tcab-5D：【15， 45】
                 let rangeZ = []
-                if(["Tcab_5D"].includes(this.deviceCabinetType)){
+                if(["Tcab_5D","ABot"].includes(this.deviceCabinetType)){
                     rangeZ = [15,45]
                 }else if(["Tcab_5L","Tcab_5","Tcab_5pro"].includes(this.deviceCabinetType)){
                     rangeZ = [15,45]
@@ -1157,7 +1157,7 @@
                     this.adjustTitle = "[15,45]"
                     this.adjustTitleX = [25, 235]
                     this.adjustTitleY = [-300, -130]
-                }else if(["Tcab_5D"].includes(this.deviceCabinetType)){
+                }else if(["Tcab_5D","ABot"].includes(this.deviceCabinetType)){
                     this.adjustTitle = "[15,45]"
                     this.adjustTitleX = [50, 280]
                     this.adjustTitleY = [-200, 0]
@@ -1273,7 +1273,7 @@
                     xyz_1:[],
                 }
                 this.showStandbyModel = true
-                if(["Tcab_5D"].includes(this.deviceCabinetType)){
+                if(["Tcab_5D","ABot"].includes(this.deviceCabinetType)){
                     this.standbyRangeX = [0, 160]
                     this.standbyRangeY = [-200, 0]
                     this.standbyRangeZ = [-35, 0]
@@ -1525,7 +1525,7 @@
                 this.isSendReq = false
                 this.getCoordinateInfo()
                 this.getImg()
-                this.showTestBtn = device.cabinet.type === "Tcab_5D";
+                this.showTestBtn = ['Tcab_5D','ABot'].includes(device.cabinet.type)
                 let cabinetList = ['Tcab_5L','Tcab_5se']
                 this.showLocationBtn = cabinetList.includes(device.cabinet.type)
                 this.showProBtn = ['Tcab_5','Tcab_5pro'].includes(device.cabinet.type)
@@ -1536,7 +1536,7 @@
                 this.cabinetIP = row.cabinet.ip_address
                 this.deviceCabinetType = row.cabinet.type
                 this.deviceCabinetId = row.cabinet.id
-                this.showTestBtn = row.cabinet.type === "Tcab_5D";
+                this.showTestBtn = ['Tcab_5D','ABot'].includes(device.cabinet.type)
                 let cabinetList = ['Tcab_5L','Tcab_5se']
                 this.showLocationBtn = cabinetList.includes(row.cabinet.type)
                 this.showProBtn = ['Tcab_5','Tcab_5pro'].includes(row.cabinet.type)
