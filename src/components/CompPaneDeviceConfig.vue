@@ -1084,14 +1084,14 @@
             robotArmValidate(check_x1=true,check_x2=true){
                 /*  不同测试柜的 z 值范围  */
                 // Tcab-5se：【15，35】
-                // Tcab-5,5pro：【15， 45】
+                // Tcab-5,5pro：【5， 45】
                 // Tcab-5L：【15， 45】
                 // Tcab-5D：【15， 45】
                 let rangeZ = []
                 if(["Tcab_5D"].includes(this.deviceCabinetType)){
                     rangeZ = [15,45]
                 }else if(["Tcab_5L","Tcab_5","Tcab_5pro"].includes(this.deviceCabinetType)){
-                    rangeZ = [15,45]
+                    rangeZ = [5,45]
                 }
                 else if(["Tcab_5se"].includes(this.deviceCabinetType)){
                     rangeZ = [15,35]
@@ -1154,7 +1154,7 @@
                     this.adjustTitleX = [35,130]
                     this.adjustTitleY = [-210,-50]
                 }else if(["Tcab_5","Tcab_5L","Tcab_5pro"].includes(this.deviceCabinetType)){
-                    this.adjustTitle = "[15,45]"
+                    this.adjustTitle = "[5,45]"
                     this.adjustTitleX = [25, 235]
                     this.adjustTitleY = [-300, -130]
                 }else if(["Tcab_5D"].includes(this.deviceCabinetType)){
@@ -1281,7 +1281,7 @@
                 }else if(["Tcab_5L","Tcab_5","Tcab_5pro"].includes(this.deviceCabinetType)){
                     this.standbyRangeX = [0, 235]
                     this.standbyRangeY = [-380, 0]
-                    this.standbyRangeZ = [-10, 0]
+                    this.standbyRangeZ = [-10, 4]
                     this.defaultWaitPoint = [10,-175,0]
                 }
                 else if(["Tcab_5se"].includes(this.deviceCabinetType)){
