@@ -153,6 +153,13 @@
                             this.$nextTick(function () {
                                 document.querySelector("#p" + (this.startPoint-1)).scrollIntoView(true);
                             })
+                        }else {
+                            this.selectedUrl = ""
+                            this.selectedIndex = 0
+                            this.$nextTick(function () {
+                                if(this.tableData.length!==0)
+                                    document.querySelector("#p0").scrollIntoView(true);
+                            })
                         }
                         if(this.tableData.length!==0){
                             let showImgName = this.rdsInfo.start_point ? this.rdsInfo.start_point + ".jpg" : "1.jpg"
