@@ -482,6 +482,10 @@
             //    保存起始结束点
             savePoint(){
                 let Obj = this.$refs.rdsPhotos.getPointMsg()
+                if(!Obj.startPoint||!Obj.endPoint){
+                    this.$Message.warning({content:"起点、终点必须同时存在！",duration:5})
+                    return
+                }
                 this.$refs.rdsPhotos.showLoading = true
                 console.log(Obj)
                 this.$ajax.patch("api/v1/cedar/rds/" + this.rdsInfo.id + "/",{
@@ -495,6 +499,7 @@
                     this.showRdsPhotosModal = false
 
                 }).catch(error=>{
+                    this.$refs.rdsPhotos.showLoading = false
                     if (config.DEBUG) console.log(error)
                     this.$Message.error("数据保存失败")
                 })
