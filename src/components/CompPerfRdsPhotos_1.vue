@@ -241,12 +241,14 @@
                 if (event.keyCode === 189) {
                     if (this.selectedIndex === 0) return
                     this.selectedIndex--;
+                    this.selectRowData = this.tableData[this.selectedIndex]
                     let imgName = this.tableData[this.selectedIndex].frame_num + ".jpg"
                     this.getPic(imgName)
                     document.querySelector("#p" + this.selectedIndex).scrollIntoView(true);
                 } else if (event.keyCode === 187) {
                     if (this.selectedIndex === this.tableData.length-1) return
                     this.selectedIndex++;
+                    this.selectRowData = this.tableData[this.selectedIndex]
                     let imgName = this.tableData[this.selectedIndex].frame_num + ".jpg"
                     this.getPic(imgName)
                     document.querySelector("#p" + (this.selectedIndex)).scrollIntoView(true);
