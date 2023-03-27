@@ -829,6 +829,9 @@
                 }else if(["Tcab_5D","ABot"].includes(this.deviceCabinetType)){
                     this.coordinateRangeX = [50, 280]
                     this.coordinateRangeY = [-200, 0]
+                }else if(["Tcab_5D plus"].includes(this.deviceCabinetType)){
+                    this.coordinateRangeX = [50, 300]
+                    this.coordinateRangeY = [-650, -100]
                 }
                 this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/get_coordinate/")
                     .then(response=>{
@@ -1092,9 +1095,10 @@
                     rangeZ = [15,45]
                 }else if(["Tcab_5L","Tcab_5","Tcab_5pro"].includes(this.deviceCabinetType)){
                     rangeZ = [15,45]
-                }
-                else if(["Tcab_5se"].includes(this.deviceCabinetType)){
+                }else if(["Tcab_5se"].includes(this.deviceCabinetType)){
                     rangeZ = [15,35]
+                }else if(["Tcab_5D plus"].includes(this.deviceCabinetType)){
+                    rangeZ = [0,54]
                 }
                 if(this.showTestBtn){  //5D 双机械臂
                     if(check_x1){
@@ -1161,6 +1165,10 @@
                     this.adjustTitle = "[15,45]"
                     this.adjustTitleX = [50, 280]
                     this.adjustTitleY = [-200, 0]
+                }else if(["Tcab_5D plus"].includes(this.deviceCabinetType)){
+                    this.adjustTitle = "[0,54]"
+                    this.adjustTitleX = [50, 300]
+                    this.adjustTitleY = [-650, -100]
                 }
                 this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/get_z_down/").then(response=>{
                     if(response.data.error_code===0){
@@ -1283,12 +1291,16 @@
                     this.standbyRangeY = [-380, 0]
                     this.standbyRangeZ = [-10, 0]
                     this.defaultWaitPoint = [10,-175,0]
-                }
-                else if(["Tcab_5se"].includes(this.deviceCabinetType)){
+                }else if(["Tcab_5se"].includes(this.deviceCabinetType)){
                     this.standbyRangeX = [0, 130]
                     this.standbyRangeY = [-210, 0]
                     this.standbyRangeZ = [-15, 0]
                     this.defaultWaitPoint = [10,-95,0]
+                }else if(["Tcab_5D plus"].includes(this.deviceCabinetType)){
+                    this.standbyRangeX = [50, 300]
+                    this.standbyRangeY = [-650, -100]
+                    this.standbyRangeZ = [-50, 0]
+                    this.defaultWaitPoint = [0,0,0]
                 }
                 this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/wait_position/").then(response=>{
                     if(response.data.error_code===0){
@@ -1525,7 +1537,7 @@
                 this.isSendReq = false
                 this.getCoordinateInfo()
                 this.getImg()
-                this.showTestBtn = ['Tcab_5D','ABot'].includes(device.cabinet.type)
+                this.showTestBtn = ['Tcab_5D','ABot','Tcab_5D plus'].includes(device.cabinet.type)
                 let cabinetList = ['Tcab_5L','Tcab_5se']
                 this.showLocationBtn = cabinetList.includes(device.cabinet.type)
                 this.showProBtn = ['Tcab_5','Tcab_5pro'].includes(device.cabinet.type)
@@ -1536,7 +1548,7 @@
                 this.cabinetIP = row.cabinet.ip_address
                 this.deviceCabinetType = row.cabinet.type
                 this.deviceCabinetId = row.cabinet.id
-                this.showTestBtn = ['Tcab_5D','ABot'].includes(device.cabinet.type)
+                this.showTestBtn = ['Tcab_5D','ABot','Tcab_5D plus'].includes(device.cabinet.type)
                 let cabinetList = ['Tcab_5L','Tcab_5se']
                 this.showLocationBtn = cabinetList.includes(row.cabinet.type)
                 this.showProBtn = ['Tcab_5','Tcab_5pro'].includes(row.cabinet.type)
