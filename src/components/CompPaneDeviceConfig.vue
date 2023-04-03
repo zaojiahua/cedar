@@ -194,21 +194,25 @@
         </Modal>
 
         <!--    调节z值模态框    -->
-        <Modal v-model="showAdjustZModel" :closable="false" :footer-hide="true" :mask-closable="false" width="500">
+        <Modal v-model="showAdjustZModel" :closable="false" :footer-hide="true" :mask-closable="false" width="520">
             <Card>
                 <Row style="margin-bottom: 20px;">
                     <p>按压过轻时，请调大机械臂z值，范围：{{ adjustTitle }}</p>
-                    <p>x向右为正，范围：[{{adjustTitleX[0]}},{{adjustTitleX[1]}}]，y向下为负，范围：[{{adjustTitleY[0]}},{{adjustTitleY[1]}}]</p>
+                    <p v-show="this.deviceCabinetType==='Tcab_5D plus'">x向右为正，左机械臂x范围：[{{adjustTitleX[0]}},{{adjustTitleX[1]}}]，右机械臂x范围：[{{adjustTitleX2[0]}},{{adjustTitleX2[1]}}]</p>
+                    <p v-show="this.deviceCabinetType!=='Tcab_5D plus'">x向右为正，范围：[{{adjustTitleX[0]}},{{adjustTitleX[1]}}]</p>
+                    <p>y向下为负，范围：[{{adjustTitleY[0]}},{{adjustTitleY[1]}}]</p>
                 </Row>
                 <!--   5D  双机械臂  -->
                 <div v-show="showTestBtn">
                     <Row>
+                        <span>左：</span>
                         <InputNumber v-model="robotArm.click_xy1[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                         <InputNumber v-model="robotArm.click_xy1[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
                         <InputNumber v-model="robotArm.x1" :min="0" style="width:100px;margin-right: 16px;" placeholder="左机械臂z值"></InputNumber>
                         <Button type="info" @click="onTestRobotArm(true,false)">测试</Button>
                     </Row>
                     <Row style="margin-top: 16px;">
+                        <span>右：</span>
                         <InputNumber v-model="robotArm.click_xy2[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                         <InputNumber v-model="robotArm.click_xy2[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
                         <InputNumber v-model="robotArm.x2" :min="0" style="width:100px;margin-right: 16px;" placeholder="右机械臂z值"></InputNumber>
@@ -231,21 +235,26 @@
             </Card>
         </Modal>
         <!--待命位置 模态框-->
-        <Modal v-model="showStandbyModel" :closable="false" :footer-hide="true" :mask-closable="false" width="500">
+        <Modal v-model="showStandbyModel" :closable="false" :footer-hide="true" :mask-closable="false" width="520">
             <Card>
                 <Row style="margin-bottom: 20px;">
                     <p>机械臂的待命位置</p>
-                    <p>x向右为正，范围：[{{standbyRangeX[0]}},{{standbyRangeX[1]}}]，y向下为负，范围：[{{standbyRangeY[0]}},{{standbyRangeY[1]}}]，z向上为正，范围：[{{standbyRangeZ[0]}},{{standbyRangeZ[1]}}]；默认值：[{{ defaultWaitPoint.join(",") }}]</p>
+                    <p v-show="this.deviceCabinetType==='Tcab_5D plus'">x向右为正，左机械臂x范围：[{{standbyRangeX[0]}},{{standbyRangeX[1]}}]，右机械臂x范围：[{{standbyRangeX2[0]}},{{standbyRangeX2[1]}}]；</p>
+                    <p v-show="this.deviceCabinetType!=='Tcab_5D plus'">x向右为正，范围：[{{standbyRangeX[0]}},{{standbyRangeX[1]}}]；</p>
+                    <p>y向下为负，范围：[{{standbyRangeY[0]}},{{standbyRangeY[1]}}]，z向上为正，范围：[{{standbyRangeZ[0]}},{{standbyRangeZ[1]}}]；<br>
+                        默认值：[{{ defaultWaitPoint.join(",") }}]</p>
                 </Row>
                 <!--   5D  双机械臂  -->
                 <div v-show="showTestBtn">
                     <Row>
+                        <span>左：</span>
                         <InputNumber v-model="robotArmStandby.xyz[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                         <InputNumber v-model="robotArmStandby.xyz[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
                         <InputNumber v-model="robotArmStandby.xyz[2]" style="width:100px;margin-right: 16px;" placeholder="左机械臂z值"></InputNumber>
                         <Button type="info" @click="onTestWaitPosition(true,false)">测试</Button>
                     </Row>
                     <Row style="margin-top: 16px;">
+                        <span>右：</span>
                         <InputNumber v-model="robotArmStandby.xyz_1[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                         <InputNumber v-model="robotArmStandby.xyz_1[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
                         <InputNumber v-model="robotArmStandby.xyz_1[2]" style="width:100px;margin-right: 16px;" placeholder="右机械臂z值"></InputNumber>
@@ -675,6 +684,7 @@
                 showAdjustZModel:false,
                 adjustTitle:"",
                 adjustTitleX:"",
+                adjustTitleX2:"",
                 adjustTitleY:"",
                 robotArm:{
                     x:null,
@@ -691,7 +701,8 @@
                     xyz_1:[],
                 },
                 defaultWaitPoint:[],
-                standbyRangeX:[],
+                standbyRangeX:[], // 5d plus左机械臂x范围 或者 其他非5d plus普通机械臂x范围
+                standbyRangeX2:[],  // 5d plus右机械臂x范围
                 standbyRangeY:[],
                 standbyRangeZ:[],
                 isSentTestReq:false,
@@ -1120,12 +1131,22 @@
                             this.$Message.warning({content:"右机械臂值不能为空",duration:3})
                             return true
                         }
-                        if(this.robotArm.x2>rangeZ[1] || this.robotArm.x2<rangeZ[0]
-                            || this.robotArm.click_xy2[0]>this.adjustTitleX[1] || this.robotArm.click_xy2[0]<this.adjustTitleX[0]
-                            || this.robotArm.click_xy2[1]>this.adjustTitleY[1] || this.robotArm.click_xy2[1]<this.adjustTitleY[0]){
-                            this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
-                            return true
+                        if(this.deviceCabinetType==="Tcab_5D plus"){
+                            if(this.robotArm.x2>rangeZ[1] || this.robotArm.x2<rangeZ[0]
+                                || this.robotArm.click_xy2[0]>this.adjustTitleX2[1] || this.robotArm.click_xy2[0]<this.adjustTitleX2[0]
+                                || this.robotArm.click_xy2[1]>this.adjustTitleY[1] || this.robotArm.click_xy2[1]<this.adjustTitleY[0]){
+                                this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                                return true
+                            }
+                        }else {
+                            if(this.robotArm.x2>rangeZ[1] || this.robotArm.x2<rangeZ[0]
+                                || this.robotArm.click_xy2[0]>this.adjustTitleX[1] || this.robotArm.click_xy2[0]<this.adjustTitleX[0]
+                                || this.robotArm.click_xy2[1]>this.adjustTitleY[1] || this.robotArm.click_xy2[1]<this.adjustTitleY[0]){
+                                this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                                return true
+                            }
                         }
+
                     }
                 }else {
                     if(this.robotArm.x===null || this.robotArm.x==='' || this.robotArm.click_xy[0]===null || this.robotArm.click_xy[0]===''
@@ -1167,7 +1188,8 @@
                     this.adjustTitleY = [-200, 0]
                 }else if(["Tcab_5D plus"].includes(this.deviceCabinetType)){
                     this.adjustTitle = "[0,54]"
-                    this.adjustTitleX = [50, 300]
+                    this.adjustTitleX = [0, 170]
+                    this.adjustTitleX2 = [180, 340]
                     this.adjustTitleY = [-650, -100]
                 }
                 this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/get_z_down/").then(response=>{
@@ -1297,7 +1319,8 @@
                     this.standbyRangeZ = [-15, 0]
                     this.defaultWaitPoint = [10,-95,0]
                 }else if(["Tcab_5D plus"].includes(this.deviceCabinetType)){
-                    this.standbyRangeX = [50, 300]
+                    this.standbyRangeX = [0, 170]
+                    this.standbyRangeX2 = [180, 340]
                     this.standbyRangeY = [-650, -100]
                     this.standbyRangeZ = [-50, 0]
                     this.defaultWaitPoint = [0,0,0]
@@ -1343,11 +1366,20 @@
                             this.$Message.warning({content:"右机械臂值不能为空",duration:3})
                             return true
                         }
-                        if(this.robotArmStandby.xyz_1[0]>this.standbyRangeX[1] || this.robotArmStandby.xyz_1[0]<this.standbyRangeX[0]
-                            || this.robotArmStandby.xyz_1[1]>this.standbyRangeY[1] || this.robotArmStandby.xyz_1[1]<this.standbyRangeY[0]
-                            || this.robotArmStandby.xyz_1[2]>this.standbyRangeZ[1] || this.robotArmStandby.xyz_1[2]<this.standbyRangeZ[0]){
-                            this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
-                            return true
+                        if(this.deviceCabinetType==="Tcab_5D plus"){
+                            if(this.robotArmStandby.xyz_1[0]>this.standbyRangeX2[1] || this.robotArmStandby.xyz_1[0]<this.standbyRangeX2[0]
+                                || this.robotArmStandby.xyz_1[1]>this.standbyRangeY[1] || this.robotArmStandby.xyz_1[1]<this.standbyRangeY[0]
+                                || this.robotArmStandby.xyz_1[2]>this.standbyRangeZ[1] || this.robotArmStandby.xyz_1[2]<this.standbyRangeZ[0]){
+                                this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                                return true
+                            }
+                        }else {
+                            if(this.robotArmStandby.xyz_1[0]>this.standbyRangeX[1] || this.robotArmStandby.xyz_1[0]<this.standbyRangeX[0]
+                                || this.robotArmStandby.xyz_1[1]>this.standbyRangeY[1] || this.robotArmStandby.xyz_1[1]<this.standbyRangeY[0]
+                                || this.robotArmStandby.xyz_1[2]>this.standbyRangeZ[1] || this.robotArmStandby.xyz_1[2]<this.standbyRangeZ[0]){
+                                this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                                return true
+                            }
                         }
                     }
                 }else {
