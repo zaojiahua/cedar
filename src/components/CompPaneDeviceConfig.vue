@@ -1319,8 +1319,8 @@
                     this.standbyRangeZ = [-15, 0]
                     this.defaultWaitPoint = [10,-95,0]
                 }else if(["Tcab_5D plus"].includes(this.deviceCabinetType)){
-                    this.standbyRangeX = [0, 170]
-                    this.standbyRangeX2 = [180, 340]
+                    this.standbyRangeX = [0, 150]
+                    this.standbyRangeX2 = [210, 340]
                     this.standbyRangeY = [-650, -100]
                     this.standbyRangeZ = [-50, 0]
                     this.defaultWaitPoint = [0,0,0]
