@@ -1,12 +1,12 @@
 <template>
     <div class="collapse">
         <div class="collapse__header">
-            <span class="collapse__header-tip">搜索</span>
+            <span class="collapse__header-tip">{{$t('filterSwitch.search')}}</span>
             <Input
                     clearable
                     v-model="keyword"
                     @on-change="onChange"
-                    placeholder="输入用例名称..."
+                    :placeholder="$t('filterSwitch.placeholder')"
                     class="collapse__header-input"
             />
             <Icon type="ios-arrow-up" class="collapse__header-arrow-up" v-show="collapseIsOpen" @click="handleCollapse"/>
@@ -42,7 +42,7 @@
                         </Tag>
                     </Row>
                     <Row style="margin-top: 16px;">
-                        <Button @click="onClearChange">清空</Button>
+                        <Button @click="onClearChange">{{$t('filter.clean')}}</Button>
                     </Row>
                 </div>
             </div>
@@ -123,37 +123,37 @@
                 collapseIsOpen: true, // 是否展开搜索框下方的标签页
                 filterColumn: [
                     {
-                        title: "适用机型",
+                        title: this.$t('filter.phone_model'),
                         key: "phone_model",
                         item_key: "phone_model_name",
                     },
                     {
-                        title: "测试用途",
+                        title: this.$t('filter.job_test_area'),
                         key: "job_test_area",
                         item_key: "description"
                     },
                     {
-                        title: "安卓版本",
+                        title: this.$t('filter.android_version'),
                         key: "android_version",
                         item_key: "version"
                     },
                     {
-                        title: "ROM版本",
+                        title: this.$t('filter.rom_version'),
                         key: "rom_version",
                         item_key: "version"
                     },
                     {
-                        title: "维护人员",
+                        title: this.$t('filter.reefuser'),
                         key: "reefuser",
                         item_key: "username"
                     },
                     {
-                        title: "自定义标签",
+                        title: this.$t('filter.custom_tag'),
                         key: "custom_tag",
                         item_key: "custom_tag_name"
                     },
                     {
-                        title: "测试柜类型",
+                        title: this.$t('filter.type'),
                         key: "type",
                         item_key: "type"
                     }

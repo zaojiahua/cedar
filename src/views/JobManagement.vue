@@ -7,33 +7,33 @@
         <Row style="height: 50px;"  v-if="!roles.includes('Admin')">
             <Col span="8">
                 <Upload ref="upload" :action="uploadUrl" :data="userMsg" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
-                    <Button icon="ios-cloud-upload-outline">导入用例</Button>
+                    <Button icon="ios-cloud-upload-outline">{{$t('jobManagement.import')}}</Button>
                 </Upload>
             </Col>
             <Col span="16" style="text-align: right">
-                <Button type="primary" class="job-btn" @click="exportCase">导出用例</Button>
-                <Button type="warning" class="job-btn" @click="cancelJobList">取消选择（{{jobNumbers}}）</Button>
-                <Button type="error" class="job-btn" @click="delJobList">批量删除</Button>
+                <Button type="primary" class="job-btn" @click="exportCase">{{$t('jobManagement.export')}}</Button>
+                <Button type="warning" class="job-btn" @click="cancelJobList">{{$t('public.cancelSelect')}}（{{jobNumbers}}）</Button>
+                <Button type="error" class="job-btn" @click="delJobList">{{$t('public.del_list')}}</Button>
             </Col>
         </Row>
         <!-- 超级用户权限  -->
         <Row style="height: 50px;" v-if="roles.includes('Admin')">
             <Col span="12">
                 <Upload ref="upload" :action="uploadUrl" :data="userMsg" :on-error="handleUploadError" :on-success="handleUploadSuccess" style="float:left;height: 31px;">
-                    <Button icon="ios-cloud-upload-outline" class="job-btn">导入用例</Button>
+                    <Button icon="ios-cloud-upload-outline" class="job-btn">{{$t('jobManagement.import')}}</Button>
                 </Upload>
-                <Button type="primary" class="job-btn" @click="exportCase">导出用例</Button>
+                <Button type="primary" class="job-btn" @click="exportCase">{{$t('jobManagement.export')}}</Button>
             </Col>
             <Col span="12" style="text-align: right">
-                <Button type="warning" class="job-btn" @click="cancelJobList">取消选择（{{jobNumbers}}）</Button>
+                <Button type="warning" class="job-btn" @click="cancelJobList">{{$t('public.cancelSelect')}}（{{jobNumbers}}）</Button>
                 <Dropdown trigger="click" class="job-btn">
                     <Button>
-                        更多操作
+                        {{$t('public.moreAction')}}
                         <Icon type="ios-arrow-down"></Icon>
                     </Button>
                     <DropdownMenu slot="list" style="text-align: left">
-                        <span @click="onOpenModal"><DropdownItem>变更归属账号</DropdownItem></span>
-                        <span @click="delJobList"><DropdownItem>批量删除</DropdownItem></span>
+                        <span @click="onOpenModal"><DropdownItem>{{$t('jobManagement.change')}}</DropdownItem></span>
+                        <span @click="delJobList"><DropdownItem>{{$t('public.del_list')}}</DropdownItem></span>
                     </DropdownMenu>
                 </Dropdown>
             </Col>
@@ -50,7 +50,7 @@
 
         <Modal v-model="showUserModal" :closable="false" :footer-hide="true" :mask-closable="false" width="550">
             <Card>
-                <p style="text-align: center;font-size: 18px;margin-bottom: 30px;"><b>请选择目标账号</b></p>
+                <p style="text-align: center;font-size: 18px;margin-bottom: 30px;"><b>{{$t('jobManagement.select')}}</b></p>
                 <div class="scroll-modal">
                     <Row v-for="(item,index) in userList" style="margin-bottom: 16px;">
                         <p v-model="item.username" class="p-c" :class="{ active: isActive===index }" @click="isActive=index;targetUserId = item.id">{{ item.username }}</p>
@@ -58,8 +58,8 @@
                 </div>
 
                 <p style="text-align: center;margin-top: 30px;">
-                    <Button style="margin-right: 30px;width: 100px"  @click="showUserModal=false">取消</Button>
-                    <Button style="width: 100px" type="primary" @click="onChangeOwner">确认</Button>
+                    <Button style="margin-right: 30px;width: 100px"  @click="showUserModal=false">{{$t('public.btn_cancel')}}</Button>
+                    <Button style="width: 100px" type="primary" @click="onChangeOwner">{{$t('public.btn_ok')}}</Button>
                 </p>
             </Card>
         </Modal>
@@ -68,21 +68,21 @@
             <Icon type="ios-help-circle" style="color: #ff9900;float: left;margin: 15px 10px 0 0;" size="24"/>
             <p style="margin: 15px 0;font-size: 16px">提示</p>
             <Row style="margin: 10px 0 0 30px;">
-                Inner 【{{ errorInnerList.join("】,【") }}】 存在关联用例，无法删除，继续删除选中的其他用例吗？
+                Inner 【{{ errorInnerList.join("】,【") }}】 {{$t('jobManagement.delTit')}}
             </Row>
             <Row type="flex" justify="end" style="margin-top: 30px;">
-                <Button type="text" @click="showErrorInner=false">取消</Button>
-                <Button type="primary" :disabled="delJobIds.length===0" @click="continueDeleted">继续</Button>
+                <Button type="text" @click="showErrorInner=false">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" :disabled="delJobIds.length===0" @click="continueDeleted">{{$t('jobManagement.continue')}}</Button>
             </Row>
         </Modal>
 
         <Modal v-model="showImportFilter" :closable="false" :footer-hide="true" fullscreen>
-            <p style="margin-bottom: 10px"><b>导入以下用例将覆盖系统中已有的用例，请选择仍要继续导入的用例</b></p>
+            <p style="margin-bottom: 10px"><b>{{$t('jobManagement.importTit')}}</b></p>
             <Table :columns="tableColumns" :data="tableData" border ref="table"  :max-height="600"
                    @on-row-click="onRowClick" @on-selection-change="onSelectChange"></Table>
             <Row type="flex" justify="end" style="margin-top: 20px;">
-                <Button type="text" @click="cancelImport">取消</Button>
-                <Button type="primary" @click="importJob">导入( {{ jobImportCount }} )</Button>
+                <Button type="text" @click="cancelImport">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" @click="importJob">{{$t('jobManagement.import_btn')}}( {{ jobImportCount }} )</Button>
             </Row>
         </Modal>
     </Card>
@@ -129,21 +129,21 @@
                         align: 'center'
                     },
                     {
-                        title: '导入用例',
+                        title: this.$t('jobManagement.import'),
                         align: 'center',
                         children: [
                             {
-                                title: "状态",
+                                title: this.$t('jobManagement.contrast'),
                                 key: "contrast",
                                 width: 90,
                                 align: 'center',
                                 filters: [
                                     {
-                                        label: '较新',
+                                        label: this.$t('jobManagement.new'),
                                         value: '较新'
                                     },
                                     {
-                                        label: '较旧',
+                                        label: this.$t('jobManagement.old'),
                                         value: '较旧'
                                     }
                                 ],
@@ -153,21 +153,21 @@
                                 }
                             },
                             {
-                                title: '用例类型',
+                                title: this.$t('jobList.job_type'),
                                 key: 'job_type',
                                 width: 120,
                                 align: 'center',
                                 filters: [
                                     {
-                                        label: '功能',
+                                        label: this.$t('jobList.Joblib'),
                                         value: '功能'
                                     },
                                     {
-                                        label: '性能',
+                                        label: this.$t('jobList.PerfJob'),
                                         value: '性能'
                                     },
                                     {
-                                        label: '内嵌',
+                                        label: this.$t('jobList.InnerJob'),
                                         value: '内嵌'
                                     }
                                 ],
@@ -177,18 +177,18 @@
                                 }
                             },
                             {
-                                title: '用例名称',
+                                title: this.$t('jobList.job_name'),
                                 key: 'import_job_name',
                                 align: 'center',
                             },
                             {
-                                title: '更新时间',
+                                title: this.$t('jobList.updated_time'),
                                 width: 110,
                                 key: 'import_job_update_time',
                                 align: 'center',
                             },
                             {
-                                title: '维护人员',
+                                title: this.$t('jobList.username'),
                                 key: 'import_job_username',
                                 width: 120,
                                 align: 'center',
@@ -196,22 +196,22 @@
                         ]
                     },
                     {
-                        title: '已有用例',
+                        title: this.$t('jobManagement.have'),
                         align: 'center',
                         children: [
                             {
-                                title: '用例名称',
+                                title: this.$t('jobList.job_name'),
                                 key: 'exist_job_name',
                                 align: 'center',
                             },
                             {
-                                title: '更新时间',
+                                title: this.$t('jobList.updated_time'),
                                 width: 110,
                                 key: 'exist_job_update_time',
                                 align: 'center',
                             },
                             {
-                                title: '维护人员',
+                                title: this.$t('jobList.username'),
                                 width: 120,
                                 key: 'exist_job_username',
                                 align: 'center',
@@ -282,17 +282,17 @@
                 let that = this;
                 if(jobList.length===0){
                     this.$Modal.confirm({
-                        title: "提示",
-                        content: "请选择要删除的数据！"
+                        title: that.$t('public.modal_info'),
+                        content: that.$t('jobManagement.delSelect')
                     });
                 }else{
                     this.$Modal.confirm({
-                        title: "警告！",
-                        content: "您确定要删除这些用例吗?",
+                        title: that.$t('public.modal_warn'),
+                        content: that.$t('jobManagement.delSure'),
                         onOk(){
                             this.$ajax.post("api/v1/cedar/job_deleted/", { job_ids:jobList } )
                                 .then(response=>{
-                                    this.$Message.success("用例删除成功！")
+                                    this.$Message.success(that.$t('jobManagement.delSuccess'))
                                     that.jobNumbers = 0
                                     that.$refs.jobList.resetJobList()
                                     that.onJobFilterChange(that.$refs.jobFilter._jobRender())
@@ -300,12 +300,12 @@
                                 .catch(error=>{
                                     if (config.DEBUG) console.log(error)
                                     if(error.response.status===500){
-                                        this.$Message.error('服务器错误！')
+                                        that.$Message.error(this.$t('public.error_500'))
                                         return
                                     }
                                     if(error.response.data.custom_code==="0"){  //管理员 （带admin权限）
                                         if(error.response.data.point_out_job.length===0){
-                                            this.$Message.success('用例删除成功')
+                                            this.$Message.success(that.$t('jobManagement.delSuccess'))
                                             that.jobNumbers = 0
                                             that.$refs.jobList.resetJobList()
                                             that.onJobFilterChange(that.$refs.jobFilter._jobRender())
@@ -315,9 +315,9 @@
                                             that.delJobIds = error.response.data.enable
                                         }
                                     }else if(error.response.data.custom_code==="201001"){  //普通用户
-                                        this.$Message.error({content:'用例删除失败！'+error.response.data.description,duration:10})
+                                        this.$Message.error({content:that.$t('jobManagement.delFail')+error.response.data.description,duration:10})
                                     }else
-                                        this.$Message.error({content:'用例删除失败！'+error.response.data.description,duration:10})
+                                        this.$Message.error({content:that.$t('jobManagement.delFail')+error.response.data.description,duration:10})
                                 })
                         }
                     });
@@ -327,7 +327,7 @@
                 this.$ajax.post("api/v1/cedar/job_deleted/", { job_ids:this.delJobIds } )
                     .then(response=>{
                         this.showErrorInner = false
-                        this.$Message.success("用例删除成功！")
+                        this.$Message.success(this.$t('jobManagement.delSuccess'))
                         this.jobNumbers = 0
                         this.$refs.jobList.resetJobList()
                         this.onJobFilterChange(this.$refs.jobFilter._jobRender())
@@ -335,10 +335,10 @@
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
                         if(error.response.status===500){
-                            this.$Message.error('服务器错误！')
+                            this.$Message.error(this.$t('public.error_500'))
                             return
                         }
-                        this.$Message.error({content:'用例删除失败！'+error.response.data.description,duration:10})
+                        this.$Message.error({content:this.$t('jobManagement.delFail')+error.response.data.description,duration:10})
                     })
             },
             JobOnRowClick(row,index){
@@ -357,7 +357,7 @@
                 if (config.DEBUG) console.log(error);
                 this.$refs.upload.clearFiles()
                 if(error.status>=500){
-                    this.$Message.error("服务器错误")
+                    this.$Message.error(this.$t('public.error_500'))
                     return
                 }
                 this.$Message.error({content: file.description,duration: 6})
@@ -372,13 +372,13 @@
                     this.showImportFilter = true
                     this.tableData = response.diff_data
                     this.tableData.forEach(job=>{
-                        job.contrast = job.contrast ? '较新' : '较旧'
+                        job.contrast = job.contrast ? this.$t('jobManagement.new') : this.$t('jobManagement.old')
                         if( job.job_type === "Joblib" )
-                            job.job_type = '功能'
+                            job.job_type = this.$t('jobList.Joblib')
                         else if( job.job_type === "InnerJob" )
-                            job.job_type = '内嵌'
+                            job.job_type = this.$t('jobList.InnerJob')
                         else if( job.job_type === "PerfJob" )
-                            job.job_type = '性能'
+                            job.job_type = this.$t('jobList.PerfJob')
                     })
                     return
                 }
@@ -387,13 +387,13 @@
                     job_name_list:this.jobList,
                     inner_job_name_list:this.innerJobList
                 }).then(responsr=>{
-                    this.$Message.success("文件上传成功！")
+                    this.$Message.success(this.$t('jobManagement.uploadSuccess'))
                     setTimeout(function (){
                         location.reload()
                     },1000)
                 }).catch(error=>{
                     if(error.response.status>=500)
-                        this.$Message.error("服务器错误")
+                        this.$Message.error(this.$t('public.error_500'))
                     else
                         this.$Message.error({content: error.response.data.description,duration: 10})
                 })
@@ -403,7 +403,7 @@
                 let inner = []
                 let normal = []
                 this.tableSelect.forEach(item=>{
-                    if(item.job_type==='内嵌')
+                    if(item.job_type===this.$t('jobList.InnerJob'))
                         inner.push(item.import_job_name)
                     else
                         normal.push(item.import_job_name)
@@ -414,13 +414,13 @@
                     inner_job_name_list:this.innerJobList.concat(inner)
                 }).then(responsr=>{
                     this.showImportFilter = false
-                    this.$Message.success("文件上传成功！")
+                    this.$Message.success(this.$t('jobManagement.uploadSuccess'))
                     setTimeout(function (){
                         location.reload()
                     },1000)
                 }).catch(error=>{
                     if(error.response.status>=500)
-                        this.$Message.error("服务器错误")
+                        this.$Message.error(this.$t('public.error_500'))
                     else
                         this.$Message.error({content: error.response.data.description,duration: 10})
                 })
@@ -453,13 +453,13 @@
                 let userId = sessionStorage.getItem('id')
                 if(jobList.length===0){
                     this.$Modal.confirm({
-                        title: "提示",
-                        content: "请选择要导出的用例！"
+                        title: root.$t('public.modal_info'),
+                        content: root.$t('jobManagement.selJob')
                     });
                 }else{
                     this.$Modal.confirm({
-                        title: "提示",
-                        content: "您确定要导出这些用例吗?<p>普通用户只能导出自己的用例，管理员可以导出全部用例。</p>",
+                        title: root.$t('public.modal_info'),
+                        content: root.$t('jobManagement.exportTit_1') +"<p>"+ root.$t('jobManagement.exportTit_2') +"</p>",
                         onOk(){
                             root.showLoading = true
                             this.$ajax
@@ -471,10 +471,10 @@
                                     if(response.data.success){
                                         window.location.href=root.baseUrl + response.data.success;
                                         root.cancelJobList()
-                                        this.$Message.success({content:"正在导出用例...",duration: 3})
+                                        this.$Message.success({content:root.$t('jobManagement.isExport') ,duration: 3})
                                         root.showLoading = false
                                     }else {
-                                        this.$Message.error("导出用例失败!")
+                                        this.$Message.error(root.$t('jobManagement.exportFail'))
                                         root.showLoading = false
                                     }
                                 })
@@ -493,8 +493,8 @@
                 let jobList = this.getJobList();
                 if(jobList.length===0){
                     this.$Modal.confirm({
-                        title: "提示",
-                        content: "请先选择用例！"
+                        title: this.$t('public.modal_info'),
+                        content: this.$t('jobManagement.selJob_2')
                     });
                     return
                 }
@@ -508,12 +508,12 @@
                         this.userList = response.data.reefusers
                     })
                     .catch(error => {
-                        this.$Message.error("获取目标用户失败")
+                        this.$Message.error(this.$t('jobManagement.userError'))
                     })
             },
             onChangeOwner(){
                 if(this.targetUserId===null){
-                    this.$Message.warning({content:'请先选择用例归属目标！',duration:3})
+                    this.$Message.warning({content:this.$t('jobManagement.selUser'),duration:3})
                     return
                 }
                 let jobList = this.getJobList();
@@ -522,13 +522,13 @@
                         transfer_user_id: this.targetUserId,
                         job_ids: jobList
                     }).then(response=>{
-                        this.$Message.success({content:'用例变更归属成功',duration:3})
+                        this.$Message.success({content:this.$t('jobManagement.changeSuccess'),duration:3})
                         this.showUserModal = false
                         setTimeout(function (){
                             location.reload()
                         },500)
                     }).catch(error=>{
-                        this.$Message.error({content:"变更归属账号失败！ " + error.response.data.error,duration:5 })
+                        this.$Message.error({content:this.$t('jobManagement.changeFail') + error.response.data.error,duration:5 })
                 })
             }
         },
@@ -547,7 +547,7 @@
                     }
                     this.roles = groups.join(",");
                 }).catch(error=>{
-                    this.$Message.error("获取用户权限信息失败")
+                    this.$Message.error(this.$t('jobManagement.userFail'))
             })
         }
     }

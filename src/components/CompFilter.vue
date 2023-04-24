@@ -3,10 +3,10 @@
         <Tabs type="card">
             <TabPane v-for="column in filterColumn" :label="column.title" :key="column.key">
                 <div style="max-height: 130px;overflow: auto">
-                    <Row v-if="column.title==='测试用途'||column.title==='自定义标签'" style="text-align: right;margin-right: 20px">
+                    <Row v-if="column.title===$t('filter.job_test_area')||column.title===$t('filter.custom_tag')" style="text-align: right;margin-right: 20px">
                         <i-switch v-model="filterType" size="large" @on-change="onOrderChange">
-                            <span slot="open">用例</span>
-                            <span slot="close">字母</span>
+                            <span slot="open">{{$t('filter.case')}}</span>
+                            <span slot="close">{{$t('filter.word')}}</span>
                         </i-switch>
                     </Row>
                     <CheckboxGroup v-model="checked" @on-change="onChange">
@@ -33,7 +33,7 @@
             </Tag>
         </Row>
         <Row style="margin-top: 16px;">
-            <Button @click="checked=[]; onChange()">清空</Button>
+            <Button @click="checked=[]; onChange()">{{$t('filter.clean')}}</Button>
         </Row>
         <Divider></Divider>
     </div>
@@ -144,37 +144,37 @@
             return {
                 filterColumn: [
                     {
-                        title: "适用机型",
+                        title: this.$t('filter.phone_model'),
                         key: "phone_model",
                         item_key: "phone_model_name",
                     },
                     {
-                        title: "测试用途",
+                        title: this.$t('filter.job_test_area'),
                         key: "job_test_area",
                         item_key: "description"
                     },
                     {
-                        title: "安卓版本",
+                        title: this.$t('filter.android_version'),
                         key: "android_version",
                         item_key: "version"
                     },
                     {
-                        title: "ROM版本",
+                        title: this.$t('filter.rom_version'),
                         key: "rom_version",
                         item_key: "version"
                     },
                     {
-                        title: "维护人员",
+                        title: this.$t('filter.reefuser'),
                         key: "reefuser",
                         item_key: "username"
                     },
                     {
-                        title: "自定义标签",
+                        title: this.$t('filter.custom_tag'),
                         key: "custom_tag",
                         item_key: "custom_tag_name"
                     },
                     {
-                        title: "测试柜类型",
+                        title: this.$t('filter.type'),
                         key: "type",
                         item_key: "type"
                     }
@@ -261,7 +261,7 @@
                         }
                     })).catch(reason => {
                         if (config.DEBUG) console.log(reason)
-                        this.$Message.error("载入失败")
+                        this.$Message.error(this.$t('filter.fail'))
                     })
             }
         },
@@ -362,7 +362,7 @@
                     }
                 })).catch(reason => {
                 if (config.DEBUG) console.log(reason)
-                this.$Message.error("载入失败")
+                this.$Message.error(this.$t('filter.fail'))
             })
             if (this.propRdsFilter) {
                 this.filterColumn.splice(3, 2);

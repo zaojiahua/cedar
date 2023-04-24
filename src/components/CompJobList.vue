@@ -107,7 +107,7 @@
             return {
                 columns: [
                     {
-                        title: "用例名称",
+                        title: this.$t('jobList.job_name'),
                         key: "job_name",
                         sortable: true,
                         minWidth:200
@@ -118,20 +118,20 @@
                     //     sortable: true
                     // },
                     this.propShowJobType ? {
-                        title: "用例类型",
+                        title: this.$t('jobList.job_type'),
                         key: "job_type",
                         sortable: true,
                         filters: [
                             {
-                                label: '功能',
+                                label: this.$t('jobList.Joblib'),
                                 value: 'Joblib'
                             },
                             {
-                                label: '性能',
+                                label: this.$t('jobList.PerfJob'),
                                 value: 'PerfJob'
                             },
                             {
-                                label: '内嵌',
+                                label: this.$t('jobList.InnerJob'),
                                 value: 'InnerJob'
                             }
                         ],
@@ -143,16 +143,16 @@
                             this.jobSearch(this.keyword.trim())
                         }
                     } :  this.propNotInner ? {
-                        title: "用例类型",
+                        title: this.$t('jobList.job_type'),
                         key: "job_type",
                         sortable: true,
                         filters: [
                             {
-                                label: '功能',
+                                label: this.$t('jobList.Joblib'),
                                 value: 'Joblib'
                             },
                             {
-                                label: '性能',
+                                label: this.$t('jobList.PerfJob'),
                                 value: 'PerfJob'
                             },
                         ],
@@ -164,16 +164,16 @@
                             this.jobSearch(this.keyword.trim())
                         }
                     } : {
-                        title: "用例类型",
+                        title: this.$t('jobList.job_type'),
                         key: "job_type",
                         sortable: true
                     },
                     {
-                        title: "测试用途",
+                        title: this.$t('jobList.display_job_test_area'),
                         key: "display_job_test_area"
                     },
                     {
-                        title: "自定义标签",
+                        title: this.$t('jobList.display_custom_tag'),
                         key: "display_custom_tag"
                     },
                     // {
@@ -183,11 +183,11 @@
                     //     width:105
                     // },
                     {
-                        title: "维护人员",
+                        title: this.$t('jobList.username'),
                         key: "username",
                     },
                     {
-                        title: "更新时间",
+                        title: this.$t('jobList.updated_time'),
                         key: "updated_time",
                         sortable: true
                     }
@@ -211,7 +211,7 @@
         methods: {
             _requestErrorHandle(reason) {
                 if (config.DEBUG) console.log(reason)
-                this.$Message.error("载入失败")
+                this.$Message.error(this.$t('public.loadFail'))
             },
             _responseHandle(response) {
                 this.currentPageSelection = {}
@@ -220,11 +220,11 @@
                 this.data.forEach(job => {
                     job.username = job.author.username
                     if( job.job_type === "Joblib" )
-                        job.job_type = '功能'
+                        job.job_type = this.$t('jobList.Joblib')
                     else if( job.job_type === "InnerJob" )
-                        job.job_type = '内嵌'
+                        job.job_type = this.$t('jobList.InnerJob')
                     else if( job.job_type === "PerfJob" )
-                        job.job_type = '性能'
+                        job.job_type = this.$t('jobList.PerfJob')
                     // if (job.job_type === "InnerJob" && sessionStorage.username!=='admin') job._disabled = true
                     if (job.counter === null) job.counter = 1
                     let job_test_areas = []
@@ -515,7 +515,7 @@
             if (this.propAutoLoad) this.refresh()
             if (this.propShowCounter)
                 this.columns.splice(0, 0, {
-                    title: "运行次数",
+                    title: this.$t('jobList.counter'),
                     slot: "counter",
                     width:93
                 })
@@ -528,7 +528,7 @@
             if (this.propDeletable){
                 this.columns.push({
                     align: "center",
-                    title: "删除",
+                    title: this.$t('jobList.delete'),
                     width:80,
                     slot: "delete"
                 })

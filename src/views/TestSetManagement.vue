@@ -2,16 +2,16 @@
     <div @click="showContextMenu=false">
         <div class="layout_left">
             <Row class="title_left">
-                <b>项目列表</b>
-                <Button size="small" style="float: right;margin-top: 14px;color: #1bbc9c" @click="showNewModal=true;isNewProject=true;projectName = ''">新建项目</Button>
+                <b>{{$t('testSetManagement.topTit')}}</b>
+                <Button size="small" style="float: right;margin-top: 14px;color: #1bbc9c" @click="showNewModal=true;isNewProject=true;projectName = ''">{{$t('testSetManagement.newPro')}}</Button>
             </Row>
             <div class="search">
-                <Input v-model="allKeyword" clearable search placeholder="输入项目名称"
+                <Input v-model="allKeyword" clearable search :placeholder="$t('testSetManagement.enterName')"
                        @on-change="projectSearch(allKeyword,false)"/>
             </div>
             <div class="project-list all-pro" :class="{ active: projectIndex===-1 }" @click="projectIndex=-1;">
                 <Icon type="ios-folder-open-outline" size="18" style="font-weight: bold;margin-right: 5px"/>
-                <b>全部测试集（{{ allTestcount }}）</b>
+                <b>{{$t('testSetManagement.allTestSet')}}（{{ allTestcount }}）</b>
             </div>
 
             <div style="overflow: auto;max-height: calc(100% - 91px)">
@@ -30,25 +30,25 @@
         <div class="layout_right_bottom">
             <Row style="height: 32px;line-height: 32px;margin: 10px 0">
                 <Col style="text-align: right">
-                    <span style="padding-left: 5px;border-left: 3px solid #1bbc9c;float: left">测试集列表( 已选 {{ testCount }} 个 )</span>
+                    <span style="padding-left: 5px;border-left: 3px solid #1bbc9c;float: left">{{$t('testSetManagement.testSetList')}}( {{$t('testSetManagement.sel')}} {{ testCount }} {{$t('testSetManagement.units')}} )</span>
                 <!--</Col>-->
                 <!--<Col span="20" style="text-align: right">-->
-                    <Button type="primary" style="margin-right: 10px;" @click="onAddTestSet">新建测试集</Button>
-                    <Button style="margin-right: 10px;" :disabled="projectIndex===-1" @click="onOpenAddTestModal">添加测试集</Button>
+                    <Button type="primary" style="margin-right: 10px;" @click="onAddTestSet">{{$t('testSetManagement.newTestSet')}}</Button>
+                    <Button style="margin-right: 10px;" :disabled="projectIndex===-1" @click="onOpenAddTestModal">{{$t('testSetManagement.add')}}</Button>
                     <Dropdown trigger="click" style="margin-right: 10px;">
                         <Button>
-                            更多操作
+                            {{$t('public.moreAction')}}
                             <Icon type="ios-arrow-down"></Icon>
                         </Button>
                         <DropdownMenu slot="list" style="text-align: left">
-                            <span @click="menuClick(true)"><DropdownItem>复制</DropdownItem></span>
-                            <span v-show="projectIndex!==-1" @click="menuClick(false)"><DropdownItem>移动</DropdownItem></span>
-                            <span v-show="projectIndex!==-1" @click="removeTestSet"><DropdownItem>从当前项目移除</DropdownItem></span>
-                            <span v-show="username==='admin'" @click="deleteTestSet"><DropdownItem>删除</DropdownItem></span>
+                            <span @click="menuClick(true)"><DropdownItem>{{$t('testSetManagement.copy')}}</DropdownItem></span>
+                            <span v-show="projectIndex!==-1" @click="menuClick(false)"><DropdownItem>{{$t('testSetManagement.move')}}</DropdownItem></span>
+                            <span v-show="projectIndex!==-1" @click="removeTestSet"><DropdownItem>{{$t('testSetManagement.remove')}}</DropdownItem></span>
+                            <span v-show="username==='admin'" @click="deleteTestSet"><DropdownItem>{{$t('testSetManagement.del')}}</DropdownItem></span>
                         </DropdownMenu>
                     </Dropdown>
                     <div style="float: right;width:250px;">
-                        <Input v-model="keyword" clearable search enter-button placeholder="输入测试集名称"
+                        <Input v-model="keyword" clearable search enter-button :placeholder="$t('testSetManagement.enterName_2')"
                                class="search-input" @on-change="testSearch(keyword)"/>
                     </div>
                 </Col>
@@ -58,8 +58,8 @@
 
         <div id="context-menu" v-show="showContextMenu">
             <ButtonGroup vertical style="width: 100px">
-                <Button @click="showNewModal=true;isNewProject=false;projectName=projectMsg.name">重命名</Button>
-                <Button @click="deleteProject" :disabled="username!=='admin'">删除</Button>
+                <Button @click="showNewModal=true;isNewProject=false;projectName=projectMsg.name">{{$t('testSetManagement.reName')}}</Button>
+                <Button @click="deleteProject" :disabled="username!=='admin'">{{$t('public.btn_del')}}</Button>
             </ButtonGroup>
         </div>
 
@@ -70,21 +70,21 @@
         <Modal v-model="showAddTestModal" width="90" :mask-closable="false" :footer-hide="true">
             <div>
                 <Row style="margin-bottom: 15px;">
-                    <h2>添加测试集到【{{ projectMsg.name }}】</h2>
+                    <h2>{{$t('testSetManagement.addTo')}}【{{ projectMsg.name }}】</h2>
                 </Row>
                 <Row style="margin-bottom: 16px">
                     <Col span="8">
                         <div style="float: left;margin-right: 50px;">
-                            <span>项目：</span>
+                            <span>{{$t('testSetManagement.pro')}}：</span>
                             <Select v-model="projectSelected" style="width:200px" clearable  @on-change="onSelectedChange">
                                 <Option v-for="project in allProject" :value="project.id" :key="project.id">{{ project.name }}</Option>
                             </Select>
                         </div>
                     </Col>
                     <Col span="16" style="text-align: right">
-                        <Button  style="margin-right: 15px;" type="warning" @click="cancelTestSetList">取消选择（{{ selection.length }}）</Button>
+                        <Button  style="margin-right: 15px;" type="warning" @click="cancelTestSetList">{{$t('public.cancelSelect')}}（{{ selection.length }}）</Button>
                         <div style="width: 250px;float: right;">
-                            <Input v-model="testKeyword" clearable search enter-button placeholder="输入测试集名称"
+                            <Input v-model="testKeyword" clearable search enter-button :placeholder="$t('testSetManagement.enterName_2')"
                                    class="search-input" @on-change="onPageChange(1)"/>
                         </div>
                     </Col>
@@ -92,17 +92,17 @@
                 <Table ref="addTestTable" :columns="testColumns" :data="testData" border @on-row-click="onRowClick" @on-selection-change="onSelectionChange"></Table>
                 <Page :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
                 <Row style="text-align: right;margin-top: 30px;">
-                    <Button @click="showAddTestModal=false;">取消</Button>
-                    <Button type="primary" style="margin-left: 20px" @click="addTestToProject">确定</Button>
+                    <Button @click="showAddTestModal=false;">{{$t('public.btn_cancel')}}</Button>
+                    <Button type="primary" style="margin-left: 20px" @click="addTestToProject">{{$t('public.btn_ok')}}</Button>
                 </Row>
             </div>
         </Modal>
 
         <Modal v-model="showCopyModal" footer-hide :closable="false" :mask-closable="false" width="420">
             <Row style="margin: 12px 0 10px 0;line-height: 32px">
-                <b>移动/复制到</b>
+                <b>{{$t('testSetManagement.remove_2')}}</b>
                 <div style="width: 250px;float: right;">
-                    <Input v-model="projectKeyword" clearable search enter-button placeholder="输入项目名称"
+                    <Input v-model="projectKeyword" clearable search enter-button :placeholder="$t('testSetManagement.enterName')"
                            class="search-input" @on-change="projectSearch(projectKeyword)"/>
                 </div>
             </Row>
@@ -114,17 +114,17 @@
                 </div>
             </div>
             <Row style="text-align: right;margin-top: 30px;">
-                <Button @click="showCopyModal=false;">取消</Button>
-                <Button type="primary" style="margin-left: 20px" @click="operateTestSet">确认</Button>
+                <Button @click="showCopyModal=false;">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" style="margin-left: 20px" @click="operateTestSet">{{$t('public.btn_ok')}}</Button>
             </Row>
         </Modal>
 
         <Modal v-model="showNewModal" footer-hide :closable="false" :mask-closable="false" width="420">
-            <p style="margin: 12px 0 10px 0"><b>请输入项目名称</b></p>
+            <p style="margin: 12px 0 10px 0"><b>{{$t('testSetManagement.enterName')}}</b></p>
             <Input v-model="projectName" maxlength="20"></Input>
             <Row style="text-align: right;margin-top: 30px;">
-                <Button @click="showNewModal=false;">取消</Button>
-                <Button type="primary" style="margin-left: 20px" @click="newProject">确认</Button>
+                <Button @click="showNewModal=false;">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" style="margin-left: 20px" @click="newProject">{{$t('public.btn_ok')}}</Button>
             </Row>
         </Modal>
 
@@ -165,15 +165,15 @@
                         align: 'center'
                     },
                     {
-                        title: '测试集名称',
+                        title: this.$t('testSetList.name'),
                         key: 'name',
                     },
                     {
-                        title: '涉及测试柜',
+                        title: this.$t('testSetList.cabinet_version_list'),
                         key: 'cabinet_version_list'
                     },
                     {
-                        title: '更新时间',
+                        title: this.$t('testSetList.update_time'),
                         key: 'update_time'
                     }],
                 testData:[],
@@ -217,24 +217,24 @@
             newProject(){
                 let name = this.projectName.trim()
                 if(name.length===0){
-                    this.$Message.warning('项目名称不能为空！')
+                    this.$Message.warning(this.$t('testSetManagement.proWarn_1'))
                     return
                 }
                 if(name.length>20){
-                    this.$Message.warning('项目名称不能超过20个字符！')
+                    this.$Message.warning(this.$t('testSetManagement.proWarn_2'))
                     return
                 }
                 if(this.isNewProject){
                     this.$ajax.post("api/v1/cedar/test_project/",{
                         name:this.projectName.trim()
                     }).then(response=>{
-                        this.$Message.success("项目添加成功")
+                        this.$Message.success(this.$t('testSetManagement.addProSuccess'))
                         this.getProjectList()
                         this.showNewModal = false
                     }) .catch(error=>{
                         if (config.DEBUG) console.log(error)
                         if(error.response.data.name)
-                            this.$Message.error({content: "项目不允许重名",duration:3})
+                            this.$Message.error({content: this.$t('testSetManagement.proWarn_3'),duration:3})
                         else
                             this.$Message.error({content: error.response.data.description,duration:5})
                     })
@@ -242,13 +242,13 @@
                     this.$ajax.patch("api/v1/cedar/test_project/" + this.projectMsg.id + "/",{
                         name:this.projectName.trim()
                     }).then(response=>{
-                        this.$Message.success("重命名成功")
+                        this.$Message.success(this.$t('testSetManagement.reNameSuccess'))
                         this.getProjectList()
                         this.showNewModal = false
                     }) .catch(error=>{
                         if (config.DEBUG) console.log(error)
                         if(error.response.data.name)
-                            this.$Message.error({content: "项目不允许重名",duration:3})
+                            this.$Message.error({content: this.$t('testSetManagement.proWarn_3'),duration:3})
                         else
                             this.$Message.error({content: error.response.data.description,duration:5})
                     })
@@ -258,11 +258,11 @@
             deleteProject(){
                 let _this = this
                 this.$Modal.confirm({
-                    title:"提示",
-                    content:"是否要删除【"+ this.projectMsg.name +"】？",
+                    title:this.$t('public.modal_info'),
+                    content:this.$t('testSetManagement.sureDel')+"【"+ this.projectMsg.name +"】？",
                     onOk(){
                         this.$ajax.delete("api/v1/cedar/test_project/" + _this.projectMsg.id + "/").then(response=>{
-                            _this.$Message.success("项目删除成功")
+                            _this.$Message.success(_this.$t('testSetManagement.delSuccess'))
                             _this.getProjectList()
                             _this.projectIndex = -1
                         }) .catch(error=>{
@@ -275,17 +275,17 @@
             //  删 除 测 试 集
             deleteTestSet(){
                 if(this.username!=='admin'){
-                    this.$Message.warning({content:"非admin不允许删除测试集",duration:3})
+                    this.$Message.warning({content:this.$t('testSetManagement.delTit'),duration:3})
                     return
                 }
                 let list = this.$refs.testList.getSelection()
                 let root = this
                 if(list.length===0){
-                    this.$Message.warning("至少选择一项！")
+                    this.$Message.warning(this.$t('testSetManagement.delOne'))
                 }else{
                     this.$Modal.confirm({
-                        title: "提示！",
-                        content: "确定要删除这些测试集吗?",
+                        title: this.$t('public.modal_info'),
+                        content: this.$t('testSetManagement.delTit_2'),
                         onOk(){
                             let ajaxObj = [];
                             list.forEach(item=>{
@@ -293,7 +293,7 @@
                             })
                             this.$ajax.all(ajaxObj)
                                 .then(response=>{
-                                    this.$Message.success("测试集删除成功！")
+                                    this.$Message.success(root.$t('testSetManagement.delSuccess_2'))
                                     root.$refs.testList.onPageChange(1)
                                     root.$refs.testList.resetSelection()
                                     root.getProjectList()
@@ -301,7 +301,7 @@
                                 })
                                 .catch(error=>{
                                     if (config.DEBUG) console.log(error)
-                                    this.$Message.error({content:"测试集删除失败，请刷新页面重试！"+ error.res.data.description,duration:5})
+                                    this.$Message.error({content:root.$t('testSetManagement.delFail_2')+ error.res.data.description,duration:5})
                                 })
                         }
                     });
@@ -312,7 +312,7 @@
                 this.isCopy = flag
                 let list = this.$refs.testList.getSelection()
                 if(list.length===0){
-                    this.$Message.warning("至少选择一项！")
+                    this.$Message.warning(this.$t('testSetManagement.delOne'))
                     return
                 }
                 this.getAllProjectList()
@@ -321,11 +321,11 @@
                     this.showCopyModal = true
                     this.projectKeyword = ""
                 }else
-                    this.$Message.warning("至少有两个项目，才可以进行复制移动操作！")
+                    this.$Message.warning(this.$t('testSetManagement.copyTit'))
             },
             operateTestSet(){    // 确 认 操 作
                 if(this.operateTargetProject===0){
-                    this.$Message.warning("至少选择一个项目！")
+                    this.$Message.warning(this.$t('testSetManagement.delOne'))
                     return
                 }
                 let list = this.$refs.testList.getSelection()
@@ -354,11 +354,11 @@
                     this.getProjectList()
                     this.$refs.testList.onPageChange(1)
                     this.$refs.testList.resetSelection()
-                    this.$Message.success({content:"操作成功，目标项目增加了"+response.data.change_num +"个测试集",duration:3})
+                    this.$Message.success({content:this.$t('testSetManagement.operateSuccess_1')+response.data.change_num +this.$t('testSetManagement.operateSuccess_2'),duration:3})
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     if(error.response.status>=500)
-                        this.$Message.error({content  :"服务器错误",duration:3})
+                        this.$Message.error({content:this.$t('public.error_500'),duration:3})
                     else
                         this.$Message.error({content: error.response.data.description,duration:6})
                 })
@@ -388,7 +388,7 @@
             removeTestSet(){
                 let list = this.$refs.testList.getSelection()
                 if(list.length===0){
-                    this.$Message.warning("至少选择一项！")
+                    this.$Message.warning(this.$t('testSetManagement.delOne'))
                     return
                 }
                 let ids = []
@@ -397,8 +397,8 @@
                 })
                 let _this = this
                 this.$Modal.confirm({
-                    title:"提示",
-                    content:"确定从当前项目中移除这些测试集吗？",
+                    title:this.$t('public.modal_info'),
+                    content:this.$t('testSetManagement.removeTit'),
                     onOk(){
                         this.$ajax.post("api/v1/cedar/operate_test_gather/",{
                             test_gather_list:ids,
@@ -409,11 +409,11 @@
                             _this.getProjectList()
                             _this.$refs.testList.onPageChange(1)
                             _this.$refs.testList.resetSelection()
-                            _this.$Message.success({content:"移除成功",duration:3})
+                            _this.$Message.success({content:_this.$t('testSetManagement.removeSuccess'),duration:3})
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
                             if(error.response.status>=500)
-                                _this.$Message.error({content:"服务器错误",duration:3})
+                                _this.$Message.error({content:_this.$t('public.error_500'),duration:3})
                             else
                                 _this.$Message.error({content: error.response.data.description,duration:6})
                         })
@@ -443,7 +443,7 @@
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("用例名称获取失败")
+                        this.$Message.error(this.$t('testSetManagement.getFailed'))
                     })
             },
             // 右 键 点 击 项 目
@@ -471,7 +471,7 @@
             },
             addTestToProject(){  //添 加
                 if(this.selection.length===0){
-                    this.$Message.warning("至少选择一项！")
+                    this.$Message.warning(this.$t('testSetManagement.delOne'))
                     return
                 }
                 let ids = []
@@ -487,11 +487,11 @@
                     this.getProjectList()
                     this.$refs.testList.onPageChange(1)
                     this.$refs.testList.resetSelection()
-                    this.$Message.success({content:"成功添加"+response.data.change_num+"个测试集",duration:3})
+                    this.$Message.success({content:this.$t('testSetManagement.addSuccess')+response.data.change_num+this.$t('testSetManagement.operateSuccess_2'),duration:3})
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     if(error.response.status>=500)
-                        this.$Message.error({content:"服务器错误",duration:3})
+                        this.$Message.error({content:this.$t('public.error_500'),duration:3})
                     else
                         this.$Message.error({content: error.response.data.description,duration:6})
                 })

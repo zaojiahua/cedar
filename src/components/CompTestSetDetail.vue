@@ -1,32 +1,32 @@
 <template>
-    <Card :title="isShowOther ? '测试集信息' : '新建测试集' ">
-        <Form :label-width="120" :rules="validateRules" ref="form" :model="testInfo">
+    <Card :title="isShowOther ? $t('testSetDetail.info') : $t('testSetDetail.info_1') ">
+        <Form :label-width="147" :rules="validateRules" ref="form" :model="testInfo">
             <FormItem prop="name">
-                <b slot="label">测试集名称：</b>
+                <b slot="label">{{$t('testSetList.name')}}：</b>
                 <Input v-model="testInfo.name" maxlength="50"></Input>
             </FormItem>
             <FormItem v-show="!isShowOther">
-                <b slot="label">项目：</b>
+                <b slot="label">{{$t('testSetDetail.pro')}}：</b>
                 <Select v-model="selectProject" clearable style="width:200px" :filterable="true">
                     <Option v-for="item in allProject" :value="item.id" :key="item.id">{{ item.name }}</Option>
                 </Select>
             </FormItem>
             <div v-show="isShowOther">
                 <FormItem>
-                    <b slot="label">用例数量：</b>
+                    <b slot="label">{{$t('testSetList.job_count')}}：</b>
                     <Input v-model="testInfo.job_count" disabled class="disabled-input"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">预计耗时（h）：</b>
+                    <b slot="label">{{$t('testSetList.duration_time')}}（h）：</b>
                     <Input v-model="testInfo.duration_time" disabled class="disabled-input"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">更新时间：</b>
+                    <b slot="label">{{$t('testSetList.update_time')}}：</b>
                     <Input v-model="testInfo.update_time" disabled class="disabled-input"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">涉及项目：</b>
-                    <p v-if="projectList.length===0" style="color: #FF9900">暂无数据</p>
+                    <b slot="label">{{$t('testSetDetail.pro_1')}}：</b>
+                    <p v-if="projectList.length===0" style="color: #FF9900">{{$t('public.noData')}}</p>
                     <div v-else>
                         <Button v-for="project in projectList" style="margin:0 10px 8px 0;" :key="project.id">{{ project.name }}</Button>
                     </div>
@@ -34,8 +34,8 @@
             </div>
         </Form>
         <Row style="text-align-last: right;">
-            <Button type="primary" style="margin-right: 20px" @click="onSave">保存</Button>
-            <Button @click="onCancel">取消</Button>
+            <Button type="primary" style="margin-right: 20px" @click="onSave">{{$t('public.btn_save')}}</Button>
+            <Button @click="onCancel">{{$t('public.btn_cancel')}}</Button>
         </Row>
         <Spin size="large" fix v-if="spinShow"></Spin>
     </Card>
@@ -60,9 +60,9 @@
                 testInfo:utils.validate(testSetSerializer,{}),
                 validateRules: { // 表单验证规则
                     name: [{
-                        required: true,type:"string", message: '测试集名称不能为空', trigger: 'blur'
+                        required: true,type:"string", message: this.$t('testSetDetail.validate_1'), trigger: 'blur'
                     }, {
-                        max: 50, message: '测试集名称不能超过50个字符', trigger: 'blur'
+                        max: 50, message: this.$t('testSetDetail.validate_2'), trigger: 'blur'
                     }],
                 },
                 spinShow:false,
@@ -84,11 +84,11 @@
                     .then(response=>{
                         this.spinShow = false
                         this.testInfo = utils.validate(testSetSerializer,response.data)
-                        this.testInfo.duration_time =  (this.testInfo.duration_time/3600).toFixed(1) + ' 小时'
+                        this.testInfo.duration_time =  (this.testInfo.duration_time/3600).toFixed(1) + this.$t('testSetDetail.time')
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
                         this.spinShow = false
-                        this.$Message.error({content:"测试集信息获取失败"+error.response.data.description,duration:6})
+                        this.$Message.error({content:this.$t('testSetDetail.error_1')+error.response.data.description,duration:6})
                     })
                 //  取 当 前 测 试 集 所 属 的 项 目
                 this.$ajax.get('api/v1/cedar/test_project/?fields=name&test_gather='+id)
@@ -97,7 +97,7 @@
                     }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     this.spinShow = false
-                    this.$Message.error({content:"项目信息获取失败"+error.response.data.description,duration:6})
+                    this.$Message.error({content:this.$t('testSetDetail.error_2')+error.response.data.description,duration:6})
                 })
             },
             showOther(flag){
@@ -111,15 +111,15 @@
                             this.$ajax.patch('api/v1/cedar/test_gather/'+ this.testInfo.id +'/',{
                                 name: this.testInfo.name
                             }).then(response=>{
-                                this.$Message.success("测试集信息修改成功！")
+                                this.$Message.success(this.$t('testSetDetail.success'))
                                 this.$emit('on-save',false)
                                 this.spinShow = false
                             }).catch(error=>{
                                 if(config.DEBUG) console.log(error)
                                 if(error.response.data.name)
-                                    this.$Message.error({content: "测试集不允许重名",duration:3})
+                                    this.$Message.error({content: this.$t('testSetDetail.error_3'),duration:3})
                                 else
-                                    this.$Message.error({content: "测试集信息修改失败"+ error.response.data.description,duration:5})
+                                    this.$Message.error({content: this.$t('testSetDetail.error_4')+ error.response.data.description,duration:5})
                                 this.spinShow = false
                             })
                         }else {  //  console.log("新建")
@@ -134,22 +134,22 @@
                             }
                             this.$ajax.post('api/v1/cedar/test_gather/',obj )
                             .then(response=>{
-                                this.$Message.success("测试集创建成功！")
+                                this.$Message.success(this.$t('testSetDetail.newSuccess'))
                                 this.$emit('on-save',false)
                                 this.spinShow = false
                             }).catch(error=>{
                                 if(config.DEBUG) console.log(error)
                                 if(error.response.data.name)
-                                    this.$Message.error({content: "测试集不允许重名",duration:3})
+                                    this.$Message.error({content: this.$t('testSetDetail.error_3'),duration:3})
                                 else
-                                    this.$Message.error({content: "测试集创建失败" +error.response.data.description,duration:5})
+                                    this.$Message.error({content: this.$t('testSetDetail.newFailed') +error.response.data.description,duration:5})
                                 this.spinShow = false
                             })
                         }
                     } else { // 验证失败
                         this.$Message.warning({
                             background: true,
-                            content: '请输入完整信息'
+                            content: this.$t('testSetDetail.tit')
                         })
                     }
                 })
@@ -163,7 +163,7 @@
                         this.allProject = response.data.test_project
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error({content:"项目信息获取失败"+error.response.data.description,duration:6})
+                        this.$Message.error({content:this.$t('testSetDetail.error_2')+error.response.data.description,duration:6})
                     })
             }
 

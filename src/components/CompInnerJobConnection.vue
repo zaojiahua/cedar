@@ -1,6 +1,6 @@
 <template>
     <div>
-        <row style="margin: 16px 0;font-weight: bold">用例名称：{{ innerName }}</row>
+        <row style="margin: 16px 0;font-weight: bold">{{$t('jobList.job_name')}}：{{ innerName }}</row>
         <Table stripe :columns="columns" :data="data" border></Table>
         <Page simple :page-size="pageSize" :total="totalCount" :current="currentPage" @on-change="onPageChange" style="margin-top:20px;text-align: center"></Page>
     </div>
@@ -18,7 +18,7 @@
                 currentPage: 1,
                 columns: [
                     {
-                        title: '序号',
+                        title: this.$t('innerJobTable.number'),
                         width: 100,
                         align: 'center',
                         render: (h, params) => {
@@ -28,11 +28,11 @@
                         }
                     },
                     {
-                        title: '关联用例',
+                        title: this.$t('innerJobTable.connect'),
                         key: 'job_name',
                     },
                     {
-                        title: '维护人员',
+                        title: this.$t('jobList.username'),
                         key: 'author',
                     },
                 ],
@@ -62,7 +62,7 @@
                     this.data = response.data
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error({content:"inner关联信息获取失败"+error.response.data.name,duration:6})
+                    this.$Message.error({content:this.$t('innerJobTable.error')+error.response.data.name,duration:6})
                 })
             },
             onPageChange (page) {

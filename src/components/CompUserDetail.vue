@@ -1,18 +1,18 @@
 <template>
     <Card>
         <Form  v-model="userInfo" :label-width="90">
-            <FormItem label="登录名：">
+            <FormItem :label="$t('userDetail.username')">
                 <Input v-model="userInfo.username" :disabled="propEdit" placeholder="Enter username..." @on-keyup="usernameVerifyFeedback" :class="{'disabled-input':propEdit}"></Input>
                 <p v-show="showNameTip" style="color: red;">{{ nameTipMsg }}</p>
             </FormItem>
-            <FormItem label="真实姓名：">
+            <FormItem :label="$t('userDetail.firstname')">
                 <Input v-model="userInfo.firstname" placeholder="Enter your name..."></Input>
             </FormItem>
-            <FormItem label="密码：" v-if="showPassword">
+            <FormItem :label="$t('userDetail.password')" v-if="showPassword">
                 <Input v-model="userInfo.password" type="password" placeholder="Enter password..." @on-keyup="passwordVerifyFeedback"></Input>
                 <p v-show="showPwdTip" style="color: red;">{{ pwdTipMsg }}</p>
             </FormItem>
-            <FormItem label="角色：">
+            <FormItem :label="$t('userDetail.role')">
                 <CheckboxGroup v-model="userInfo.role" @on-change="groupVerifyFeedback">
                     <Checkbox v-for="item in groupList" :label="item" :key="item"></Checkbox><br/>
                 </CheckboxGroup>
@@ -20,9 +20,9 @@
             </FormItem>
         </Form>
         <div  class="drawer-footer">
-            <Button v-if="propStatus" style="float: left" @click="showPassword=true;userInfo.password=null">修改密码</Button>
-            <Button type="primary" style="margin-right: 20px" @click="onSave">确认</Button>
-            <Button  @click="cancelClick">取消</Button>
+            <Button v-if="propStatus" style="float: left" @click="showPassword=true;userInfo.password=null">{{$t('userDetail.btn_1')}}</Button>
+            <Button type="primary" style="margin-right: 20px" @click="onSave">{{$t('public.btn_ok')}}</Button>
+            <Button  @click="cancelClick">{{$t('public.btn_cancel')}}</Button>
         </div>
     </Card>
 </template>
@@ -102,9 +102,9 @@
                         if (config.DEBUG) console.log(error);
                         let errorMsg = "";
                         if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
+                            errorMsg = this.$t('public.error_500')
                         } else {
-                            errorMsg = "获取权限列表失败！"
+                            errorMsg = this.$t('userDetail.errorMsg_1')
                         }
                         this.$Message.error(errorMsg)
                         this.$Loading.error();
@@ -147,16 +147,16 @@
                     this.$ajax
                         .patch("api/v1/cedar/reefuser/"+ this.userInfo.id +"/",ajaxParamObj)
                         .then(response => {
-                            this.$Message.success('修改成功');
+                            this.$Message.success(this.$t('userDetail.success_1'));
                             this.$Loading.finish()
                             this.$emit("afterSendRequest",false)
                         })
                         .catch(error => {
                             let errorMsg = "";
                             if (error.response.status >= 500) {
-                                errorMsg = "服务器错误！"
+                                errorMsg = this.$t('public.error_500')
                             }else if(error.response.status=== 400){
-                                errorMsg = "该用户名已存在，请重新输入！"
+                                errorMsg = this.$t('userDetail.error_2')
                             } else {
                                 errorMsg = error.toString()
                             }
@@ -169,16 +169,16 @@
                     this.$ajax
                         .post("api/v1/cedar/reefuser/",ajaxParamObj)
                         .then(response => {
-                            this.$Message.success('添加成功');
+                            this.$Message.success(this.$t('public.addSuccess'));
                             this.$Loading.finish()
                             this.$emit("afterSendRequest",false)
                         })
                         .catch(error => {
                             let errorMsg = "";
                             if (error.response.status >= 500) {
-                                errorMsg = "服务器错误！"
+                                errorMsg = this.$t('public.error_500')
                             }else if(error.response.status=== 400){
-                                errorMsg = "该用户名已存在，请重新输入！"
+                                errorMsg = this.$t('userDetail.error_2')
                             } else {
                                 errorMsg = error.toString()
                             }
@@ -191,27 +191,27 @@
             //表单验证
             usernameVerify(){
                 if(this.userInfo.username.trim()===""){
-                   return "登录名不能为空！"
+                   return this.$t('userDetail.verify_1')
                 }else if (this.userInfo.username.trim().length<5||this.userInfo.username.trim().length>50) {
-                    return "登录名的长度应在5-50个字符之内！"
+                    return this.$t('userDetail.verify_2')
                 } else if (!/^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/.test(this.userInfo.username.trim())) {
-                    return "请输入正确的邮箱格式！"
+                    return this.$t('userDetail.verify_3')
                 } else {
                     return  "";
                 }
             },
             passwordVerify(){
-                if(!this.userInfo.password){
-                    return "密码不能为空！"
-                }else if (this.userInfo.password.length<6||this.userInfo.password.length>30) {
-                    return "密码长度应在6-30个字符之内！"
+                if(!this.userInfo.password || this.userInfo.password.trim().length===0){
+                    return this.$t('userDetail.verify_4')
+                }else if (this.userInfo.password.trim().length<6||this.userInfo.password.trim().length>30) {
+                    return this.$t('userDetail.verify_5')
                 }else {
                     return  "";
                 }
             },
             groupVerify(){
                 if(this.userInfo.role.length<1){
-                    return  "请选择该用户拥有的权限（至少选择一项）！";
+                    return  this.$t('userDetail.verify_6')
                 }else {
                     return "";
                 }

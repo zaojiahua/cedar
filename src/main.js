@@ -10,6 +10,7 @@ import ConsoleLogMiddleware from './middleware/ConsoleLogMiddleware'
 import config from "./lib/config"
 import AuthenticationMiddleware from "./middleware/AuthenticationMiddleware";
 import utils from "./lib/utils";
+import i18n  from "./locale";
 
 utils._initDate();
 
@@ -37,6 +38,7 @@ Vue.config.debug = true
 Vue.prototype.$ajax = axios
 let _ = lodash
 Vue.use(iView)
+Vue.use(i18n)
 
 //Load authentication from local
 if(sessionStorage.token === undefined
@@ -50,6 +52,7 @@ if(sessionStorage.token === undefined
 // Entry point
 let main = new Vue({
     router,
+    i18n,  //挂载i18n
     render: h => h(App),
 })
 

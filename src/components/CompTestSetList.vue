@@ -7,22 +7,22 @@
         <Modal v-model="showViewModal" width="90" :mask-closable="false" :footer-hide="true">
             <div v-if="showViewModal">
                 <Row style="text-align-last: center;margin-bottom: 15px;">
-                    <h2>测试集：{{ viewName }}</h2>
+                    <h2>{{$t('testSetList.test')}}：{{ viewName }}</h2>
                 </Row>
                 <comp-filter-switch ref="filterSwitch" :prop-test-gather="viewId" @on-url-change="onJobFilterParams"></comp-filter-switch>
                 <Row style=";margin: 10px 0">
                     <Col style="text-align: right">
-                        <Button type="primary" @click="openJobModal">添加用例</Button>
-                        <Button  style="margin: 0 15px;" type="warning" @click="cancelJobList">取消选择（{{jobNumbers}}）</Button>
+                        <Button type="primary" @click="openJobModal">{{$t('testSetList.addJob')}}</Button>
+                        <Button  style="margin: 0 15px;" type="warning" @click="cancelJobList">{{$t('public.cancelSelect')}}（{{jobNumbers}}）</Button>
                         <Dropdown trigger="click">
                             <Button>
-                                更多操作
+                                {{$t('public.moreAction')}}
                                 <Icon type="ios-arrow-down"></Icon>
                             </Button>
                             <DropdownMenu slot="list" style="text-align: left;">
                                 <!--<span @click="onRefreshJobList"><DropdownItem>刷新列表</DropdownItem></span>-->
-                                <span @click="onRemoveJobs"><DropdownItem>批量移除</DropdownItem></span>
-                                <span @click="onExportJobs"><DropdownItem>导出用例</DropdownItem></span>
+                                <span @click="onRemoveJobs"><DropdownItem>{{$t('testSetList.remove')}}</DropdownItem></span>
+                                <span @click="onExportJobs"><DropdownItem>{{$t('testSetList.export')}}</DropdownItem></span>
                             </DropdownMenu>
                         </Dropdown>
                     </Col>
@@ -35,8 +35,8 @@
         <Modal v-model="showSelectJobModal" v-if="showSelectJobModal" :fullscreen="true" :transfer="false" :closable="false">
             <comp-test-set-add-job ref="addJob"  @get-job-count="getJobCount"></comp-test-set-add-job>
             <div slot="footer">
-                <Button type="text" @click="showSelectJobModal=false">取消</Button>
-                <Button type="primary" @click="getJobSelection">确定 ( {{ selectJobCount }} )</Button>
+                <Button type="text" @click="showSelectJobModal=false">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" @click="getJobSelection">{{$t('public.btn_ok')}} ( {{ selectJobCount }} )</Button>
             </div>
         </Modal>
     </div>
@@ -67,32 +67,32 @@
                         align: 'center'
                     },
                     {
-                        title: '测试集名称',
+                        title: this.$t('testSetList.name'),
                         key: 'name',
                     },
                     {
-                        title: '用例数量',
+                        title: this.$t('testSetList.job_count'),
                         width: 100,
                         align: 'center',
                         key: 'job_count'
                     },
                     {
-                        title: '涉及测试柜',
+                        title: this.$t('testSetList.cabinet_version_list'),
                         key: 'cabinet_version_list'
                     },
                     {
-                        title: '预计耗时',
+                        title: this.$t('testSetList.duration_time'),
                         key: 'duration_time'
                     },
                     {
-                        title: '更新时间',
+                        title: this.$t('testSetList.update_time'),
                         key: 'update_time',
                         sortable:'custom'
                     },
                     {
-                        title:"操作",
+                        title:this.$t('testSetList.action'),
                         key:"action",
-                        width:100,
+                        width:110,
                         align: 'center',
                         render: (h, params) => {
                             return h('div', [
@@ -102,7 +102,7 @@
                                         padding:"15px 0",
                                         cursor:"pointer"
                                     },
-                                }, '查看用例')
+                                }, this.$t('testSetList.see'))
                             ]);
                         }
                     }
@@ -145,7 +145,7 @@
                         this.dataTotal = parseInt(response.headers["total-count"])
                         this.data.forEach(item=>{
                             item.cabinet_version_list = item.cabinet_version ? item.cabinet_version.cabinet_version_list.join(",") : ""
-                            item.duration_time =  (item.duration_time/3600).toFixed(1) + ' 小时'
+                            item.duration_time =  (item.duration_time/3600).toFixed(1) + this.$t('testSetList.house')
 
                             /* 将之前已经选中的选项重新勾选 */
                             this.selection.forEach(selected=>{
@@ -157,7 +157,7 @@
                         })
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error({content:"测试集信息获取失败"+error.response.data.description,duration:6})
+                        this.$Message.error({content:this.$t('testSetList.err')+error.response.data.description,duration:6})
                     })
             },
             //接收传过来的搜索keyword
@@ -240,7 +240,7 @@
             getJobSelection(){
                 let jobSelectList = this.$refs.addJob.getSelection()
                 if(jobSelectList.length===0){
-                    this.$Message.warning("请选择用例！")
+                    this.$Message.warning(this.$t('testSetList.selTit'))
                     return
                 }
                 let ids = []
@@ -252,14 +252,14 @@
                     job_ids: ids,
                     operate: "add"
                 }).then(response=>{
-                    this.$Message.success("用例添加成功")
+                    this.$Message.success(this.$t('testSetList.addSuccess'))
                     this.showSelectJobModal = false
                     this.$refs.testSetJobList.refresh(this.viewId)
                     this.$refs.filterSwitch.getFilterData()
                     this.refresh()
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error({content:"用例添加失败"+error.response.data.description,duration:6})
+                    this.$Message.error({content:this.$t('testSetList.addFailed')+error.response.data.description,duration:6})
                 })
             },
             openJobModal(){
@@ -290,7 +290,7 @@
             // 批  量  移  除  用  例
             onRemoveJobs(){
                 if(this.jobNumbers===0){
-                    this.$Message.info("至少选择一个用例！")
+                    this.$Message.info(this.$t('testSetList.selTit_2'))
                     return
                 }
                let jobList = this.$refs.testSetJobList.getSelection();
@@ -300,14 +300,14 @@
                 })
                 let root = this
                 this.$Modal.confirm({
-                    title: "确认移除选中的用例吗?",
+                    title: this.$t('testSetList.removeTit'),
                     onOk() {
                         this.$ajax.post('api/v1/cedar/update_test_gather/',{
                             id: root.viewId,
                             job_ids: ids,
                             operate: "delete"
                         }).then(response=>{
-                            root.$Message.success("用例移除成功")
+                            root.$Message.success(root.$t('testSetList.delSuccess'))
                             root.refresh()   // 用例移除以后刷新外层测试集列表
                             root.$refs.testSetJobList.onPageChange(1)  //刷新当前的用例列表
                             root.$refs.testSetJobList.resetJobList() //  重置当前用例列表的已选数据
@@ -315,7 +315,7 @@
                             // root.$refs.filterSwitch.getFilterData() //刷新当前的筛选列表
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
-                            this.$Message.error({content:"用例移除失败"+error.response.data.description,duration:6})
+                            this.$Message.error({content:root.$t('testSetList.delFailed')+error.response.data.description,duration:6})
                         })
                     }
                 })
@@ -323,7 +323,7 @@
             // 导出用例
             onExportJobs(){
                 if(this.jobNumbers===0){
-                    this.$Message.info("至少选择一个用例！")
+                    this.$Message.info(this.$t('testSetList.selTit_2'))
                     return
                 }
                 let jobList = this.$refs.testSetJobList.getSelection();
@@ -334,8 +334,8 @@
                 let userId = sessionStorage.getItem('id')
                 let _this = this
                 this.$Modal.confirm({
-                    title: "提示",
-                    content: "您确定要导出这些用例吗?<p>普通用户只能导出自己的用例，管理员可以导出全部用例。</p>",
+                    title: this.$t('public.modal_info'),
+                    content: this.$t('jobManagement.exportTit_1')+"<p>"+this.$t('jobManagement.exportTit_2')+"</p>",
                     onOk(){
                         this.$ajax
                             .post("api/v1/cedar/job_export/",{
@@ -346,9 +346,9 @@
                                 if(response.data.success){
                                     window.location.href=_this.baseUrl + response.data.success;
                                     _this.cancelJobList()
-                                    this.$Message.success({content:"正在导出用例...",duration: 3})
+                                    this.$Message.success({content:_this.$t('jobManagement.isExport'),duration: 3})
                                 }else {
-                                    this.$Message.error("导出用例失败!")
+                                    this.$Message.error(_this.$t('jobManagement.exportFail'))
                                 }
                             })
                             .catch(error=>{
