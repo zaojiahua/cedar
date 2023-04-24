@@ -36,9 +36,9 @@
         },
         methods:{
             setDefaultOption(){
-                let str = "失败率"
+                let str = this.$t('dynamicLoadingChart.failRate')
                 if(this.propType===2)
-                    str = "无效率"
+                    str = this.$t('dynamicLoadingChart.invalidRate')
                 let option = {
                     color:[ "#1bbc9c","#FFAE25","#999"],   //通过>未通过>无效
                     series: [

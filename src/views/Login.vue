@@ -6,28 +6,32 @@
                 <Form ref="formInline" inline>
                     <Row>
                         <FormItem>
-                            <Input type="text" v-model="username" :autofocus="true" @keyup.enter.native="login" placeholder="请输入账户">
+                            <Input type="text" v-model="username" :autofocus="true" @keyup.enter.native="login" :placeholder="lang==='zh'?'请输入账户':'username'">
                                 <Icon type="ios-person-outline" slot="prepend"></Icon>
                             </Input>
                         </FormItem>
                     </Row>
                     <Row>
                         <FormItem>
-                            <Input type="password" v-model="password" @keyup.enter.native="login" placeholder="请输入密码">
+                            <Input type="password" v-model="password" @keyup.enter.native="login" :placeholder="lang==='zh'?'请输入密码':'password'">
                                 <Icon type="ios-lock-outline" slot="prepend"></Icon>
                             </Input>
                         </FormItem>
                     </Row>
                     <Row type="flex" justify="start">
                         <FormItem>
-                            <Checkbox v-model="keepLogin" @keyup.enter.native="login">保持登入</Checkbox>
+                            <Checkbox v-model="keepLogin" @keyup.enter.native="login" style="width: 84px">{{$t('login.remember')}}</Checkbox>
+                            <Select v-model="lang" size="small" style="width:100px;display: inline-block" @on-change="onLangChange">
+                                <Option value="zh">简体中文</Option>
+                                <Option value="en">English</Option>
+                            </Select>
                         </FormItem>
                     </Row>
-                    <Row type="flex" justify="end">
-                        <FormItem>
-                            <Button id="loginButton" type="primary" @click="login" @keyup.enter="login" style="width: 200px;">登入
+                    <Row type="flex">
+                        <!--<FormItem>-->
+                            <Button id="loginButton" type="primary" @click="login" @keyup.enter="login" style="width: 192px;">{{$t('login.login_btn')}}
                             </Button>
-                        </FormItem>
+                        <!--</FormItem>-->
                     </Row>
                 </Form>
             </Card>
@@ -39,19 +43,25 @@
     export default {
         data() {
             return {
+                lang: localStorage.getItem("lang") ||  'zh',
                 username: "",
                 password: "",
                 keepLogin: false
             }
         },
         methods: {
+            onLangChange(select){
+                this.lang = select
+                this.$i18n.locale = select
+                localStorage.setItem('lang', select)
+            },
             login() {
                 if(this.username.trim().length===0){
-                    this.$Message.warning("请输入用户名！")
+                    this.$Message.warning(this.$t('login.check_username'))
                     return
                 }
                 if(this.password.length===0){
-                    this.$Message.warning("请输入密码！")
+                    this.$Message.warning(this.$t('login.check_password'))
                     return
                 }
                 this.$Loading.start()
@@ -70,19 +80,19 @@
                             localStorage.setItem("username", response.data["username"])
                         }
                         this.$router.push({name: "tboard-management"})
-                        this.$Message.success('成功登入!');
+                        this.$Message.success(this.$t('login.successMsg'));
                         this.$Loading.finish()
                     })
                     .catch(error => {
                         let errorMsg = "";
                         if (error.response.status === 400) {
-                            errorMsg = "该用户已被冻结！"
+                            errorMsg = this.$t('login.errorMsg_400')
                         }else if (error.response.status === 401) {
-                            errorMsg = "密码错误！"
+                            errorMsg = this.$t('login.errorMsg_401')
                         }else if (error.response.status === 404)
-                            errorMsg = "用户名错误！"
+                            errorMsg = this.$t('login.errorMsg_404')
                         else if(error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
+                            errorMsg = this.$t('public.error_500')
                         } else {
                             errorMsg = error.toString()
                         }
@@ -94,6 +104,7 @@
             }
         },
         mounted() {
+            console.log(this.lang);
             localStorage.removeItem("token")
             localStorage.removeItem("id")
             localStorage.removeItem("username")

@@ -15,36 +15,36 @@
                         </MenuItem>
                         <Submenu name="1">
                             <template slot="title">
-                                设置
+                                {{$t('navbar.setting.name')}}
                             </template>
                             <div class="box">
-                                <MenuItem name="1-1" :to="{name: 'TGuard-management'}">T-Guard干扰词库</MenuItem>
-                                <MenuItem name="1-2" :to="{name: 'setting'}">页面设置</MenuItem>
-                                <MenuItem name="1-3"  @click.native="getSysVersion">关于TMach</MenuItem>
+                                <MenuItem name="1-1" :to="{name: 'TGuard-management'}">{{$t('navbar.setting.TGuard')}}</MenuItem>
+                                <MenuItem name="1-2" :to="{name: 'setting'}">{{$t('navbar.setting.page')}}</MenuItem>
+                                <MenuItem name="1-3"  @click.native="getSysVersion">{{$t('navbar.setting.about')}}</MenuItem>
                             </div>
                         </Submenu>
                         <MenuItem name="3" @click.native="logout">
-                            登出
+                            {{$t('navbar.loginOut')}}
                             <Icon type="ios-exit-outline" size="24"></Icon>
                         </MenuItem>
                     </div>
                 </Menu>
             </Header>
             <Layout>
-                <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;padding-bottom: 48px">
+                <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="width:200px;padding-bottom: 48px;border-top: #5b5b5b 1px solid;">
                     <Menu theme="dark" style="background-color: transparent; width: inherit;" :class="menuClass" :active-name="$route.name">
                         <MenuItem v-if="permissions.includes('apiv1.user_management')" name="user-management" :to="{name: 'user-management'}">
-                            <Tooltip content="用户管理" placement="right" :disabled="!isCollapsed">
+                            <Tooltip :content="$t('navbar.user')" placement="right" :disabled="!isCollapsed">
                                 <Icon type="md-person" size="24"/>
                             </Tooltip>
-                            <span>用户管理</span>
+                            <span>{{$t('navbar.user')}}</span>
                         </MenuItem>
-                        <MenuItem v-if="permissions.includes('apiv1.upgrade_system')" name="system-upgrade" :to="{name: 'system-upgrade'}">
-                            <Tooltip content="系统升级" placement="right" :disabled="!isCollapsed">
-                                <Icon type="md-sync" size="24"/>
-                            </Tooltip>
-                            <span>系统升级</span>
-                        </MenuItem>
+                        <!--<MenuItem v-if="permissions.includes('apiv1.upgrade_system')" name="system-upgrade" :to="{name: 'system-upgrade'}">-->
+                            <!--<Tooltip :content="$t('navbar.sys')" placement="right" :disabled="!isCollapsed">-->
+                                <!--<Icon type="md-sync" size="24"/>-->
+                            <!--</Tooltip>-->
+                            <!--<span>{{$t('navbar.sys')}}</span>-->
+                        <!--</MenuItem>-->
                         <!--<MenuItem v-if="permissions.includes('apiv1.view_system_log')" name="log-files" :to="{name: 'log-files'}">-->
                             <!--<Tooltip content="日志文件" placement="right" :disabled="!isCollapsed">-->
                                 <!--<Icon type="md-filing" size="24"/>-->
@@ -52,60 +52,60 @@
                             <!--<span>日志文件</span>-->
                         <!--</MenuItem>-->
                         <MenuItem name="job-management" :to="{name: 'job-management'}">
-                            <Tooltip content="用例管理" placement="right" :disabled="!isCollapsed">
+                            <Tooltip :content="$t('navbar.job')" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-briefcase-outline" size="24"/>
                             </Tooltip>
-                            <span>用例管理</span>
+                            <span>{{$t('navbar.job')}}</span>
                         </MenuItem>
                         <MenuItem name="testSet-management" :to="{name: 'testSet-management'}">
-                            <Tooltip content="测试集" placement="right" :disabled="!isCollapsed">
+                            <Tooltip :content="$t('navbar.testSet')" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-cube-outline" size="24" />
                             </Tooltip>
-                            <span>测试集</span>
+                            <span>{{$t('navbar.testSet')}}</span>
                         </MenuItem>
                         <MenuItem name="create-tboard" :to="{name: 'create-tboard'}">
-                            <Tooltip content="新建任务" placement="right" :disabled="!isCollapsed">
+                            <Tooltip :content="$t('navbar.create')" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-add-circle-outline" size="24"/>
                             </Tooltip>
-                            <span>新建任务</span>
+                            <span>{{$t('navbar.create')}}</span>
                         </MenuItem>
                         <MenuItem name="tboard-management" :to="{name: 'tboard-management'}">
-                            <Tooltip content="我的任务" placement="right" :disabled="!isCollapsed">
+                            <Tooltip :content="$t('navbar.tboard')" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-list-box-outline" size="24" />
 
                                 <!--<Icon type="ios-folder-open-outline" size="24"/>-->
                             </Tooltip>
-                            <span>我的任务</span>
+                            <span>{{$t('navbar.tboard')}}</span>
                         </MenuItem>
                         <MenuItem name="rds-management" :to="{name: 'rds-management'}">
-                            <Tooltip content="测试数据" placement="right" :disabled="!isCollapsed">
+                            <Tooltip :content="$t('navbar.rds')" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-pie-outline" size="24"/>
                             </Tooltip>
-                            <span>测试数据</span>
+                            <span>{{$t('navbar.rds')}}</span>
                         </MenuItem>
                         <MenuItem name="perf-data-management" :to="{name: 'perf-data-management'}">
-                            <Tooltip content="性能分析" placement="right" :disabled="!isCollapsed">
+                            <Tooltip :content="$t('navbar.perf')" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-pulse" size="24"/>
                             </Tooltip>
-                            <span>性能分析</span>
+                            <span>{{$t('navbar.perf')}}</span>
                         </MenuItem>
                         <MenuItem name="device-management" :to="{name: 'device-management'}">
-                            <Tooltip content="设备管理" placement="right" :disabled="!isCollapsed">
+                            <Tooltip :content="$t('navbar.device')" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-phone-portrait" size="24"/>
                             </Tooltip>
-                            <span>设备管理</span>
+                            <span>{{$t('navbar.device')}}</span>
                         </MenuItem>
                         <MenuItem name="clean-center" :to="{name: 'clean-center'}">
-                            <Tooltip content="清理中心" placement="right" :disabled="!isCollapsed">
+                            <Tooltip :content="$t('navbar.clean')" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-trash" size="24"/>
                             </Tooltip>
-                            <span>清理中心</span>
+                            <span>{{$t('navbar.clean')}}</span>
                         </MenuItem>
                         <MenuItem name="abnormal-statistics" :to="{name: 'abnormal-statistics'}">
-                            <Tooltip content="异常统计" placement="right" :disabled="!isCollapsed">
+                            <Tooltip :content="$t('navbar.abnormal')" placement="right" :disabled="!isCollapsed">
                                 <Icon type="ios-warning-outline" size="24"/>
                             </Tooltip>
-                            <span>异常统计</span>
+                            <span>{{$t('navbar.abnormal')}}</span>
                         </MenuItem>
                     </Menu>
                 </Sider>
@@ -119,16 +119,16 @@
                 </p>
                 <Form :label-width="120">
                     <FormItem>
-                        <b slot="label">Reef版本：</b>
+                        <b slot="label">{{$t('navbar.reef')}}：</b>
                         <p>{{ reef_version }}</p>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">Cedar版本：</b>
+                        <b slot="label">{{$t('navbar.cedar')}}：</b>
                         <p>3.8</p>
                     </FormItem>
                 </Form>
                 <p slot="footer" style="text-align: center">
-                    <Button type="primary"  @click="showModal = false">关闭</Button>
+                    <Button type="primary"  @click="showModal = false">{{$t('public.btn_close')}}</Button>
                 </p>
                 <Spin size="large" fix v-if="showVersionLoading"></Spin>
             </Modal>
@@ -170,11 +170,11 @@
         methods: {
             logout(){
                 this.$Modal.confirm({
-                    title: "您确定要登出?",
+                    title: this.$t('navbar.loginOutTit'),
                     onOk(){
                         this.$Loading.start()
                         main.$router.push({name: "login"})
-                        this.$Message.success("登出成功!")
+                        this.$Message.success(this.$t('navbar.loginOutSuccess'))
                         this.$Loading.finish()
                     },
                     onCancel(){
@@ -210,12 +210,12 @@
                         sessionStorage.permissions = []
                         let msg = ""
                         if(reason.response === undefined){
-                            msg = "请确认您的网路"
+                            msg = localStorage.getItem("lang")==='zh' ? "请确认您的网络" : 'Please confirm your network'
                         } else {
                             msg = reason.response.status
                         }
                         this.$Notice.error({
-                            title: "取得用户权限失败: "+msg
+                            title: localStorage.getItem("lang")==='zh' ? "取得用户权限失败: ":"Failed to get user permissions: "+msg
                         })
                     })
             }else {
@@ -237,7 +237,6 @@
         top: 0px;
         left: 0px;
         text-align: center;
-        border-bottom: #5b5b5b 1px solid;
     }
     .layout-nav{
         margin: 0 auto;
@@ -261,7 +260,7 @@
     .menu-item span{
         display: inline-block;
         overflow: hidden;
-        width: 69px;
+        width: 120px;
         text-overflow: ellipsis;
         white-space: nowrap;
         vertical-align: bottom;

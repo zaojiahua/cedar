@@ -1,12 +1,12 @@
 <template>
-    <Card title="用例详细信息" dis-hover>
-        <Form :label-width="90">
+    <Card :title="$t('jobDetail.cardTit')" dis-hover>
+        <Form :label-width="100">
             <FormItem v-model="jobInfo">
                 <b slot="label">ID:</b>
                 <Input v-model="jobInfo.id" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">用例名称:</b>
+                <b slot="label">{{$t('jobList.job_name')}}:</b>
                 <Input v-model="jobInfo.job_name" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
@@ -18,59 +18,59 @@
                 <Input v-model="jobInfo.priority" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">用例说明:</b>
+                <b slot="label">{{$t('jobDetail.description')}}:</b>
                 <Input v-model="jobInfo.description" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">测试用途:</b>
+                <b slot="label">{{$t('jobList.display_job_test_area')}}:</b>
                 <Input v-model="testArea" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">适配机型:</b>
+                <b slot="label">{{$t('filter.phone_model')}}:</b>
                 <Input v-model="phoneModels" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">安卓版本:</b>
+                <b slot="label">{{$t('filter.android_version')}}:</b>
                 <Input v-model="androidVersion" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">ROM版本:</b>
+                <b slot="label">{{$t('filter.rom_version')}}:</b>
                 <Input v-model="romVersion" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">测试柜类型:</b>
+                <b slot="label">{{$t('filter.type')}}:</b>
                 <Input v-model="jobInfo.cabinet_type" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">自定义标签:</b>
+                <b slot="label">{{$t('jobList.display_custom_tag')}}:</b>
                 <Input v-model="customTag" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">附加资源:</b>
-                <span v-if="resourceList.length===0">暂无资源</span>
+                <b slot="label">{{$t('jobDetail.resource')}}:</b>
+                <span v-if="resourceList.length===0">{{$t('jobDetail.noResource')}}</span>
                 <Cascader v-else :disabled="true" v-for="i in resourceList.length" v-model="resourceList[i-1]" :data="cascaderData" :key="i"
                           :transfer="true" style="margin-bottom: 16px" class="disabled-input"></Cascader>
             </FormItem>
             <FormItem>
-                <b slot="label">维护人员:</b>
+                <b slot="label">{{$t('jobList.username')}}:</b>
                 <Input v-model="jobInfo.author.username" disabled class="disabled-input" type="textarea" :autosize="{minRows: 1,maxRows: 4}"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">更新时间:</b>
+                <b slot="label">{{$t('jobList.updated_time')}}:</b>
                 <Input v-model="jobInfo.updated_time" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">平均时长:</b>
+                <b slot="label">{{$t('jobDetail.process_time')}}:</b>
                 <Input v-model="jobInfo.process_time" disabled class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">最大时长:</b>
+                <b slot="label">{{$t('jobDetail.max_process_time')}}:</b>
                 <Input v-model="jobInfo.max_process_time" disabled class="disabled-input"></Input>
             </FormItem>
         </Form>
         <p style="text-align: right">
-            <Button v-if="propDelJob" type="error" style="float:left;" @click="delJob">删除用例</Button>
-            <Button v-if="propCloseBtn" type="primary" @click="closeDrawerDetail">关闭</Button>
+            <Button v-if="propDelJob" type="error" style="float:left;" @click="delJob">{{$t('jobDetail.del')}}</Button>
+            <Button v-if="propCloseBtn" type="primary" @click="closeDrawerDetail">{{$t('public.btn_close')}}</Button>
         </p>
     </Card>
 </template>
@@ -115,10 +115,11 @@
         max_process_time:"string",
         cabinet_type:"string"
     };
+    const lang = localStorage.getItem("lang")
     const simChildren = [
         {
             value: '中国移动',
-            label: '中国移动',
+            label: lang ==='zh' ? '中国移动' : 'China Mobile',
             children: [
                 {
                     value: 'volte_true',
@@ -126,13 +127,13 @@
                 },
                 {
                     value: 'volte_false',
-                    label: '非Volte',
+                    label: 'not Volte',
                 }
             ]
         },
         {
             value: '中国联通',
-            label: '中国联通',
+            label: lang ==='zh' ? '中国联通' : 'China Unicom',
             children: [
                 {
                     value: 'volte_true',
@@ -140,13 +141,13 @@
                 },
                 {
                     value: 'volte_false',
-                    label: '非Volte',
+                    label: 'not Volte',
                 }
             ]
         },
         {
             value: '中国电信',
-            label: '中国电信',
+            label: lang ==='zh' ? '中国电信' : 'China Telecom',
             children: [
                 {
                     value: 'volte_true',
@@ -154,13 +155,13 @@
                 },
                 {
                     value: 'volte_false',
-                    label: '非Volte',
+                    label: 'not Volte',
                 }
             ]
         },
         {
             value: 'anything',
-            label: '移动/联通/电信',
+            label: lang ==='zh' ? '移动/联通/电信' : 'Mobile/Unicom/Telecom',
             children: [
                 {
                     value: 'volte_true',
@@ -168,13 +169,13 @@
                 },
                 {
                     value: 'volte_false',
-                    label: '非Volte',
+                    label: 'not Volte',
                 }
             ]
         },
         {
             value: 'not_中国移动',
-            label: '非中国移动',
+            label: lang ==='zh' ? '非中国移动':"not China Mobile",
             children: [
                 {
                     value: 'volte_true',
@@ -182,13 +183,13 @@
                 },
                 {
                     value: 'volte_false',
-                    label: '非Volte',
+                    label: 'not Volte',
                 }
             ]
         },
         {
             value: 'not_中国联通',
-            label: '非中国联通',
+            label: lang ==='zh' ? '非中国联通':"not China Unicom",
             children: [
                 {
                     value: 'volte_true',
@@ -196,13 +197,13 @@
                 },
                 {
                     value: 'volte_false',
-                    label: '非Volte',
+                    label: ' not Volte',
                 }
             ]
         },
         {
             value: 'not_中国电信',
-            label: '非中国电信',
+            label: lang ==='zh' ? '非中国电信':"not China Telecom",
             children: [
                 {
                     value: 'volte_true',
@@ -210,13 +211,13 @@
                 },
                 {
                     value: 'volte_false',
-                    label: '非Volte',
+                    label: 'not Volte',
                 }
             ]
         },
         {
             value: 'nothing',
-            label: '无卡'
+            label: lang ==='zh' ? '无卡':"no SIMCard"
         },
     ];
 
@@ -242,21 +243,21 @@
                 cascaderData:[
                     {
                         value: 'device',
-                        label: '主机',
+                        label: lang ==='zh'?'主机':'host',
                         children: [
                             {
                                 value: 'simcard_1',
-                                label: 'SIM卡1',
+                                label: lang ==='zh'?'SIM卡1':'simcard_1',
                                 children: simChildren,
                             },
                             {
                                 value: 'simcard_2',
-                                label: 'SIM卡2',
+                                label: lang ==='zh'?'SIM卡2':'simcard_2',
                                 children: simChildren,
                             },
                             {
                                 value: 'account_resource',
-                                label: '账号资源',
+                                label: lang ==='zh'?'账号资源':'account_resource',
                                 children:[]
                             }
                         ]
@@ -264,21 +265,21 @@
                     //=========================================
                     {
                         value: 'subsidiary_device_1',
-                        label: '僚机1',
+                        label: lang ==='zh'?'僚机1':'subsidiary_device_1',
                         children: [
                             {
                                 value: 'simcard_1',
-                                label: 'SIM卡1',
+                                label: lang ==='zh'?'SIM卡1':'simcard_1',
                                 children: simChildren,
                             },
                             {
                                 value: 'simcard_2',
-                                label: 'SIM卡2',
+                                label: lang ==='zh'?'SIM卡2':'simcard_2',
                                 children: simChildren,
                             },
                             {
                                 value: 'account_resource',
-                                label: '账号资源',
+                                label: lang ==='zh'?'账号资源':'account_resource',
                                 children:[]
                             }
                         ]
@@ -286,21 +287,21 @@
                     //============================
                     {
                         value: 'subsidiary_device_2',
-                        label: '僚机2',
+                        label: lang ==='zh'?'僚机2':'subsidiary_device_2',
                         children: [
                             {
                                 value: 'simcard_1',
-                                label: 'SIM卡1',
+                                label: lang ==='zh'?'SIM卡1':'simcard_1',
                                 children: simChildren,
                             },
                             {
                                 value: 'simcard_2',
-                                label: 'SIM卡2',
+                                label: lang ==='zh'?'SIM卡2':'simcard_2',
                                 children: simChildren,
                             },
                             {
                                 value: 'account_resource',
-                                label: '账号资源',
+                                label: lang ==='zh'?'账号资源':'account_resource',
                                 children:[]
                             }
                         ]
@@ -308,21 +309,21 @@
                     //=======================
                     {
                         value: 'subsidiary_device_3',
-                        label: '僚机3',
+                        label: lang ==='zh'?'僚机3':'subsidiary_device_3',
                         children: [
                             {
                                 value: 'simcard_1',
-                                label: 'SIM卡1',
+                                label: lang ==='zh'?'SIM卡1':'simcard_1',
                                 children: simChildren,
                             },
                             {
                                 value: 'simcard_2',
-                                label: 'SIM卡2',
+                                label: lang ==='zh'?'SIM卡2':'simcard_2',
                                 children: simChildren,
                             },
                             {
                                 value: 'account_resource',
-                                label: '账号资源',
+                                label: lang ==='zh'?'账号资源':'account_resource',
                                 children:[]
                             }
                         ]
@@ -395,7 +396,7 @@
                             let seconds=Math.round(leave)
                             this.jobInfo.process_time = minutes+" min "+seconds+" s"
                         }else
-                            this.jobInfo.process_time = "暂无数据"
+                            this.jobInfo.process_time = this.$t('jobDetail.noData')
                         if(response.data.max_process_time){
                             //计算分钟数
                             let minutes=Math.floor(response.data.max_process_time/60)
@@ -404,12 +405,12 @@
                             let seconds=Math.round(leave)
                             this.jobInfo.max_process_time = minutes+" min "+seconds+" s"
                         }else
-                            this.jobInfo.max_process_time = "暂无数据"
+                            this.jobInfo.max_process_time = this.$t('jobDetail.noData')
 
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("数据加载失败");
+                        this.$Message.error(this.$t('jobDetail.loadFail'));
                     })
             },
             closeDrawerDetail(){
@@ -418,31 +419,31 @@
             delJob(){
                 let root = this;
                 this.$Modal.confirm({
-                    title: "警告！",
-                    content: "您确定要删除该用例吗？",
+                    title: root.$t('public.modal_warn'),
+                    content: root.$t('jobDetail.delTit'),
                     onOk(){
                         this.$ajax
                             .post("api/v1/cedar/job_deleted/",{
                                 job_ids:[].concat(root.jobInfo.id)
                             })
                             .then(response=>{
-                                this.$Message.success("用例删除成功！");
+                                this.$Message.success(root.$t('jobDetail.delSuccess'));
                                 root.$emit("delJobOne",false);
                             })
                             .catch(error=>{
                                 if (config.DEBUG) console.log(error)
                                 let errorMsg = "";
                                 if (error.response.status >= 500) {
-                                    errorMsg = "服务器错误！"
+                                    errorMsg = root.$t('public.error_500')
                                 } else {
                                     if(error.response.data.custom_code==="203001"){
-                                        errorMsg = "job不存在"
+                                        errorMsg = root.$t('jobDetail.err_1')
                                     }else if (error.response.data.custom_code === "203002") {
-                                        errorMsg = "该inner job关联了其他用例，无法完成删除操作"
+                                        errorMsg = root.$t('jobDetail.err_2')
                                     }else if(error.response.data.custom_code ==="201001"){
-                                        errorMsg = '用例删除失败！'+error.response.data.description
+                                        errorMsg = root.$t('jobDetail.err_3')+error.response.data.description
                                     }else{
-                                        errorMsg = 'Inner 【'+ error.response.data.point_out_job.join("】,【") +'】 存在关联用例，无法删除！'
+                                        errorMsg = 'Inner 【'+ error.response.data.point_out_job.join("】,【") +'】 '+root.$t('jobDetail.err_4')
                                     }
                                 }
                                 this.$Message.error({content:errorMsg,duration:10})
@@ -457,10 +458,13 @@
                         let subsidiaryAppChildren = []
                         response.data.result.forEach(app=>{
                             appChildren.push({value:app.name,label:app.name})
-                            subsidiaryAppChildren.push({value:app.name,label:app.name,children:[{value:"account_alike_true",label:"与主机相同"},{value:"unrestrained",label:"无特殊要求"}]})
+                            subsidiaryAppChildren.push({
+                                value:app.name,label:app.name,
+                                children:[{value:"account_alike_true",label:lang ==='zh'?"与主机相同":'Same as the host'},
+                                    {value:"unrestrained",label:lang ==='zh'?"无特殊要求":'No special requirements'}]})
                         })
                         this.cascaderData.forEach(item=> {
-                            if(item.label === "主机")
+                            if(item.label === this.$t('jobDetail.host'))
                                 item.children[2].children = appChildren
                             else
                                 item.children[2].children = subsidiaryAppChildren
@@ -468,7 +472,7 @@
                     })
                     .catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error({content:"获取app列表失败"+ error.response.data.message,duration:3})
+                        this.$Message.error({content:this.$t('jobDetail.fail')+ error.response.data.message,duration:3})
                     })
             }
         },

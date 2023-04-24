@@ -1,26 +1,26 @@
 <template>
     <Card >
-        <p slot="title" style="color:#1bbc9c;text-align: center"><Icon type="ios-contact" size="24"/>个人基本资料展示</p>
-        <Form v-model="userInfo" :label-width="80" style="width: 400px;margin: 0 auto">
+        <p slot="title" style="color:#1bbc9c;text-align: center;height: 23px"><Icon type="ios-contact" size="24"/>{{$t('personal.title')}}</p>
+        <Form v-model="userInfo" :label-width="120" style="width: 400px;margin: 0 auto">
             <FormItem>
-                <b slot="label">用户名：</b>
+                <b slot="label">{{$t('personal.name')}}:</b>
                 <Input v-model="userInfo.name" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">真实姓名：</b>
+                <b slot="label">{{$t('personal.real')}}:</b>
                 <Input v-model="userInfo.lastname" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">权限：</b>
+                <b slot="label">{{$t('personal.role')}}:</b>
                 <Input v-model="userInfo.role" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem v-if="showPwd">
-                <b slot="label">新密码：</b>
+                <b slot="label">{{$t('personal.psd')}}:</b>
                 <Input v-model="userInfo.password" type="password" placeholder="Enter your new password..."></Input>
             </FormItem>
             <p style="text-align: center;margin: 60px 0 20px;">
-                <Button v-if="updateBtn" @click="passwordBtn">修改密码</Button>
-                <Button v-if="saveBtn" type="primary" @click="savePwdBtn">保存修改</Button>
+                <Button v-if="updateBtn" @click="passwordBtn">{{$t('personal.btn_update')}}</Button>
+                <Button v-if="saveBtn" type="primary" @click="savePwdBtn">{{$t('personal.btn_save')}}</Button>
             </p>
         </Form>
     </Card>
@@ -52,7 +52,7 @@
             },
             savePwdBtn(){
                 if(this.userInfo.password===null){
-                    this.$Message.warning("请输入密码!");
+                    this.$Message.warning(this.$t('personal.enterPassword'));
                 }else {
                     this.$Loading.start();
                     this.$ajax
@@ -60,7 +60,7 @@
                             password:this.userInfo.password
                         })
                         .then(response => {
-                            this.$Message.success("密码修改成功！")
+                            this.$Message.success(this.$t('personal.successPsd'))
                             this.showPwd=false;
                             this.updateBtn=true;
                             this.saveBtn=false;
@@ -70,9 +70,9 @@
                         .catch(error => {
                             let errorMsg = "";
                             if (error.response.status >= 500) {
-                                errorMsg = "服务器错误！"
+                                errorMsg = this.$t('public.error_500')
                             } else {
-                                errorMsg = "密码修改失败！"
+                                errorMsg = this.$t('personal.errorPsd')
                             }
                             this.$Message.error(errorMsg)
                             this.$Loading.error()

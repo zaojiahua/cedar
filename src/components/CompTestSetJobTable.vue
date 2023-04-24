@@ -45,36 +45,36 @@
             return{
                 columns: [
                     {
-                        title: "用例名称",
+                        title: this.$t('jobList.job_name'),
                         key: "job_name",
                         width:250
                     },
                     {
-                        title: "用例类型",
+                        title: this.$t('jobList.job_type'),
                         key: "job_type",
                     },
                     {
-                        title: "测试用途",
+                        title: this.$t('jobList.display_job_test_area'),
                         key: "display_job_test_area"
                     },
                     {
-                        title: "自定义标签",
+                        title: this.$t('jobList.display_custom_tag'),
                         key: "display_custom_tag"
                     },
                     {
-                        title: "用例耗时",
+                        title: this.$t('testSetJobTable.process_time'),
                         key: "process_time",
                     },
                     {
-                        title: "测试柜类型",
+                        title: this.$t('filter.type'),
                         key: "cabinet_type",
                     },
                     {
-                        title: "维护人员",
+                        title: this.$t('jobList.username'),
                         key: "username",
                     },
                     {
-                        title: "更新时间",
+                        title: this.$t('jobList.updated_time'),
                         key: "updated_time",
                         sortable:'custom'
                     }
@@ -141,11 +141,11 @@
                             job.username = job.author.username
 
                             if( job.job_type === "Joblib" )
-                                job.job_type = '功能'
+                                job.job_type = this.$t('jobList.Joblib')
                             else if( job.job_type === "InnerJob" )
-                                job.job_type = '内嵌'
+                                job.job_type = this.$t('jobList.InnerJob')
                             else if( job.job_type === "PerfJob" )
-                                job.job_type = '性能'
+                                job.job_type = this.$t('jobList.PerfJob')
 
                             if(job.process_time){
                                 //计算分钟数
@@ -155,7 +155,7 @@
                                 let seconds=Math.round(leave)
                                 job.process_time = minutes+" min "+seconds+" s"
                             }else
-                                job.process_time = "暂无数据"
+                                job.process_time = this.$t('testSetJobTable.noData')
 
                             /* 将之前已经选中的选项重新勾选 */
                             this.selection.forEach(selected=>{
@@ -167,7 +167,7 @@
                         })
                     }).catch(error=>{
                         if (config.DEBUG) console.log(reason)
-                        this.$Message.error("用例信息获取失败")
+                        this.$Message.error(this.$t('testSetJobTable.error_1'))
                 })
             },
             onRowClick(row,index){

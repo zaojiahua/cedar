@@ -9,7 +9,7 @@
     <!--</Tabs>-->
 
     <Tabs v-model="tabName" name="outer">
-        <TabPane label="设备数据视图" name="rdsGroupByDevice" tab="outer">
+        <TabPane :label="$t('rdsManagement.view_1')" name="rdsGroupByDevice" tab="outer">
             <comp-rds-device-view></comp-rds-device-view>
         </TabPane>
         <!--<TabPane label="用例数据视图" name="rdsGroupByJob" tab="outer">-->
@@ -18,12 +18,12 @@
         <TabPane :label=tabLabel name="rdsGroupByTboard" tab="outer" icon="ios-arrow-down" context-menu>
             <comp-rds-tboard-view :prop-tab-name="tabLabel"></comp-rds-tboard-view>
         </TabPane>
-        <TabPane label="日志文件搜索" name="logSearch">
+        <TabPane :label="$t('rdsManagement.view_2')" name="logSearch">
             <comp-rds-log-search></comp-rds-log-search>
         </TabPane>
         <template slot="contextMenu">
-            <DropdownItem @click.native="tabLabel='任务数据统计'">任务数据统计</DropdownItem>
-            <DropdownItem @click.native="tabLabel='任务数据视图'">任务数据视图</DropdownItem>
+            <DropdownItem @click.native="tabLabel=$t('rdsManagement.view_3')">{{$t('rdsManagement.view_3')}}</DropdownItem>
+            <DropdownItem @click.native="tabLabel=$t('rdsManagement.view_4')">{{$t('rdsManagement.view_4')}}</DropdownItem>
         </template>
     </Tabs>
 
@@ -45,7 +45,7 @@
         data(){
             return{
                 tabName:"rdsGroupByDevice",
-                tabLabel:"任务数据统计",
+                tabLabel:this.$t('rdsManagement.view_3'),
             }
         },
         methods:{

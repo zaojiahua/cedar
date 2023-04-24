@@ -43,9 +43,9 @@
         },
         methods:{
             setDefaultOption(){
-                let type = "失败数"
+                let type = this.$t('dynamicLoadingChart.failCount')
                 if(this.propType===2)
-                    type = "无效数"
+                    type = this.$t('dynamicLoadingChart.invalidCount')
                 // 指定图表的配置项和数据
                 let option = {
                     tooltip: {
@@ -183,7 +183,7 @@
                     this.histogram.hideLoading();
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.warning("月历数据获取失败")
+                    this.$Message.warning(this.$t('dynamicLoadingChart.error_3'))
                     this.histogram.hideLoading();
                 })
             },

@@ -2,14 +2,14 @@
     <div>
         <Card>
             <p class="user-head">
-                <Button icon="md-add" style="margin-right: 20px" type="primary" @click="addUser">添加用户</Button>
+                <Button icon="md-add" style="margin-right: 20px" type="primary" @click="addUser">{{$t('userManagement.add')}}</Button>
                 <!--<Button icon="ios-trash-outline" type="error" @click="delUserList">批量删除</Button>-->
             </p>
             <Table ref="table" stripe :columns="userColumns" :data="userData"></Table>
             <Page :current="currentPage" :total="dataTotal" :page-size="pageSize" simple @on-change="onPageChange"
                   style="margin-top:20px;text-align: center "/>
         </Card>
-        <Drawer v-model="showUserDetail" :draggable="true" width="50" title="用户信息">
+        <Drawer v-model="showUserDetail" :draggable="true" width="50" :title="$t('userManagement.info')">
             <comp-user-detail :propStatus="componentStatus"  :prop-edit="isEdit" ref="userDetail" @onCancelClick="closeDrawer" @afterSendRequest="afterSendRequest"></comp-user-detail>
         </Drawer>
     </div>
@@ -32,27 +32,29 @@
                         align: 'center'
                     },
                     {
-                        title:"用户名",
+                        title:this.$t('userManagement.userColumns.username'),
                         key:"username"
                     },
                     {
-                        title:"真实姓名",
+                        title:this.$t('userManagement.userColumns.firstname'),
                         key:"firstname"
                     },
                     {
-                        title:"角色",
+                        title:this.$t('userManagement.userColumns.role'),
                         key:"role"
                     },
                     {
-                      title:"编辑用例数量",
-                      key:"job_amount"
+                        title:this.$t('userManagement.userColumns.job_amount'),
+                        key:"job_amount",
+                        maxWidth:120
                     },
                     {
-                      title:"贡献总分",
-                      key:"job_contribution"
+                        title:this.$t('userManagement.userColumns.job_contribution'),
+                        key:"job_contribution",
+                        maxWidth:160
                     },
                     {
-                        title:"操作",
+                        title:this.$t('userManagement.userColumns.action'),
                         key:"action",
                         // width:150,
                         align: 'center',
@@ -71,7 +73,7 @@
                                             this.showUserInfo(params.index);
                                         }
                                     }
-                                }, '修改'),
+                                }, this.$t('userManagement.userColumns.btn_1')),
                                 h('Button', {
                                     props: {
                                         type:  params.row.action ? 'error' : "default",
@@ -82,7 +84,7 @@
                                             this.onFrozenAccount(params.row)
                                         }
                                     }
-                                }, params.row.action ? '冻结账户' : "解冻账户")
+                                }, params.row.action ? this.$t('userManagement.userColumns.btn_2') : this.$t('userManagement.userColumns.btn_3'))
                             ]);
                         }
                     }
@@ -120,13 +122,13 @@
                     .then(response => {
                         this.showModal = false;
                         this.userData.splice(index, 1);
-                        this.$Message.success('删除成功');
+                        this.$Message.success(this.$t('public.delSuccess'));
                         this.$Loading.finish()
                     })
                     .catch(error => {
                         let errorMsg = "";
                         if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
+                            errorMsg = this.$t('public.error_500')
                         }
                         else {
                             errorMsg = error.toString()
@@ -172,7 +174,7 @@
                     .catch(error => {
                         let errorMsg = "";
                         if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
+                            errorMsg = this.$t('public.error_500')
                         } else {
                             errorMsg = error.toString()
                         }
@@ -184,11 +186,11 @@
             //  批量删除用户
             delUserList(){
                 let userList = this.$refs.table.getSelection();
+                let root = this;
                 if(userList.length>0){
-                    let root = this;
                     this.$Modal.confirm({
-                        title: "警告！",
-                        content: "您确定要删除这些数据吗?",
+                        title: root.$t('public.modal_warn'),
+                        content: root.$t('userManagement.modalContent'),
                         onOk(){
                             let userIds = [];
                             userList.forEach(info=>{
@@ -200,19 +202,19 @@
                             }
                             root.$ajax.all(ajaxObj)
                                 .then(response=>{
-                                    this.$Message.success("数据删除成功！")
+                                    this.$Message.success(root.$t('public.delSuccess'))
                                     root.getUserData();
                                 })
                                 .catch(error=>{
                                     if (config.DEBUG) console.log(error)
-                                    this.$Message.error("数据删除失败！")
+                                    this.$Message.error(root.$t('public.delFail'))
                                 })
                         }
                     });
                 }else{
                     this.$Modal.confirm({
-                        title: "提示",
-                        content: "请选择要删除的数据！"
+                        title: root.$t('public.modal_info'),
+                        content: root.$t('userManagement.modalContent_2')
                     });
                 }
             },
@@ -224,20 +226,20 @@
             onFrozenAccount(row){
                 let _this = this
                 if(row.is_superuser){
-                    this.$Message.warning("不能对该账户进行此操作！")
+                    this.$Message.warning(this.$t('userManagement.waringTit'))
                     return
                 }
 
-                let content = "您确定要冻结该账户吗?"
-                let successMsg = "冻结账户成功！"
-                let errorMsg = "冻结账户失败！"
+                let content = this.$t('userManagement.content')
+                let successMsg = this.$t('userManagement.successMsg')
+                let errorMsg = this.$t('userManagement.errorMsg')
                 if(!row.action){
-                    content = "您确定要恢复该账户吗?"
-                    successMsg = "解冻账户成功！"
-                    errorMsg = "解冻账户失败！"
+                    content = this.$t('userManagement.content_1')
+                    successMsg = this.$t('userManagement.successMsg_1')
+                    errorMsg = this.$t('userManagement.errorMsg_1')
                 }
                 this.$Modal.confirm({
-                    title:'提示',
+                    title:_this.$t('public.modal_info'),
                     content: content,
                     onOk(){
                         this.$ajax.patch("api/v1/cedar/reefuser/"+ row.id +"/",{

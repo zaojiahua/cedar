@@ -1,19 +1,19 @@
 <template>
     <div>
         <div class="sel-box" v-if="testIndex===0">
-            <h3 class="sel-tip">请先确定任务类型</h3>
-            <div style="text-align: center">
+            <h3 class="sel-tip">{{$t('createTboard.select')}}</h3>
+            <div style="display: flex;text-align: center;justify-content: center">
                 <div class="sel-grey-box" style="margin-right: 30px;" @click="testIndex=1">
                     <Icon type="ios-photos-outline" size="50" />
-                    <p>功能测试任务</p>
+                    <p>{{$t('createTboard.type_1')}}</p>
                 </div>
                 <div class="sel-grey-box" style="margin-right: 30px;" @click="testIndex=2">
                     <Icon type="ios-speedometer-outline" size="50" />
-                    <p>性能测试任务</p>
+                    <p>{{$t('createTboard.type_2')}}</p>
                 </div>
                 <div class="sel-grey-box" @click="testIndex=3">
                     <Icon type="ios-paper-outline" size="50" />
-                    <p>用例测试任务</p>
+                    <p>{{$t('createTboard.type_3')}}</p>
                 </div>
             </div>
         </div>

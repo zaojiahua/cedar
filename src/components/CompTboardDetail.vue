@@ -1,21 +1,21 @@
 <template>
     <Card :title="'Tboard(' + data.id + ')'" dis-hover>
-        <Button v-show="data.finished_flag&&data.belong==='coolpad'" slot="extra" style="float:right;margin-top: -5px;" @click="exportExcel" type="primary">导出数据</Button>
-        <Form :label-width="80">
+        <Button v-show="data.finished_flag&&data.belong==='coolpad'" slot="extra" style="float:right;margin-top: -5px;" @click="exportExcel" type="primary">{{$t('tboardDetail.export')}}</Button>
+        <Form :label-width="95">
             <FormItem>
-                <b slot="label">任务名称:</b>
+                <b slot="label">{{$t('tboardList.board_name')}}:</b>
                 <Input disabled class="disabled-input" :value="data.board_name"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">任务信息:</b>
+                <b slot="label">{{$t('tboardDetail.taskInfo')}}:</b>
                 <div style="border: #eee dotted 1px;padding-left: 7px;">
-                    <span style="margin-right: 16px;">用例数量：{{ getJobNum(data.job) }}</span>
-                    <span style="margin-right: 16px;">设备数量：{{ data.device.length }}</span>
-                    <span>运行轮次：{{ data.repeat_time }}</span>
+                    <span style="margin-right: 16px;">{{$t('tboardDetail.jobNum')}}：{{ getJobNum(data.job) }}</span>
+                    <span style="margin-right: 16px;">{{$t('tboardDetail.devNum')}}：{{ data.device.length }}</span>
+                    <span>{{$t('functionalTest.tboardRepeatTime')}}：{{ data.repeat_time }}</span>
                 </div>
             </FormItem>
             <FormItem v-show="data.test_gather_List.length>0">
-                <b slot="label">测试集:</b>
+                <b slot="label">{{$t('testSetList.test')}}:</b>
                 <ButtonGroup>
                     <Button v-for="(test_gather,index) in data.test_gather_List" :key="index">{{test_gather}}</Button>
                 </ButtonGroup>
@@ -25,15 +25,15 @@
                 <!--<Input disabled class="disabled-input" :value="getJobNum(data.job)"></Input>-->
             <!--</FormItem>-->
             <FormItem style="margin-bottom: 0;">
-                <b slot="label">测试用例:</b>
+                <b slot="label">{{$t('tboardDetail.testJob')}}:</b>
                 <ButtonGroup :class="{'hide-btn':!showMsg}">
                     <Tooltip v-for="(job,index) in data.job" :content="job.job_label" :key="index" placement="top" transfer>
                         <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">{{job.job_name}}</Button>
                     </Tooltip>
                 </ButtonGroup>
                 <Row>
-                    <span v-show="showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=false"><Icon type="ios-arrow-up" />收起</span>
-                    <span v-show="!showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=true"><Icon type="ios-arrow-down" />展开</span>
+                    <span v-show="showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=false"><Icon type="ios-arrow-up" />{{$t('tboardDetail.up')}}</span>
+                    <span v-show="!showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=true"><Icon type="ios-arrow-down" />{{$t('tboardDetail.down')}}</span>
                 </Row>
             </FormItem>
             <!--<FormItem>-->
@@ -41,7 +41,7 @@
                 <!--<Input disabled class="disabled-input" :value="data.device.length"></Input>-->
             <!--</FormItem>-->
             <FormItem>
-                <b slot="label">测试设备:</b>
+                <b slot="label">{{$t('tboardDetail.testDev')}}:</b>
                 <ButtonGroup>
                     <Tooltip v-for="device in data.device" :content="device.device_label" :key="device.id" placement="bottom" transfer>
                         <Button @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
@@ -55,46 +55,46 @@
                 <!--<Input disabled class="disabled-input" :value="data.repeat_time"></Input>-->
             <!--</FormItem>-->
             <FormItem>
-                <b slot="label">操作人员:</b>
+                <b slot="label">{{$t('tboardDetail.username')}}:</b>
                 <Input disabled class="disabled-input" :value="data.author.username"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">结束时间:</b>
+                <b slot="label">{{$t('tboardDetail.end_time')}}:</b>
                 <Input disabled class="disabled-input" :value="data.end_time"></Input>
             </FormItem>
-            <Divider orientation="left">总体运行结果</Divider>
+            <Divider orientation="left">{{$t('tboardDetail.result')}}</Divider>
             <Card style="cursor: pointer;" @click.native="onTotalResultClick">
                 <Row type="flex" align="middle" style="margin: 10px 16px 10px 16px;">
                     <Col>
                         <i-circle :percent="(totalStatisticData.pass/totalStatisticData.total*100)">
                             <p style="font-size:24px;font-weight: bold">{{(totalStatisticData.pass/totalStatisticData.total*100).toFixed(1)}}%</p>
-                            <small>总成功率</small>
+                            <small>{{$t('tboardDetail.success_ratio')}}</small>
                         </i-circle>
                     </Col>
                     <Col style="margin-left:16px;">
-                        <b>总共: </b><span>{{totalStatisticData.total.toFixed()}}</span><br>
-                        <b>成功: </b><span>{{totalStatisticData.pass}}</span><br>
-                        <b>失败: </b><span>{{totalStatisticData.fail}}</span><br>
-                        <b>无效: </b><span>{{totalStatisticData.invalid}}</span>
+                        <b>{{$t('tboardDetail.total')}}: </b><span>{{totalStatisticData.total.toFixed()}}</span><br>
+                        <b>{{$t('tboardDetail.pass')}}: </b><span>{{totalStatisticData.pass}}</span><br>
+                        <b>{{$t('tboardDetail.fail')}}: </b><span>{{totalStatisticData.fail}}</span><br>
+                        <b>{{$t('tboardDetail.invalid')}}: </b><span>{{totalStatisticData.invalid}}</span>
                     </Col>
                 </Row>
             </Card>
-            <Divider orientation="left">设备运行结果</Divider>
+            <Divider orientation="left">{{$t('tboardDetail.devResult')}}</Divider>
             <Card v-for="statistic in deviceStatisticData" :key="statistic.device_label"
                   style="padding: 7px 16px; margin-bottom: 8px; cursor: pointer;">
                 <Row type="flex" align="middle" style="margin-top: 16px; margin-bottom: 16px;" @click.native="onCellClick(statistic)">
                     <Col>
                         <i-circle :size="80" :percent="statistic.pass*100/statistic.total">
                             <p style="font-weight: bold;margin-bottom: 2px">{{(statistic.pass*100/statistic.total).toFixed(1)}}%</p>
-                            <small>设备成功率</small>
+                            <small>{{$t('tboardDetail.devSuss')}}</small>
                         </i-circle>
                     </Col>
                     <Col style="margin-left: 16px;">
-                        <b>设备名称: </b><span>{{statistic.deviceName}}</span><br>
-                        <b>总共: </b><span>{{statistic.total}}</span><br>
-                        <b>成功: </b><span>{{statistic.pass}}</span><br>
-                        <b>失败: </b><span>{{statistic.fail}}</span><br>
-                        <b>无效: </b><span>{{statistic.invalid}}</span>
+                        <b>{{$t('tboardDetail.devName')}}: </b><span>{{statistic.deviceName}}</span><br>
+                        <b>{{$t('tboardDetail.total')}}: </b><span>{{statistic.total}}</span><br>
+                        <b>{{$t('tboardDetail.pass')}}: </b><span>{{statistic.pass}}</span><br>
+                        <b>{{$t('tboardDetail.fail')}}: </b><span>{{statistic.fail}}</span><br>
+                        <b>{{$t('tboardDetail.invalid')}}: </b><span>{{statistic.invalid}}</span>
                     </Col>
                 </Row>
                 <Row>
@@ -104,22 +104,22 @@
                     <comp-battery-level-histogram :device-id="statistic.id" ref="histogram"></comp-battery-level-histogram>
                 </Row>
             </Card>
-            <Divider orientation="left">用例运行结果</Divider>
+            <Divider orientation="left">{{$t('tboardDetail.jobResult')}}</Divider>
             <Card v-for="(statistic,index) in jobStatisticData" :key="index" @click.native="onJobCellClick(statistic)"
                   style="padding: 7px 16px; margin-bottom: 8px; cursor: pointer;">
                 <Row type="flex" align="middle" style="margin: 16px 0">
                     <Col>
                         <i-circle :size="80" :percent="statistic.total===0 ? 0 : statistic.pass*100/statistic.total">
                             <p style="font-weight: bold;margin-bottom: 2px">{{statistic.total===0 ? 0 : (statistic.pass*100/statistic.total).toFixed(1)}}%</p>
-                            <small>用例成功率</small>
+                            <small>{{$t('tboardDetail.jobSuss')}}</small>
                         </i-circle>
                     </Col>
                     <Col style="margin-left: 16px;">
-                        <b>用例名称: </b><span>{{statistic.job_name}}</span><br>
-                        <b>总共: </b><span>{{statistic.total}}</span><br>
-                        <b>成功: </b><span>{{statistic.pass}}</span><br>
-                        <b>失败: </b><span>{{statistic.fail}}</span><br>
-                        <b>无效: </b><span>{{statistic.na}}</span>
+                        <b>{{$t('tboardDetail.jobName')}}: </b><span>{{statistic.job_name}}</span><br>
+                        <b>{{$t('tboardDetail.total')}}: </b><span>{{statistic.total}}</span><br>
+                        <b>{{$t('tboardDetail.pass')}}: </b><span>{{statistic.pass}}</span><br>
+                        <b>{{$t('tboardDetail.fail')}}: </b><span>{{statistic.fail}}</span><br>
+                        <b>{{$t('tboardDetail.invalid')}}: </b><span>{{statistic.na}}</span>
                     </Col>
                 </Row>
             </Card>
@@ -344,7 +344,7 @@
                         this.showLoading = false;
                     })).catch(reason => {
                         if (config.DEBUG) console.log(reason)
-                        this.$Message.error("载入失败")
+                        this.$Message.error(this.$t('public.loadFail'))
                         this.showLoading = false;
                     })
                 this.$ajax.get("api/v1/statistics/get_tboard_running_detail/?tboard_id=" + tboardId )
@@ -373,14 +373,14 @@
                 this.$ajax.get("api/v1/cedar/tboard_statistics_result/?tboard="+ this.data.id +"&ordering=-create_time&limit=1")
                     .then(response=>{
                         if(response.data.tboardstatisticsresult.length===0){
-                            this.$Message.error("导出异常")
+                            this.$Message.error(this.$t('tboardDetail.exportErr_1'))
                             return
                         }
                         window.open("http://"+config.REEF_HOST+":"+config.REEF_PORT +'/media/'+ response.data.tboardstatisticsresult[0].file_path)
-                        this.$Message.success("正在导出...")
+                        this.$Message.success(this.$t('tboardDetail.exportErr_2'))
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error({content:"导出失败",duration:3})
+                        this.$Message.error({content:this.$t('tboardDetail.exportErr_3'),duration:3})
                     })
             },
             //去重后的job数量

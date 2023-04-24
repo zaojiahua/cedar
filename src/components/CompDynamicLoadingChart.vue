@@ -1,11 +1,11 @@
 <template>
     <div style="position: relative">
         <p style="position: absolute;top: 20px;left: 0;right: 0;text-align: center">
-            <Icon type="ios-git-commit" size="20" style="color: #2f83e4"/><span style="margin-left: 5px">{{ propType===1 ? "失败率" : "无效率" }}</span>
-            <span style="display: inline-block;width: 25px;height: 14px;border-radius: 4px;background: #81e1ff;margin: 0 5px 0 50px"></span><span>{{ propType===1 ? "失败数" : "无效数" }}</span>
+            <Icon type="ios-git-commit" size="20" style="color: #2f83e4"/><span style="margin-left: 5px">{{ propType===1 ? $t('dynamicLoadingChart.failRate') : $t('dynamicLoadingChart.invalidRate') }}</span>
+            <span style="display: inline-block;width: 25px;height: 14px;border-radius: 4px;background: #81e1ff;margin: 0 5px 0 50px"></span><span>{{ propType===1 ? $t('dynamicLoadingChart.failCount') : $t('dynamicLoadingChart.invalidCount') }}</span>
         </p>
         <div :id="'device'+deviceId" :style="{ height: propWidth+'px'}"></div>
-        <p style="text-align: center;margin-top: 16px;font-size: 12px;color: #aaa">点击柱状图切换数据，左右拖拽加载更多数据</p>
+        <p style="text-align: center;margin-top: 16px;font-size: 12px;color: #aaa">{{$t('dynamicLoadingChart.tips')}}</p>
     </div>
 </template>
 
@@ -103,7 +103,7 @@
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
                     this.histogram.hideLoading();
-                    this.$Message.warning("图表数据加载失败")
+                    this.$Message.warning(this.$t('dynamicLoadingChart.error_1'))
                 })
             },
             getDefaultData(){
@@ -113,10 +113,11 @@
                 this.loadData()
             },
             setDefaultOption(){
-                let type = ["失败率","失败数"]
+                let type = [this.$t('dynamicLoadingChart.failRate'),this.$t('dynamicLoadingChart.failCount')]
                 if(this.propType===2)
-                    type = ["无效率","无效数"]
+                    type = [this.$t('dynamicLoadingChart.invalidRate'),this.$t('dynamicLoadingChart.invalidCount')]
 
+                let _this = this
                 // 指定图表的配置项和数据
                 let option = {
                     tooltip:{
@@ -124,7 +125,7 @@
                         formatter: function (obj) {
                             return obj[1].value[0] + '<br>'
                                 + 'ID：' + obj[1].value[2] + '<br>'
-                                + '自定义名称：' + obj[1].value[3] + '<br>'
+                                + _this.$t('dynamicLoadingChart.custom')+'：' + obj[1].value[3] + '<br>'
                                 + type[1] + '：' + obj[1].value[1] + '<br>'
                                 + type[0] + '：' + obj[0].value[1] + '%<br>'
                         }
@@ -222,7 +223,7 @@
                     this.dataLock = false;
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.warning("数据获取失败")
+                    this.$Message.warning(this.$t('dynamicLoadingChart.error_2'))
                 })
             },
             loadNextDataIntoGraph(){
@@ -231,7 +232,7 @@
                         clearTimeout(this.lastTimer)
                     }
                     this.lastTimer = setTimeout(() => {
-                        this.$Message.info("已是最后一笔数据，没有更多了 ")
+                        this.$Message.info({content:this.$t('dynamicLoadingChart.noMore'),duration:3})
                     }, this.timerStep)
                     return
                 }
@@ -240,7 +241,7 @@
                         clearTimeout(this.loadingTimer)
                     }
                     this.loadingTimer = setTimeout(() => {
-                        this.$Message.info("正在请求数据，请稍等！")
+                        this.$Message.info(this.$t('dynamicLoadingChart.isSend'))
                     }, this.timerStep)
                     return
                 }
@@ -288,7 +289,7 @@
                         clearTimeout(this.firstTimer)
                     }
                     this.firstTimer = setTimeout(() => {
-                        this.$Message.info("已是第一笔数据")
+                        this.$Message.info(this.$t('dynamicLoadingChart.isFirst'))
                         return
                     }, this.timerStep)
                 }

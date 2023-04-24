@@ -1,17 +1,17 @@
 <template>
     <Card dis-hover>
         <Steps :current="current" style="margin-bottom: 16px;">
-            <Step title="选择设备"></Step>
-            <Step title="选择用例"></Step>
-            <Step title="填写信息"></Step>
+            <Step :title="$t('createTboard.selDev')"></Step>
+            <Step :title="$t('createTboard.selJob')"></Step>
+            <Step :title="$t('createTboard.write')"></Step>
         </Steps>
         <div v-if="current===0">
             <comp-device-list ref="selectDevice" :prop-add-mode="false" :prop-multi-select="true" :prop-device-status="true" :prop-paneview-type="true"
                               :prop-perf-cabinet="true" @on-row-click="onSelectDeviceClick" @get-selection="getDeviceSelection"></comp-device-list>
             <Row type="flex" justify="center" style="margin-top: 16px;">
                 <Col>
-                    <Button style="margin-right: 32px; width: 90px;" @click="onBackClick">返回</Button>
-                    <Button type="primary" style="width: 90px;" @click="toPageChooseJob" :disabled="disableFlag">下一步</Button>
+                    <Button style="margin-right: 32px; minWidth: 90px;" @click="onBackClick">{{$t('public.btn_back')}}</Button>
+                    <Button type="primary" style="minWidth: 90px;" @click="toPageChooseJob" :disabled="disableFlag">{{$t('public.btn_next')}}</Button>
                 </Col>
             </Row>
         </div>
@@ -21,8 +21,8 @@
                 <!--<TabPane label="启动时间"></TabPane>-->
             <!--</Tabs>-->
             <RadioGroup v-model="groupType" type="button" style="margin-bottom: 12px;">
-                <Radio :label="1">用例列表</Radio>
-                <Radio :label="2">测试集列表</Radio>
+                <Radio :label="1">{{$t('functionalTest.list_1')}}</Radio>
+                <Radio :label="2">{{$t('functionalTest.list_2')}}</Radio>
             </RadioGroup>
             <div v-show="groupType===1">
                 <Row type="flex">
@@ -32,7 +32,7 @@
                     <Col span="2">
                         <Row type="flex" justify="center" style="margin-top: 48px;">
                             <Button @click="selectJob">
-                                添加
+                                {{$t('public.btn_add')}}
                                 <Icon type="ios-arrow-forward" />
                             </Button>
                         </Row>
@@ -41,8 +41,8 @@
                         <comp-job-list style="margin-top: 48px" ref="jobSelectedList" :prop-auto-load="false" :prop-show-search="false"
                                        :prop-show-counter="true" :prop-deletable="true" :prop-show-page="false"></comp-job-list>
                         <Row type="flex" justify="center" style="margin-top: 32px;">
-                            <Button type="primary" style="width: 90px;" @click="backToPageChooseDevice">上一步</Button>
-                            <Button type="primary" style="width: 90px; margin-left:32px;" @click="toPageFillInfo">下一步( {{selectedJob.length}} )</Button>
+                            <Button type="primary" style="minWidth: 90px;" @click="backToPageChooseDevice">{{$t('public.btn_prev')}}</Button>
+                            <Button type="primary" style="minWidth: 90px; margin-left:32px;" @click="toPageFillInfo">{{$t('public.btn_next')}}( {{selectedJob.length}} )</Button>
                         </Row>
                     </Col>
                 </Row>
@@ -53,23 +53,23 @@
         </div>
 
         <div v-if="current===2">
-            <Card title="填写任务讯息" dis-hover>
-                <Form :label-width="80">
+            <Card :title="$t('functionalTest.cardTit')" dis-hover>
+                <Form :label-width="120">
                     <FormItem>
-                        <b slot="label">任务名称</b>
+                        <b slot="label">{{$t('functionalTest.tboardName')}}</b>
                         <Input v-model="tboardName" style="max-width: 600px;" :maxlength="32"></Input>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">运行轮次</b>
+                        <b slot="label">{{$t('functionalTest.tboardRepeatTime')}}</b>
                         <InputNumber v-model="tboardRepeatTime" :min="1" :precision="0"></InputNumber>
-                        <span style="margin: 0 10px 0 20px">用例顺序随机</span><i-switch v-model="isRandom"/>
+                        <span style="margin: 0 10px 0 20px">{{$t('functionalTest.random')}}</span><i-switch v-model="isRandom"/>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">任务配置</b>
-                        <span> 设备 {{selectedDevice.length}} 台；用例 {{selectedJob.length}} 个 </span>
+                        <b slot="label">{{$t('functionalTest.config')}}</b>
+                        <span> {{$t('functionalTest.config_1')}}{{selectedDevice.length}}{{$t('functionalTest.config_4')}}{{selectedJob.length}}{{$t('functionalTest.config_5')}} </span>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">已选设备</b>
+                        <b slot="label">{{$t('functionalTest.selDev')}}</b>
                         <ButtonGroup>
                             <Button v-for="device in selectedDevice" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
                                 {{device.device_name}}
@@ -79,28 +79,28 @@
                 </Form>
             </Card>
             <Row type="flex" justify="center" style="margin-top: 32px;">
-                <Button type="primary" style="width: 80px;" @click="backToPageChooseJob">上一步</Button>
-                <Button type="primary" style="width: 80px; margin-left:32px;" @click="complete(false)">启动任务</Button>
+                <Button type="primary" style="minWidth: 80px;" @click="backToPageChooseJob">{{$t('public.btn_prev')}}</Button>
+                <Button type="primary" style="minWidth: 80px; margin-left:32px;" @click="complete(false)">{{$t('functionalTest.complete')}}</Button>
             </Row>
         </div>
         <div v-if="current===3">
-            <Card title="填写任务讯息" dis-hover>
-                <Form :label-width="90">
+            <Card :title="$t('functionalTest.cardTit')" dis-hover>
+                <Form :label-width="120">
                     <FormItem>
-                        <b slot="label">任务名称</b>
+                        <b slot="label">{{$t('functionalTest.tboardName')}}</b>
                         <Input v-model="tboardName" style="max-width: 600px;" :maxlength="32"></Input>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">运行轮次</b>
+                        <b slot="label">{{$t('functionalTest.tboardRepeatTime')}}</b>
                         <InputNumber v-model="tboardRepeatTime" :min="1" :precision="0"></InputNumber>
-                        <span style="margin: 0 10px 0 20px">用例顺序随机</span><i-switch v-model="isRandom"/>
+                        <span style="margin: 0 10px 0 20px">{{$t('functionalTest.random')}}</span><i-switch v-model="isRandom"/>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">任务配置</b>
-                        <span> 设备 {{selectedDevice.length}} 台；测试集 {{selectedTestSet.length}} 个；用例 {{selectedTestSetJobs.length}} 个 </span>
+                        <b slot="label">{{$t('functionalTest.config')}}</b>
+                        <span> {{$t('functionalTest.config_1')}}{{selectedDevice.length}}{{$t('functionalTest.config_2')}}{{selectedTestSet.length}}{{$t('functionalTest.config_3')}}{{selectedTestSetJobs.length}}{{$t('functionalTest.config_5')}} </span>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">已选设备</b>
+                        <b slot="label">{{$t('functionalTest.selDev')}}</b>
                         <ButtonGroup>
                             <Button v-for="device in selectedDevice" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
                                 {{device.device_name}}
@@ -108,7 +108,7 @@
                         </ButtonGroup>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">测 试 集</b>
+                        <b slot="label">{{$t('functionalTest.set')}}</b>
                         <ButtonGroup>
                             <Button v-for="item in selectedTestSet">
                                 {{item.title}}
@@ -118,8 +118,8 @@
                 </Form>
             </Card>
             <Row type="flex" justify="center" style="margin-top: 32px;">
-                <Button type="primary" style="width: 80px;" @click="backToPageChooseJob">上一步</Button>
-                <Button type="primary" style="width: 80px; margin-left:32px;" @click="complete(true)">启动任务</Button>
+                <Button type="primary" style="minWidth: 80px;" @click="backToPageChooseJob">{{$t('public.btn_prev')}}</Button>
+                <Button type="primary" style="minWidth: 80px; margin-left:32px;" @click="complete(true)">{{$t('functionalTest.complete')}}</Button>
             </Row>
         </div>
 
@@ -128,22 +128,22 @@
         </Drawer>
         <Modal v-model="showErrorInner" :closable="false" :mask-closable="false" :footer-hide="true" width="60">
             <Icon type="ios-help-circle" style="color: #ff9900;float: left;margin: 15px 10px 0 0;" size="24"/>
-            <p style="margin: 15px 0;font-size: 16px">任务启动失败</p>
-            <Row>以下用例：</Row>
+            <p style="margin: 15px 0;font-size: 16px">{{$t('functionalTest.runError')}}</p>
+            <Row>{{$t('functionalTest.errTit')}}：</Row>
             <Row style="margin: 10px 0">
                 <Button v-for="item in errorInnerList" @click="getJobConnection(item.job_label,item.job_name)">{{item.job_name}}</Button>
             </Row>
-            <p>缺少资源文件，请尝试重新保存用例，是否继续运行其他用例？</p>
+            <p>{{$t('functionalTest.errTit_2')}}</p>
             <Row type="flex" justify="end" style="margin-top: 30px;">
-                <Button type="text" @click="showErrorInner=false">取消</Button>
-                <Button type="primary" @click="continueCreated">继续</Button>
+                <Button type="text" @click="showErrorInner=false">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" @click="continueCreated">{{$t('functionalTest.continue')}}</Button>
             </Row>
         </Modal>
 
         <Modal v-model="showJobConnectionModal" :fullscreen="true" :transfer="false" :closable="false" >
             <comp-inner-job-connection ref="innerJobConnection"></comp-inner-job-connection>
             <div slot="footer">
-                <Button type="primary" @click="showJobConnectionModal = false">关闭</Button>
+                <Button type="primary" @click="showJobConnectionModal = false">{{$t('public.btn_close')}}</Button>
             </div>
         </Modal>
         <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
@@ -229,7 +229,7 @@
                 if(this.selectedJob.length>0){
                     this.current = 2
                 }else {
-                    this.$Message.warning("请选择要进行测试的用例！");
+                    this.$Message.warning(this.$t('functionalTest.selTit'));
                 }
             },
             toPageFillInfoNext(jobs,selectSet){
@@ -253,7 +253,7 @@
                     console.log(this.tboardRepeatTime)
                 }
                 if(this.tboardRepeatTime===null){
-                    this.$Message.warning("请输入运行轮次！")
+                    this.$Message.warning(this.$t('functionalTest.enterNum'))
                 }else{
                     let deviceList = [];
                     this.selectedDevice.forEach(device=>{
@@ -302,7 +302,7 @@
                                     this.$Message.error({content:error.response.data.description,duration:7})
                                 }
                             }else if(error.response.status>=500)
-                                this.$Message.error("服务器错误")
+                                this.$Message.error(this.$t('public.error_500'))
                             else
                                 this.$Message.error({content:error.response.data.description,duration:7})
                         })
@@ -312,18 +312,18 @@
                 let str = ""
                 if(response.data.fail_cabinet){
                     response.data.fail_cabinet.forEach(item=>{
-                        str = str + item+"服务器启动任务失败；"
+                        str = str + item+this.$t('functionalTest.err_1')
                     })
                 }
                 let root = this
                 if(response.data.status==="fail"){
                     this.$Modal.error({
-                        title:"启动失败！",
+                        title:this.$t('functionalTest.err_2'),
                         content:str
                     })
                 }else if(response.data.status==="warning"){
                     this.$Modal.warning({
-                        title:"部分服务器启动失败！",
+                        title:this.$t('functionalTest.err_3'),
                         content:str,
                         onOk(){
                             root.$router.push({
@@ -332,7 +332,7 @@
                         }
                     })
                 }else if(response.data.status==="success"){
-                    this.$Message.success("任务启动成功！")
+                    this.$Message.success(this.$t('functionalTest.success'))
                     this.$router.push({
                         name: "perf-data-management",
                     })
@@ -343,8 +343,8 @@
                 if(this.current===3){
                     let _this = this
                     this.$Modal.confirm({
-                        title:"提示",
-                        content:"返回上一步将不会保存已选测试集，是否继续？",
+                        title:this.$t('public.modal_info'),
+                        content:this.$t('functionalTest.modalContent'),
                         onOk(){
                             _this.current = 1
                             _this.$nextTick(function () {
@@ -387,7 +387,7 @@
                     }) .catch(error=>{
                     if(config.DEBUG) console.log(error)
                     this.showLoading = false
-                    this.$Message.error({content:"任务启动失败",duration:3})
+                    this.$Message.error({content:this.$t('functionalTest.err_5'),duration:3})
                 })
             },
             //查看缺少资源的 innerJob 对应关联的 普通job

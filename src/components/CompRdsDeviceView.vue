@@ -8,21 +8,21 @@
         </Modal>
 
         <Row v-show="devices.length === 0" style="margin-bottom: 16px;">
-            <DatePicker v-model="filterDateRange" @on-change="onDateChange" style="width: 220px;" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
-            <p style="color: rgb(194, 194, 194);margin-top: 10px;">默认选择最近七天的数据 </p>
+            <DatePicker v-model="filterDateRange" @on-change="onDateChange" style="width: 220px;" type="daterange" :placeholder="$t('rdsDeviceView.placeholderTime')" :transfer="true" :clearable="false"></DatePicker>
+            <p style="color: rgb(194, 194, 194);margin-top: 10px;">{{$t('rdsDeviceView.selTips')}} </p>
         </Row>
         <Row v-show="devices.length === 0" style="margin-top: 100px;text-align: center">
-            <Button type="primary" @click="openDeviceList">选取设备</Button>
-            <p style="color: rgb(194, 194, 194); font-size: larger; font-weight: bold;margin-top: 16px;">您还没有选择任何设备!</p>
+            <Button type="primary" @click="openDeviceList">{{$t('rdsDeviceView.selBtn')}}</Button>
+            <p style="color: rgb(194, 194, 194); font-size: larger; font-weight: bold;margin-top: 16px;">{{$t('rdsDeviceView.selTips_2')}}</p>
         </Row>
 
         <div v-if="devices.length !== 0">
             <RadioGroup v-model="groupType" type="button">
-                <Radio style="width: 100px;text-align: center;margin-bottom: 12px" :label="1">失败数据</Radio>
-                <Radio style="width: 100px;text-align: center;margin-bottom: 12px" :label="2">无效数据</Radio>
+                <Radio style="width: 100px;text-align: center;margin-bottom: 12px" :label="1">{{$t('rdsDeviceView.failData')}}</Radio>
+                <Radio style="width: 100px;text-align: center;margin-bottom: 12px" :label="2">{{$t('rdsDeviceView.invalidData')}}</Radio>
             </RadioGroup>
-            <Button type="primary" style="float: right;" @click="openDeviceList">选取设备( {{ devices.length }} )</Button>
-            <DatePicker style="float: right;margin-right: 20px;width: 220px;" v-model="filterDateRange" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
+            <Button type="primary" style="float: right;" @click="openDeviceList">{{$t('rdsDeviceView.selBtn')}}( {{ devices.length }} )</Button>
+            <DatePicker style="float: right;margin-right: 20px;width: 220px;" v-model="filterDateRange" @on-change="onDateChange" type="daterange" :placeholder="$t('rdsDeviceView.placeholderTime')" :transfer="true" :clearable="false"></DatePicker>
 
         </div>
 
@@ -32,7 +32,7 @@
             <div>
                 <div class="count-left">
                     <Row style="margin-left: 10px">
-                        <p>{{ groupType===1 ? "总失败率" : "总无效率" }}</p>
+                        <p>{{ groupType===1 ? $t('rdsDeviceView.failRate') : $t('rdsDeviceView.invalidRate') }}</p>
                         <p style="font-size: 36px;font-weight: bold">{{ groupType===1 ? totalCount.failureRate : totalCount.invalidRate }}</p>
                     </Row>
                     <Row class="progress" style="margin: 10px">
@@ -45,24 +45,24 @@
                     </Row>
                     <Row>
                         <Col span="12">
-                            <span class="icon-span" style="background: #2D8cF0"></span> 总共： {{ totalCount.total }}
+                            <span class="icon-span" style="background: #2D8cF0"></span> {{$t('tboardDetail.total')}}： {{ totalCount.total }}
                         </Col>
                         <Col span="12">
-                            <span class="icon-span" style="background: #f5a623"></span> 失败： {{ totalCount.fail }}
+                            <span class="icon-span" style="background: #f5a623"></span> {{$t('tboardDetail.fail')}}： {{ totalCount.fail }}
                         </Col>
                     </Row>
                     <Row style="margin-top: 5px;">
                         <Col span="12">
-                            <span class="icon-span" style="background: #999"></span> 无效： {{ totalCount.invalid }}
+                            <span class="icon-span" style="background: #999"></span> {{$t('tboardDetail.invalid')}}： {{ totalCount.invalid }}
                         </Col>
                         <Col span="12">
-                            <span class="icon-span" style="background: #1bbc9c"></span> 成功： {{ totalCount.pass }}
+                            <span class="icon-span" style="background: #1bbc9c"></span> {{$t('tboardDetail.pass')}}： {{ totalCount.pass }}
                         </Col>
                     </Row>
                 </div>
                 <Card style="height: 200px;margin-left: 315px" :bordered="false" dis-hover>
                     <p style="height: 32px;line-height:32px;margin-bottom: 6px;">
-                        <span>设备列表</span>
+                        <span>{{$t('rdsDeviceView.deviceList')}}</span>
                         <!--<Button type="primary" style="float: right;" @click="openDeviceList">选取设备( {{ devices.length }} )</Button>-->
                         <!--<DatePicker style="float: right;margin-right: 20px;width:220px;" v-model="filterDateRange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>-->
                     </p>
@@ -99,13 +99,13 @@
             <span>ID：</span>
             <span>{{tipData.id}}</span>
             <br>
-            <span>设备名称：</span>
+            <span>{{$t('tboardDetail.devName')}}：</span>
             <span>{{tipData.device.device_name}}</span>
             <br>
-            <span>用例名称：</span>
+            <span>{{$t('tboardDetail.jobName')}}：</span>
             <span>{{tipData.job.job_name}}</span>
             <br>
-            <span>结果：</span>
+            <span>{{$t('rdsDeviceView.result')}}：</span>
             <span>{{tipData.job_assessment_value}}</span>
         </div>
 
@@ -227,7 +227,7 @@
                     }
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.warning("统计模块信息获取失败")
+                    this.$Message.warning(this.$t('rdsDeviceView.error_1'))
                 })
             },
             onDateChange(date){
@@ -235,8 +235,8 @@
                 if(sub>5*30*24*3600*1000){
                     let root = this
                     this.$Modal.info({
-                        title:"提示",
-                        content:"最多只能选取150天的数据，已自动调整日期！",
+                        title:this.$t('public.modal_info'),
+                        content:this.$t('rdsDeviceView.modalTips'),
                     })
                     root.filterDateRange = [new Date(new Date(new Date(date[1]).getTime()-150*24*3600*1000).setHours(0,0,0,0)), new Date(date[1])]
                 }

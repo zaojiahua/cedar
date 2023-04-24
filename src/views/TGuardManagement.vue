@@ -4,14 +4,14 @@
             <Tag v-for="item in tguardList" style="margin-bottom: 5px"
                  :closable="!item.is_system&&username==='admin'" :color="getColor(item.is_system)"
                  @on-close="deleteTGuard(item)">{{ item.name }}</Tag>
-            <Button class="box" type="primary" v-if="username==='admin'" icon="md-add" size="small" @click="showAddModal=true;addName = ''">添加</Button>
+            <Button class="box" type="primary" v-if="username==='admin'" icon="md-add" size="small" @click="showAddModal=true;addName = ''">{{$t('public.btn_add')}}</Button>
         </Row>
         <Modal v-model="showAddModal" footer-hide :closable="false" :mask-closable="false" width="420">
-            <p style="margin: 12px 0 10px 0"><b>请添加新干扰词</b></p>
+            <p style="margin: 12px 0 10px 0"><b>{{$t('TGuard.addTit')}}</b></p>
             <Input v-model="addName"></Input>
             <Row style="text-align: right;margin-top: 20px;">
-                <Button @click="showAddModal=false;addName = ''">取消</Button>
-                <Button type="primary" style="margin-left: 20px" @click="addTGuard">确认</Button>
+                <Button @click="showAddModal=false;addName = ''">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" style="margin-left: 20px" @click="addTGuard">{{$t('public.btn_ok')}}</Button>
             </Row>
         </Modal>
     </Card>
@@ -35,26 +35,26 @@
                         this.tguardList = response.data
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error);
-                        this.$Message.error("T-Guard词组获取失败")
+                        this.$Message.error(this.$t('TGuard.getError'))
                 })
             },
             deleteTGuard(item){
                 let _this = this
                 this.$Modal.confirm({
-                    title:"提示",
-                    content:"确认要删除干扰词 '"+ item.name + "' 吗？",
+                    title:this.$t('public.modal_info'),
+                    content:this.$t('TGuard.delTit')+ item.name + "？",
                     onOk(){
                         this.$ajax.delete("api/v1/cedar/tguard/"+ item.id +"/")
                             .then(response=>{
-                                this.$Message.success("干扰词删除成功")
+                                this.$Message.success(_this.$t('TGuard.delSuccess'))
                                 _this.getTguardList()
                             }).catch(error=>{
                                 if(config.DEBUG) console.log(error);
                                 _this.getTguardList()
                                 if(error.response.data.data_info&&error.response.data.data_info.length>0)
-                                    this.$Message.error({content:error.response.data.data_info.join(',')+'删除失败',duration:10})
+                                    this.$Message.error({content:error.response.data.data_info.join(',')+_this.$t('TGuard.delError'),duration:10})
                                 else
-                                    this.$Message.error({content:'干扰词删除失败',duration:6})
+                                    this.$Message.error({content:_this.$t('TGuard.delError'),duration:6})
                             })
                     }
                 })
@@ -62,26 +62,26 @@
             addTGuard(){
                 this.addName = this.addName.trim()
                 if(this.addName===""){
-                    this.$Message.warning("请输入要添加的干扰词！")
+                    this.$Message.warning(this.$t('TGuard.addWaring'))
                     return
                 }
                 this.$ajax.post("api/v1/cedar/tguard/",{
                     name: this.addName
                 }).then(response=>{
                     this.showAddModal = false
-                    this.$Message.success("干扰词添加成功")
+                    this.$Message.success(this.$t('TGuard.addSuccess'))
                     this.getTguardList()
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error);
                     this.getTguardList()
                     if(error.response.data.data_info&&error.response.data.data_info.length>0){
-                        this.$Message.error({content:error.response.data.data_info.join(',')+'下发失败',duration:10})
+                        this.$Message.error({content:error.response.data.data_info.join(',')+this.$t('TGuard.addErr_3'),duration:10})
                         this.showAddModal = false
                     }
                     else if(error.response.data.name)
-                        this.$Message.error({content:'干扰词已存在',duration:6})
+                        this.$Message.error({content:this.$t('TGuard.addErr_1'),duration:6})
                     else
-                        this.$Message.error({content:'干扰词添加失败',duration:6})
+                        this.$Message.error({content:this.$t('TGuard.addErr_2'),duration:6})
                 })
             },
             getColor(flag){

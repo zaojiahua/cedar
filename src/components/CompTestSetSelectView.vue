@@ -1,16 +1,16 @@
 <template>
     <div>
         <div class="container_left">
-            <b>测试集目录</b>
+            <b>{{$t('testSetSelView.tit')}}</b>
             <Tree v-if="showTree" ref="tree" :data="treeData" show-checkbox @on-select-change="onTreeClick" @on-check-change="onTreeSelect"></Tree>
-            <p v-else style="color: #FF9900;margin-top: 10px">暂无数据</p>
+            <p v-else style="color: #FF9900;margin-top: 10px">{{$t('public.noData')}}</p>
         </div>
         <div class="container_right">
-            <p style="margin-bottom: 5px">测试集名称：{{ testName }}</p>
+            <p style="margin-bottom: 5px">{{$t('testSetSelView.name')}}：{{ testName }}</p>
             <comp-test-set-job-table ref="jobTable" :prop-multi-select="false"></comp-test-set-job-table>
             <Row style="text-align: right;">
-                <Button style="margin-right: 20px;width: 90px;" @click="onBack">上一步</Button>
-                <Button type="primary" @click="nextStep" :loading="showLoadingBtn">下一步( {{ selectedSet.length }} )</Button>
+                <Button style="margin-right: 20px;width: 90px;" @click="onBack">{{$t('public.btn_prev')}}</Button>
+                <Button type="primary" @click="nextStep" :loading="showLoadingBtn">{{$t('public.btn_next')}}( {{ selectedSet.length }} )</Button>
             </Row>
         </div>
     </div>
@@ -87,7 +87,7 @@
                     })
 
                     this.treeData = [{
-                        title: '全部测试集',
+                        title: this.$t('testSetManagement.allTestSet'),
                         expand: true,
                         children: children
                     }].concat(projectData)
@@ -103,7 +103,7 @@
                 }))
                 .catch(error=>{
                     if (config.DEBUG) console.log(error)
-                    this.$Message.error({content:"测试集信息获取失败",duration:5})
+                    this.$Message.error({content:this.$t('testSetSelView.getErr'),duration:5})
                 })
             },
             onTreeClick(select,item){
@@ -121,7 +121,7 @@
             },
             nextStep(){
                 if(this.selectedSet.length===0){
-                    this.$Message.warning("请至少选择一个测试集！")
+                    this.$Message.warning(this.$t('testSetSelView.selOne'))
                     return
                 }
                 this.showLoadingBtn = true
@@ -137,14 +137,14 @@
                 }).catch(error=>{
                     this.showLoadingBtn = false
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error({content:"用例信息合并失败"+error.response.data.description,duration:6})
+                    this.$Message.error({content:this.$t('testSetSelView.error')+error.response.data.description,duration:6})
                 })
             },
             onBack(){
                 let _this = this
                 this.$Modal.confirm({
-                    title:"提示",
-                    content:"返回上一步将不会保存已选测试集，是否继续？",
+                    title:this.$t('public.modal_info'),
+                    content:this.$t('testSetSelView.modalTit'),
                     onOk(){
                         _this.$emit("on-back")
                     }

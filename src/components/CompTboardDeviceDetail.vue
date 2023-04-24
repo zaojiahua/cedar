@@ -1,41 +1,41 @@
 <template>
-    <Card :title="'设备名称: ' + statistic.deviceName+' ('+statistic.deviceLabel + ')'" dis-hover>
+    <Card :title="$t('tboardDetail.devName')+': ' + statistic.deviceName+' ('+statistic.deviceLabel + ')'" dis-hover>
         <Row type="flex" align="middle" style="margin: 32px 16px 32px 16px;">
             <Col>
                 <i-circle :percent="statistic.pass/statistic.total*100">
                     <p style="font-size:24px">{{(statistic.pass/statistic.total*100).toFixed(1)}}%</p>
-                    <small>成功率</small>
+                    <small>{{$t('tboardDetail_2.successRatio')}}</small>
                 </i-circle>
             </Col>
             <Col style="margin-left:16px;">
-                <b>总共: </b><span>{{statistic.total}}</span><br>
-                <b>成功: </b><span>{{statistic.pass}}</span><br>
-                <b>失败: </b><span>{{statistic.fail}}</span><br>
-                <b>无效: </b><span>{{statistic.invalid}}</span>
+                <b>{{$t('tboardDetail.total')}}: </b><span>{{statistic.total}}</span><br>
+                <b>{{$t('tboardDetail.pass')}}: </b><span>{{statistic.pass}}</span><br>
+                <b>{{$t('tboardDetail.fail')}}: </b><span>{{statistic.fail}}</span><br>
+                <b>{{$t('tboardDetail.invalid')}}: </b><span>{{statistic.invalid}}</span>
             </Col>
         </Row>
-        <Divider orientation="left">{{statistic.deviceName}} 运行结果</Divider>
-        <Form :label-width="80">
+        <Divider orientation="left">{{statistic.deviceName}} {{$t('tboardDetail_2.result')}}</Divider>
+        <Form :label-width="85">
             <Card v-for="statistic in jobStatistic" :key="statistic.id" dis-hover style="margin-bottom: 16px;">
                 <FormItem style="margin-bottom: 8px;">
-                    <b slot="label">用例名称:</b>
+                    <b slot="label">{{$t('tboardDetail.jobName')}}:</b>
                     <Input disabled class="disabled-input"
                            :value="statistic.jobName + ' (' + statistic.jobLabel + ')'"></Input>
                 </FormItem>
                 <FormItem style="margin-bottom: 0px;">
-                    <b slot="label">结果总数:</b>
+                    <b slot="label">{{$t('tboardDetail.total')}}:</b>
                     <Input disabled class="disabled-input" :value="statistic.total.toFixed(0)"></Input>
                 </FormItem>
                 <FormItem style="margin-bottom: 0px;">
-                    <b slot="label">成功:</b>
+                    <b slot="label">{{$t('tboardDetail.pass')}}:</b>
                     <Progress :percent="statistic.pass/statistic.total*100" :stroke-width="4">{{statistic.pass}}</Progress>
                 </FormItem>
                 <FormItem style="margin-bottom: 0px;">
-                    <b slot="label">失败:</b>
+                    <b slot="label">{{$t('tboardDetail.fail')}}:</b>
                     <Progress :percent="statistic.fail/statistic.total*100" stroke-color="#ed4014" :stroke-width="4">{{statistic.fail}}</Progress>
                 </FormItem>
                 <FormItem style="margin-bottom: 0px;">
-                    <b slot="label">无效:</b>
+                    <b slot="label">{{$t('tboardDetail.invalid')}}:</b>
                     <Progress :percent="statistic.invalid/statistic.total*100" stroke-color="#ff9900" :stroke-width="4">{{statistic.invalid}}</Progress>
                 </FormItem>
             </Card>
@@ -170,7 +170,7 @@
                     this.spinShow = false;
                 }).catch(reason => {
                     if (config.DEBUG) console.log(reason)
-                    this.$Message.error("载入失败")
+                    this.$Message.error(this.$t('public.loadFail'))
                     this.spinShow = false;
                 })
             }
