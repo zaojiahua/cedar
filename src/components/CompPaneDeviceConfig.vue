@@ -1580,7 +1580,7 @@
                 this.cabinetIP = row.cabinet.ip_address
                 this.deviceCabinetType = row.cabinet.type
                 this.deviceCabinetId = row.cabinet.id
-                this.showTestBtn = ['Tcab_5D','ABot','Tcab_5D plus'].includes(device.cabinet.type)
+                this.showTestBtn = ['Tcab_5D','ABot','Tcab_5D plus'].includes(row.cabinet.type)
                 let cabinetList = ['Tcab_5L','Tcab_5se']
                 this.showLocationBtn = cabinetList.includes(row.cabinet.type)
                 this.showProBtn = ['Tcab_5','Tcab_5pro'].includes(row.cabinet.type)
