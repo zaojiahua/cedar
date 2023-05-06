@@ -2,7 +2,7 @@
     <div>
         <Row style="margin-bottom: 10px">
             <Input style="width: calc(100% - 70px)" v-model="keyword" :clearable="true"
-                   placeholder="输入账号搜索..."
+                   :placeholder="$t('appInfo.tips_1')"
                    @on-enter="onPageChange(1)" @on-clear="keyword='';onPageChange(1)"></Input>
             <Button style="height: 32px;" @click="onPageChange(1)" type="primary">search</Button>
         </Row>
@@ -71,19 +71,19 @@
                         }
                     },
                     {
-                        title: "账号",
+                        title: this.$t('deviceDetail.account_info'),
                         key: "name",
                     },
                     {
-                        title: "用户名/昵称",
+                        title: this.$t('appInfo.tips_2'),
                         key: "username",
                     },
                     {
-                        title: "密码",
+                        title: this.$t('userDetail.password'),
                         key: "password",
                     },
                     {
-                        title: "绑定手机号",
+                        title: this.$t('appInfo.tips_3'),
                         key: "phone_number",
                     },
                     // {
@@ -106,11 +106,11 @@
                     //     }
                     // },
                     {
-                        title: "关联设备(僚机)",
+                        title: this.$t('appInfo.tips_4'),
                         key: "connection",
                     },
                     {
-                        title: "已登录/可登录",
+                        title: this.$t('appInfo.tips_5'),
                         key: "usage_rate",
                     },
                 ],
@@ -164,7 +164,7 @@
                         this.dataTotal = parseInt(response.headers["total-count"])
                         this.data = utils.validate(appSerializer,response.data.Account)
                         this.data.forEach(item=>{
-                            item.status = item.status === "idle" ? "未占用" :"占用"
+                            item.status = item.status === "idle" ? this.$t('resourcesList.status_1') :this.$t('resourcesList.status_2')
                             let deviceList = []
                             if(item.device.length>0)
                                 item.device.forEach(device=>{
@@ -188,18 +188,18 @@
                         this.showLoading = false
                     }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                        this.$Message.error({content:"获取账号资源信息失败"+error.response.data.message,duration:5})
+                        this.$Message.error({content:this.$t('appInfo.tips_6')+error.response.data.message,duration:5})
                         this.showLoading = false
                 })
             },
             removeResources(id){
                 this.$ajax.delete("api/v1/cedar/account/" + id + "/")
                     .then(response=>{
-                        this.$Message.success("账号资源移除成功")
+                        this.$Message.success(this.$t('appInfo.tips_7'))
                         this.getData()
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error({content:"账号资源移除失败:" + error.response.data.message,duration:7})
+                        this.$Message.error({content:this.$t('appInfo.tips_8') + error.response.data.message,duration:7})
                     })
             },
             afterUpdate(){
@@ -231,7 +231,7 @@
                     })
                     .catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error("app列表获取失败")
+                        this.$Message.error(this.$t('appInfo.tips_9'))
                     })
             },
             // 支持多选
@@ -288,7 +288,7 @@
                 })
             if (username==="admin" && this.propAction) {
                 this.appColumn.push({
-                    title: "操作",
+                    title: this.$t('testSetList.action'),
                     key: "action",
                     align: 'center',
                     width:120,
@@ -306,7 +306,7 @@
                                         this.$refs.editApp.setData(params.row)
                                     }
                                 }
-                            }, '编辑'),
+                            }, this.$t('resourcesList.edit')),
                             h('span', {
                                 class:'mouse-hover-remove',
                                 style: {
@@ -316,15 +316,15 @@
                                     click: () => {
                                         let root = this
                                         this.$Modal.confirm({
-                                            title: "警告！",
-                                            content: "确定要移除资源账号" + params.row.account_number+ "吗？",
+                                            title: this.$t('public.modal_warn'),
+                                            content: this.$t('appInfo.tips_10') + params.row.account_number+ this.$t('deviceDetail.removeTips_2'),
                                             onOk(){
                                                 root.removeResources(params.row.id)
                                             }
                                         })
                                     }
                                 }
-                            }, '移除')
+                            }, this.$t('resourcesList.remove'))
                         ]);
                     }
                 })

@@ -1,26 +1,26 @@
 <template>
     <Card>
-        <p slot="title">SIM卡资源信息</p>
+        <p slot="title">{{$t('resourcesList.title_1')}}</p>
         <Form v-model="selectMsg" :label-width="120">
-            <FormItem label="运营商：">
+            <FormItem :label="$t('resourcesList.operator')+'：'">
                 <Select v-model="selectMsg.selectOperator">
-                    <Option value=中国移动 >中国移动</Option>
-                    <Option value=中国联通 >中国联通</Option>
-                    <Option value=中国电信 >中国电信</Option>
+                    <Option value=中国移动 >{{$t('resourcesList.operator_1')}}</Option>
+                    <Option value=中国联通 >{{$t('resourcesList.operator_2')}}</Option>
+                    <Option value=中国电信 >{{$t('resourcesList.operator_3')}}</Option>
                 </Select>
             </FormItem>
-            <FormItem label="手机号：" prop="phone_number">
-                <Input type="text" v-model="selectMsg.phone_number" @on-keyup="phoneInput" :maxlength="11" placeholder="请输入正确的手机号"></Input>
+            <FormItem :label="$t('resourcesList.phone_number')+'：'" prop="phone_number">
+                <Input type="text" v-model="selectMsg.phone_number" @on-keyup="phoneInput" :maxlength="11" :placeholder="$t('resourcesList.title_2')"></Input>
             </FormItem>
-            <FormItem label="是否Volte：">
+            <FormItem :label="$t('resourcesList.volte')+'：'">
                 <RadioGroup v-model="selectMsg.is_volte">
-                    <Radio :label="1" style="margin-right: 20px;">是</Radio>
-                    <Radio :label="2">否</Radio>
+                    <Radio :label="1" style="margin-right: 20px;">{{$t('resourcesList.yes')}}</Radio>
+                    <Radio :label="2">{{$t('resourcesList.no')}}</Radio>
                 </RadioGroup>
             </FormItem>
         </Form>
         <Row type="flex" justify="center">
-            <Button type="primary" @click="commit">提交</Button>
+            <Button type="primary" @click="commit">{{$t('resourcesList.commit')}}</Button>
         </Row>
     </Card>
 </template>
@@ -60,11 +60,11 @@
             },
             commit(){
                 if(this.selectMsg.selectOperator===null||this.selectMsg.phone_number.trim().length===0){
-                    this.$Message.warning("请先将信息填写完整再提交！")
+                    this.$Message.warning(this.$t('resourcesList.title_3'))
                     return
                 }
                 if(this.selectMsg.phone_number.trim().length<11){
-                    this.$Message.warning("请输入正确的11位手机号！")
+                    this.$Message.warning(this.$t('resourcesList.title_4'))
                     return
                 }
                 //新增资源
@@ -74,11 +74,11 @@
                         is_volte: this.selectMsg.is_volte === 1,
                         phone_number: this.selectMsg.phone_number,
                     }).then(response=>{
-                        this.$Message.success("SIM卡资源添加成功")
+                        this.$Message.success(this.$t('resourcesList.title_5'))
                         this.$emit('after-success')
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error({content:"SIM卡资源添加失败! " + error.response.data.phone_number,duration: 6})
+                        this.$Message.error({content:this.$t('resourcesList.title_6') + error.response.data.phone_number,duration: 6})
                     })
                 }else{
                     //修改资源
@@ -87,11 +87,11 @@
                         is_volte: this.selectMsg.is_volte === 1,
                         phone_number: this.selectMsg.phone_number,
                     }).then(response=>{
-                        this.$Message.success("SIM卡信息修改成功")
+                        this.$Message.success(this.$t('resourcesList.title_7'))
                         this.$emit('after-update')
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error({content:"SIM卡信息修改失败! " + error.response.data.phone_number,duration: 6})
+                        this.$Message.error({content:this.$t('resourcesList.title_8') + error.response.data.phone_number,duration: 6})
                     })
                 }
             },

@@ -1,10 +1,10 @@
 <template>
   <div style="margin-left: 2px">
     <Row style="margin-bottom: 15px;">
-      <span>设备情况：</span>
-      <Tag type="dot" color="#CBD0D3">暂无设备</Tag>
-      <Tag type="dot" color="#85D700">正常</Tag>
-      <Tag type="dot" color="#D04B40"><span style="padding: 10px 0" @click="openErrorDevice=true">异常 ( {{ errorCount }} )</span>
+      <span>{{$t('paneView.tips_1')}}：</span>
+      <Tag type="dot" color="#CBD0D3">{{$t('paneView.tips_2')}}</Tag>
+      <Tag type="dot" color="#85D700">{{$t('paneView.tips_3')}}</Tag>
+      <Tag type="dot" color="#D04B40"><span style="padding: 10px 0" @click="openErrorDevice=true">{{$t('paneView.tips_4')}} ( {{ errorCount }} )</span>
       </Tag>
     </Row>
     <div v-for="(item,index) in paneList" :key="index" class="pane-list">
@@ -17,27 +17,27 @@
     </div>
     <div class="add-pane">
       <Icon type="ios-add" size="180" style="cursor: pointer;margin: 35px auto;" @click="onOpenModal"/>
-      <p>添加Pane</p>
+      <p>{{$t('paneView.tips_5')}}</p>
     </div>
 
     <Modal v-model="showAddPane" :closable="false" :footer-hide="true" :mask-closable="false" width="550">
       <Card>
-        <p slot="title">添加Pane</p>
+        <p slot="title">{{$t('paneView.tips_5')}}</p>
         <Icon slot="extra" @click.prevent="showAddPane=false;" type="md-close"/>
         <Form :model="pane" :label-width="100">
           <FormItem>
-            <b slot="label">选择机柜：</b>
+            <b slot="label">{{$t('paneView.tips_6')}}：</b>
             <Select v-model="CabinetSelected" style="width:150px">
               <Option v-for="item in cabinetList" :value="item.id">{{ item.cabinet_name }}</Option>
             </Select>
           </FormItem>
           <FormItem>
-            <b slot="label">Pane名称：</b>
-            <Input v-model="pane.pane_name" placeholder=" 例： pane001@2X3" v-show="paneType==='matrix'"></Input>
-            <Input v-model="pane.pane_name" placeholder="请输入pane名称" v-show="paneType==='test_box'"></Input>
+            <b slot="label">{{$t('paneView.tips_7')}}：</b>
+            <Input v-model="pane.pane_name" :placeholder="$t('paneView.tips_12')+'： pane001@2X3'" v-show="paneType==='matrix'"></Input>
+            <Input v-model="pane.pane_name" :placeholder="$t('paneView.tips_13')" v-show="paneType==='test_box'"></Input>
             <p v-show="paneType==='matrix'">
-              注：名称由字母、数字或下划线组成，不允许输入特殊字符<br/>
-              格式：名称 @ 规格行 X 规格列，最大规格不能超过 9 x 9
+              {{$t('paneView.tips_8')}}<br/>
+              {{$t('paneView.tips_9')}}
             </p>
           </FormItem>
           <!--                    <FormItem v-show="paneType==='test_box'">-->
@@ -49,7 +49,7 @@
           <!--                        <InputNumber :min="0" v-model="pane.camera" style="width: 100%" placeholder="请输入相机的串口号"></InputNumber>-->
           <!--                    </FormItem>-->
           <FormItem>
-            <b slot="label">类型：</b>
+            <b slot="label">{{$t('paneView.tips_10')}}：</b>
             <RadioGroup v-model="paneType" type="button">
               <Radio label="matrix" class="pane-type">matrix</Radio>
               <Radio label="test_box" class="pane-type">Test Box</Radio>
@@ -57,12 +57,12 @@
           </FormItem>
         </Form>
         <p style="text-align: center">
-          <Button type="primary" @click="addPane">提交</Button>
+          <Button type="primary" @click="addPane">{{$t('resourcesList.commit')}}</Button>
         </p>
       </Card>
     </Modal>
     <Modal v-model="openModal" :footer-hide="true" :mask-closable="false" width="450">
-      <p style="font-size: 16px;margin: 0 0 5px;">注：请在灰色位置区域添加要添加的设备！</p>
+      <p style="font-size: 16px;margin: 0 0 5px;">{{$t('paneView.tips_11')}}</p>
       <comp-pane-card :prop-pane="propPane" :prop-show-remove-btn="false" @on-slot-click="onSlotClick"></comp-pane-card>
     </Modal>
 
@@ -72,8 +72,8 @@
                         :prop-device-status="true" :prop-cabinet="cabinetId" :prop-show-cabinet-select="false"
                         @on-row-click="onSelectDeviceModalRowClick"></comp-device-list>
       <div slot="footer">
-        <Button type="text" @click="openDevice=false">取消</Button>
-        <Button type="primary" @click="setDevice">确定</Button>
+        <Button type="text" @click="openDevice=false">{{$t('public.btn_cancel')}}</Button>
+        <Button type="primary" @click="setDevice">{{$t('public.btn_ok')}}</Button>
       </div>
     </Modal>
 
@@ -86,7 +86,7 @@
         </Drawer>
       </comp-device-list>
       <div slot="footer">
-        <Button type="primary" @click="openErrorDevice=false;showDeviceDetail=false;">返回</Button>
+        <Button type="primary" @click="openErrorDevice=false;showDeviceDetail=false;">{{$t('public.btn_back')}}</Button>
       </div>
     </Modal>
     <Modal v-model="showConfirmModal" :closable="false" :footer-hide="true" :mask-closable="false" width="95">
@@ -158,7 +158,7 @@ export default {
             this.paneList = paneList;
           }).catch(error => {
         if (config.DEBUG) console.log(error)
-        this.$Message.error("取得paneView信息列表失败")
+        this.$Message.error(this.$t('paneView.title_1'))
       })
       this.getErrorCount()
     },
@@ -166,18 +166,18 @@ export default {
     //添加pane
     addPane() {
       if (this.pane.pane_name.replace(/\s+/g, "").length === 0) {
-        alert('请输入项目名称！')
+        alert(this.$t('paneView.title_2'))
         return
       }
       if (this.CabinetSelected === null) {
-        alert('请选择机柜！')
+        alert(this.$t('paneView.title_3'))
         return
       }
       if (this.paneType === "matrix") {
         //去除前后两端的空格
         this.pane.pane_name = this.pane.pane_name.replace(/(^\s*)|(\s*$)/g, "");
         if (!/^\w+@[1-9](x|X)[1-9]$/.test(this.pane.pane_name)) {
-          this.$Message.error('格式错误')
+          this.$Message.error(this.$t('paneView.title_4'))
           return
         }
         let str = this.pane.pane_name.split("@")
@@ -197,9 +197,9 @@ export default {
         }).catch(error => {
           if (config.DEBUG) console.log(error)
           if (error.status === 400)
-            this.$Message.error("该项目名称已存在，请重新输入！")
+            this.$Message.error(this.$t('paneView.title_5'))
           else
-            this.$Message.error("项目添加失败,请检查后再重新添加！")
+            this.$Message.error(this.$t('paneView.title_6'))
         })
       } else if (this.paneType === "test_box") {
         let paramObj = {
@@ -222,7 +222,7 @@ export default {
               this.showAddPane = false
             }).catch(error => {
           if (config.DEBUG) console.log(error)
-          this.$Message.error("项目添加失败,请检查后再重新添加！")
+          this.$Message.error(this.$t('paneView.title_6'))
         })
       }
     },
@@ -256,15 +256,15 @@ export default {
       this.slotKey = key
       this.slotId = id
       if (this.paneList[this.paneIndex].slotList[key].status !== "empty") {
-        this.$Message.info("该区域已有设备，请在未放置设备区域添加设备！")
+        this.$Message.info(this.$t('paneView.title_7'))
         return
       }
       let root = this;
       let x = row + 1;
       let y = col + 1;
       this.$Modal.confirm({
-        title: "提示：",
-        content: "您确定要在该位置(" + x + "," + y + ")处添加设备吗？",
+        title: this.$t('public.modal_info'),
+        content: this.$t('paneView.title_8')+"(" + x + "," + y + ")"+this.$t('paneView.title_9'),
         onOk() {
           root.cabinetId = root.paneList[root.paneIndex].cabinet
           root.openDevice = true
@@ -287,7 +287,7 @@ export default {
       this.paneId = this.paneList[this.paneIndex].id
       if (this.paneList[this.paneIndex].type === "test_box") {
         if (this.selectDevice === null) {
-          this.$Message.warning("请先选择一台设备")
+          this.$Message.warning(this.$t('paneView.title_10'))
           return
         }
         this.$refs.deviceConfig.setPaneId(this.paneId)
@@ -312,12 +312,12 @@ export default {
         return
       }
       if (this.selectDevice !== null) {
-        let str = "添加设备成功，请继续添加或关闭弹窗！"
+        let str = this.$t('paneView.notices_1')
         this.sendRequest(str)
       }
     },
     onConfirmDevice() {
-      let str = "添加设备成功！"
+      let str = this.$t('paneView.notices_2')
       this.sendRequest(str)
     },
     sendRequest(str) {
@@ -338,7 +338,7 @@ export default {
       }).catch(error => {
         if (config.DEBUG) console.log(error)
         this.showSpin = false
-        this.$Message.error("添加设备失败")
+        this.$Message.error(this.$t('paneView.notices_3'))
       })
     },
     onSelectDeviceModalRowClick(row) {
@@ -359,7 +359,7 @@ export default {
           })
           .catch(error => {
             if (config.DEBUG) console.log(error)
-            this.$Message.error("获取异常数据失败")
+            this.$Message.error(this.$t('paneView.notices_4'))
           })
     },
     getCabinet() {
@@ -369,7 +369,7 @@ export default {
           })
           .catch(error => {
             if (config.DEBUG) console.log(error)
-            this.$Message.error("取得机柜信息出错")
+            this.$Message.error(this.$t('deviceList.err_1'))
           })
     },
       onCloseConfog(flag,flag2){

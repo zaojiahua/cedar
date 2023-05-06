@@ -2,17 +2,17 @@
     <div>
         <Row style="height: 50px;line-height: 50px;">
             <Col span="4">
-                <span style="padding-left: 5px;border-left: 3px solid #1bbc9c">App列表</span>
+                <span style="padding-left: 5px;border-left: 3px solid #1bbc9c">{{$t('appInfo.editTips_1')}}</span>
             </Col>
             <Col span="20" style="text-align: right">
-                <Button type="primary" @click="onOpenAddModal">添加App</Button>
+                <Button type="primary" @click="onOpenAddModal">{{$t('appInfo.editTips_2')}}</Button>
                 <Dropdown trigger="click" style="margin: 0 15px">
                     <Button>
-                        更多操作
+                        {{$t('public.moreAction')}}
                         <Icon type="ios-arrow-down"></Icon>
                     </Button>
                     <DropdownMenu slot="list" style="text-align: left">
-                        <span @click="deleteApp"><DropdownItem>删除</DropdownItem></span>
+                        <span @click="deleteApp"><DropdownItem>{{$t('public.btn_del')}}</DropdownItem></span>
                     </DropdownMenu>
                 </Dropdown>
                 <AutoComplete  style="width:300px;text-align: left"
@@ -22,7 +22,7 @@
                                @on-search="handleSearch"
                                @on-clear="clearSearch"
                                @keyup.enter.native="jobSearch(keyword)"
-                               placeholder="输入App名称...">
+                               :placeholder="$t('appInfo.editTips_3')">
                     <Option v-for="(item,index) in filterAppNameList" :value="item" :key="index">{{ item }}</Option>
                 </AutoComplete>
                 <Button style="height: 32px;" @click="jobSearch(keyword)" type="primary">search</Button>
@@ -34,17 +34,17 @@
 
         <Modal v-model="showAppNameInfo" footer-hide :mask-closable="false" width="420">
             <Card>
-                <p slot="title">App信息</p>
+                <p slot="title">{{$t('appInfo.editTips_4')}}</p>
                 <Form :model="appInfo" :label-width="130" :rules="ruleValidate" ref="formValidate">
-                    <FormItem label="App名称：" prop="name">
-                        <Input v-model="appInfo.name" placeholder="请输入要添加的App名称"></Input>
+                    <FormItem :label="$t('appInfo.editTips_5')+'：'" prop="name">
+                        <Input v-model="appInfo.name" :placeholder="$t('appInfo.editTips_6')"></Input>
                     </FormItem>
-                    <FormItem label="最多登录数：" prop="max_login_num">
+                    <FormItem :label="$t('appInfo.editTips_7')+'：'" prop="max_login_num">
                         <InputNumber v-model="appInfo.max_login_num" :min="1" :precision="0"></InputNumber>
                     </FormItem>
                 </Form>
                 <Row type="flex" justify="center">
-                    <Button type="primary" @click="createAppName">提交</Button>
+                    <Button type="primary" @click="createAppName">{{$t('resourcesList.commit')}}</Button>
                 </Row>
             </Card>
         </Modal>
@@ -72,11 +72,11 @@
                         key: "name",
                     },
                     {
-                        title: "最大登录数",
+                        title: this.$t('appInfo.editTips_7'),
                         key: "max_login_num",
                     },
                     {
-                        title: "操作",
+                        title: this.$t('testSetList.action'),
                         key: "action",
                         align: 'center',
                         width:120,
@@ -94,17 +94,17 @@
                                             this.setAppInfo(params.row)
                                         }
                                     }
-                                }, '编辑'),
+                                }, this.$t('resourcesList.edit')),
                             ]);
                         }
                     }
                 ],
                 ruleValidate: {
                     name: [
-                        { required: true, message: 'App名称不能为空', trigger: 'blur' },
+                        { required: true, message: this.$t('appInfo.title_2'), trigger: 'blur' },
                     ],
                     max_login_num:[
-                        { required: true, type:"number", min:1, message: '该项不能为空', trigger: 'blur' },
+                        { required: true, type:"number", min:1, message: this.$t('appInfo.editTips_8'), trigger: 'blur' },
                     ]
                 },
                 isCreated:true,
@@ -169,7 +169,7 @@
                         this.showLoading = false
                     }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error({content:"app列表获取失败"+error.response.data.message,duration:5})
+                    this.$Message.error({content:this.$t('appInfo.tips_9')+error.response.data.message,duration:5})
                     this.showLoading = false
                 })
             },
@@ -196,7 +196,7 @@
                     })
                     .catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error("app列表获取失败")
+                        this.$Message.error(this.$t('appInfo.tips_9'))
                     })
             },
             // 支持多选
@@ -272,7 +272,7 @@
                     })
                     .catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error("app列表获取失败")
+                        this.$Message.error(this.$t('appInfo.tips_9'))
                         this.showLoading = false
                     })
             },
@@ -287,17 +287,17 @@
             },
             deleteApp(){
                 if(this.selection.length===0){
-                    this.$Message.warning("请选择要删除的App!")
+                    this.$Message.warning(this.$t('appInfo.editTips_9'))
                     return
                 }
                 let _this = this
                 this.$Modal.confirm({
-                    title:"警告",
-                    content:"确认要删除App【"+_this.selection[0].name+"】吗",
+                    title:this.$t('public.modal_warn'),
+                    content:this.$t('appInfo.editTips_10')+"【"+_this.selection[0].name+"】"+this.$t('tboardList.delTit_2'),
                     onOk(){
                         _this.$ajax.delete("api/v1/cedar/appgather/"+_this.selection[0].id + "/")
                         .then(response=>{
-                            _this.$Message.success("删除成功")
+                            _this.$Message.success(_this.$t('public.delSuccess'))
                             _this.selection = []
                             _this.clearSearch()
                             _this.$emit("after-update-app")
@@ -305,7 +305,7 @@
                             if(error.response.data.custom_code==="0"){
                                 _this.$Message.error({content:error.response.data.description,duration:5})
                             }else {
-                                _this.$Message.error("删除失败")
+                                _this.$Message.error(_this.$t('public.delFail'))
                             }
                         })
                     }
@@ -315,7 +315,7 @@
             },
             createAppName(){
                 if(this.appInfo.name.trim().length===0){
-                    this.$Message.warning("请输入要添加的App名称！")
+                    this.$Message.warning(this.$t('appInfo.editTips_6'))
                     return
                 }
                 if(this.isCreated){
@@ -324,14 +324,14 @@
                         max_login_num:this.appInfo.max_login_num,
                     }).then(response=>{
                         this.showAppNameInfo = false
-                        this.$Message.success("App添加成功")
+                        this.$Message.success(this.$t('appInfo.editApp_1'))
                         this.$emit("after-update-app")
                         this.clearSearch()
                     }).catch(error=>{
                         if(error.response.data.name){
                             this.$Message.error({content:error.response.data.name.join(","),duration:5})
                         }else {
-                            this.$Message.error("App添加失败")
+                            this.$Message.error(this.$t('appInfo.editApp_2'))
                         }
                     })
                 }else {
@@ -340,14 +340,14 @@
                         max_login_num:this.appInfo.max_login_num,
                     }).then(response=>{
                         this.showAppNameInfo = false
-                        this.$Message.success("修改成功")
+                        this.$Message.success(this.$t('userDetail.success_1'))
                         this.$emit("after-update-app")
                         this.clearSearch()
                     }).catch(error=>{
                         if(error.response.data.name){
                             this.$Message.error({content:error.response.data.name.join(","),duration:5})
                         }else {
-                            this.$Message.error("修改失败")
+                            this.$Message.error(this.$t('appInfo.editApp_3'))
                         }
                     })
                 }

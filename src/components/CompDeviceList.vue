@@ -39,7 +39,7 @@
             </Col>
             <Col span="8">
                 <div v-show="propShowSearch" style="float: right;width:300px;" v-click-outside="onClickOutSide">
-                    <Input v-model="deviceKeyword" clearable search enter-button="Search" placeholder="输入设备自定义名称" class="search-input"
+                    <Input v-model="deviceKeyword" clearable search enter-button="Search" :placeholder="$t('subsidiaryDevice.tips_1')" class="search-input"
                            @on-focus="isShowHistory=true" @on-search="onDeviceSearch" @on-clear="deviceKeyword='';onPageChange(1)"/>
                     <Card v-show="isShowHistory" style="position:absolute;width: 300px;z-index: 100;margin-top: 5px;">
                         <Row>{{$t('deviceList.history')}}<Icon style="float: right;" type="ios-trash-outline" size="18" @click="emptyHistory" /></Row>

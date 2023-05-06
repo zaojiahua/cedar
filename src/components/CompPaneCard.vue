@@ -2,8 +2,8 @@
     <div>
         <div>
             <div class="pane-box" @mouseenter="showRemove=true" @mouseleave="showRemove=false">
-                <span v-if="propShowRemoveBtn" v-show="showRemove" class="remove" style="right: 90px;color: #19be6b" @click="addDevice(propPane,propIndex)">添加设备</span>
-                <span v-if="propShowRemoveBtn" v-show="showRemove" class="remove" @click="removePane(propIndex)">移除支架</span>
+                <span v-if="propShowRemoveBtn" v-show="showRemove" class="remove" style="right: 90px;color: #19be6b" @click="addDevice(propPane,propIndex)">{{$t('paneCard.btn_1')}}</span>
+                <span v-if="propShowRemoveBtn" v-show="showRemove" class="remove" @click="removePane(propIndex)">{{$t('paneCard.btn_2')}}</span>
                 <div :style="{ width: (propPane.width*40+30) + 'px'}" style="margin:auto">
                     <p style="margin-left: 20px"><span class="w-index" v-for="h_index in propPane.width">{{ h_index }}</span></p>
                     <div>

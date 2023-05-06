@@ -6,16 +6,16 @@
                 <Input v-model="device.id" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">编号</b>
+                <b slot="label">{{$t('deviceList.device_label')}}</b>
                 <Input v-model="device.serial_number" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">自定义编号</b>
+                <b slot="label">{{$t('rdsDetail.customName')}}</b>
                 <Input v-model="device.custom_number" :maxlength="100" style="width: 80%"></Input>
-                <Button type="primary" @click="updateCustomNumber">修改</Button>
+                <Button type="primary" @click="updateCustomNumber">{{$t('userManagement.userColumns.btn_1')}}</Button>
             </FormItem>
             <FormItem>
-                <b slot="label">机柜</b>
+                <b slot="label">{{$t('deviceList.cabinet')}}</b>
                 <Input v-model="device.cabinet.cabinet_name+' ( '+device.cabinet.type +' )'" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
@@ -23,22 +23,22 @@
                 <Input v-model="device.ip_address" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <FormItem>
-                <b slot="label">状态</b>
+                <b slot="label">{{$t('deviceDetail.status')}}</b>
                 <Input v-model="device.status" :disabled="true" class="disabled-input"></Input>
             </FormItem>
             <Divider></Divider>
             <FormItem>
-                <b slot="label"><span class="need">*</span>自定义名称</b>
+                <b slot="label"><span class="need">*</span>{{$t('deviceList.device_name')}}</b>
                 <Input style="width: 80%" v-model="device.custom_name"></Input>
-                <Button type="primary" @click="updateDevice">修改</Button>
+                <Button type="primary" @click="updateDevice">{{$t('userManagement.userColumns.btn_1')}}</Button>
             </FormItem>
         </Form>
         <Collapse :value="[0,1,2,3,4,5]">
-            <Panel>机型信息
+            <Panel>{{$t('deviceDetail.model')}}
                 <div  slot="content">
                     <Form :model="device" :label-width="90">
                         <FormItem>
-                            <b slot="label">手机型号</b>
+                            <b slot="label">{{$t('deviceDetail.phone_model_name')}}</b>
                             <Input v-model="device.phone_model.phone_model_name" :disabled="true" class="disabled-input"></Input>
                         </FormItem>
                         <FormItem>
@@ -50,32 +50,32 @@
                             <Input v-model="device.phone_model.y_dpi" :disabled="true" class="disabled-input"></Input>
                         </FormItem>
                         <FormItem>
-                            <b slot="label">X边框厚度</b>
+                            <b slot="label">{{$t('subsidiaryDevice.tips_4')}}</b>
                             <Input v-model="device.phone_model.x_border" :disabled="true" class="disabled-input"></Input>
                         </FormItem>
                         <FormItem>
-                            <b slot="label">Y边框厚度</b>
+                            <b slot="label">{{$t('subsidiaryDevice.tips_5')}}</b>
                             <Input v-model="device.phone_model.y_border" :disabled="true" class="disabled-input"></Input>
                         </FormItem>
                     </Form>
                 </div>
             </Panel>
-            <Panel>关联主机
+            <Panel>{{$t('subsidiaryDevice.tips_2')}}
                 <div slot="content">
                     <Form :model="device" :label-width="90">
                         <FormItem>
-                            <b slot="label">关联主机</b>
+                            <b slot="label">{{$t('subsidiaryDevice.tips_2')}}</b>
                             <Input v-model="device.device.device_name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
                         </FormItem>
                     </Form>
                 </div>
             </Panel>
-            <Panel>SIM卡信息
-                <Button type="text" @click.stop="unboundAllSources(1)" style="float: right;margin-right: 10%;margin-top: 4px">批量解绑</Button>
+            <Panel>SIM{{$t('deviceDetail.simInfo')}}
+                <Button type="text" @click.stop="unboundAllSources(1)" style="float: right;margin-right: 10%;margin-top: 4px">{{$t('deviceDetail.unbound')}}</Button>
                 <div slot="content">
                     <Form :model="device" :label-width="90" class="remove-icon">
                         <FormItem>
-                            <b slot="label">SIM卡1</b>
+                            <b slot="label">SIM{{$t('deviceDetail.card')}}1</b>
                             <Row>
                                 <Input v-model="device.sim1.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
                                 <Icon v-show="propSubsidiaryDevice&& !device.sim1.id" type="ios-add-circle" size="20" color="#1bbc9c"
@@ -85,7 +85,7 @@
                             </Row>
                         </FormItem>
                         <FormItem>
-                            <b slot="label">SIM卡2</b>
+                            <b slot="label">SIM{{$t('deviceDetail.card')}}2</b>
                             <Row>
                                 <Input v-model="device.sim2.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
                                 <Icon v-show="propSubsidiaryDevice&& !device.sim2.id" type="ios-add-circle" size="20" color="#1bbc9c"
@@ -97,12 +97,12 @@
                     </Form>
                 </div>
             </Panel>
-            <Panel>账号信息
-                <Button type="text" @click.stop="unboundAllSources(2)" style="float: right;margin-right: 10%;margin-top: 4px">批量解绑</Button>
+            <Panel>{{$t('deviceDetail.account_info_2')}}
+                <Button type="text" @click.stop="unboundAllSources(2)" style="float: right;margin-right: 10%;margin-top: 4px">{{$t('deviceDetail.unbound')}}</Button>
                 <div slot="content" class="remove-icon">
                     <Form :model="device" :label-width="90">
                         <FormItem v-for="item in device.account">
-                            <b slot="label">账号</b>
+                            <b slot="label">{{$t('deviceDetail.account_info')}}</b>
                             <Row>
                                 <Input v-model="item.app_name + ' / ' + item.name" style="width: 80%" :disabled="true" class="disabled-input"></Input>
                                 <Icon v-show="propSubsidiaryDevice" type="md-remove-circle" size="20" color="#666"
@@ -110,7 +110,7 @@
                             </Row>
                         </FormItem>
                         <FormItem v-show="propSubsidiaryDevice">
-                            <b slot="label">账号</b>
+                            <b slot="label">{{$t('deviceDetail.account_info')}}</b>
                             <Row>
                                 <Input style="width: 80%" :disabled="true" class="disabled-input"></Input>
                                 <Icon type="ios-add-circle" style="margin-left: 5px;cursor: pointer;" size="20" color="#1bbc9c" @click="showAddAppModal=true"/>
@@ -122,11 +122,11 @@
         </Collapse>
         <Row align="middle" justify="space-between" type="flex" style="margin-top: 32px;">
             <Col>
-                <Button type="error" style="margin-right: 16px;" @click="deleteDevice">移除设备</Button>
+                <Button type="error" style="margin-right: 16px;" @click="deleteDevice">{{$t('deviceDetail.remove')}}</Button>
                 <!--<Button type="primary" @click="reconnectDevice">重新连接</Button>-->
             </Col>
             <Col>
-                <Button @click="cancelConfig">取消</Button>
+                <Button @click="cancelConfig">{{$t('public.btn_cancel')}}</Button>
             </Col>
         </Row>
 
@@ -134,15 +134,15 @@
         <Modal v-model="showAddSimModal"  :fullscreen="true" :transfer="false" :closable="false">
             <comp-sim-list v-if="showAddSimModal" :prop-status="true" :prop-action="false" @on-row-click="onSimRowClick"></comp-sim-list>
             <div slot="footer">
-                <Button type="text" @click="showAddSimModal=false">取消</Button>
-                <Button type="primary" @click="addSimCard">确定</Button>
+                <Button type="text" @click="showAddSimModal=false">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" @click="addSimCard">{{$t('public.btn_ok')}}</Button>
             </div>
         </Modal>
         <Modal v-model="showAddAppModal"  :fullscreen="true" :transfer="false" :closable="false">
             <comp-app-table v-if="showAddAppModal" ref="appTable" :prop-status="true" :prop-action="false" :prop-multi-select="true"></comp-app-table>
             <div slot="footer">
-                <Button type="text" @click="showAddAppModal=false">取消</Button>
-                <Button type="primary" @click="addAppSource">确定</Button>
+                <Button type="text" @click="showAddAppModal=false">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" @click="addAppSource">{{$t('public.btn_ok')}}</Button>
             </div>
         </Modal>
 
@@ -231,13 +231,13 @@
                 let detailComp = this
                 if(device_status==="busy"){
                     this.$Modal.confirm({
-                        title: "警告！",
-                        content: "当前设备正在执行任务，不允许移除",
+                        title: this.$t('public.modal_warn'),
+                        content:this.$t('subsidiaryDevice.tips_6'),
                     })
                 }else {
                     this.$Modal.confirm({
-                        title: "警告！",
-                        content: "您确定要从系统中移除该设备吗？",
+                        title: this.$t('public.modal_warn'),
+                        content: this.$t('subsidiaryDevice.tips_7'),
                         onOk(){
                             detailComp.deleteAjax(device_id)
                         }
@@ -251,15 +251,15 @@
                 }).then(response=>{
                     this.spinShow = false;
                     if(response.data.status==="success"){
-                        this.$Message.success("该设备已从系统中移除");
+                        this.$Message.success(this.$t('deviceDetail.tips_11'));
                         this.$emit('after-device-action')
                     } else{
-                        this.$Message.error("设备移除失败！" +response.data.message);
+                        this.$Message.error(this.$t('deviceDetail.error_3') +response.data.message);
                     }
                 }).catch(error=>{
                     this.spinShow = false;
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error({content:"设备移除失败！" + error.response.data.message,duration:3});
+                    this.$Message.error({content:this.$t('deviceDetail.error_3') + error.response.data.message,duration:3});
                 })
             },
             // Load data
@@ -298,17 +298,17 @@
                     this.spinShow = false;
                     if(config.DEBUG) console.log(reason)
                     let status = reason.response?reason.response.status : "Network error!"
-                    this.$Message.error("获取僚机详情出错! "+status)
+                    this.$Message.error(this.$t('subsidiaryDevice.tips_8')+status)
                 })
             },
             // Update device
             updateDevice(){
                 if(this.device.custom_name.trim().length===0){
-                    this.$Message.warning("自定义名称不能为空！");
+                    this.$Message.warning(this.$t('subsidiaryDevice.tips_9'));
                     return
                 }
                 if (!this.device.custom_name.match(/^[\u4E00-\u9FA5a-zA-Z0-9()_\-]+$/)) {
-                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字、括号和中下划线",duration:5})
+                    this.$Message.warning({content:this.$t('deviceDetail.tips_9'),duration:5})
                     return
                 }
                 this.$ajax.patch("/api/v1/cedar/subsidiary_device/"+ this.device.id + "/",
@@ -316,11 +316,11 @@
                         custom_name: this.device.custom_name.trim()
                     }
                 ).then(response=>{
-                    this.$Message.success("自定义名称修改成功")
+                    this.$Message.success(this.$t('subsidiaryDevice.tips_10'))
                     this.$emit('after-device-action',)
                 }).catch(reason => {
                     if(config.DEBUG) console.log(reason)
-                    this.$Message.error("自定义名称修改失败")
+                    this.$Message.error(this.$t('subsidiaryDevice.tips_11'))
                 })
             },
             // Update device custom_cumber
@@ -330,11 +330,11 @@
                         custom_number: this.device.custom_number.trim()
                     }
                 ).then(response=>{
-                    this.$Message.success("自定义编号修改成功")
+                    this.$Message.success(this.$t('subsidiaryDevice.tips_12'))
                     this.$emit('after-device-action',)
                 }).catch(reason => {
                     if(config.DEBUG) console.log(reason)
-                    this.$Message.error("自定义编号修改失败")
+                    this.$Message.error(this.$t('subsidiaryDevice.tips_13'))
                 })
             },
             cancelConfig(){
@@ -351,7 +351,7 @@
             //add SIM card/---/app
             addSimCard(){
                 if(!this.sim_id){
-                    this.$Message.info("请选择要绑定的SIM卡！")
+                    this.$Message.info(this.$t('deviceDetail.sourceTips_2'))
                     return
                 }
                 this.$ajax.patch("api/v1/cedar/simcard/" + this.sim_id + "/",{
@@ -359,17 +359,17 @@
                     status:"busy",
                     subsidiary_device:this.device.id
                 }).then(response=>{
-                    this.$Message.success("SIM卡绑定成功")
+                    this.$Message.success(this.$t('deviceDetail.sourceTips_3'))
                     this.showAddSimModal = false
                     this.refresh(this.device.id)
                 }).catch(error=>{
-                    this.$Message.error({content:"SIM卡绑定失败"+ error.response.data.message,duration:6})
+                    this.$Message.error({content:this.$t('deviceDetail.sourceTips_4')+ error.response.data.message,duration:6})
                 })
             },
             addAppSource(){
                 let apps = this.$refs.appTable.getThisSelection()
                 if(apps.length===0){
-                    this.$Message.info("请选择要绑定的APP资源！")
+                    this.$Message.info(this.$t('deviceDetail.sourceTips_5'))
                     return
                 }
                 let ids = [];
@@ -382,25 +382,25 @@
                 }).then(response=>{
                     if(response.data.length>0){
                         this.$Modal.error({
-                            title:'绑定失败',
-                            content:'app账号资源【'+ response.data.join("】,【") +'】已经超出最大登录数，绑定失败'
+                            title:this.$t('deviceDetail.sourceTips_6'),
+                            content:this.$t('deviceDetail.sourceTips_7')+'【'+ response.data.join("】,【") +'】'+this.$t('deviceDetail.sourceTips_8')
                         })
                     }else
-                        this.$Message.success("绑定成功！")
+                        this.$Message.success(this.$t('deviceDetail.sourceTips_9'))
                     this.showAddAppModal = false
                     this.refresh(this.device.id)
                 })
                 .catch(error=>{
                     if (config.DEBUG) console.log(error)
-                    this.$Message.error({content:"app账号资源绑定失败;"+error.response.data.message,duration:7})
+                    this.$Message.error({content:this.$t('deviceDetail.sourceTips_10')+error.response.data.message,duration:7})
                 })
             },
             //remove sim  card/---/ app
             removeSimCard(id){
                 let root = this;
                 this.$Modal.confirm({
-                    title: "警告！",
-                    content: "您确定要解绑该SIM卡吗？",
+                    title: this.$t('public.modal_warn'),
+                    content: this.$t('deviceDetail.unbindTips_1'),
                     onOk(){
                         root.$ajax.patch("api/v1/cedar/simcard/" + id + "/",{
                             order: null,
@@ -408,11 +408,11 @@
                             history_relevance:root.device.custom_name,
                             subsidiary_device:null,
                         }).then(response=>{
-                            root.$Message.success("SIM卡解绑成功")
+                            root.$Message.success(root.$t('deviceDetail.unbindTips_2'))
                             root.refresh(root.device.id)
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
-                            root.$Message.error({content:"SIM卡解绑失败"+ error.response.data.message,duration:6})
+                            root.$Message.error({content:root.$t('deviceDetail.unbindTips_3')+ error.response.data.message,duration:6})
                         })
                     }
                 })
@@ -420,18 +420,18 @@
             removeAppSource(id){
                 let root = this;
                 this.$Modal.confirm({
-                    title: "警告！",
-                    content: "您确定要解绑该账号资源吗？",
+                    title: this.$t('public.modal_warn'),
+                    content: this.$t('deviceDetail.unbindTips_4'),
                     onOk(){
                         root.$ajax.post("api/v1/cedar/unbind_account_source/",{
                             account_id: id,
                             subsidiary_device:root.device.id
                         }).then(response=>{
-                            root.$Message.success("账号资源解绑成功")
+                            root.$Message.success(root.$t('deviceDetail.unbindTips_5'))
                             root.refresh(root.device.id)
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
-                            root.$Message.error({content:"账号资源解绑失败"+ error.response.data.message,duration:7})
+                            root.$Message.error({content:root.$t('deviceDetail.unbindTips_6')+ error.response.data.message,duration:7})
                         })
                     }
                 })
@@ -444,32 +444,32 @@
                 let content = ""
                 if(val===1){
                     if(this.device.simcard.length === 0){
-                        this.$Message.success("没有可批量解绑的SIM卡资源")
+                        this.$Message.success(this.$t('deviceDetail.unbindTips_7'))
                         return
                     }
                     type = "SIMCard"
-                    content = "您确定要解绑所有SIM卡资源吗?"
+                    content = this.$t('deviceDetail.unbindTips_8')
                 }else if(val===2){
                     if(this.device.account.length === 0){
-                        this.$Message.success("没有可批量解绑的账号资源")
+                        this.$Message.success(this.$t('deviceDetail.unbindTips_9'))
                         return
                     }
                     type = "Account"
-                    content = "您确定要解绑所有账号资源吗?"
+                    content = this.$t('deviceDetail.unbindTips_10')
                 }
                 this.$Modal.confirm({
-                    title: "警告！",
+                    title: this.$t('public.modal_warn'),
                     content:content,
                     onOk(){
                         _this.$ajax.post("api/v1/cedar/block_unbind_resource",{
                             subsidiary_device:_this.device.id,
                             "resource_type":type
                         }).then(response=>{
-                            this.$Message.success("资源解绑成功")
+                            this.$Message.success(_this.$t('deviceDetail.unbindTips_11'))
                             _this.refresh(_this.device.id)
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
-                            this.$Message.error({content:"资源解绑失败:" + error.response.data.message,duration:5})
+                            this.$Message.error({content:_this.$t('deviceDetail.unbindTips_12') + error.response.data.message,duration:5})
                         })
                     }
                 })

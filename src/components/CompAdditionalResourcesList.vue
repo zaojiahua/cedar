@@ -3,28 +3,28 @@
         <Row style="margin-bottom: 16px">
             <Col span="12">
                 <Select v-model="tableList" style="width: 200px;">
-                    <Option :value="1">SIM卡资源列表</Option>
-                    <Option :value="2">账号资源列表</Option>
+                    <Option :value="1">{{$t('resourcesList.tips_1')}}</Option>
+                    <Option :value="2">{{$t('resourcesList.tips_2')}}</Option>
                 </Select>
-                <Button v-show="(tableList===1)&&(username==='admin')" type="primary" style="margin-left: 16px" @click="onOpenSimModal">添加SIM卡资源</Button>
-                <Button v-show="(tableList===2)&&(username==='admin')" type="primary" style="margin-left: 16px" @click="onOpenAppModal">添加账号资源</Button>
-                <Button v-show="(tableList===2)&&(username==='admin')" type="default" style="margin-left: 16px;width: 80px" @click="onOpenAppEditList">编辑App</Button>
+                <Button v-show="(tableList===1)&&(username==='admin')" type="primary" style="margin-left: 16px" @click="onOpenSimModal">{{$t('resourcesList.tips_3')}}</Button>
+                <Button v-show="(tableList===2)&&(username==='admin')" type="primary" style="margin-left: 16px" @click="onOpenAppModal">{{$t('resourcesList.tips_4')}}</Button>
+                <Button v-show="(tableList===2)&&(username==='admin')" type="default" style="margin-left: 16px;width: 80px" @click="onOpenAppEditList">{{$t('resourcesList.tips_5')}}</Button>
             </Col>
 
             <Col span="12" style="text-align: right" v-show="username==='admin'">
-                <Button type="warning" style="margin-right: 16px;" @click="cancelSelected">取消选择 ( {{ selectedNum }} )</Button>
+                <Button type="warning" style="margin-right: 16px;" @click="cancelSelected">{{$t('public.cancelSelect')}} ( {{ selectedNum }} )</Button>
                 <Dropdown trigger="click" style="margin-right: 2px;">
                     <Button>
-                        更多操作
+                        {{$t('public.moreAction')}}
                         <Icon type="ios-arrow-down"></Icon>
                     </Button>
                     <DropdownMenu slot="list" style="text-align: left">
                         <Upload :action="importResourcesUrl" name="import_file" :show-upload-list="false"
                                 :on-success="importResourcesSuccess" :on-error="importResourcesFailed">
-                            <DropdownItem>导入资源</DropdownItem>
+                            <DropdownItem>{{$t('resourcesList.tips_6')}}</DropdownItem>
                         </Upload>
-                        <span @click="exportResources"><DropdownItem>导出资源</DropdownItem></span>
-                        <span @click="deleteMore"><DropdownItem>批量删除</DropdownItem></span>
+                        <span @click="exportResources"><DropdownItem>{{$t('resourcesList.tips_7')}}</DropdownItem></span>
+                        <span @click="deleteMore"><DropdownItem>{{$t('public.del_list')}}</DropdownItem></span>
                     </DropdownMenu>
                 </Dropdown>
             </Col>
@@ -48,7 +48,7 @@
         <Modal v-model="showAppEditModal" :fullscreen="true" :transfer="true" :closable="false">
             <comp-app-edit v-if="showAppEditModal" @after-update-app="afterUpdateApp"></comp-app-edit>
             <div slot="footer">
-                <Button type="primary" @click="showAppEditModal=false">返回</Button>
+                <Button type="primary" @click="showAppEditModal=false">{{$t('public.btn_back')}}</Button>
             </div>
         </Modal>
     </div>
@@ -118,13 +118,13 @@
                 if(this.tableList===1){  //sim
                     let sims = this.$refs.simTable.getThisSelection()
                     if(sims.length===0){
-                        this.$Message.info("请选择要删除的SIM卡资源！")
+                        this.$Message.info(this.$t('resourcesList.tips_8'))
                         return
                     }
                     let _this = this
                     this.$Modal.confirm({
-                        title:"警告！",
-                        content:"确认要删除已选择的资源吗？",
+                        title:this.$t('public.modal_warn'),
+                        content:this.$t('resourcesList.tips_9'),
                         onOk(){
                             let ajaxObj = [];
                             sims.forEach(info=>{
@@ -132,27 +132,27 @@
                             })
                             _this.$ajax.all(ajaxObj)
                                 .then(response=>{
-                                    _this.$Message.success("SIM卡资源删除成功！")
+                                    _this.$Message.success(_this.$t('resourcesList.tips_10'))
                                     _this.$refs.simTable.resetSimList()
                                     _this.$refs.simTable.getData()
 
                                 }).catch(error=>{
                                     if (config.DEBUG) console.log(error)
                                     _this.$refs.simTable.resetSimList()
-                                    _this.$Message.error({content:"SIM卡资源删除失败;"+error.response.data.message,duration:7})
+                                    _this.$Message.error({content:_this.$t('resourcesList.tips_11')+error.response.data.message,duration:7})
                             })
                         }
                     })
                 }else if(this.tableList===2) {   //app
                     let apps = this.$refs.appTable.getThisSelection()
                     if(apps.length===0){
-                        this.$Message.info("请选择要删除的APP账号资源！")
+                        this.$Message.info(this.$t('resourcesList.tips_12'))
                         return
                     }
                     let _this = this
                     this.$Modal.confirm({
-                        title:"警告！",
-                        content:"确认要删除已选择的资源吗？",
+                        title:this.$t('public.modal_warn'),
+                        content:this.$t('resourcesList.tips_13'),
                         onOk(){
                             let ajaxObj = [];
                             apps.forEach(info=>{
@@ -160,13 +160,13 @@
                             })
                             _this.$ajax.all(ajaxObj)
                                 .then(response=>{
-                                    _this.$Message.success("app账号资源删除成功！")
+                                    _this.$Message.success(_this.$t('resourcesList.tips_14'))
                                     _this.$refs.appTable.resetAppList()
                                     _this.$refs.appTable.getData()
                                 }).catch(error=>{
                                 if (config.DEBUG) console.log(error)
                                     _this.$refs.appTable.resetAppList()
-                                    _this.$Message.error({content:"app账号资源删除失败;"+error.response.data.message,duration:7})
+                                    _this.$Message.error({content:_this.$t('resourcesList.tips_15')+error.response.data.message,duration:7})
                             })
                         }
                     })
@@ -174,7 +174,7 @@
             },
             //导入资源 success/ fail
             importResourcesSuccess(response, file, fileList){
-                this.$Message.success("资源导入成功！")
+                this.$Message.success(this.$t('resourcesList.exportTips_1'))
                 if(this.tableList===1) {  //sim
                     this.$refs.simTable.resetSimList()
                     this.$refs.simTable.getData()
@@ -191,7 +191,7 @@
                     this.$refs.appTable.resetAppList()
                 }
                 this.$Notice.error({
-                    title: '资源导入失败！',
+                    title: this.$t('resourcesList.exportTips_2'),
                     desc:  file.data_info.join("<br>"),
                     duration: 60
                 });
@@ -201,7 +201,7 @@
                 if(this.tableList===1){  //sim
                     let sims = this.$refs.simTable.getThisSelection()
                     if(sims.length===0){
-                        this.$Message.info("请选择需要导出的SIM卡资源！")
+                        this.$Message.info(this.$t('resourcesList.exportTips_3'))
                         return
                     }
                     let simIds = []
@@ -211,8 +211,8 @@
                     console.log(sims)
                     let _this = this
                     this.$Modal.confirm({
-                        title:"提示！",
-                        content:"确认要导出已选择的SIM卡资源吗？",
+                        title:this.$t('public.modal_info'),
+                        content:this.$t('resourcesList.exportTips_4'),
                         onOk(){
                             _this.$ajax.post("api/v1/cedar/resource_export/",{
                                 resource_type: "SIMCard",
@@ -220,13 +220,13 @@
                             }).then(response=>{
                                 console.log(response.data)
                                 window.open("http://"+config.REEF_HOST+":"+config.REEF_PORT + response.data)
-                                _this.$Message.success("正在导出...")
+                                _this.$Message.success(_this.this.$t('tboardDetail.exportErr_2'))
                                 _this.$refs.simTable.resetSimList()
                                 _this.$refs.simTable.getData()
                             }).catch(error=>{
                                 if (config.DEBUG) console.log(error)
                                 _this.$refs.simTable.resetSimList()
-                                _this.$Message.error({content:"SIM卡资源导出失败;"+error.response.data.message,duration:7})
+                                _this.$Message.error({content:_this.$t('resourcesList.exportTips_5')+error.response.data.message,duration:7})
                             })
                         }
                     })
@@ -234,7 +234,7 @@
                 }else if(this.tableList===2) {   //app
                     let apps = this.$refs.appTable.getThisSelection()
                     if(apps.length===0){
-                        this.$Message.info("请选择需要导出的APP账号资源！")
+                        this.$Message.info(this.$t('resourcesList.exportTips_6'))
                         return
                     }
                     let appsIds = []
@@ -243,21 +243,21 @@
                     })
                     let _this = this
                     this.$Modal.confirm({
-                        title:"提示！",
-                        content:"确认要导出已选择的账号资源吗？",
+                        title:this.$t('public.modal_info'),
+                        content:this.$t('resourcesList.exportTips_7'),
                         onOk(){
                             _this.$ajax.post("api/v1/cedar/resource_export/",{
                                 resource_type: "Account",
                                 account: appsIds
                             }).then(response=>{
                                 window.open("http://"+config.REEF_HOST+":"+config.REEF_PORT + response.data)
-                                _this.$Message.success("正在导出...")
+                                _this.$Message.success(_this.this.$t('tboardDetail.exportErr_2'))
                                 _this.$refs.appTable.resetAppList()
                                 _this.$refs.appTable.getData()
                             }).catch(error=>{
                                 if (config.DEBUG) console.log(error)
                                 _this.$refs.appTable.resetAppList()
-                                _this.$Message.error({content:"app账号资源导出失败;"+error.response.data.message,duration:7})
+                                _this.$Message.error({content:_this.$t('resourcesList.exportTips_8')+error.response.data.message,duration:7})
                             })
                         }
                     })

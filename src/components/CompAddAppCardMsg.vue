@@ -1,6 +1,6 @@
 <template>
     <Card>
-        <p slot="title">账号资源信息</p>
+        <p slot="title">{{$t('appInfo.title_1')}}</p>
         <Form :model="selectMsg" :label-width="130" :rules="ruleValidate" ref="formValidate">
             <FormItem label="App：" prop="app_name_id">
                 <!--<Input v-model="selectMsg.app_name" type="text" ></Input>-->
@@ -8,21 +8,21 @@
                     <Option v-for="item in appNameList" :value="item.id" :key="item.id">{{ item.name }}</Option>
                 </Select>
             </FormItem>
-            <FormItem label="账号：" prop="name">
-                <Input v-model="selectMsg.name" placeholder="请输入"></Input>
+            <FormItem :label="$t('deviceDetail.account_info')+'：'" prop="name">
+                <Input v-model="selectMsg.name" placeholder="Enter something..."></Input>
             </FormItem>
-            <FormItem label="密码："  prop="password">
-                <Input v-model="selectMsg.password" placeholder="请输入"></Input>
+            <FormItem :label="$t('userDetail.password')+'：'"  prop="password">
+                <Input v-model="selectMsg.password" placeholder="Enter something..."></Input>
             </FormItem>
-            <FormItem label="用户名/昵称："  prop="username">
-                <Input v-model="selectMsg.username" placeholder="请输入"></Input>
+            <FormItem :label="$t('appInfo.tips_2')+'：'"  prop="username">
+                <Input v-model="selectMsg.username" placeholder="Enter something..."></Input>
             </FormItem>
-            <FormItem label="绑定手机号：">
-                <Input v-model="selectMsg.phone_number"  @on-keyup="selectMsg.phone_number=phoneInput(selectMsg.phone_number)" :maxlength="11" placeholder="请输入正确的手机号"></Input>
+            <FormItem :label="$t('appInfo.tips_3')+'：'">
+                <Input v-model="selectMsg.phone_number"  @on-keyup="selectMsg.phone_number=phoneInput(selectMsg.phone_number)" :maxlength="11" :placeholder="$t('resourcesList.title_2')"></Input>
             </FormItem>
         </Form>
         <Row type="flex" justify="center">
-            <Button type="primary" @click="commit()">提交</Button>
+            <Button type="primary" @click="commit()">{{$t('resourcesList.commit')}}</Button>
         </Row>
     </Card>
 </template>
@@ -51,16 +51,16 @@
                 appNameList:[],
                 ruleValidate: {
                     app_name_id: [
-                        { required: true, type:"number", message: 'APP名称不能为空', trigger: 'change' }
+                        { required: true, type:"number", message: this.$t('appInfo.title_2'), trigger: 'change' }
                     ],
                     name: [
-                        { required: true, message: '账号不能为空', trigger: 'blur' },
+                        { required: true, message: this.$t('appInfo.title_3'), trigger: 'blur' },
                     ],
                     password: [
-                        { required: true, message: '密码不能为空', trigger: 'blur' }
+                        { required: true, message: this.$t('appInfo.title_4'), trigger: 'blur' }
                     ],
                     username: [
-                        { required: true, message: '用户名不能为空', trigger: 'blur' }
+                        { required: true, message: this.$t('appInfo.title_5'), trigger: 'blur' }
                     ],
                 },
                 flag:true,   //true:新建   false:修改
@@ -94,7 +94,7 @@
                 this.$refs.formValidate.validate((valid) => {
                     if (valid) {
                         if(this.selectMsg.phone_number.trim().length<11&&this.selectMsg.phone_number.trim().length>0){
-                            this.$Message.warning("请输入正确的11位手机号！")
+                            this.$Message.warning(this.$t('resourcesList.title_2'))
                             return
                         }
                         //新增资源
@@ -106,15 +106,15 @@
                                 password:this.selectMsg.password,
                                 phone_number:this.selectMsg.phone_number,
                             }).then(response=>{
-                                this.$Message.success("账号资源添加成功")
+                                this.$Message.success(this.$t('appInfo.title_6'))
                                 this.$emit('after-succrss')
                             }).catch(error=>{
                                 if(config.DEBUG) console.log(error)
                                 if(error.response.data.non_field_errors){
-                                    this.$Message.error({content:"账号资源添加失败! 当前app下已有该账号",duration: 6})
+                                    this.$Message.error({content:this.$t('appInfo.title_7'),duration: 6})
                                     return
                                 }
-                                this.$Message.error({content:"账号资源添加失败! ",duration: 6})
+                                this.$Message.error({content:this.$t('appInfo.title_8'),duration: 6})
                             })
                         }else {
                             //修改资源
@@ -125,19 +125,19 @@
                                 password:this.selectMsg.password,
                                 phone_number:this.selectMsg.phone_number,
                             }).then(response=>{
-                                this.$Message.success("账号信息修改成功")
+                                this.$Message.success(this.$t('appInfo.title_9'))
                                 this.$emit('after-update')
                             }).catch(error=>{
                                 if(config.DEBUG) console.log(error)
                                 if(error.response.data.non_field_errors){
-                                    this.$Message.error({content:"账号资源添加失败! 当前app下已有该账号",duration: 6})
+                                    this.$Message.error({content:this.$t('appInfo.title_7'),duration: 6})
                                     return
                                 }
-                                this.$Message.error({content:"账号资源添加失败! ",duration: 6})
+                                this.$Message.error({content:this.$t('appInfo.title_11'),duration: 6})
                             })
                         }
                     } else {
-                        this.$Message.warning('请先将账号信息填写完整');
+                        this.$Message.warning(this.$t('appInfo.title_10'));
                     }
                 })
             },
@@ -148,7 +148,7 @@
                         this.appNameList = response.data.result
                     })
                     .catch(error=>{
-                        this.$Message.error("app列表获取失败")
+                        this.$Message.error(this.$t('appInfo.tips_9'))
                     })
             },
             //校验、限制手机号

@@ -54,19 +54,19 @@
             return{
                 modelColumn:[
                     {
-                        title: "运营商",
+                        title: this.$t('resourcesList.operator'),
                         key: "operator",
                         filters: [
                             {
-                                label: '中国移动',
+                                label: this.$t('resourcesList.operator_1'),
                                 value: '中国移动'
                             },
                             {
-                                label: '中国联通',
+                                label: this.$t('resourcesList.operator_2'),
                                 value: '中国联通'
                             },
                             {
-                                label: '中国电信',
+                                label: this.$t('resourcesList.operator_3'),
                                 value: '中国电信'
                             }
                         ],
@@ -76,19 +76,19 @@
                         }
                     },
                     {
-                        title: "手机号",
+                        title: this.$t('resourcesList.phone_number'),
                         key: "phone_number",
                     },
                     {
-                        title: "是否Volte",
+                        title: this.$t('resourcesList.volte'),
                         key: "volte",
                         filters: [
                             {
-                                label: '是',
+                                label: this.$t('resourcesList.yes'),
                                 value: "True"
                             },
                             {
-                                label: '否',
+                                label: this.$t('resourcesList.no'),
                                 value: "False"
                             }
                         ],
@@ -98,23 +98,23 @@
                         }
                     },
                     {
-                        title: "资源状态",
+                        title: this.$t('resourcesList.status'),
                         key: "status",
                         filters: [
                             {
-                                label: '未占用',
+                                label: this.$t('resourcesList.status_1'),
                                 value: "idle"
                             },
                             {
-                                label: '占用',
+                                label: this.$t('resourcesList.status_2'),
                                 value: "busy"
                             }
                         ],
                         filterRemote (value, row) {
                             if(this.propStatus){
                                 this.$Modal.info({
-                                    title: "提示",
-                                    content: "只允许查看空闲状态的资源！"
+                                    title: this.$t('public.modal_info'),
+                                    content: this.$t('resourcesList.statusTips')
                                 });
                             }else {
                                 this.statusList = value
@@ -123,12 +123,12 @@
                         }
                     },
                     {
-                        title: "关联设备/僚机",
+                        title: this.$t('resourcesList.connection'),
                         key: "connection",
                         sortable: true,
                     },
                     {
-                        title: "历史关联",
+                        title: this.$t('resourcesList.history_relevance'),
                         key: "history_relevance",
                     },
                 ],
@@ -178,8 +178,8 @@
                         this.dataTotal = parseInt(response.headers["total-count"])
                         this.data = utils.validate(simSerializer,response.data.SIMCard)
                         this.data.forEach(item=>{
-                            item.status = item.status === "idle" ? "未占用" :"占用"
-                            item.volte = item.is_volte ? "是" : "否"
+                            item.status = item.status === "idle" ? this.$t('resourcesList.status_1') :this.$t('resourcesList.status_2')
+                            item.volte = item.is_volte ? this.$t('resourcesList.yes') : this.$t('resourcesList.no')
                             item.connection = (item.device.id ? item.device.device_name : "" ) + (item.subsidiary_device.id ? item.subsidiary_device.custom_name : "")
                             /* 将之前已经选中的选项重新勾选 */
                             if(this.selection.length>0)
@@ -193,7 +193,7 @@
                         this.showLoading = false
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error({content:"获取SIM卡资源信息失败"+error.response.data.message,duration:5})
+                        this.$Message.error({content:this.$t('resourcesList.error_1')+error.response.data.message,duration:5})
                         this.showLoading = false
                 })
             },
@@ -214,11 +214,11 @@
             removeResources(id){
                 this.$ajax.delete("api/v1/cedar/simcard/" + id + "/")
                     .then(response=>{
-                        this.$Message.success("SIM卡资源移除成功")
+                        this.$Message.success(this.$t('resourcesList.error_2'))
                         this.getData()
                     }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error({content:"SIM卡资源移除失败:" + error.response.data.message,duration:7})
+                    this.$Message.error({content:this.$t('resourcesList.error_3') + error.response.data.message,duration:7})
                 })
             },
             // 支持多选
@@ -274,7 +274,7 @@
                 })
             if (username==="admin" && this.propAction) {
                 this.modelColumn.push(  {
-                    title: "操作",
+                    title: this.$t('testSetList.action'),
                     key: "action",
                     align: 'center',
                     width:120,
@@ -292,7 +292,7 @@
                                         this.$refs.editSim.setData(params.row)
                                     }
                                 }
-                            }, '编辑'),
+                            }, this.$t('resourcesList.edit')),
                             h('span', {
                                 class: 'mouse-hover-remove',
                                 style: {
@@ -302,15 +302,15 @@
                                     click: () => {
                                         let root = this
                                         this.$Modal.confirm({
-                                            title: "警告！",
-                                            content: "确定要移除资源SIM卡" + params.row.phone_number+ "吗？",
+                                            title: this.$t('public.modal_warn'),
+                                            content: this.$t('resourcesList.error_4') + params.row.phone_number+ this.$t('deviceDetail.removeTips_2'),
                                             onOk(){
                                                 root.removeResources(params.row.id)
                                             }
                                         })
                                     }
                                 }
-                            }, '移除')
+                            }, this.$t('resourcesList.remove'))
                         ]);
                     }
                 })

@@ -7,18 +7,18 @@
                 <Checkbox v-for="item in deviceColumn" :label="item.key" :key="item.key">{{item.title}}</Checkbox>
             </CheckboxGroup>
             <div style="float: right;width:300px;" v-click-outside="onClickOutSide">
-                <Input v-model="deviceKeyword" clearable search enter-button="Search" placeholder="输入设备自定义名称" class="search-input"
+                <Input v-model="deviceKeyword" clearable search enter-button="Search" :placeholder="$t('subsidiaryDevice.tips_1')" class="search-input"
                        @on-focus="isShowHistory=true" @on-search="onDeviceSearch" @on-clear="deviceKeyword='';onPageChange(1)"/>
                 <Card v-show="isShowHistory" style="position:absolute;width: 300px;z-index: 100;margin-top: 5px;">
-                    <Row>历史搜索<Icon style="float: right;" type="ios-trash-outline" size="18" @click="emptyHistory" /></Row>
+                    <Row>{{$t('deviceList.history')}}<Icon style="float: right;" type="ios-trash-outline" size="18" @click="emptyHistory" /></Row>
                     <div class="history-box" v-for="(item,index) in historyList" :key="index" @click="onSearchHistory(item)">{{ item }}</div>
-                    <Row v-show="historyList.length===0" style="margin-top: 10px;color: #cccccc;cursor: default;">暂无历史搜索记录</Row>
+                    <Row v-show="historyList.length===0" style="margin-top: 10px;color: #cccccc;cursor: default;">{{$t('deviceList.noHistory')}}</Row>
                 </Card>
             </div>
         </Row>
         <Row style="margin-bottom: 16px">
             <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
-                <span>机柜：</span>
+                <span>{{$t('deviceList.cabinet')}}：</span>
                 <!--<Select v-model="cabinetSelected" style="width:200px" clearable  @on-change="onSelectedChange">-->
                     <!--<OptionGroup v-for="types in cabinetList" :label="types.type">-->
                         <!--<Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id">{{ cabinets.cabinet_name }}</Option>-->
@@ -104,17 +104,17 @@
                 // Device table
                 deviceColumn: {
                     "serial_number": {
-                        title: "设备编号",
+                        title: this.$t('deviceList.device_label'),
                         key: "serial_number",
                         sortable: true
                     },
                     "custom_name": {
-                        title: "自定义名称",
+                        title: this.$t('deviceList.device_name'),
                         key: "custom_name",
                         sortable: true
                     },
                     "phone_model": {
-                        title: "设备型号",
+                        title: this.$t('deviceList.phone_model'),
                         key: "phone_model",
                         sortable: true,
                         filters:[],
@@ -124,7 +124,7 @@
                         }
                     },
                     "status": {
-                        title: "使用状态",
+                        title: this.$t('deviceList.status'),
                         key: "status",
                         sortable: true,
                         filters: [
@@ -143,8 +143,8 @@
                         filterRemote(value){
                             if(this.propStatus){
                                 this.$Modal.info({
-                                    title: "提示",
-                                    content: "当前状态不支持筛选功能！"
+                                    title: this.$t('public.modal_info'),
+                                    content: this.$t('deviceList.tip_1')
                                 });
                             }else {
                                 this.statusFilterList = value
@@ -153,7 +153,7 @@
                         }
                     },
                     "device": {
-                        title: "关联主机",
+                        title: this.$t('subsidiaryDevice.tips_2'),
                         key: "device",
                         sortable: true
                     },
@@ -263,7 +263,7 @@
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
                         this.loading = false
-                        this.$Message.error("获取僚机列表失败 " + error.response.data.description)
+                        this.$Message.error(this.$t('subsidiaryDevice.tips_3') + error.response.data.description)
                 })
             },
             // Table control
@@ -342,7 +342,7 @@
                     })
                     .catch(error => {
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("取得机柜信息出错")
+                        this.$Message.error(this.$t('deviceList.err_1'))
                     })
             },
             //机柜筛选
@@ -412,7 +412,7 @@
                 })
                 .catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error("获取设备型号失败")
+                    this.$Message.error(this.$t('deviceList.err_3'))
                 })
         },
         mounted() {
