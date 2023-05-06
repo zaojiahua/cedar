@@ -4,21 +4,21 @@
                                         :job-id="job.job_id" :prop-canvas-id="index" :device-id="deviceId"
                                         ></comp-perf-histogram-time-track>
         <div>
-            <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 5px;">测试结果</p>
+            <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 5px;">{{$t('rdsDetail.result')}}</p>
             <!--  RDS部分 -->
             <div style="overflow:hidden;">
                 <div>
                     <div style="margin: 5px 0 20px 0">
-                        <Select v-model="resultRange" multiple style="width:230px" :transfer="true" placeholder="请选择测试结果类型">
-                            <Option value="0"> 成功 </Option>
-                            <Option value="1"> 失败 </Option>
-                            <Option value="-1"> 无效 </Option>
+                        <Select v-model="resultRange" multiple style="width:230px" :transfer="true" :placeholder="$t('rdsDeviceStatistic.selTip_1')">
+                            <Option value="0"> {{$t('tboardDetail.pass')}} </Option>
+                            <Option value="1"> {{$t('tboardDetail.fail')}} </Option>
+                            <Option value="-1"> {{$t('tboardDetail.invalid')}} </Option>
                         </Select>
                         <p style="float: right">
-                            <Tag type="dot" color="#1bbc9c">成功</Tag>
-                            <Tag type="dot" color="#FFAE25">失败</Tag>
-                            <Tag type="dot" color="#F75F0D">严重失败</Tag>
-                            <Tag type="dot" color="#BDC3C7">无效</Tag>
+                            <Tag type="dot" color="#1bbc9c">{{$t('tboardDetail.pass')}}</Tag>
+                            <Tag type="dot" color="#FFAE25">{{$t('tboardDetail.fail')}}</Tag>
+                            <Tag type="dot" color="#F75F0D">{{$t('rdsDeviceStatistic.seriousFail')}}</Tag>
+                            <Tag type="dot" color="#BDC3C7">{{$t('tboardDetail.invalid')}}</Tag>
                         </p>
                     </div>
                     <comp-rds-card ref="rdsCard"
@@ -36,8 +36,8 @@
                             <div>Loading</div>
                         </Spin>
                     </div>
-                    <p v-show="!noMoreData" style="text-align: center" @click="onClickLoadMore"><Button>点击加载更多</Button></p>
-                    <p v-show="noMoreData" style="text-align: center">暂无更多数据</p>
+                    <p v-show="!noMoreData" style="text-align: center" @click="onClickLoadMore"><Button>{{$t('rdsTboardDeviceStatistic.btn')}}</Button></p>
+                    <p v-show="noMoreData" style="text-align: center">{{$t('rdsDeviceStatistic.noMore')}}</p>
                 </div>
             </div>
         </div>

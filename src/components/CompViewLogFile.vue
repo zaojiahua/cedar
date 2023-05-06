@@ -29,7 +29,7 @@
                     .catch(error=>{
                         this.showSpin = false;
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error("读取日志文件失败！")
+                        this.$Message.error(this.$t('rdsLogSearch.error_2'))
                     })
             }
         }

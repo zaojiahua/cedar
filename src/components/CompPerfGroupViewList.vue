@@ -2,10 +2,10 @@
     <div>
         <Row style="margin-bottom: 16px;">
             <RadioGroup v-model="groupView" type="button">
-                <Radio style="width: 100px;text-align: center;" :label="1">测试轨迹</Radio>
-                <Radio style="width: 100px;text-align: center;" :label="2">统计视图</Radio>
+                <Radio style="width: 100px;text-align: center;" :label="1">{{$t('rdsTboardDeviceStatistic.tip_2')}}</Radio>
+                <Radio style="width: 100px;text-align: center;" :label="2">{{$t('perfDataView.label_5')}}</Radio>
             </RadioGroup>
-            <Button style="float: right;" @click="refreshData">刷新</Button>
+            <Button style="float: right;" @click="refreshData">{{$t('perfDataView.btn_3')}}</Button>
             <div style="float: right;margin-right:16px;width:230px;">
                 <Input class="search-box" v-model="rdsId" :number="true" search enter-button placeholder="输入RDS ID" @on-search="rdsIdentify" @on-clear="onClearIdentify" :clearable="true"/>
             </div>
@@ -46,28 +46,28 @@
                 groupView:1,
                 jobColumn:[
                     {
-                        title: '平均值[s]',
+                        title: this.$t('perfDataView.jobColumn_1') +'[s]',
                         key: 'avg',
                         align: 'center',
                         className: 'avgColumn'
                     },
                     {
-                        title: '最大值[s]',
+                        title: this.$t('perfDataView.jobColumn_2') +'[s]',
                         key: 'max',
                         align: 'center'
                     },
                     {
-                        title: '中位数[s]',
+                        title: this.$t('perfDataView.jobColumn_3') +'[s]',
                         key: 'median',
                         align: 'center'
                     },
                     {
-                        title: '启动成功/次',
+                        title: this.$t('perfDataView.jobColumn_4'),
                         key: 'success_num',
                         align: 'center'
                     },
                     {
-                        title: '启动失败/次',
+                        title: this.$t('perfDataView.jobColumn_5'),
                         key: 'failed_num',
                         align: 'center'
                     },
@@ -110,12 +110,12 @@
                         })
                     }).catch(reason => {
                     if (config.DEBUG) console.log(reason)
-                    this.$Message.error("平均值获取失败")
+                    this.$Message.error(this.$t('perfDataView.error_2'))
                 })
             },
             rdsIdentify(){
                 if(typeof this.rdsId !== 'number'){
-                    this.$Message.warning("请输入正确的 RDS ID")
+                    this.$Message.warning(this.$t('rdsTboardDeviceStatistic.tips_2'))
                     return
                 }
                 if(this.groupView===1){

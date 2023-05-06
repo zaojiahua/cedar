@@ -1,99 +1,99 @@
 <template>
     <Card dis-hover>
         <p>
-            <Button type="error" @click="delRds()">删除</Button>
+            <Button type="error" @click="delRds()">{{$t('public.btn_del')}}</Button>
             <ButtonGroup style="float: right;">
-                <Button @click="onBtnClick(true)">上一个</Button>
-                <Button @click="onBtnClick(false)">下一个</Button>
+                <Button @click="onBtnClick(true)">{{$t('rdsDetail.prev')}}</Button>
+                <Button @click="onBtnClick(false)">{{$t('rdsDetail.next')}}</Button>
             </ButtonGroup>
-            <Button v-if="propPerfRds&&rdsInfo.job.job_second_type==='TimeJob'" type="primary" @click="goRdsPhotos" style="margin-left: 24px;">测试图集</Button>
-            <Button v-if="rdsInfo.job.job_second_type==='SmoothJob'&&(rdsInfo.result!=='无效')" type="primary" @click="goRdsFramePhotos" style="margin-left: 24px;">测试图集</Button>
+            <Button v-if="propPerfRds&&rdsInfo.job.job_second_type==='TimeJob'" type="primary" @click="goRdsPhotos" style="margin-left: 24px;">{{$t('rdsDetail.photos')}}</Button>
+            <Button v-if="rdsInfo.job.job_second_type==='SmoothJob'&&(rdsInfo.result!==$t('tboardDetail.invalid'))" type="primary" @click="goRdsFramePhotos" style="margin-left: 24px;">{{$t('rdsDetail.photos')}}</Button>
         </p>
         <Form :label-width="120">
-            <Divider>RDS信息</Divider>
+            <Divider>{{$t('rdsDetail.rdsInfo')}}</Divider>
             <FormItem>
                 <b slot="label">ID：</b>
                 <Input v-model="rdsInfo.id" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">开始时间：</b>
+                <b slot="label">{{$t('rdsDetail.start_time')}}：</b>
                 <Input v-model="rdsInfo.start_time" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">结束时间：</b>
+                <b slot="label">{{$t('rdsDetail.end_time')}}：</b>
                 <Input v-model="rdsInfo.end_time" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">运行时长：</b>
+                <b slot="label">{{$t('rdsDetail.runTime')}}：</b>
                 <Input v-model="rdsInfo.runTime" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">测试结果：</b>
+                <b slot="label">{{$t('rdsDetail.result')}}：</b>
                 <Input v-model="rdsInfo.result" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem v-if="propPerfRds&&rdsInfo.job_duration!==null">
-                <b slot="label">结果时间：</b>
+                <b slot="label">{{$t('rdsDetail.job_duration')}}：</b>
                 <Input v-model="rdsInfo.job_duration+'s'" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem v-if="rdsInfo.job.job_second_type==='SmoothJob'">
-                <b slot="label">丢帧位置：</b>
+                <b slot="label">{{$t('rdsDetail.lose_frame_point')}}：</b>
                 <Input v-model="rdsInfo.lose_frame_point" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
                 <b slot="label">rdsDict：</b>
                 <Input v-model="rdsInfo.rds_dict" class="disabled-input" disabled></input>
-                <Button size="small" style="float: right;margin-top: 10px;" type="primary" @click="openRdsDict">查看详情</Button>
+                <Button size="small" style="float: right;margin-top: 10px;" type="primary" @click="openRdsDict">{{$t('rdsDetail.view')}}</Button>
             </FormItem>
-            <Divider>用例信息</Divider>
+            <Divider>{{$t('rdsDetail.jobInfo')}}</Divider>
             <FormItem>
-                <b slot="label">用例ID：</b>
+                <b slot="label">{{$t('rdsDetail.label')}}ID：</b>
                 <Input v-model="rdsInfo.job.job_label" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">用例名称：</b>
+                <b slot="label">{{$t('jobList.job_name')}}：</b>
                 <Input v-model="rdsInfo.job.job_name" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">维护人员：</b>
+                <b slot="label">{{$t('jobList.username')}}：</b>
                 <Input v-model="rdsInfo.job.author.username" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">来自任务：</b>
+                <b slot="label">{{$t('rdsDetail.from')}}：</b>
                 <Input v-model="rdsInfo.tboard.board_name" class="disabled-input" disabled></input>
             </FormItem>
-            <Divider>设备信息</Divider>
+            <Divider>{{$t('rdsDetail.devInfo')}}</Divider>
             <FormItem>
-                <b slot="label">自定义名称：</b>
+                <b slot="label">{{$t('deviceList.device_name')}}：</b>
                 <Input v-model="rdsInfo.device.device_name" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">设备编号：</b>
+                <b slot="label">{{$t('deviceList.device_label')}}：</b>
                 <Input v-model="rdsInfo.device.device_label" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">自定义编号：</b>
+                <b slot="label">{{$t('rdsDetail.customName')}}：</b>
                 <Input v-model="rdsInfo.device.custom_number" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">安卓版本：</b>
+                <b slot="label">{{$t('deviceList.android_version')}}：</b>
                 <Input v-model="rdsInfo.device.android_version.version" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">ROM版本：</b>
+                <b slot="label">{{$t('deviceList.rom_version')}}：</b>
                 <Input v-model="rdsInfo.device.rom_version.version" class="disabled-input" disabled></input>
             </FormItem>
             <div>
                 <comp-temperature-histogram v-if="showTemperatures" :device-id="rdsInfo.device.id" ref="histogram"></comp-temperature-histogram>
             </div>
-            <Divider>其他信息</Divider>
+            <Divider>{{$t('rdsDetail.otherInfo')}}</Divider>
             <FormItem>
-                <b slot="label">日志文件：</b>
-                <p v-if="showLogTip" style="color: #FF9900">暂无日志文件信息</p>
+                <b slot="label">{{$t('rdsDetail.log')}}：</b>
+                <p v-if="showLogTip" style="color: #FF9900">{{$t('rdsDetail.noLog')}}</p>
                 <ButtonGroup v-show="rdsInfo.logList.length>0" style="margin-bottom: 8px">
                     <Button v-for="files in rdsInfo.logList" :key="files.id" @click="viewLogFile(files.log_file,files.file_name)">{{ files.file_name }}</Button>
                 </ButtonGroup>
                 <Row v-show="rdsInfo.logList.length>0">
-                    <Button size="small" type="primary" ghost @click="downloadAllFile">全部下载</Button>
+                    <Button size="small" type="primary" ghost @click="downloadAllFile">{{$t('rdsDetail.downLoad')}}</Button>
                 </Row>
                 <Divider v-show="rdsInfo.logList.length>0"></Divider>
                 <Row v-show="rdsInfo.zipList.length>0">
@@ -103,21 +103,21 @@
                 </Row>
             </FormItem>
             <FormItem>
-                <b slot="label">当时ROM版本：</b>
-                <p v-if="!rdsInfo.rom_version_const" style="color: #FF9900">暂无数据</p>
+                <b slot="label">{{$t('rdsDetail.rom')}}：</b>
+                <p v-if="!rdsInfo.rom_version_const" style="color: #FF9900">{{$t('public.noData')}}</p>
                 <Input v-show="rdsInfo.rom_version_const" v-model="rdsInfo.rom_version_const" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">App版本：</b>
-                <p v-if="rdsInfo.app_info.length===0" style="color: #FF9900">暂无数据</p>
+                <b slot="label">{{$t('rdsDetail.app')}}：</b>
+                <p v-if="rdsInfo.app_info.length===0" style="color: #FF9900">{{$t('public.noData')}}</p>
                 <div v-show="rdsInfo.app_info.length>0">
                     <Input v-for="item in rdsInfo.app_info" v-model="item.app_version+'('+item.package_name+')'" class="disabled-input" style="margin-bottom: 10px" disabled></input>
                 </div>
             </FormItem>
         </Form>
         <div style="color: #515a6e;padding-left: 48px;font-size: 12px">
-            <b style="cursor: default">截图：</b><b style="cursor: default" v-if="!showScreenTip">共 {{rdsscreenshot.length}} 张</b>
-            <label v-if="showScreenTip" style="color: #FF9900">暂无截图信息</label>
+            <b style="cursor: default">{{$t('rdsDetail.pic')}}：</b><b style="cursor: default" v-if="!showScreenTip">{{$t('rdsDetail.pic_1')}}{{rdsscreenshot.length}} {{$t('rdsDetail.pic_2')}}</b>
+            <label v-if="showScreenTip" style="color: #FF9900">{{$t('rdsDetail.noPic')}}</label>
             <br>
             <img style="margin: 5px; cursor: pointer;" v-for="(img,index) in rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name :title=img.file_name @click="viewOriginalImg(img,index)">
         </div>
@@ -134,22 +134,22 @@
             <p style="font-size: 20px"> {{ imgInfo.file_name }} </p>
             <p style="font-size: 20px"> {{ imgIndex+1 }} / {{ rdsscreenshot.length }} </p>
         </Modal>
-        <Modal v-model="showRdsLogModal" :fullscreen="true" :title="logName" ok-text="下载" @on-ok="downloadLog">
+        <Modal v-model="showRdsLogModal" :fullscreen="true" :title="logName" :ok-text="$t('rdsDetail.down')" @on-ok="downloadLog">
             <comp-view-log-file ref="viewLogFile"></comp-view-log-file>
         </Modal>
         <Modal v-model="showRdsPhotosModal" :fullscreen="true" :closable="false">
             <comp-perf-rds-photos v-if="showRdsPhotosModal" :prop-rds-id="rdsInfo.id" ref="rdsPhotos"></comp-perf-rds-photos>
             <div slot="footer">
-                <Button type="text" @click="showRdsPhotosModal=false">取消</Button>
-                <Button type="primary" @click="savePoint">确定</Button>
+                <Button type="text" @click="showRdsPhotosModal=false">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" @click="savePoint">{{$t('public.btn_ok')}}</Button>
             </div>
         </Modal>
         <!-- 丢帧点 -->
         <Modal v-model="showRdsFramePhotosModal" :fullscreen="true" :closable="false">
             <comp-perf-frame-rds-photos v-if="showRdsFramePhotosModal" :prop-rds-id="rdsInfo.id" ref="rdsFramePhotos"></comp-perf-frame-rds-photos>
             <div slot="footer">
-                <Button type="text" @click="showRdsFramePhotosModal=false">取消</Button>
-                <Button type="primary" @click="saveFramePoint">确定</Button>
+                <Button type="text" @click="showRdsFramePhotosModal=false">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" @click="saveFramePoint">{{$t('public.btn_ok')}}</Button>
             </div>
         </Modal>
     </Card>
@@ -299,7 +299,7 @@
                         this.showSpin=false;
                         this.rdsInfo = utils.validate(rdsSerializer,response.data);
                         this.rdsInfo.rds_dict = JSON.stringify(this.rdsInfo.rds_dict);
-                        this.rdsInfo.lose_frame_point = this.rdsInfo.lose_frame_point ? this.rdsInfo.lose_frame_point + ".jpg" : "无";
+                        this.rdsInfo.lose_frame_point = this.rdsInfo.lose_frame_point ? this.rdsInfo.lose_frame_point + ".jpg" : this.$t('rdsDetail.no');
                         let logList=[], zipList=[]
                         this.rdsInfo.rdslog.forEach(item=>{
                             let arr = item.file_name.split(".")
@@ -313,12 +313,12 @@
                         this.rdsInfo.zipList = zipList
                         if(this.rdsInfo.rds_dict === "null") this.rdsInfo.rds_dict = "";
                         if(this.rdsInfo.job_assessment_value==="0"){
-                            this.rdsInfo.result = "成功";
+                            this.rdsInfo.result = this.$t('tboardDetail.pass');
                         }else if(this.rdsInfo.job_assessment_value==="1"){
-                            this.rdsInfo.result = "失败";
+                            this.rdsInfo.result = this.$t('tboardDetail.fail');
                             this.isReferenceShow = true
                         }else{
-                            this.rdsInfo.result = "无效";
+                            this.rdsInfo.result = this.$t('tboardDetail.invalid');
                             this.isReferenceShow = true
                         }
                         if(this.rdsInfo.rdslog.length===0)
@@ -338,9 +338,9 @@
                         if (config.DEBUG) console.log(error)
                         let errorMsg = "";
                         if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
+                            errorMsg = this.$t('public.error_500')
                         } else {
-                            errorMsg = "数据读取失败！"
+                            errorMsg = this.$t('rdsDetail.err_1')
                         }
                         this.$Message.error(errorMsg)
                     })
@@ -354,9 +354,9 @@
                         if (config.DEBUG) console.log(error)
                         let errorMsg = "";
                         if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
+                            errorMsg = this.$t('public.error_500')
                         } else {
-                            errorMsg = "截图获取失败！"
+                            errorMsg = this.$t('rdsDetail.err_2')
                         }
                         this.$Message.error(errorMsg)
                     })
@@ -378,22 +378,22 @@
             delRds(){
                 let root = this;
                 this.$Modal.confirm({
-                    title: "警告！",
-                    content: "您确定要删除该RDS吗？",
+                    title: root.$t('public.modal_warn'),
+                    content: root.$t('rdsDetail.tips'),
                     onOk(){
                         this.$ajax
                             .delete("api/v1/cedar/rds/"+root.rdsInfo.id+"/")
                             .then(response=>{
-                                this.$Message.success("删除成功！");
+                                this.$Message.success(root.$t('public.delSuccess'));
                                 root.$emit("delRdsOne",false);
                             })
                             .catch(error=>{
                                 if (config.DEBUG) console.log(error)
                                 let errorMsg = "";
                                 if (error.response.status >= 500) {
-                                    errorMsg = "服务器错误！"
+                                    errorMsg = root.$t('public.error_500')
                                 } else {
-                                    errorMsg = "删除失败！"
+                                    errorMsg = root.$t('public.delFail')
                                 }
                                 this.$Message.error(errorMsg)
                             })
@@ -483,7 +483,7 @@
             savePoint(){
                 let Obj = this.$refs.rdsPhotos.getPointMsg()
                 if(!Obj.startPoint||!Obj.endPoint){
-                    this.$Message.warning({content:"起点、终点必须同时存在！",duration:5})
+                    this.$Message.warning({content:this.$t('rdsDetail.tips_1'),duration:5})
                     return
                 }
                 this.$refs.rdsPhotos.showLoading = true
@@ -494,14 +494,14 @@
                     end_point: Obj.endPoint,
                 }).then(response=>{
                     this.rdsInfo.job_duration = Obj.job_duration
-                    this.$Message.success("数据保存成功")
+                    this.$Message.success(this.$t('rdsDetail.success'))
                     this.$refs.rdsPhotos.showLoading = false
                     this.showRdsPhotosModal = false
 
                 }).catch(error=>{
                     this.$refs.rdsPhotos.showLoading = false
                     if (config.DEBUG) console.log(error)
-                    this.$Message.error("数据保存失败")
+                    this.$Message.error(this.$t('rdsDetail.fail'))
                 })
             },
             //  保存丢帧点
@@ -513,14 +513,14 @@
                     lose_frame_point:Obj.lose_frame_point_index,
                     job_assessment_value:Obj.lose_frame_point_index ? "1" : "0"
                 }).then(response=>{
-                    this.rdsInfo.result = Obj.lose_frame_point_index ? "失败" : "成功"
-                    this.rdsInfo.lose_frame_point = Obj.lose_frame_point_index ? Obj.lose_frame_point_index+'.jpg' : "无"
-                    this.$Message.success("数据保存成功")
+                    this.rdsInfo.result = Obj.lose_frame_point_index ? this.$t('tboardDetail.fail') : this.$t('tboardDetail.pass')
+                    this.rdsInfo.lose_frame_point = Obj.lose_frame_point_index ? Obj.lose_frame_point_index+'.jpg' : this.$t('rdsDetail.no')
+                    this.$Message.success(this.$t('rdsDetail.success'))
                     this.$refs.rdsFramePhotos.showLoading = false
                     this.showRdsFramePhotosModal = false
                 }).catch(error=>{
                     if (config.DEBUG) console.log(error)
-                    this.$Message.error("数据保存失败")
+                    this.$Message.error(this.$t('rdsDetail.fail'))
                 })
             },
             // 上一个下一个按钮 分发事件 true:上一个  false:下一个
@@ -564,7 +564,7 @@
                 //计算相差秒数
                 let leave2=leave%(60*1000)      //计算分钟数后剩余的毫秒数
                 let seconds=Math.round(leave2/1000)
-                return (hours ? hours +" 小时 " : "") + (minutes ? minutes+" 分钟 " : "") + (seconds? seconds+" 秒": "")
+                return (hours ? hours +this.$t('rdsDetail.hours') : "") + (minutes ? minutes+this.$t('rdsDetail.minutes') : "") + (seconds? seconds+this.$t('rdsDetail.seconds'): "")
             }
         },
         created() {

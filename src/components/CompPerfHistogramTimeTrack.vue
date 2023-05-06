@@ -2,7 +2,7 @@
     <div>
         <div v-if="showChart" :id="'histogram'+propCanvasId+'-'+jobId" style="height: 250px;"></div>
         <div v-else>
-            <div style="font-size: 12px;text-align: center">暂无性能图表信息！</div>
+            <div style="font-size: 12px;text-align: center">{{$('perfDataView.noChart')}}</div>
         </div>
     </div>
 </template>
@@ -58,7 +58,7 @@
                         }
                         this.series = [
                             {
-                                name:'启动时间',
+                                name:this.$('perfDataView.startTime'),
                                 type:'bar',
                                 label: {
                                     show: true,
@@ -76,19 +76,20 @@
                         this.$emit("after-load-data",response.data.length>0)
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("图表加载失败")
+                        this.$Message.error(this.$('perfDataView.error_3'))
                         this.histogram.hideLoading()
                     })
                 })
             },
             setDefaultOption(){
+                let _this = this
                 // 指定图表的配置项和数据
                 let option = {
                     tooltip:{
                         trigger: "axis",
                         formatter: function (obj) {
                             return obj[0].value[0]+ '<br>'
-                                + '启动时间：' + obj[0].value[1] + ' s<br>'
+                                + _this.$('perfDataView.startTime') +'：' + obj[0].value[1] + ' s<br>'
                         }
                     },
                     grid:{
@@ -106,7 +107,7 @@
                     },
                     yAxis: {
                         type: "value",
-                        name:"启动时间 /s",
+                        name:_this.$('perfDataView.startTime')+" /s",
                         nameLocation:"middle",
                         nameGap:27,
                         show: true,

@@ -2,8 +2,8 @@
     <div>
         <Row style="margin-bottom: 10px;">
             <RadioGroup v-model="groupTypeSwitch" style="float: right;">
-                <Radio style="width: 100px;text-align: center;" :label="1">数值</Radio>
-                <Radio style="width: 100px;text-align: center;" :label="2">百分比</Radio>
+                <Radio style="width: 100px;text-align: center;" :label="1">{{$t('rdsTboardStatisticTable.group_1')}}</Radio>
+                <Radio style="width: 100px;text-align: center;" :label="2">{{$t('rdsTboardStatisticTable.group_2')}}</Radio>
             </RadioGroup>
         </Row>
         <!-- 第一层级表格数据 -->
@@ -12,19 +12,19 @@
         <Row style="margin-top:20px;text-align: center ">
             <Page :current="currentPage" :total="dataTotal" :page-size="pageSize" simple @on-change="onPageChange" style="display: inline-flex"/>
             <Select v-model="pageSize" style="width:100px;margin-left: 30px" size="small">
-                <Option :value="10">10 条/页</Option>
-                <Option :value="30">30 条/页</Option>
-                <Option :value="50"> 50 条/页</Option>
-                <Option :value="100"> 100 条/页</Option>
-                <Option :value="150"> 150 条/页</Option>
+                <Option :value="10">10 {{$t('rdsTboardStatisticTable.pcs')}}</Option>
+                <Option :value="30">30 {{$t('rdsTboardStatisticTable.pcs')}}</Option>
+                <Option :value="50"> 50 {{$t('rdsTboardStatisticTable.pcs')}}</Option>
+                <Option :value="100"> 100 {{$t('rdsTboardStatisticTable.pcs')}}</Option>
+                <Option :value="150"> 150 {{$t('rdsTboardStatisticTable.pcs')}}</Option>
             </Select>
         </Row>
         <!-- 第二层级表格数据 -->
         <Row style="padding:0 20px" v-show="rowData.name">
-            <b v-show="propType==='job'">用例：{{ rowData.name }}</b>
-            <b v-show="propType==='device'">设备：{{ rowData.name }}</b>
-            <span v-show="showTableChild" style="float: right;color: #1296db;cursor: pointer" @click="showTableChild=false"><Icon type="ios-arrow-up" />收起</span>
-            <span v-show="!showTableChild" style="float: right;color: #1296db;cursor: pointer" @click="showTableChild=true"><Icon type="ios-arrow-down" />展开</span>
+            <b v-show="propType==='job'">{{$t('rdsDeviceStatistic.job')}}：{{ rowData.name }}</b>
+            <b v-show="propType==='device'">{{$t('rdsDeviceStatistic.dev')}}：{{ rowData.name }}</b>
+            <span v-show="showTableChild" style="float: right;color: #1296db;cursor: pointer" @click="showTableChild=false"><Icon type="ios-arrow-up" />{{$t('tboardDetail.up')}}</span>
+            <span v-show="!showTableChild" style="float: right;color: #1296db;cursor: pointer" @click="showTableChild=true"><Icon type="ios-arrow-down" />{{$t('tboardDetail.down')}}</span>
         </Row>
         <div v-show="showTableChild&&rowData.name">
             <Table :columns="columns2" :data="data2" border highlight-row style="margin-top: 16px" :loading="loading2"
@@ -32,11 +32,11 @@
             <Row style="margin-top:20px;text-align: center ">
                 <Page :current="currentPage2" :total="dataTotal2" :page-size="pageSize2" simple @on-change="onPageChange2" style="display: inline-flex"/>
                 <Select v-model="pageSize2" style="width:100px;margin-left: 30px" size="small">
-                    <Option :value="10">10 条/页</Option>
-                    <Option :value="30">30 条/页</Option>
-                    <Option :value="50"> 50 条/页</Option>
-                    <Option :value="100"> 100 条/页</Option>
-                    <Option :value="150"> 150 条/页</Option>
+                    <Option :value="10">10 {{$t('rdsTboardStatisticTable.pcs')}}</Option>
+                    <Option :value="30">30 {{$t('rdsTboardStatisticTable.pcs')}}</Option>
+                    <Option :value="50"> 50 {{$t('rdsTboardStatisticTable.pcs')}}</Option>
+                    <Option :value="100"> 100 {{$t('rdsTboardStatisticTable.pcs')}}</Option>
+                    <Option :value="150"> 150 {{$t('rdsTboardStatisticTable.pcs')}}</Option>
                 </Select>
             </Row>
         </div>
@@ -218,32 +218,32 @@
                         if(this.propType==='job'){
                             this.columns = [
                                 {
-                                    title: "用例名称",
+                                    title: this.$t('jobList.job_name'),
                                     key: "name",
                                     width:600,
                                     tree: true
                                 },
                                 {
-                                    title: '失败',
+                                    title: this.$t('tboardDetail.fail'),
                                     key: 'fail_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '无效',
+                                    title: this.$t('tboardDetail.invalid'),
                                     key: 'invalid_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '成功',
+                                    title: this.$t('tboardDetail.pass'),
                                     key: 'success_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '总共',
+                                    title: this.$t('tboardDetail.total'),
                                     key: 'count_num'
                                 },
                                 {
-                                    title: '操作',
+                                    title: this.$t('testSetList.action'),
                                     key: "action",
                                     align: 'center',
                                     render: (h, params) => {
@@ -275,39 +275,39 @@
                                                         // }
                                                     }
                                                 }
-                                            }, '详情'),
+                                            }, this.$t('rdsTboardStatisticTable.view')),
                                         ]);
                                     }
                                 }
                             ]
                             this.columns2 = [
                                 {
-                                    title: "自定义名称",
+                                    title: this.$t('deviceList.device_name'),
                                     key: "name",
                                     width:600,
                                     tree: true
                                 },
                                 {
-                                    title: '失败',
+                                    title: this.$t('tboardDetail.fail'),
                                     key: 'fail_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '无效',
+                                    title: this.$t('tboardDetail.invalid'),
                                     key: 'invalid_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '成功',
+                                    title: this.$t('tboardDetail.pass'),
                                     key: 'success_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '总共',
+                                    title: this.$t('tboardDetail.total'),
                                     key: 'count_num'
                                 },
                                 {
-                                    title: '操作',
+                                    title: this.$t('testSetList.action'),
                                     key: "action",
                                     align: 'center',
                                     render: (h, params) => {
@@ -339,7 +339,7 @@
                                                         // }
                                                     }
                                                 }
-                                            }, '详情'),
+                                            }, this.$t('rdsTboardStatisticTable.view')),
                                         ]);
                                     }
                                 }
@@ -347,32 +347,32 @@
                         }else if(this.propType==='device'){
                             this.columns = [
                                 {
-                                    title: "自定义名称",
+                                    title: this.$t('deviceList.device_name'),
                                     key: "name",
                                     width:600,
                                     tree: true
                                 },
                                 {
-                                    title: '失败',
+                                    title: this.$t('tboardDetail.fail'),
                                     key: 'fail_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '无效',
+                                    title: this.$t('tboardDetail.invalid'),
                                     key: 'invalid_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '成功',
+                                    title: this.$t('tboardDetail.pass'),
                                     key: 'success_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '总共',
+                                    title: this.$t('tboardDetail.total'),
                                     key: 'count_num'
                                 },
                                 {
-                                    title: '操作',
+                                    title: this.$t('testSetList.action'),
                                     key: "action",
                                     align: 'center',
                                     render: (h, params) => {
@@ -404,39 +404,39 @@
                                                         // }
                                                     }
                                                 }
-                                            }, '详情'),
+                                            }, this.$t('rdsTboardStatisticTable.view')),
                                         ]);
                                     }
                                 }
                             ]
                             this.columns2 = [
                                 {
-                                    title: "用例名称",
+                                    title: this.$t('jobList.job_name'),
                                     key: "name",
                                     width:600,
                                     tree: true
                                 },
                                 {
-                                    title: '失败',
+                                    title: this.$t('tboardDetail.fail'),
                                     key: 'fail_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '无效',
+                                    title: this.$t('tboardDetail.invalid'),
                                     key: 'invalid_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '成功',
+                                    title: this.$t('tboardDetail.pass'),
                                     key: 'success_num',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '总共',
+                                    title: this.$t('tboardDetail.total'),
                                     key: 'count_num'
                                 },
                                 {
-                                    title: '操作',
+                                    title:  this.$t('testSetList.action'),
                                     key: "action",
                                     align: 'center',
                                     render: (h, params) => {
@@ -468,7 +468,7 @@
                                                         // }
                                                     }
                                                 }
-                                            }, '详情'),
+                                            }, this.$t('rdsTboardStatisticTable.view')),
                                         ]);
                                     }
                                 }
@@ -479,32 +479,32 @@
                         if(this.propType==='job'){
                             this.columns = [
                                 {
-                                    title: "用例名称",
+                                    title: this.$t('jobList.job_name'),
                                     width:600,
                                     key: "name",
                                     tree: true
                                 },
                                 {
-                                    title: '失败率',
+                                    title: this.$t('rdsTboardStatisticTable.failRate'),
                                     key: 'fail_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '无效率',
+                                    title: this.$t('rdsTboardStatisticTable.invalidRate'),
                                     key: 'invalid_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '成功率',
+                                    title: this.$t('rdsTboardStatisticTable.passRate'),
                                     key: 'success_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '总共',
+                                    title: this.$t('tboardDetail.total'),
                                     key: 'count_num'
                                 },
                                 {
-                                    title: '操作',
+                                    title: this.$t('testSetList.action'),
                                     key: "action",
                                     align: 'center',
                                     render: (h, params) => {
@@ -521,39 +521,39 @@
                                                         this.$refs.jobDetail.refresh(params.row.id)
                                                     }
                                                 }
-                                            }, '详情'),
+                                            }, this.$t('rdsTboardStatisticTable.view')),
                                         ]);
                                     }
                                 }
                             ]
                             this.columns2 = [
                                 {
-                                    title: "自定义名称",
+                                    title: this.$t('deviceList.device_name'),
                                     width:600,
                                     key: "name",
                                     tree: true
                                 },
                                 {
-                                    title: '失败率',
+                                    title: this.$t('rdsTboardStatisticTable.failRate'),
                                     key: 'fail_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '无效率',
+                                    title: this.$t('rdsTboardStatisticTable.invalidRate'),
                                     key: 'invalid_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '成功率',
+                                    title: this.$t('rdsTboardStatisticTable.passRate'),
                                     key: 'success_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '总共',
+                                    title: this.$t('tboardDetail.total'),
                                     key: 'count_num'
                                 },
                                 {
-                                    title: '操作',
+                                    title: this.$t('testSetList.action'),
                                     key: "action",
                                     align: 'center',
                                     render: (h, params) => {
@@ -570,7 +570,7 @@
                                                         this.$refs.deviceDetail.refresh(params.row.id)
                                                     }
                                                 }
-                                            }, '详情'),
+                                            }, this.$t('rdsTboardStatisticTable.view')),
                                         ]);
                                     }
                                 }
@@ -578,32 +578,32 @@
                         }else if(this.propType==='device'){
                             this.columns = [
                                 {
-                                    title: "自定义名称",
+                                    title: this.$t('deviceList.device_name'),
                                     width:600,
                                     key: "name",
                                     tree: true
                                 },
                                 {
-                                    title: '失败率',
+                                    title: this.$t('rdsTboardStatisticTable.failRate'),
                                     key: 'fail_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '无效率',
+                                    title: this.$t('rdsTboardStatisticTable.invalidRate'),
                                     key: 'invalid_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '成功率',
+                                    title: this.$t('rdsTboardStatisticTable.passRate'),
                                     key: 'success_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '总共',
+                                    title: this.$t('tboardDetail.total'),
                                     key: 'count_num'
                                 },
                                 {
-                                    title: '操作',
+                                    title: this.$t('testSetList.action'),
                                     key: "action",
                                     align: 'center',
                                     render: (h, params) => {
@@ -620,39 +620,39 @@
                                                         this.$refs.deviceDetail.refresh(params.row.id)
                                                     }
                                                 }
-                                            }, '详情'),
+                                            }, this.$t('rdsTboardStatisticTable.view')),
                                         ]);
                                     }
                                 }
                             ]
                             this.columns2 = [
                                 {
-                                    title: "用例名称",
+                                    title: this.$t('jobList.job_name'),
                                     width:600,
                                     key: "name",
                                     tree: true
                                 },
                                 {
-                                    title: '失败率',
+                                    title: this.$t('rdsTboardStatisticTable.failRate'),
                                     key: 'fail_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '无效率',
+                                    title: this.$t('rdsTboardStatisticTable.invalidRate'),
                                     key: 'invalid_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '成功率',
+                                    title: this.$t('rdsTboardStatisticTable.passRate'),
                                     key: 'success_rate',
                                     sortable: 'custom',
                                 },
                                 {
-                                    title: '总共',
+                                    title: this.$t('tboardDetail.total'),
                                     key: 'count_num'
                                 },
                                 {
-                                    title: '操作',
+                                    title: this.$t('testSetList.action'),
                                     key: "action",
                                     align: 'center',
                                     render: (h, params) => {
@@ -669,7 +669,7 @@
                                                         this.$refs.jobDetail.refresh(params.row.id)
                                                     }
                                                 }
-                                            }, '详情'),
+                                            }, this.$t('rdsTboardStatisticTable.view')),
                                         ]);
                                     }
                                 }

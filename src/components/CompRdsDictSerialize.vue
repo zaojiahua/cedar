@@ -19,8 +19,8 @@
                                             <div slot="content" v-for="(unit_list,unit_index) in item_eb2.all_unit_list" class="unit_box">
                                                 <div v-for="unit_item in unit_list.units">
                                                     <p v-if="unit_item.detail" :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )
-                                                        {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
-                                                    <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }} {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
+                                                        {{ unit_item.assistDevice ? $t('rdsInfoPage.subsidiary_device')+ unit_item.assistDevice +'】' : ''}}</p>
+                                                    <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }} {{ unit_item.assistDevice ? $t('rdsInfoPage.subsidiary_device')+ unit_item.assistDevice +'】' : ''}}</p>
                                                     <div class="pic" v-for="(pic,index) in unit_item.pictures" >
                                                         <p :class="{'high-light-pic':propPicName===pic&&!isNotInclude(pic),'high-light':isNotInclude(pic)}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps ? unit_item.timestamps[index] :'' }} {{ pic }}</p>
                                                     </div>
@@ -34,8 +34,8 @@
                                     <div v-for="(unit_list,unit_index) in item_eb1.all_unit_list" class="unit_box">
                                         <div v-for="unit_item in unit_list.units">
                                             <p v-if="unit_item.detail" :class="{'high-light':unit_item.detail.result!==0}">{{ unit_index+1 }}-{{ unit_item.jobUnitName }} ( {{ unit_item.detail.result }} )
-                                                {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】' : ''}}</p>
-                                            <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }} {{ unit_item.assistDevice ? '【僚机'+ unit_item.assistDevice +'】': ''}}</p>
+                                                {{ unit_item.assistDevice ? $t('rdsInfoPage.subsidiary_device')+ unit_item.assistDevice +'】' : ''}}</p>
+                                            <p v-else>{{ unit_index+1 }}-{{ unit_item.jobUnitName }} {{ unit_item.assistDevice ? $t('rdsInfoPage.subsidiary_device')+ unit_item.assistDevice +'】': ''}}</p>
                                             <div class="pic " v-for="(pic,index) in unit_item.pictures" >
                                                 <p :class="{'high-light-pic':propPicName===pic&&!isNotInclude(pic),'high-light':isNotInclude(pic)}" @click="onPicClick(pic)"><Icon type="md-image" class="p-icon" />{{ unit_item.timestamps ? unit_item.timestamps[index]:'' }} {{ pic }}</p>
                                             </div>

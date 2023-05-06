@@ -1,9 +1,9 @@
 <template>
   <transition>
-    <Card dis-hover title="第一步: 设置设备亮度并选择机柜" v-if="addDeviceStep === 1" style="text-align:left;">
-      <p style="font-weight: bold;">设备：关闭“自动亮度调节”，调整到适当亮度，并设置屏幕为常亮</p>
+    <Card dis-hover :title="$t('deviceManagement.info_2')" v-if="addDeviceStep === 1" style="text-align:left;">
+      <p style="font-weight: bold;">{{$t('rdsDeviceStatistic.dev')}}：{{$t('deviceManagement.tips_5')}}</p>
       <br>
-      <b>机柜列表：</b>
+      <b>{{$t('deviceManagement.tips_8')}}：</b>
       <Select v-model="CabinetSelected" style="width:150px">
         <OptionGroup v-for="types in cabinetList" :label="types.type">
           <Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id"
@@ -12,26 +12,26 @@
       </Select>
       <br>
       <br>
-      <b>机柜内已有设备数量： </b>
-      <span style="color: #999999">  {{ deviceNum }} 台 </span>
-      <p style="color: #999999;margin: 20px 0 40px 0">注：每个机柜建议注册不超过50台设备</p>
+      <b>{{$t('deviceManagement.tips_9')}}： </b>
+      <span style="color: #999999">  {{ deviceNum }} {{$t('functionalTest.pcs')}} </span>
+      <p style="color: #999999;margin: 20px 0 40px 0">{{$t('deviceManagement.tips_10')}}</p>
       <Row type="flex" justify="center" style="margin-top: 16px">
-        <Button type="primary" @click="getDeviceInDoor">下一步</Button>
+        <Button type="primary" @click="getDeviceInDoor">{{$t('public.btn_next')}}</Button>
       </Row>
     </Card>
-    <Card dis-hover title="第二步: 添加设备" v-if="addDeviceStep === 2">
+    <Card dis-hover :title="$t('deviceManagement.info_3')" v-if="addDeviceStep === 2">
       <Form :label-width="130">
         <FormItem>
-          <b slot="label"><span class="need">*</span>自定义名称</b>
+          <b slot="label"><span class="need">*</span>{{$t('deviceList.device_name')}}</b>
           <Input v-model="addedDeviceName"></Input>
         </FormItem>
         <FormItem>
-          <b slot="label">自定义编号</b>
+          <b slot="label">{{$t('rdsDetail.customName')}}</b>
           <Input v-model="addCustomNumber" :maxlength="100"></Input>
         </FormItem>
             <FormItem prop="test_area">
-              <b slot="label"><span class="need">*</span>设备型号</b>
-              <Select  @on-change="checkPhoneModelInfo" placeholder="请选择或新建设备型号" filterable allow-create>
+              <b slot="label"><span class="need">*</span>{{$t('deviceList.phone_model')}}</b>
+              <Select  @on-change="checkPhoneModelInfo" :placeholder="$t('deviceManagement.info_4')" filterable allow-create>
                 <Option v-for="item in phoneModelList" :value="item" :key="item">{{ item }}</Option>
               </Select>
             </FormItem>
@@ -73,13 +73,13 @@
           <!--<span>毫米</span>-->
         <!--</FormItem>-->
         <FormItem>
-          <b slot="label"><span class="need">*</span>机型厚度</b>
+          <b slot="label"><span class="need">*</span>{{$t('deviceManagement.info_5')}}</b>
           <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.ply"></InputNumber>
-          <span>毫米</span>
+          <span>$t('deviceManagement.info_6')</span>
         </FormItem>
       </Form>
       <Row type="flex" justify="center">
-        <Button type="primary" @click="addDevice()">添加</Button>
+        <Button type="primary" @click="addDevice()">{{$t('public.btn_add')}}</Button>
       </Row>
       <Spin size="large" fix v-if="spinShow"></Spin>
     </Card>
@@ -129,7 +129,7 @@ export default {
                 })
                 .catch(error => {
                     if (config.DEBUG) console.log(error);
-                    this.$Message.error("获取设备数量出错")
+                    this.$Message.error(this.$t('deviceManagement.error_1'))
                 });
         }
     },
@@ -147,18 +147,18 @@ export default {
           // || this.deviceInfo.y_border === null || this.deviceInfo.height_resolution === null
           // || this.deviceInfo.height === null || this.deviceInfo.width === null
           || this.deviceInfo.ply === null) {
-        this.$Message.warning("带*项信息不能为空！")
+        this.$Message.warning(this.$t('deviceManagement.info_1'))
         return
       }
       if (!this.addedDeviceName.match(/^[\u4E00-\u9FA5a-zA-Z0-9()_\-]+$/)) {
-         this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字、括号和中下划线",duration:5})
+         this.$Message.warning({content:this.$t('deviceDetail.tips_9'),duration:5})
          return
       }
       let reg = ['\/','\\',' ','`','~','!','#','$','%','^','&','*','(',')','+','=','<','>','?',':','"','{','}','|','！','￥','…','（','）',
          '《','》','？','：','“','”','【','】','、','；','‘','’','，','。']
        for(let i = 0;i < reg.length;i++ ){
           if(this.phoneModel.indexOf(reg[i])!==-1){
-              this.$Message.warning({content:"设备型号不允许输入空格、/、\\ 等特殊字符",duration:5})
+              this.$Message.warning({content:this.$t('deviceManagement.info_7'),duration:5})
               return
           }
        }
@@ -181,7 +181,7 @@ export default {
           }
       ).then(response => {
           if (response.data.error_code === 0) {
-          this.$Message.success("添加成功")
+          this.$Message.success(this.$t('public.addSuccess'))
           this.getPhoneModelList()
           this.$emit('afterDeviceAddSuccess', response.data)
         }else {
@@ -193,21 +193,21 @@ export default {
       }).catch(reason => {
         this.spinShow = false;
         if(reason.message==='Network Error'){
-          this.$Message.error({content:'添加失败！请检查电脑网络连接是否正确',duration: 10})
+          this.$Message.error({content:this.$t('deviceManagement.info_8'),duration: 10})
           this.$Loading.error()
           return
         }
         if(reason.response.status>=500)
-          this.$Message.error({content:'服务器错误',duration: 5})
+          this.$Message.error({content:this.$t('public.error_500'),duration: 5})
         else
-          this.$Message.error({content:'请求失败',duration: 5})
+          this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
         this.$Loading.error()
         this.$emit('afterDeviceAddFailed', reason)
       })
     },
     getDeviceInDoor() {
       if (this.CabinetIpSelected === "") {
-        this.$Message.error("请先选择机柜信息")
+        this.$Message.error(this.$t('deviceManagement.error_3'))
         return
       }
       this.addDeviceStep = 2;
@@ -222,7 +222,7 @@ export default {
             })
             .catch(error => {
                 if (config.DEBUG) console.log(error)
-                this.$Message.error("取得机柜信息出错")
+                this.$Message.error(this.$t('deviceList.err_1'))
             })
     },
     getPhoneModelList() {
@@ -254,7 +254,7 @@ export default {
               })
               .catch(error => {
                   if (config.DEBUG) console.log(error);
-                  this.$Message.error("获取设备数量出错")
+                  this.$Message.error(this.$t('deviceManagement.error_1'))
               });
           this.CabinetIpSelected = ip
       },

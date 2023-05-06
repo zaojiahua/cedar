@@ -69,20 +69,20 @@
             return {
                 columns: [
                     {
-                        title: "用例名称",
+                        title: this.$t('jobList.job_name'),
                         key: "job_name",
                         sortable: true
                     },
                     {
-                        title: "测试用途",
+                        title: this.$t('jobList.display_job_test_area'),
                         key: "display_job_test_area"
                     },
                     {
-                        title: "自定义标签",
+                        title: this.$t('jobList.display_custom_tag'),
                         key: "display_custom_tag"
                     },
                     {
-                        title: "更新时间",
+                        title: this.$t('jobList.updated_time'),
                         key: "updated_time",
                         sortable: true
                     }
@@ -101,7 +101,7 @@
         methods: {
             _requestErrorHandle(reason) {
                 if (config.DEBUG) console.log(reason)
-                this.$Message.error("载入失败")
+                this.$Message.error(this.$t('public.loadFail'))
             },
             _responseHandle(response) {
                 this.dataTotal = parseInt(response.headers["total-count"])

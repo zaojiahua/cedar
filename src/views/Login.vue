@@ -104,7 +104,6 @@
             }
         },
         mounted() {
-            console.log(this.lang);
             localStorage.removeItem("token")
             localStorage.removeItem("id")
             localStorage.removeItem("username")

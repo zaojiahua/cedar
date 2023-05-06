@@ -1,10 +1,10 @@
 <template>
     <Tabs v-model="tabName" name="outer" style="overflow: visible">
-        <TabPane label="启动时间数据" name="startTime" tab="outer">
+        <TabPane :label="$t('perfDataView.label_1')" name="startTime" tab="outer">
             <comp-perf-data-view></comp-perf-data-view>
         </TabPane>
 
-        <TabPane label="其他性能数据" name="otherPerfData" tab="outer">
+        <TabPane :label="$t('perfDataView.label_2')" name="otherPerfData" tab="outer">
 
         </TabPane>
     </Tabs>

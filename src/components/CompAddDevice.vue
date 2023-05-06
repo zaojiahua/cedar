@@ -1,20 +1,20 @@
 <template>
     <transition>
-        <Card dis-hover title="第一步: 请对待添加设备执行" v-if="addDeviceStep === 1">
+        <Card dis-hover :title="$t('deviceManagement.tips_1')" v-if="addDeviceStep === 1">
             <Steps direction="vertical" :current="-1">
-                <Step title="将设备添加到专用USB接口"></Step>
-                <Step title="将添加设备连接到TMach系统WLAN"></Step>
-                <Step title='开启"USB调试功能"与"通过USB安装APP"'></Step>
-                <Step title='关闭"自动亮度调节"，并调整到适当亮度，同时设置屏幕为常亮'></Step>
-                <Step title='请在待添加设备弹出窗口中勾选 始终允许这台计算机进行调试 如果已设置，可直接点击"下一步'></Step>
+                <Step :title="$t('deviceManagement.tips_2')"></Step>
+                <Step :title="$t('deviceManagement.tips_3')"></Step>
+                <Step :title="$t('deviceManagement.tips_4')"></Step>
+                <Step :title="$t('deviceManagement.tips_5')"></Step>
+                <Step :title="$t('deviceManagement.tips_6')"></Step>
             </Steps>
             <Row type="flex" justify="center" style="margin-top: 16px">
-                <Button type="primary" @click="getCabinetInfo ">下一步</Button>
+                <Button type="primary" @click="getCabinetInfo ">{{$t('public.btn_next')}}</Button>
             </Row>
         </Card>
-        <Card dis-hover title="第二步: 选择机柜" v-if="addDeviceStep === 2" style="text-align:left;">
+        <Card dis-hover :title="$t('deviceManagement.tips_7')" v-if="addDeviceStep === 2" style="text-align:left;">
             <br>
-            <b>机柜列表：</b>
+            <b>{{$t('deviceManagement.tips_8')}}：</b>
             <Select v-model="CabinetSelected" style="width:150px">
                 <OptionGroup v-for="types in cabinetList" :label="types.type">
                     <Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id"
@@ -23,52 +23,52 @@
             </Select>
             <br>
             <br>
-            <b >机柜内已有设备数量： </b>
-            <span style="color: #999999">  {{deviceNum}} 台 </span>
-            <p style="color: #999999;margin: 20px 0 40px 0">注：每个机柜建议注册不超过50台设备</p>
+            <b >{{$t('deviceManagement.tips_9')}}： </b>
+            <span style="color: #999999">  {{deviceNum}} {{$t('functionalTest.pcs')}} </span>
+            <p style="color: #999999;margin: 20px 0 40px 0">{{$t('deviceManagement.tips_10')}}</p>
             <Row>
-                <b>设备类型：</b>
+                <b>{{$t('deviceManagement.tips_11')}}：</b>
                 <RadioGroup v-model="deviceType" style="margin-top: -3px;">
-                    <Radio :label="1" style="margin-right: 20px;">主机</Radio>
-                    <Radio :label="2">僚机</Radio>
+                    <Radio :label="1" style="margin-right: 20px;">{{$t('jobDetail.host')}}</Radio>
+                    <Radio :label="2">{{$t('deviceDetail.subsidiary_device')}}</Radio>
                 </RadioGroup>
             </Row>
             <Row type="flex" justify="center" style="margin-top: 16px">
-                <Button type="primary" @click="getDeviceInDoor">下一步</Button>
+                <Button type="primary" @click="getDeviceInDoor">{{$t('public.btn_next')}}</Button>
                 <!--<Button type="error" @click="addDeviceError('ip侦测失败', '侦测不到该装置的IP位置，请确认待添加设备已连接到系统TMach系统WLAN！')">错误DEMO</Button>-->
             </Row>
         </Card>
-        <Card dis-hover title="第三步: 添加设备" v-if="addDeviceStep === 3">
+        <Card dis-hover :title="$t('deviceManagement.tips_12')" v-if="addDeviceStep === 3">
             <Form :label-width="130">
                 <FormItem>
-                    <b slot="label"><span class="need">*</span>自定义名称</b>
+                    <b slot="label"><span class="need">*</span>{{$t('deviceList.device_name')}}</b>
                     <Input v-model="addedDeviceName"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">自定义编号</b>
+                    <b slot="label">{{$t('rdsDetail.customName')}}</b>
                     <Input v-model="customNumber" :maxlength="100"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">设备编号</b>
+                    <b slot="label">{{$t('deviceList.device_label')}}</b>
                     <Input v-model="deviceInfo.device_label" class="disabled-input" :disabled="true"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">IP地址</b>
+                    <b slot="label">{{$t('deviceDetail.ip')}}</b>
                     <Input v-model="deviceInfo.ip_address" class="disabled-input" :disabled="true"></Input>
                 </FormItem>
                 <Divider />
               <FormItem>
-                <b slot="label"><span class="need">*</span>厂商名称</b>
-                <Select   @on-create="addManufacturer" v-model="deviceInfo.manufacturer" placeholder="请选择或新建厂商信息" filterable allow-create>
+                <b slot="label"><span class="need">*</span>{{$t('deviceManagement.manufacturer')}}</b>
+                <Select   @on-create="addManufacturer" v-model="deviceInfo.manufacturer" :placeholder="$t('deviceManagement.manufacturerTips')" filterable allow-create>
                   <Option v-for="item in manufacturerList" :value="item">{{ item}}</Option>
                 </Select>
               </FormItem>
                 <FormItem>
-                    <b slot="label">手机型号</b>
+                    <b slot="label">{{$t('deviceDetail.phone_model_name')}}</b>
                     <Input v-model="deviceInfo.phone_model_name" class="disabled-input" :disabled="true"></Input>
                 </FormItem>
                 <FormItem v-if="deviceType===1">
-                    <b slot="label">Rom版本</b>
+                    <b slot="label">{{$t('deviceList.rom_version')}}</b>
                     <Input v-model="deviceInfo.rom_version"></Input>
                 </FormItem>
                 <FormItem>
@@ -89,9 +89,9 @@
                 <!--</FormItem>-->
             </Form>
             <Row type="flex" justify="center">
-                <Button type="primary" v-if="addBtn" @click="addDevice()">添加</Button>
-                <Button type="primary" v-if="rescan" @click="getDeviceInDoor()" style="margin-right: 20px;">重新扫描</Button>
-                <Button type="primary" v-if="backStepOne" @click="addDeviceStep=2 ">返回上一步</Button>
+                <Button type="primary" v-if="addBtn" @click="addDevice()">{{$t('public.btn_add')}}</Button>
+                <Button type="primary" v-if="rescan" @click="getDeviceInDoor()" style="margin-right: 20px;">{{$t('deviceManagement.btn_1')}}</Button>
+                <Button type="primary" v-if="backStepOne" @click="addDeviceStep=2 ">{{$t('deviceManagement.btn_2')}}</Button>
             </Row>
             <Spin size="large" fix v-if="spinShow"></Spin>
         </Card>
@@ -145,7 +145,7 @@
                         })
                         .catch(error => {
                             if (config.DEBUG) console.log(error);
-                            this.$Message.error("获取设备数量出错")
+                            this.$Message.error(this.$t('deviceManagement.error_1'))
                         });
             },
             setManufacturer(item){
@@ -165,11 +165,11 @@
             addDevice() {
                 if(this.addedDeviceName.trim().length===0||this.deviceInfo.x_dpi===null
                     ||this.deviceInfo.y_dpi===null||this.deviceInfo.manufacturer===""){
-                    this.$Message.warning("带*项信息不能为空！")
+                    this.$Message.warning(this.$t('deviceManagement.info_1'))
                     return
                 }
                 if (!this.addedDeviceName.match(/^[\u4E00-\u9FA5a-zA-Z0-9()_\-]+$/)) {
-                    this.$Message.warning({content:"自定义名称只允许输入汉字、英文字母、数字、括号和中下划线",duration:5})
+                    this.$Message.warning({content:this.$t('deviceDetail.tips_9'),duration:5})
                     return
                 }
                 this.$Loading.start()
@@ -182,7 +182,7 @@
                         deviceInfoDict
                     ).then(response => {
                         if (response.data.error_code === 0) {
-                            this.$Message.success("添加成功")
+                            this.$Message.success(this.$t('public.addSuccess'))
                             this.$emit('afterDeviceAddSuccess', response.data)
                         } else {
                             this.$Message.error({content: response.data.description, duration: 8})
@@ -193,9 +193,9 @@
                     }).catch(reason => {
                         this.spinShow = false;
                         if(reason.response.status>=500)
-                            this.$Message.error({content:'服务器错误',duration: 5})
+                            this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                         else
-                            this.$Message.error({content:'请求失败',duration: 5})
+                            this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                         this.$Loading.error()
                         this.$emit('afterDeviceAddFailed', reason)
                     })
@@ -217,19 +217,19 @@
                         },
                         cabinet:this.CabinetId
                     }).then(response=>{
-                        this.$Message.success("添加成功")
+                        this.$Message.success(this.$t('public.addSuccess'))
                         this.$emit('afterDeviceAddSuccess', response.data)
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
                         this.spinShow = false;
                         this.$Loading.error()
-                        this.$Message.error({content:"僚机添加失败！"+error.response.data.message,duration:6})
+                        this.$Message.error({content:this.$t('deviceManagement.error_2')+error.response.data.message,duration:6})
                     })
                 }
             },
             getDeviceInDoor() {
                 if (this.CabinetIpSelected === "" ){
-                    this.$Message.error("请先选择机柜信息")
+                    this.$Message.error(this.$t('deviceManagement.error_3'))
                     return
                 }
                 if(this.CabinetSelected){
@@ -239,7 +239,7 @@
                         })
                         .catch(error => {
                             if (config.DEBUG) console.log(error);
-                            this.$Message.error("获取设备数量出错")
+                            this.$Message.error(this.$t('deviceManagement.error_1'))
                         });
                 }
                 this.deviceInfo = utils.validate(addDeviceSerializer, {});
@@ -259,7 +259,7 @@
                         .then(response => {
                             if(response.data.error_code===0){
                                 if (utils.validate(addDeviceSerializer, response.data.data).ip_address === null) {
-                                    this.addDeviceError('扫描设备失败', response.data.data.description);
+                                    this.addDeviceError(this.$t('deviceManagement.error_4'), response.data.data.description);
                                     this.addBtn = false;
                                     this.backStepOne = true;
                                     this.deviceInfo = utils.validate(addDeviceSerializer, response.data.data);
@@ -267,14 +267,14 @@
                                     this.addBtn = false;
                                     this.rescan = true;
                                     this.deviceInfo = utils.validate(addDeviceSerializer, response.data.data);
-                                    this.addDeviceError('ip侦测失败', '侦测不到该设备的IP地址，请确认待添加设备已连接到TMach系统WLAN！')
+                                    this.addDeviceError(this.$t('deviceManagement.error_5'), this.$t('deviceManagement.error_6'))
                                 } else {
                                     this.deviceInfo = utils.validate(addDeviceSerializer, response.data.data);
                                     if (this.manufacturerList.indexOf(this.deviceInfo.manufacturer) === -1)
                                         this.manufacturerList.push(this.deviceInfo.manufacturer)
                                 }
                             }else {
-                                this.addDeviceError('扫描设备失败', response.data.description);
+                                this.addDeviceError(this.$t('deviceManagement.error_4'), response.data.description);
                                 this.addBtn = false;
                                 this.rescan = true;
                             }
@@ -298,7 +298,7 @@
                                     if (this.manufacturerList.indexOf(this.deviceInfo.manufacturer) === -1)
                                         this.manufacturerList.push(this.deviceInfo.manufacturer)
                                 }else {
-                                    this.addDeviceError('僚机信息获取失败', response.data.description);
+                                    this.addDeviceError(this.$t('deviceDetail.slotTips_5'), response.data.description);
                                     this.addBtn = false;
                                     this.backStepOne = true;
                                     this.rescan = true;
@@ -312,13 +312,13 @@
                                 this.rescan = true;
                                 this.spinShow = false;
                                 if(error.response.data.error_code===1001){
-                                    this.addDeviceError('僚机信息获取失败', '请确认当前设备是否连接到TMach系统中')
+                                    this.addDeviceError(this.$t('deviceDetail.slotTips_5'), this.$t('deviceManagement.error_7'))
                                 }else if(error.response.data.error_code===1000){
-                                    this.addDeviceError('僚机信息获取失败', '请确认当前系统中是否连接了多个僚机设备')
+                                    this.addDeviceError(this.$t('deviceDetail.slotTips_5'), this.$t('deviceManagement.error_8'))
                                 }else if(error.response.data.error_code===1007){
-                                    this.addDeviceError('僚机信息获取失败','该设备已被注册，请先将其移除，再进行操作')
+                                    this.addDeviceError(this.$t('deviceDetail.slotTips_5'),this.$t('deviceManagement.error_9'))
                                 }else
-                                    this.addDeviceError('僚机信息获取失败 ',+error.response.data.description)
+                                    this.addDeviceError(this.$t('deviceDetail.slotTips_5'),+error.response.data.description)
                             })
                     }
             },
@@ -329,7 +329,7 @@
                     })
                     .catch(error => {
                         if (config.DEBUG) console.log(error);
-                        this.$Message.error("获取设备数量出错")
+                        this.$Message.error(this.$t('deviceManagement.error_1'))
                     });
                     this.CabinetIpSelected = ip
                     this.CabinetId = val
@@ -342,7 +342,7 @@
                     })
                     .catch(error => {
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("取得机柜信息出错")
+                        this.$Message.error(this.$t('deviceList.err_1'))
                     })
             }
         },

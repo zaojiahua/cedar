@@ -1,13 +1,13 @@
 <template>
     <div style="padding: 16px;background-color: #fff;">
-        <Divider orientation="left">各机型启动时间均值对比</Divider>
+        <Divider orientation="left">{{$t('perfDataView.title_1')}}</Divider>
         <comp-perf-line-chart ref="histogram" :job-id="propJobId" :prop-phone-models="propPhoneModelList" :prop-tboard-ids="propTboardIdList"
                               @on-chart-click="onChartClick"></comp-perf-line-chart>
 
-        <Divider orientation="left">各机型启动时间分布对比</Divider>
+        <Divider orientation="left">{{$t('perfDataView.title_2')}}</Divider>
         <comp-perf-box-plot-chart ref="boxPlot" :job-id="propJobId" :prop-phone-models="propPhoneModelList" :prop-tboard-ids="propTboardIdList"></comp-perf-box-plot-chart>
 
-        <Divider orientation="left">详细数据</Divider>
+        <Divider orientation="left">{{$t('perfDataView.title_3')}}</Divider>
         <Table border :columns="column" :data="tableData"></Table>
 
         <Drawer v-model="showLineChartDetail" width="60" :closable="false" transfer>
@@ -47,7 +47,7 @@
             return{
                 column:[
                     {
-                        title: '厂商-机型',
+                        title: this.$t('perfDataView.title_4'),
                         key: 'phone_model_name',
                         align: 'center',
                         sortable: true
@@ -58,32 +58,32 @@
                         align: 'center'
                     },
                     {
-                        title: '中位数[s]',
+                        title: this.$t('perfDataView.jobColumn_3')+'[s]',
                         key: 'median',
                         align: 'center',
                         sortable: true
                     },
                     {
-                        title: '平均值[s]',
+                        title: this.$t('perfDataView.jobColumn_1')+'[s]',
                         key: 'avg',
                         align: 'center',
                         className: 'avgColumn',
                         sortable: true
                     },
                     {
-                        title: '最大值[s]',
+                        title: this.$t('perfDataView.jobColumn_2')+'[s]',
                         key: 'max',
                         align: 'center',
                         sortable: true
                     },
 
                     {
-                        title: '启动成功次数',
+                        title: this.$t('perfDataView.title_5'),
                         key: 'success_num',
                         align: 'center'
                     },
                     {
-                        title: '启动失败次数',
+                        title: this.$t('perfDataView.title_6'),
                         key: 'failed_num',
                         align: 'center'
                     },
@@ -108,7 +108,7 @@
                     this.tableData = response.data
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error("表格数据加载失败!")
+                    this.$Message.error(this.$t('perfDataView.error_4'))
                 })
             },
             //折线图的点击操作  echarts click

@@ -8,56 +8,56 @@
         </Modal>
 
         <div v-if="step===1">
-            <DatePicker v-model="filterDateRange" style="width: 220px;" @on-change="onDateChange" type="daterange" placeholder="测试开始时间" :transfer="true" :clearable="false"></DatePicker>
-            <p style="color: rgb(194, 194, 194);margin-top: 10px;margin-bottom: 30px;">默认选择最近七天的数据 </p>
+            <DatePicker v-model="filterDateRange" style="width: 220px;" @on-change="onDateChange" type="daterange" :placeholder="$t('rdsDeviceView.placeholderTime')" :transfer="true" :clearable="false"></DatePicker>
+            <p style="color: rgb(194, 194, 194);margin-top: 10px;margin-bottom: 30px;">{{$t('rdsDeviceView.selTips')}} </p>
 
             <comp-tboard-list ref="tboardList" :prop-show-header="false" :prop-multi-select="true" :prop-poll="true" :prop-is-perf="true" :prop-filter-date-range="filterDateRange"
                               @on-row-click="onTboardRowClick">
             </comp-tboard-list>
 
             <Row style="margin-top: 40px;text-align: center">
-                <Button type="primary" @click="onTboardSelect">下一步</Button>
+                <Button type="primary" @click="onTboardSelect">{{$t('public.btn_next')}}</Button>
             </Row>
         </div>
 
         <div v-if="step===2">
             <comp-perf-job-list :prop-tboard-ids="tboardsIdList" @on-row-click="onJobSelect"></comp-perf-job-list>
             <Row style="margin-top: 40px;text-align: center">
-                <Button type="primary" @click="onPrevStep1" style="margin-right: 40px;">上一步</Button>
-                <Button type="primary" @click="onNextStep3">下一步</Button>
+                <Button type="primary" @click="onPrevStep1" style="margin-right: 40px;">{{$t('public.btn_prev')}}</Button>
+                <Button type="primary" @click="onNextStep3">{{$t('public.btn_next')}}</Button>
             </Row>
         </div>
 
         <div v-if="step===3">
             <Tabs type="card" v-model="analyze" name="inside" class="analyze" style="overflow: visible">
-                <TabPane label="机型分析" name="phone_model_analyze" tab="inside" >
+                <TabPane :label="$t('perfDataView.label_3')" name="phone_model_analyze" tab="inside" >
                     <div style="padding:16px;background-color: #fff;margin-bottom: 20px;">
                         <Row>
-                            <span style="display: inline-block;border-left: 3px solid #1bbc9c;padding-left: 10px;width: 100px">测试用例</span>
+                            <span style="display: inline-block;border-left: 3px solid #1bbc9c;padding-left: 10px;width: 100px">{{$t('tboardDetail.testJob')}}</span>
                             <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">
                                 {{job.job_name}}
                             </Button>
                             <DatePicker style="margin-left: 20px;width: 220px" class="disabled-i" disabled v-model="filterDateRange" type="daterange" :transfer="true" :clearable="false"></DatePicker>
 
                             <div style="float: right;">
-                                <Button class="jobBtn" @click="onReJobSelect">重选用例</Button>
-                                <Button type="primary" style="margin-left: 20px" @click="onReSelect">重选机型</Button>
+                                <Button class="jobBtn" @click="onReJobSelect">{{$t('perfDataView.btn_1')}}</Button>
+                                <Button type="primary" style="margin-left: 20px" @click="onReSelect">{{$t('perfDataView.btn_2')}}</Button>
                             </div>
                         </Row>
                         <Row style="margin-top: 20px">
-                            <span style="display: inline-block;border-left: 3px solid #1bbc9c;padding-left: 10px;width: 100px">测试机型</span>
+                            <span style="display: inline-block;border-left: 3px solid #1bbc9c;padding-left: 10px;width: 100px">{{$t('perfDataView.tit')}}</span>
                             <Cascader class="disabled-i" :disabled="!showAnalyzeBtn" style="width: 200px;display: inline-block;margin-right: 16px" :data="cascaderData" v-model="cascaderSelect[i-1]" v-for="i in cascaderIndex"></Cascader>
                             <Button v-show="showAnalyzeBtn" @click="onAddCascader"> + </Button>
                         </Row>
                     </div>
-                    <Row v-show="showAnalyzeBtn" style="margin-top: 40px;text-align: center"><Button type="primary" @click="onAnalyzeClick">机型分析</Button></Row>
+                    <Row v-show="showAnalyzeBtn" style="margin-top: 40px;text-align: center"><Button type="primary" @click="onAnalyzeClick">{{$t('perfDataView.label_3')}}</Button></Row>
                     <comp-phone-model-analyze v-if="analyzeCardIndex===1" :prop-phone-model-list="cascaderSelect"
                                               :prop-job-id="job.id" :prop-tboard-id-list="tboardsIdList"></comp-phone-model-analyze>
                     <comp-phone-model-analyze-more v-if="analyzeCardIndex===2" :prop-phone-model-list="cascaderSelect" :prop-job-name="job.job_name"
                                                    :prop-job-id="job.id" :prop-tboard-id-list="tboardsIdList"></comp-phone-model-analyze-more>
                 </TabPane>
 
-                <TabPane label="ROM分析" name="rom_analyze" tab="inside">
+                <TabPane :label="$t('perfDataView.label_4')" name="rom_analyze" tab="inside">
 
                 </TabPane>
             </Tabs>
@@ -114,7 +114,7 @@
                 this.tboardsSelection = this.$refs.tboardList.getThisSelection()
                 this.tboards = this.$refs.tboardList.getSelection()
                 if(this.tboards.length===0){
-                    this.$Message.warning("请先选择至少一个任务!")
+                    this.$Message.warning(this.$t('perfDataView.tips_1'))
                     return
                 }
                 this.step = 2
@@ -131,7 +131,7 @@
             //  下一步  去分析
             onNextStep3(){
                 if(!this.job){
-                    this.$Message.warning("请选择一个用例进行分析！")
+                    this.$Message.warning(this.$t('perfDataView.tips_2'))
                     return
                 }
                 this.step = 3
@@ -149,7 +149,7 @@
                 if(this.cascaderIndex<5)
                     this.cascaderIndex++
                 else
-                    this.$Message.warning("最多添加5个机型进行分析！")
+                    this.$Message.warning(this.$t('perfDataView.tips_3'))
             },
             // 获取机型/Rom 数据源
             getCascaderData(){
@@ -173,7 +173,7 @@
                         this.cascaderData = list
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error("机型信息加载失败")
+                        this.$Message.error(this.$t('perfDataView.error_1'))
                 })
             },
             //点击机型分析按钮以进行机型分析
@@ -184,7 +184,7 @@
                         this.cascaderSelect.splice(i,1)
                 }
                 if(this.cascaderSelect.length===0){
-                    this.$Message.warning("请先选择至少一个机型进行分析！")
+                    this.$Message.warning(this.$t('perfDataView.tips_4'))
                     return
                 }
                 //是否为空判断完之后，再看是否重复
@@ -196,7 +196,7 @@
                     if(list.indexOf(arr[i])===-1)
                         list.push(arr[i])
                     else {
-                        this.$Message.warning("已选机型中有重复机型，请重新选择再进行下一步！")
+                        this.$Message.warning(this.$t('perfDataView.tips_5'))
                         return
                     }
                 }

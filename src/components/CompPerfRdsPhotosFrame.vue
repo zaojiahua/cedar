@@ -2,13 +2,13 @@
     <div class="p-container">
         <div class="photos">
             <p style="background: #eee;height: 40px;line-height: 40px;font-weight: bold;padding: 0 10px">
-                <span>丢帧点  {{ lose_frame_point_index ? lose_frame_point_index+'.jpg' : '无' }}</span>
+                <span>{{$t('rdsInfoPage.lose_frame_point')}}  {{ lose_frame_point_index ? lose_frame_point_index+'.jpg' : $t('rdsDetail.no') }}</span>
                 <Dropdown placement="bottom-end" style="float: right;margin-right: 5px;">
                     <span><Icon type="md-more" size="16"/></span>
                     <DropdownMenu slot="list">
-                        <span @click="quickJump(lose_frame_point_index)"><DropdownItem>丢帧点</DropdownItem></span>
-                        <span @click="quickJump(1)"><DropdownItem>顶部</DropdownItem></span>
-                        <span @click="quickJump(rdsPhotosData.picture_count)"><DropdownItem>底部</DropdownItem></span>
+                        <span @click="quickJump(lose_frame_point_index)"><DropdownItem>{{$t('rdsInfoPage.lose_frame_point')}}</DropdownItem></span>
+                        <span @click="quickJump(1)"><DropdownItem>{{$t('rdsInfoPage.top')}}</DropdownItem></span>
+                        <span @click="quickJump(rdsPhotosData.picture_count)"><DropdownItem>{{$t('rdsInfoPage.bottom')}}</DropdownItem></span>
                     </DropdownMenu>
                 </Dropdown>
             </p>
@@ -26,13 +26,13 @@
                 </Col>
                 <Col style="text-align: right">
                     <Button type="primary" v-show="isShowBtn()" @click="setPoint(true)">
-                        设为丢帧点
+                        {{$t('rdsInfoPage.btn_3')}}
                     </Button>
-                    <Button v-show="!isShowBtn()"style="margin-left: 16px;"  @click="setPoint(false)">设为正常点</Button>
+                    <Button v-show="!isShowBtn()"style="margin-left: 16px;"  @click="setPoint(false)">{{$t('rdsInfoPage.btn_4')}}</Button>
                 </Col>
             </Row>
             <div style="height: calc(100vh - 165px);text-align: center">
-                <img :src="selectedUrl" alt="图片走丢了" style="max-height: 92%;max-width: 100%;">
+                <img :src="selectedUrl" :alt="$t('rdsInfoPage.tips_2')" style="max-height: 92%;max-width: 100%;">
             </div>
         </div>
 
@@ -91,14 +91,14 @@
                                     this.selectedUrl = this.baseUrl + response.data.rdsscreenshots[0].img_file
                                 }).catch(error=>{
                                     if(error.response.status>=500)
-                                        this.$Message.error("服务器错误")
+                                        this.$Message.error(this.$t('public.error_500'))
                                     else
-                                        this.$Message.error("图片获取失败")
+                                        this.$Message.error(this.$t('rdsInfoPage.error_2'))
                             })
                         }
                     }).catch(error => {
                     if (config.DEBUG) console.log(error)
-                    this.$Message.error("图集信息获取失败")
+                    this.$Message.error(this.$t('rdsInfoPage.error_3'))
                 })
             },
             //点击列表出来大图
@@ -115,9 +115,9 @@
                     }).catch(error=>{
                     this.selectedUrl = ""
                     if(error.response.status>=500)
-                        this.$Message.error("服务器错误")
+                        this.$Message.error(this.$t('public.error_500'))
                     else
-                        this.$Message.error("图片获取失败")
+                        this.$Message.error(this.$t('rdsInfoPage.error_2'))
                 })
             },
             //图片列表前面的小圆圈

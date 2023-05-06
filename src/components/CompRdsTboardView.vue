@@ -6,27 +6,27 @@
                               @on-row-click="onSelectTboardModalRowClick"></comp-tboard-list>
         </Modal>
         <Row v-show="!showView" style="margin-top: 100px;text-align: center">
-            <Button type="primary" @click="openTboardList">选取任务</Button>
-            <p style="color: rgb(194, 194, 194); font-size: larger; font-weight: bold;margin-top: 16px;">您还没有选择任何任务!</p>
+            <Button type="primary" @click="openTboardList">{{$t('rdsTboardView.selBtn')}}</Button>
+            <p style="color: rgb(194, 194, 194); font-size: larger; font-weight: bold;margin-top: 16px;">{{$t('rdsTboardView.selTips')}}</p>
         </Row>
 
         <div v-if="showView">
-            <div v-if="propTabName==='任务数据视图'">
+            <div v-if="propTabName===$t('rdsManagement.view_4')">
                 <RadioGroup v-model="groupType" type="button">
-                    <Radio style="width: 100px;text-align: center;" :label="1">失败数据</Radio>
-                    <Radio style="width: 100px;text-align: center;" :label="2">无效数据</Radio>
+                    <Radio style="width: 100px;text-align: center;" :label="1">{{$t('rdsDeviceView.failData')}}</Radio>
+                    <Radio style="width: 100px;text-align: center;" :label="2">{{$t('rdsDeviceView.invalidData')}}</Radio>
                 </RadioGroup>
-                <Button type="primary" style="float: right;" @click="openTboardList">重选任务</Button>
+                <Button type="primary" style="float: right;" @click="openTboardList">{{$t('rdsTboardView.selBtn_2')}}</Button>
 
                 <!--   无效/失败总统计切换  Card   -->
                 <Card :bordered="false" style="margin-top: 16px;box-shadow:2px 2px 5px #f2f2f2">
-                    <b style="border-left: 3px solid #1bbc9c;padding-left: 10px;font-size: 16px">{{ data.board_name }}（ {{data.end_time===null?"进行中":"已完成"}} ）</b><span style="color: #979797;font-size: 12px"> x{{data.repeat_time}}轮</span>
+                    <b style="border-left: 3px solid #1bbc9c;padding-left: 10px;font-size: 16px">{{ data.board_name }}（ {{data.end_time===null?$t('rdsTboardView.status_1'):$t('rdsTboardView.status_2')}} ）</b><span style="color: #979797;font-size: 12px"> x{{data.repeat_time}}$t('rdsTboardView.pcs')</span>
                     <Row class="t-font" style="margin-top: 5px;">
                         <span class="dot"></span><span>{{ data.author.username }}</span>
                         <!--<Tag type="dot" style="border: none!important;padding: 0!important;">{{ data.author.username }}</Tag>-->
-                        <span class="tit">创建</span><span>{{ data.board_stamp }}</span>
-                        <span class="tit">截止</span><span>{{ data.end_time!==null?data.end_time:new Date().format("yy-MM-dd hh:mm:ss")}}</span>
-                        <span class="tit" style="margin-left: 50px"><span class="dot"></span>历时</span><span>{{ diffTime(data.board_stamp,data.end_time) }}</span>
+                        <span class="tit">{{$t('rdsTboardView.tit_1')}}</span><span>{{ data.board_stamp }}</span>
+                        <span class="tit">{{$t('rdsTboardView.tit_2')}}</span><span>{{ data.end_time!==null?data.end_time:new Date().format("yy-MM-dd hh:mm:ss")}}</span>
+                        <span class="tit" style="margin-left: 50px"><span class="dot"></span>{{$t('rdsTboardView.tit_3')}}</span><span>{{ diffTime(data.board_stamp,data.end_time) }}</span>
                     </Row>
 
                     <div style="width: 200px;float: left;">
@@ -38,7 +38,7 @@
                         <Table stripe width="500" :columns="columns" :data="tableData"></Table>
                     </div>
                     <Row  v-show="showMsg" >
-                        <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 10px">测试用例({{data.job.length}})</p>
+                        <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin-bottom: 10px">{{$t('tboardDetail.testJob')}}({{data.job.length}})</p>
                         <ButtonGroup>
                             <Tooltip v-for="(job,index) in data.job" :content="job.job_label" :key="index" placement="bottom" transfer>
                                 <Button @click="showJobDetail=true;$refs.jobDetail.refresh(job.id)">
@@ -48,7 +48,7 @@
                         </ButtonGroup>
                     </Row>
                     <Row  v-show="showMsg" >
-                        <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin: 10px 0">测试设备({{data.device.length}})</p>
+                        <p style="border-left: 3px solid #1bbc9c;padding-left: 10px;margin: 10px 0">{{$t('tboardDetail.testDev')}}({{data.device.length}})</p>
                         <ButtonGroup>
                             <Tooltip v-for="(device,index) in data.device" :content="device.device_label" :key="index" placement="bottom" transfer>
                                 <Button @click="showDeviceDetail=true;$refs.deviceDetail.refresh(device.id)">
@@ -58,15 +58,15 @@
                         </ButtonGroup>
                     </Row>
                     <Row>
-                        <span v-show="showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=false"><Icon type="ios-arrow-up" />收起</span>
-                        <span v-show="!showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=true"><Icon type="ios-arrow-down" />展开</span>
+                        <span v-show="showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=false"><Icon type="ios-arrow-up" />{{$t('tboardDetail.up')}}</span>
+                        <span v-show="!showMsg" style="float: right;color: #1296db;cursor: pointer" @click="showMsg=true"><Icon type="ios-arrow-down" />{{$t('tboardDetail.down')}}</span>
                     </Row>
                 </Card>
 
                 <!--     图表统计部份    失败    -->
                 <div class="device-statistic" style="margin-top: 16px" v-if="showStatistic&&(groupType===1)">
                     <Tabs v-model="tabName" type="card" name="inside" v-if="groupType===1">
-                        <TabPane label="设备统计" name="deviceStatistic" tab="inside">
+                        <TabPane :label="$t('rdsTboardView.tabs_1')" name="deviceStatistic" tab="inside">
                             <comp-rds-tboard-device-statistic ref="rdsDeviceStatistic"
                                                               :prop-device-url="compDeviceUrl"
                                                               :prop-tboard-id="tboardId"
@@ -75,7 +75,7 @@
                                                               @rds-mouse-leave="onRdsMouseLeave">
                             </comp-rds-tboard-device-statistic>
                         </TabPane>
-                        <TabPane label="用例统计" name="jobStatistic" tab="inside">
+                        <TabPane :label="$t('rdsTboardView.tabs_2')" name="jobStatistic" tab="inside">
                             <comp-rds-tboard-job-statistic ref="rdsJobStatistic"
                                                            :prop-job-url="compJobUrl"
                                                            :prop-tboard-id="tboardId"
@@ -89,7 +89,7 @@
                 <!--     图表统计部份    无效    -->
                 <div class="device-statistic" style="margin-top: 16px" v-if="showStatistic&&(groupType===2)">
                     <Tabs v-model="tabName" type="card" name="inside" v-if="groupType===2">
-                        <TabPane label="设备统计" name="deviceStatistic" tab="inside">
+                        <TabPane :label="$t('rdsTboardView.tabs_1')" name="deviceStatistic" tab="inside">
                             <comp-rds-tboard-device-statistic ref="rdsDeviceStatistic"
                                                               :prop-device-url="compDeviceUrl"
                                                               :prop-tboard-id="tboardId"
@@ -99,7 +99,7 @@
                                                               @rds-mouse-leave="onRdsMouseLeave">
                             </comp-rds-tboard-device-statistic>
                         </TabPane>
-                        <TabPane label="用例统计" name="jobStatistic" tab="inside">
+                        <TabPane :label="$t('rdsTboardView.tabs_2')" name="jobStatistic" tab="inside">
                             <comp-rds-tboard-job-statistic ref="rdsJobStatistic"
                                                            :prop-job-url="compJobUrl"
                                                            :prop-tboard-id="tboardId"
@@ -112,16 +112,16 @@
                     </Tabs>
                 </div>
             </div>
-            <div v-if="propTabName==='任务数据统计'">
+            <div v-if="propTabName===$t('rdsManagement.view_3')">
                 <RadioGroup v-model="groupTypeSwitch" type="button" style="margin-bottom: 16px">
-                    <Radio style="width: 100px;text-align: center;" :label="1">用例统计</Radio>
-                    <Radio style="width: 100px;text-align: center;" :label="2">设备统计</Radio>
+                    <Radio style="width: 100px;text-align: center;" :label="1">{{$t('rdsTboardView.tabs_2')}}</Radio>
+                    <Radio style="width: 100px;text-align: center;" :label="2">{{$t('rdsTboardView.tabs_1')}}</Radio>
                 </RadioGroup>
                 <div style="float: right;">
-                    <span>任务名称：{{ data.board_name }}</span>
-                    <span style="margin: 0 20px">用例数量：{{data.job.length}}</span>
-                    <span>设备数量：{{data.device.length}}</span>
-                    <span style="margin:0 20px">RDS数量：{{rdsNum}}</span>
+                    <span>{{$t('tboardList.board_name')}}：{{ data.board_name }}</span>
+                    <span style="margin: 0 20px">{{$t('tboardDetail.jobNum')}}：{{data.job.length}}</span>
+                    <span>{{$t('tboardDetail.devNum')}}：{{data.device.length}}</span>
+                    <span style="margin:0 20px">{{$t('rdsTboardView.rdsNum')}}：{{rdsNum}}</span>
                 </div>
                 <comp-rds-tboard-job-statistic-switch v-show="groupTypeSwitch===1" :tboard="tboardId"
                                                       @rds-mouse-enter="onRdsMouseEnter"
@@ -138,13 +138,13 @@
             <span>ID：</span>
             <span>{{tipData.id}}</span>
             <br>
-            <span>设备名称：</span>
+            <span>{{$t('tboardDetail.devName')}}：</span>
             <span>{{tipData.device.device_name}}</span>
             <br>
-            <span>用例名称：</span>
+            <span>{{$t('tboardDetail.jobName')}}：</span>
             <span>{{tipData.job.job_name}}</span>
             <br>
-            <span>结果：</span>
+            <span>{{$t('rdsDeviceView.result')}}：</span>
             <span>{{tipData.job_assessment_value}}</span>
         </div>
 
@@ -202,6 +202,7 @@
         },
         job_assessment_value: "string"
     }
+    const lang = localStorage.getItem("lang")
 
     export default {
         components:{ CompTboardList, CompStatisticPie,CompDeviceDetail,CompJobDetail,CompRdsTboardDeviceStatistic,CompRdsTboardJobStatistic,
@@ -209,7 +210,7 @@
         props:{
             propTabName:{
                 type: String,
-                default:"任务数据统计"
+                default: lang ==='zh' ? "任务数据统计" : "Task data statistics"
             }
         },
         data(){
@@ -234,19 +235,19 @@
                 pieData:[0,0,0],
                 columns: [
                     {
-                        title: '成功',
+                        title: this.$t('tboardDetail.pass'),
                         key: 'pass'
                     },
                     {
-                        title: '失败',
+                        title: this.$t('tboardDetail.fail'),
                         key: 'fail'
                     },
                     {
-                        title: '无效',
+                        title: this.$t('tboardDetail.invalid'),
                         key: 'na'
                     },
                     {
-                        title: '总共',
+                        title: this.$t('tboardDetail.total'),
                         key: 'total'
                     }
                 ],
@@ -315,7 +316,7 @@
 
                     })).catch(reason => {
                         if (config.DEBUG) console.log(reason)
-                        this.$Message.error("获取任务信息失败！")
+                        this.$Message.error(this.$t('rdsTboardView.err_1'))
                         this.showLoading = false;
                 })
             },
@@ -342,7 +343,7 @@
                 //计算相差秒数
                 let leave2=leave%(60*1000)      //计算分钟数后剩余的毫秒数
                 let seconds=Math.round(leave2/1000)
-                return hours+" 小时 "+minutes+" 分钟"+seconds+" 秒"
+                return hours+this.$t('rdsDetail.hours')+minutes+this.$t('rdsDetail.minutes')+seconds+this.$t('rdsDetail.seconds')
             },
             onRdsMouseEnter(rds) {
                 this.tipData = utils.validate(tipDataSerializer, rds)

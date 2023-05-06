@@ -1,7 +1,7 @@
 <template>
     <Card :shadow="true" :bordered="true">
         <Tabs value="deviceList" style="background: #fff;"  @on-click="onTabClick">
-            <TabPane label="测试设备列表" name="deviceList" :strip="true">
+            <TabPane :label="$t('deviceManagement.label_1')" name="deviceList" :strip="true">
                 <comp-device-list ref="deviceList" @on-row-click="onDeviceRowClick">
                     <Drawer slot="detail" v-model="showDeviceDetail" :draggable="true" :closable="false" width="50">
                         <comp-device-detail ref="deviceDetail" :editable="true" @after-device-delete="afterDeviceDelete" :prop-subsidiary-device="true"
@@ -9,7 +9,7 @@
                     </Drawer>
                 </comp-device-list>
             </TabPane>
-            <TabPane label="僚机列表" name="subsidiary">
+            <TabPane :label="$t('deviceManagement.label_2')" name="subsidiary">
                 <comp-subsidiary-device-list ref="subsidiaryDeviceList" @on-row-click="onSubsidiaryDeviceRowClick">
                     <Drawer slot="detail" v-model="showSubsidiaryDeviceDetail" :draggable="true" :closable="false" width="50">
                         <comp-subsidiary-device-detail ref="subsidiaryDeviceDetail" :prop-subsidiary-device="true"
@@ -19,13 +19,13 @@
                     </Drawer>
                 </comp-subsidiary-device-list>
             </TabPane>
-            <TabPane label="附加资源列表" name="resources">
+            <TabPane :label="$t('deviceManagement.label_3')" name="resources">
                 <comp-additional-resources-list ref="resourcesList"></comp-additional-resources-list>
             </TabPane>
-            <TabPane label="设备地图" name="paneList">
+            <TabPane :label="$t('deviceManagement.label_4')" name="paneList">
                 <comp-pane-list ref="paneViewList"></comp-pane-list>
             </TabPane>
-            <TabPane label="硬件设备列表" name="hardWare">
+            <TabPane :label="$t('deviceManagement.label_5')" name="hardWare">
                 <Comp-hard-ware-list ref="hardWareList"></Comp-hard-ware-list>
             </TabPane>
 

@@ -1,42 +1,42 @@
 <template>
     <div class="p-container">
         <div>
-            <span>测试用例：<b>{{ rdsInfo.job.job_name }}</b></span>
+            <span>{{$t('tboardDetail.testJob')}}：<b>{{ rdsInfo.job.job_name }}</b></span>
             <span style="margin-left: 16px">RdsID：<b>{{ rdsInfo.id }}</b></span>
-            <span style="margin-left: 16px">起点：<b>{{ startPoint }} ({{ startMethod }})</b></span>
-            <span style="margin-left: 16px">终点：<b>{{ endPoint }} ({{ endMethod }})</b></span>
-            <span style="margin-left: 16px">实际帧率：<b>{{ rdsInfo.fps }} fps</b></span>
-            <span style="margin-left: 16px">设置帧率：<b>{{ rdsInfo.set_fps }} fps</b></span>
-            <span style="margin-left: 16px">最大时长：<b>{{ rdsInfo.set_shot_time }} s</b></span>
+            <span style="margin-left: 16px">{{$t('rdsInfoPage.startPoint')}}：<b>{{ startPoint }} ({{ startMethod }})</b></span>
+            <span style="margin-left: 16px">{{$t('rdsInfoPage.endPoint')}}：<b>{{ endPoint }} ({{ endMethod }})</b></span>
+            <span style="margin-left: 16px">{{$t('rdsInfoPage.fps')}}：<b>{{ rdsInfo.fps }} fps</b></span>
+            <span style="margin-left: 16px">{{$t('rdsInfoPage.set_fps')}}：<b>{{ rdsInfo.set_fps }} fps</b></span>
+            <span style="margin-left: 16px">{{$t('rdsInfoPage.set_shot_time')}}：<b>{{ rdsInfo.set_shot_time }} s</b></span>
         </div>
         <div class="photo-box">
             <div class="photo-left">
                 <Row style="line-height: 32px;margin-bottom: 10px">
-                    <b>测试结果：{{ job_duration }}<span v-show="typeof job_duration==='number'"> s</span></b>
+                    <b>{{$t('rdsDetail.result')}}：{{ job_duration }}<span v-show="typeof job_duration==='number'"> s</span></b>
                     <Dropdown placement="bottom-end" v-show="tableData.length!==0">
                         <span><Icon type="md-more" size="16"/></span>
                         <DropdownMenu slot="list">
-                            <span @click="quickJump(parseInt(startPoint))"><DropdownItem>起点</DropdownItem></span>
-                            <span @click="quickJump(parseInt(endPoint))"><DropdownItem>终点</DropdownItem></span>
-                            <span @click="quickJump(1)"><DropdownItem>顶部</DropdownItem></span>
-                            <span @click="quickJump(tableData.length)"><DropdownItem>底部</DropdownItem></span>
+                            <span @click="quickJump(parseInt(startPoint))"><DropdownItem>{{$t('rdsInfoPage.startPoint')}}</DropdownItem></span>
+                            <span @click="quickJump(parseInt(endPoint))"><DropdownItem>{{$t('rdsInfoPage.endPoint')}}</DropdownItem></span>
+                            <span @click="quickJump(1)"><DropdownItem>{{$t('rdsInfoPage.top')}}</DropdownItem></span>
+                            <span @click="quickJump(tableData.length)"><DropdownItem>{{$t('rdsInfoPage.bottom')}}</DropdownItem></span>
                         </DropdownMenu>
                     </Dropdown>
                     <div v-show="tableData.length!==0" style="float: right;">
                         <Button type="primary" style="margin-right: 16px;" :disabled="!isDisabled('start')" @click="setPoint(true)">
-                        设为起点
+                            {{$t('rdsInfoPage.btn_1')}}
                         </Button>
-                        <Button type="error" :disabled="!isDisabled('end')" @click="setPoint(false)">设为终点</Button>
+                        <Button type="error" :disabled="!isDisabled('end')" @click="setPoint(false)">{{$t('rdsInfoPage.btn_2')}}</Button>
                     </div>
                 </Row>
                 <div class="table-container" v-show="tableData.length!==0">
                     <div style="background: #f2f2f2">
                         <table style="width: 100%;border:1px solid #dcdcdc;border-bottom: none;border-spacing:0 2px;">
                             <tr>
-                                <th style="width: 50px">帧</th>
-                                <th style="width: 150px">拿图时间</th>
-                                <th style="width: 75px">停留/ms</th>
-                                <th>参数值</th>
+                                <th style="width: 50px">{{$t('rdsInfoPage.tableHead_1')}}</th>
+                                <th style="width: 150px">{{$t('rdsInfoPage.tableHead_2')}}</th>
+                                <th style="width: 75px">{{$t('rdsInfoPage.tableHead_3')}}/ms</th>
+                                <th>{{$t('rdsInfoPage.tableHead_4')}}</th>
                             </tr>
                         </table>
                     </div>
@@ -54,7 +54,7 @@
             </div>
             <div class="photo-right">
                 <div style="display:flex;align-items: center;justify-content: center;height: calc(100vh - 159px);">
-                    <img :src="selectedUrl" alt="图片走丢了" style="max-height: 96%;max-width: 100%;">
+                    <img :src="selectedUrl" :alt="$t('rdsInfoPage.tips_2')" style="max-height: 96%;max-width: 100%;">
                 </div>
             </div>
         </div>
@@ -96,7 +96,7 @@
                 selectedUrl: "",     //大图url
                 startPoint: null,
                 endPoint: null,
-                job_duration: "暂无数据",
+                job_duration: this.$t('public.noData'),
                 rdsId:null,
                 baseUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT,
             }
@@ -104,19 +104,19 @@
         computed:{
             startMethod(){
                 if(this.rdsInfo.start_method===1)
-                    return '按下算法'
+                    return this.$t('rdsInfoPage.start_method_1')
                 else if(this.rdsInfo.start_method===2)
-                    return '按下压感'
+                    return this.$t('rdsInfoPage.start_method_2')
                 else if(this.rdsInfo.start_method===3)
-                    return '抬起压感'
+                    return this.$t('rdsInfoPage.start_method_3')
                 else if(this.rdsInfo.start_method===4)
-                    return '图片变化'
+                    return this.$t('rdsInfoPage.start_method_4')
                 else if(this.rdsInfo.start_method===5)
-                    return '点击自定义按键'
+                    return this.$t('rdsInfoPage.start_method_5')
             },
             endMethod(){
                 if(this.rdsInfo.end_method===1)
-                    return '特征出现'
+                    return this.$t('rdsInfoPage.end_method')
             }
         },
         methods: {
@@ -145,7 +145,7 @@
 
                         this.startPoint = this.rdsInfo.start_point
                         this.endPoint = this.rdsInfo.end_point
-                        this.job_duration = this.rdsInfo.job_duration ? this.rdsInfo.job_duration : "暂无数据"
+                        this.job_duration = this.rdsInfo.job_duration ? this.rdsInfo.job_duration : this.$t('public.noData')
 
                         if(this.startPoint){
                             this.selectedIndex = this.rdsInfo.start_point-1
@@ -168,14 +168,14 @@
                                     this.selectedUrl = this.baseUrl + response.data.rdsscreenshots[0].img_file
                                 }).catch(error=>{
                                     if(error.response.status>=500)
-                                        this.$Message.error("服务器错误")
+                                        this.$Message.error(this.$t('public.error_500'))
                                     else
-                                        this.$Message.error("图片获取失败")
+                                        this.$Message.error(this.$t('rdsInfoPage.error_2'))
                                 })
                         }
                     }).catch(error => {
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("图集信息获取失败")
+                        this.$Message.error(this.$t('rdsInfoPage.error_3'))
                     })
             },
             //点击列表出来大图
@@ -193,9 +193,9 @@
                     }).catch(error=>{
                     this.selectedUrl = ""
                         if(error.response.status>=500)
-                            this.$Message.error("服务器错误")
+                            this.$Message.error(this.$t('public.error_500'))
                         else
-                            this.$Message.error("图片获取失败")
+                            this.$Message.error(this.$t('rdsInfoPage.error_2'))
                     })
             },
             //按钮是否可点击
@@ -215,12 +215,12 @@
                 if(this.startPoint&&this.endPoint)
                     this.job_duration = (this.tableData[this.endPoint-1].timestamp - this.tableData[this.startPoint-1].timestamp)/1000   //   单位：s
                 else
-                    this.job_duration = "暂无数据"
+                    this.job_duration = this.$t('public.noData')
             },
             //点击快捷跳转到起点终点，顶部底部
             quickJump(point) {
                 if(!point){
-                    this.$Message.warning("未找到起点或终点！")
+                    this.$Message.warning(this.$t('rdsInfoPage.tips_3'))
                     return
                 }
                 this.selectedIndex = point-1;

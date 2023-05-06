@@ -58,7 +58,7 @@
                         }
                         this.series = [
                             {
-                                name:'均值',
+                                name:this.$t('perfDataView.chartTit'),
                                 type:'line',
                                 label: {
                                     show: true,
@@ -76,7 +76,7 @@
                         this.histogram.hideLoading()
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("图表加载失败")
+                        this.$Message.error(this.$t('perfDataView.error_3'))
                         this.histogram.hideLoading()
                     })
                 })
@@ -98,7 +98,7 @@
                     },
                     yAxis: {
                         type: "value",
-                        name:"启动时间均值(s)",
+                        name:this.$t('perfDataView.chartTit_1')+"(s)",
                         nameLocation:"middle",
                         nameGap:23,
                         show: true,

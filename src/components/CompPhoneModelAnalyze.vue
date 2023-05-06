@@ -1,6 +1,6 @@
 <template>
     <div style="padding: 16px;background-color: #fff;">
-        <Divider orientation="left">启动时间分布</Divider>
+        <Divider orientation="left">{{$t('perfDataView.title')}}</Divider>
         <Table border :columns="column" :data="tableData"></Table>
         <comp-perf-histogram style="margin-top: 20px;" ref="histogram" :job-id="propJobId" :prop-phone-models="propPhoneModelList" :prop-canvas-id="1"
                              @on-chart-click="onChartClick" @after-load-data="afterLoadData"
@@ -36,28 +36,28 @@
             return{
                 column:[
                     {
-                        title: '平均值[s]',
+                        title: this.$t('perfDataView.jobColumn_1')+'[s]',
                         key: 'avg',
                         align: 'center',
                         className: 'avgColumn'
                     },
                     {
-                        title: '最大值[s]',
+                        title: this.$t('perfDataView.jobColumn_2')+'[s]',
                         key: 'max',
                         align: 'center'
                     },
                     {
-                        title: '中位数[s]',
+                        title: this.$t('perfDataView.jobColumn_3')+'[s]',
                         key: 'median',
                         align: 'center'
                     },
                     {
-                        title: '启动成功/次',
+                        title: this.$t('perfDataView.jobColumn_4'),
                         key: 'success_num',
                         align: 'center'
                     },
                     {
-                        title: '启动失败/次',
+                        title: this.$t('perfDataView.jobColumn_5'),
                         key: 'failed_num',
                         align: 'center'
                     },
@@ -85,7 +85,7 @@
                         this.tableData = [].concat(response.data)
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error("表格数据加载失败!")
+                        this.$Message.error(this.$t('perfDataView.error_4'))
                 })
             },
             //图表的点击操作  echarts click

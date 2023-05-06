@@ -52,7 +52,7 @@
 
                         this.series = [
                             {
-                                name:'启动时间分布',
+                                name:this.$t('perfDataView.title'),
                                 type:'boxplot',
                                 data:data.boxData
                             },
@@ -70,7 +70,7 @@
 
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("盒须图加载失败")
+                        this.$Message.error(this.$t('perfDataView.error_5'))
                         this.histogram.hideLoading()
                     })
                 })
@@ -98,7 +98,7 @@
                     },
                     yAxis: {
                         type: "value",
-                        name:"启动时间分布(s)",
+                        name:this.$t('perfDataView.title')+"(s)",
                         nameLocation:"middle",
                         nameGap:25,
                         show: true,

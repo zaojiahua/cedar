@@ -14,11 +14,11 @@
                 </div>
             </Row>
             <Row v-if="showMore" style="text-align: center;margin-top: 5px;">
-                <Button @click="loadMoreData(false)">加载更多</Button>
+                <Button @click="loadMoreData(false)">{{$t('perfDataView.loadMore')}}</Button>
             </Row>
         </Card>
         <Card style="margin-bottom: 16px;" dis-hover v-if="rdsData.length===0">
-            <Row>暂无数据</Row>
+            <Row>{{$t('public.noData')}}</Row>
         </Card>
     </div>
 
@@ -216,7 +216,7 @@
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("数据加载失败!")
+                        this.$Message.error(this.$t('jobDetail.loadFail'))
                         this.loadingData = false
                     })
             },
@@ -258,7 +258,7 @@
                 if(!this.showRdsDetail)
                     return
                 if(this.rdsIndex===0){
-                    this.$Message.warning("已经是第一条数据")
+                    this.$Message.warning(this.$t('rdsCard.dataOne'))
                 }else {
                     this.rdsIndex--
                     let rds = this.rdsData[this.rdsIndex]
@@ -269,7 +269,7 @@
                 if(!this.showRdsDetail)
                     return
                 if(this.rdsIndex+1===this.rdsData.length){
-                    this.$Message.warning("已经是最后一条数据")
+                    this.$Message.warning(this.$t('rdsCard.dataLast'))
                 }else {
                     this.rdsIndex++
                     let rds = this.rdsData[this.rdsIndex]

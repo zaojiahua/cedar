@@ -2,14 +2,14 @@
     <div>
         <div style="margin-bottom: 24px;text-align: right;">
             <!--<Input v-model="keyword" style="width: 300px;float:left;" clearable search enter-button="Search" placeholder="输入用例名称" />-->
-            <Button @click="onOpenSetModal">设置标准</Button>
+            <Button @click="onOpenSetModal">{{$t('perfDataView.set_btn')}}</Button>
         </div>
         <Table ref="table" :columns="tableColumns" :data="data" :loading="loading" border
                @on-selection-change="onSelectionChange" @on-row-click="onRowClick"></Table>
 
         <Modal v-model="showStandardModal" footer-hide :closable="false" width="350">
             <Card>
-                <p style="margin:16px 0;">请选择需要设置的标准</p>
+                <p style="margin:16px 0;">{{$t('perfDataView.set_tip')}}</p>
                 <Row>
                     <Select v-model="rules.operator" style="width:80px">
                         <Option value=">"> > </Option>
@@ -22,8 +22,8 @@
                                  :formatter="value => `${parseFloat(Math.floor(value*1000)/1000)}`" />
                 </Row>
                 <Row style="margin-top: 30px;">
-                    <Button @click="showStandardModal=false" style="margin-right: 30px;">取消</Button>
-                    <Button type="primary" @click="setStandard">确认</Button>
+                    <Button @click="showStandardModal=false" style="margin-right: 30px;">{{$t('public.btn_cancel')}}</Button>
+                    <Button type="primary" @click="setStandard">{{$t('public.btn_ok')}}</Button>
                 </Row>
             </Card>
         </Modal>
@@ -52,17 +52,17 @@
                         align: 'center'
                     },
                     {
-                        title: '用例名称',
+                        title: this.$t('jobList.job_name'),
                         key: 'job_name',
                         sortable: true
                     },
                     {
-                        title: '数据名称',
+                        title: this.$t('perfDataView.data_name'),
                         key: 'data_name',
                         sortable: true
                     },
                     {
-                        title: '标准',
+                        title: this.$t('perfDataView.rule'),
                         key: 'rule'
                     }
                 ],
@@ -92,7 +92,7 @@
                     }).catch(error=>{
                         this.loading = false
                         if(error.response.status>=500)
-                            this.$Message.error({content:'服务器错误'})
+                            this.$Message.error({content:this.$t('public.error_500')})
                         else
                             this.$Message.error({content:error.response.data.description,duration:5})
                     })
@@ -108,7 +108,7 @@
             },
             onOpenSetModal(){
                 if(this.selectionJob.length===0){
-                    this.$Message.warning("请至少选择一条数据！")
+                    this.$Message.warning(this.$t('perfDataView.sel_tip'))
                     return
                 }
                 this.rules = {
@@ -120,7 +120,7 @@
             // 设 置 标 准
             setStandard(){
                 if((!this.rules.operator&&this.rules.number!==null)||(this.rules.operator&&this.rules.number===null)){
-                    this.$Message.warning("请设置正确的标准")
+                    this.$Message.warning(this.$t('perfDataView.warning_2'))
                     return
                 }
                 let rule = this.rules.operator+this.rules.number

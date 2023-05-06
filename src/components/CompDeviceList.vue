@@ -15,14 +15,14 @@
                 </CheckboxGroup>
             </Col>
             <Col v-if="propAddMode">
-                <Button icon="md-add" style="margin-right: 20px;border-color: #1bbc9c;color: #1bbc9c" @click="onAddOtherDeviceClick">其他设备</Button>
-                <Button icon="md-add" type="primary" @click="onAddDeviceClick">ADB设备</Button>
+                <Button icon="md-add" style="margin-right: 20px;border-color: #1bbc9c;color: #1bbc9c" @click="onAddOtherDeviceClick">{{$t('deviceList.other')}}</Button>
+                <Button icon="md-add" type="primary" @click="onAddDeviceClick">{{$t('deviceList.adb')}}</Button>
             </Col>
         </Row>
         <Row style="margin-bottom: 16px">
             <Col span="16">
                 <div v-show="propShowCabinetSelect" style="float: left;margin-right: 50px;">
-                    <span>机柜：</span>
+                    <span>{{$t('deviceList.cabinet')}}：</span>
                     <!--<Select v-model="cabinetSelected" style="width:200px" clearable  @on-change="onSelectedChange">-->
                         <!--<OptionGroup v-for="types in cabinetList" :label="types.type">-->
                             <!--<Option v-for="cabinets in types.val" :value="cabinets.id" :key="cabinets.id">{{ cabinets.cabinet_name }}</Option>-->
@@ -31,7 +31,7 @@
                     <Cascader style="display: inline-block" :data="cabinetList" change-on-select @on-change="onSelectedChange"></Cascader>
                 </div>
                 <div v-show="propShowSelectNumber">
-                    <span>僚机数量：</span>
+                    <span>{{$t('deviceList.subsidiary_device_count')}}：</span>
                     <Select v-model="subsidiaryDeviceSelected"  style="width:200px;" clearable @on-change="onSubsidiaryDeviceSelect">
                         <Option v-for="item in subsidiaryDeviceNum" :value="item">{{ item }}</Option>
                     </Select>
@@ -42,9 +42,9 @@
                     <Input v-model="deviceKeyword" clearable search enter-button="Search" placeholder="输入设备自定义名称" class="search-input"
                            @on-focus="isShowHistory=true" @on-search="onDeviceSearch" @on-clear="deviceKeyword='';onPageChange(1)"/>
                     <Card v-show="isShowHistory" style="position:absolute;width: 300px;z-index: 100;margin-top: 5px;">
-                        <Row>历史搜索<Icon style="float: right;" type="ios-trash-outline" size="18" @click="emptyHistory" /></Row>
+                        <Row>{{$t('deviceList.history')}}<Icon style="float: right;" type="ios-trash-outline" size="18" @click="emptyHistory" /></Row>
                         <div class="history-box" v-for="(item,index) in historyList" :key="index" @click="onSearchHistory(item)">{{ item }}</div>
-                        <Row v-show="historyList.length===0" style="margin-top: 10px;color: #cccccc;cursor: default;">暂无历史搜索记录</Row>
+                        <Row v-show="historyList.length===0" style="margin-top: 10px;color: #cccccc;cursor: default;">{{$t('deviceList.noHistory')}}</Row>
                     </Card>
                 </div>
             </Col>
@@ -193,25 +193,25 @@
                 // Device table
                 deviceColumn: {
                     "device_label": {
-                        title: "设备编号",
+                        title: this.$t('deviceList.device_label'),
                         key: "device_label",
                         sortable: true
                     },
                     "device_name": {
-                        title: "自定义名称",
+                        title: this.$t('deviceList.device_name'),
                         key: "device_name",
                         sortable: true
                     },
                     "phone_model": {
-                        title: "设备型号",
+                        title: this.$t('deviceList.phone_model'),
                         key: "phone_model",
                         sortable: true,
                         filters:[],
                         filterRemote(value){
                            if(this.propFilterStatus){
                                 this.$Modal.info({
-                                    title: "提示",
-                                    content: "当前状态不支持筛选功能！"
+                                    title: this.$t('public.modal_info'),
+                                    content: this.$t('deviceList.tip_1')
                                 });
                            }else {
                                this.phoneModelFilterList = value
@@ -220,17 +220,17 @@
                         }
                     },
                     "rom_version": {
-                        title: "ROM版本",
+                        title: this.$t('deviceList.rom_version'),
                         key: "rom_version",
                         sortable: true
                     },
                     "android_version": {
-                        title: "安卓版本",
+                        title: this.$t('deviceList.android_version'),
                         key: "android_version",
                         sortable: true
                     },
                     "cpu_name": {
-                        title: "CPU型号",
+                        title: this.$t('deviceList.cpu_name'),
                         key: "cpu_name",
                         sortable: true
                     },
@@ -240,7 +240,7 @@
                         sortable: true
                     },
                     "status": {
-                        title: "使用状态",
+                        title: this.$t('deviceList.status'),
                         key: "status",
                         sortable: true,
                         filters: [
@@ -267,13 +267,13 @@
                         filterRemote(value){
                             if(this.propDeviceStatus){
                                 this.$Modal.info({
-                                    title: "提示",
-                                    content: "只允许查看空闲状态的设备！"
+                                    title: this.$t('public.modal_info'),
+                                    content: this.$t('deviceList.tips_2')
                                 });
                             }else if(this.propFilterStatus){
                                 this.$Modal.info({
-                                    title: "提示",
-                                    content: "当前状态不支持筛选功能！"
+                                    title: this.$t('public.modal_info'),
+                                    content: this.$t('deviceList.tip_1')
                                 });
                             }
                             else {
@@ -283,27 +283,27 @@
                         }
                     },
                     "power": {
-                        title: "电量",
+                        title: this.$t('deviceList.power'),
                         key: "power",
                         sortable: true
                     },
                     "powerport": {
-                        title: "充电口",
+                        title: this.$t('deviceList.powerport'),
                         key: "powerport",
                         sortable: true
                     },
                     "tempport": {
-                        title: "温感片",
+                        title: this.$t('deviceList.tempport'),
                         key: "tempport",
                         sortable: true
                     },
                     "monitorport": {
-                        title: "相机",
+                        title: this.$t('deviceList.monitorport'),
                         key: "monitorport",
                         sortable: true
                     },
                     "subsidiary_device_count":{
-                        title: "僚机数量",
+                        title: this.$t('deviceList.subsidiary_device_count'),
                         key: "subsidiary_device_count",
                         sortable: true
                     }
@@ -496,20 +496,20 @@
                                         this.$set(device,"power",item.battery_level + "%");
                                         return;
                                     }
-                                    this.$set(device,"power","无电量信息")
+                                    this.$set(device,"power",this.$t('deviceList.noPower'))
                                 }
                             })
                         })
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("电量数据载入失败！")
+                        this.$Message.error(this.$t('deviceList.powerErr'))
                     })
                 this.loading = false
 
             },
             _requestErrorHandle(reason){
                 if (config.DEBUG) console.log(reason)
-                this.$Message.error("载入失败")
+                this.$Message.error(this.$t('public.loadFail'))
             },
             // Table control
             getDeviceColumn() {
@@ -635,7 +635,7 @@
                     })
                     .catch(error => {
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("取得机柜信息出错")
+                        this.$Message.error(this.$t('deviceList.err_1'))
                     })
             },
             onSelectedChange(val){
@@ -657,7 +657,7 @@
                         this.subsidiaryDeviceNum = response.data
                     }).catch(error=>{
                     if (config.DEBUG) console.log(error)
-                    this.$Message.error("获取僚机数量失败")
+                    this.$Message.error(this.$t('deviceList.err_2'))
                 })
             },
             onSubsidiaryDeviceSelect(val){
@@ -731,7 +731,7 @@
                 })
                 .catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error("获取设备型号失败")
+                    this.$Message.error(this.$t('deviceList.err_3'))
                 })
         },
         mounted() {
@@ -742,7 +742,7 @@
             if (this.propDeviceSlotError) {
                 this.$delete(this.deviceColumn, "status")
                 this.$set(this.deviceColumn, "paneslot",{
-                    title: "位置",
+                    title: this.$t('deviceList.slot'),
                     key: "paneslot",
                     sortable: true
                 })

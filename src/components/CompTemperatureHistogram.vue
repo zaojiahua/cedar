@@ -2,7 +2,7 @@
     <div>
         <div v-if="showTemperatures" ref="main" :id="'main'+deviceId" style="height: 100px;">
         </div>
-        <p v-else style="margin-left: 40px;color: #FF9900">该设备没有温度信息</p>
+        <p v-else style="margin-left: 40px;color: #FF9900">{{$t('rdsInfoPage.tips_1')}}</p>
     </div>
 </template>
 
@@ -106,7 +106,7 @@
                 // 指定图表的配置项和数据
                 let option = {
                     title: {
-                        "text": "温度",
+                        "text": this.$t('rdsInfoPage.temp'),
                         "textStyle": {
                             "fontSize": 12
                         },

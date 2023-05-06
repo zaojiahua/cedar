@@ -28,7 +28,7 @@
                     })
                     .catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error("日志文件读取失败")
+                        this.$Message.error(this.$t('rdsLogSearch.error_2'))
                         this.showLoading = false;
                     })
             }

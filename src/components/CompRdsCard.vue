@@ -7,7 +7,8 @@
             <Row type="flex">
                 <Spin v-show="loadingData" size="large" style="position: absolute; width: 100%; height: inherit; left: 50%;"></Spin>
                 <div :class="loadingData ? 'opacity-row' : ''">
-                    <div class="rds-box tooltip" :title="'ID：'+item.id+'\n设备名称：'+ item.device.device_name+'\n用例名称：'+item.job.job_name+'\n结果：'+item.job_assessment_value"
+                    <div class="rds-box tooltip" :title="'ID：'+item.id+'\n'+ $t('tboardDetail.devName') +'：'+ item.device.device_name+'\n'
+                         +$t('tboardDetail.jobName')+'：'+item.job.job_name+'\n'+$t('rdsDeviceView.result')+'：'+item.job_assessment_value"
                          v-for="(item,index) in rdsData" :key="item.id" :class="[getRdsColorClass(item),{'select':index===rdsIndex&&cardIndex===Index}]"
                          @click="onRdsBoxClick(item,Index,index)">
                         <div class="point-box" v-if="index===rdsIdentityIndex&&cardIdentityIndex===Index"></div>
@@ -268,7 +269,7 @@
                     })
                     .catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("数据加载失败!")
+                        this.$Message.error(this.$t('jobDetail.loadFail'))
                         this.loadingData = false
                     })
             },
@@ -355,7 +356,7 @@
                 if(!this.showRdsDetail)
                     return
                 if(this.rdsIndex===0 && this.cardIndex===0){
-                    this.$Message.warning("已经是第一条数据")
+                    this.$Message.warning(this.$t('rdsCard.dataOne'))
                 }else if(this.rdsIndex===0 && this.cardIndex>0){
                     this.cardIndex--
                     this.rdsIndex = this.rdsDataList[this.cardIndex].length-1
@@ -371,7 +372,7 @@
                 if(!this.showRdsDetail)
                     return
                 if(this.rdsIndex+1===this.rdsDataList[this.cardIndex].length && (this.cardIndex+1===this.rdsDataList.length)){
-                    this.$Message.warning("已经是最后一条数据")
+                    this.$Message.warning(this.$t('rdsCard.dataLast'))
                 }else if(this.rdsIndex+1===this.rdsDataList[this.cardIndex].length && (this.cardIndex+1<this.rdsDataList.length)){
                     this.cardIndex++
                     this.rdsIndex = 0

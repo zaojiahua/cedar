@@ -1,10 +1,10 @@
 <template>
     <div>
         <Row type="flex" style="margin-bottom: 16px;">
-            <DatePicker v-model="filterDateRange" style="width: 220px;" type="daterange" placeholder="测试开始时间" :transfer="true" @on-change="onPageChange(1)" :options="options"></DatePicker>
+            <DatePicker v-model="filterDateRange" style="width: 220px;" type="daterange" :placeholder="$t('rdsDeviceView.placeholderTime')" :transfer="true" @on-change="onPageChange(1)" :options="options"></DatePicker>
         </Row>
         <Row type="flex" style="margin-bottom: 16px;">
-            <Input v-model="keyword" style="width: 100%;" search enter-button placeholder="请输入关键字..." @on-search="onSearch" />
+            <Input v-model="keyword" style="width: 100%;" search enter-button :placeholder="$t('rdsLogSearch.tips_1')" @on-search="onSearch" />
         </Row>
         <Spin fix size="large" v-if="showLoading"></Spin>
         <div class="content" id="rdsLogSearch">
@@ -14,7 +14,7 @@
                         <b style="font-size: 16px;">{{ item.file_name }}</b>
                     </Col>
                     <Col span="6" style="float: right;text-align: right;font-size: 14px;">
-                        <span>设备名称：{{ item.device_name}} </span>
+                        <span>{{$t('tboardDetail.devName')}}：{{ item.device_name}} </span>
                     </Col>
                 </Row>
                 <Row>
@@ -27,7 +27,7 @@
                 </Row>
             </Card>
             <Row v-if="showTip" style="font-size: 16px;text-align: center;margin-top: 16px;">
-                <Col span="24">没有搜索结果，换个关键词试试！</Col>
+                <Col span="24">{{$t('rdsLogSearch.tips_2')}}</Col>
             </Row>
         </div>
         <Page v-if="showPage" :total="dataTotal" :current="currentPage" :page-size="pageSize" simple @on-change="onPageChange" style="margin-top:20px;text-align: center "/>
@@ -114,7 +114,7 @@
                         this.showPage = true;
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error("文件搜索失败！")
+                    this.$Message.error(this.$t('rdsLogSearch.error_1'))
                     if(error.response.status===400)
                         this.$Notice.error({
                             title: "ERROR",
@@ -126,7 +126,7 @@
             onSearch(value){
                 if(value===""){
                     this.$Modal.warning({
-                        title: "请输入要搜索的关键字！"
+                        title: this.$t('rdsLogSearch.tips_3')
                     });
                     return;
                 }

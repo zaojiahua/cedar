@@ -3,18 +3,18 @@
         <Card :title="propJobName" dis-hover>
             <Form :label-width="80">
                 <FormItem>
-                    <b slot="label">测试机型:</b>
+                    <b slot="label">{{$t('perfDataView.tit')}}:</b>
                     <Input disabled class="disabled-input" :value="propPhoneModel[4]"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">ROM版本:</b>
+                    <b slot="label">{{$t('deviceList.rom_version')}}:</b>
                     <Input disabled class="disabled-input" :value="propPhoneModel[5]"></Input>
                 </FormItem>
             </Form>
         </Card>
 
         <Card style="margin-top: 20px;">
-            <Divider orientation="left">启动时间分布</Divider>
+            <Divider orientation="left">{{$t('perfDataView.title')}}</Divider>
             <Table border :columns="jobColumn" :data="tableData"></Table>
             <comp-perf-histogram style="margin-top: 20px;" ref="histogram" :job-id="jobId" :propPhoneModels="phoneModel" :prop-canvas-id="2"
                                  @on-chart-click="onChartClick" @after-load-data="afterLoadData"
@@ -59,28 +59,28 @@
                 showDeviceDetail:false,
                 jobColumn:[
                     {
-                        title: '平均值[s]',
+                        title: this.$t('perfDataView.jobColumn_1')+'[s]',
                         key: 'avg',
                         align: 'center',
                         className: 'avgColumn'
                     },
                     {
-                        title: '最大值[s]',
+                        title: this.$t('perfDataView.jobColumn_2')+'[s]',
                         key: 'max',
                         align: 'center'
                     },
                     {
-                        title: '中位数[s]',
+                        title: this.$t('perfDataView.jobColumn_3')+'[s]',
                         key: 'median',
                         align: 'center'
                     },
                     {
-                        title: '启动成功/次',
+                        title: this.$t('perfDataView.jobColumn_4'),
                         key: 'success_num',
                         align: 'center'
                     },
                     {
-                        title: '启动失败/次',
+                        title: this.$t('perfDataView.jobColumn_5'),
                         key: 'failed_num',
                         align: 'center'
                     },
@@ -120,7 +120,7 @@
                         this.tableData = [].concat(response.data)
                     }).catch(error=>{
                         if(config.DEBUG) console.log(error)
-                        this.$Message.error("获取表格信息失败")
+                        this.$Message.error(this.$t('perfDataView.error_4'))
                 })
             }
 

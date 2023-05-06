@@ -1,25 +1,25 @@
 <template>
     <div>
         <div style="margin: 20px 0;">
-            <Select v-model="resultRange" multiple style="width:230px" @on-change="invalidType='';filterType=''" :transfer="true" placeholder="请选择测试结果类型">
-                <Option value="0"> 成功 </Option>
-                <Option value="1"> 失败 </Option>
-                <Option value="-1"> 无效 </Option>
+            <Select v-model="resultRange" multiple style="width:230px" @on-change="invalidType='';filterType=''" :transfer="true" :placeholder="$t('rdsDeviceStatistic.selTip_1')">
+                <Option value="0"> {{$t('tboardDetail.pass')}} </Option>
+                <Option value="1"> {{$t('tboardDetail.fail')}} </Option>
+                <Option value="-1"> {{$t('tboardDetail.invalid')}} </Option>
             </Select>
-            <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'&&invalidList.length>0" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
+            <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'&&invalidList.length>0" clearable style="width:230px;margin-left: 16px;" :transfer="true" :placeholder="$t('rdsDeviceStatistic.selTip_2')">
                 <Option v-for="item in invalidList" :value="item.job_assessment_value"> {{ item.job_assessment_value }} ({{ item.count }}) </Option>
             </Select>
-            <Select v-model="filterType" v-show="resultRange.length===1&&resultRange[0]==='1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择失败类型">
-                <Option value="serious">严重失败</Option>
+            <Select v-model="filterType" v-show="resultRange.length===1&&resultRange[0]==='1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" :placeholder="$t('rdsTboardDeviceStatistic.tips_1')">
+                <Option value="serious">{{$t('rdsDeviceStatistic.seriousFail')}}</Option>
             </Select>
             <p style="float: right;margin-top: -2px;">
-                <Tag type="dot" color="#1bbc9c">成功</Tag>
-                <Tag type="dot" color="#FFAE25">失败</Tag>
-                <Tag type="dot" color="#F75F0D">严重失败</Tag>
-                <Tag type="dot" color="#BDC3C7">无效</Tag>
+                <Tag type="dot" color="#1bbc9c">{{$t('tboardDetail.pass')}}</Tag>
+                <Tag type="dot" color="#FFAE25">{{$t('tboardDetail.fail')}}</Tag>
+                <Tag type="dot" color="#F75F0D">{{$t('rdsDeviceStatistic.seriousFail')}}</Tag>
+                <Tag type="dot" color="#BDC3C7">{{$t('tboardDetail.invalid')}}</Tag>
             </p>
             <div style="float: right;margin-right:20px;width:230px;">
-                <Input class="search-box" v-model="rdsId" :number="true" search enter-button placeholder="输入RDS ID" @on-search="rdsIdentify" @on-clear="onClearIdentify" :clearable="true"/>
+                <Input class="search-box" v-model="rdsId" :number="true" search enter-button :placeholder="$t('rdsTboardDeviceStatistic.enter')" @on-search="rdsIdentify" @on-clear="onClearIdentify" :clearable="true"/>
             </div>
         </div>
         <comp-rds-card ref="rdsCard"
@@ -40,8 +40,8 @@
                 <div>Loading</div>
             </Spin>
         </div>
-        <p v-show="!noMoreData" style="text-align: center" @click="onClickLoadMore"><Button>点击加载更多</Button></p>
-        <p v-show="noMoreData" style="text-align: center">暂无更多数据</p>
+        <p v-show="!noMoreData" style="text-align: center" @click="onClickLoadMore"><Button>{{$t('rdsTboardDeviceStatistic.btn')}}</Button></p>
+        <p v-show="noMoreData" style="text-align: center">{{$t('rdsDeviceStatistic.noMore')}}</p>
     </div>
 </template>
 
@@ -101,7 +101,7 @@
             },
             rdsIdentify(){
                 if(typeof this.rdsId !== 'number'){
-                    this.$Message.warning("请输入正确的 RDS ID")
+                    this.$Message.warning(this.$t('rdsTboardDeviceStatistic.tips_2'))
                     return
                 }
                 this.$refs.rdsCard._setSearchId(this.rdsId)

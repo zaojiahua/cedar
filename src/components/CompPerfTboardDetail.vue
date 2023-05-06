@@ -4,20 +4,20 @@
             <!--<a :href="xls_url" slot="extra" style="float:right;margin-top: -5px;">-->
                 <!--<Button type="primary">导出数据</Button>-->
             <!--</a>-->
-            <Button slot="extra" style="float:right;margin-top: -5px;" type="primary" @click="onOpenExportData">数据预览</Button>
+            <Button slot="extra" style="float:right;margin-top: -5px;" type="primary" @click="onOpenExportData">{{$t('perfDataView.btn_view')}}</Button>
             <Form :label-width="80">
                 <FormItem>
-                    <b slot="label">任务名称:</b>
+                    <b slot="label">{{$t('tboardList.board_name')}}:</b>
                     <Input disabled class="disabled-input" :value="data.board_name"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">测试用例:</b>
+                    <b slot="label">{{$t('tboardDetail.testJob')}}:</b>
                     <ButtonGroup>
                         <Button v-for="job in data.job_data" :key="job.job_id" @click="showJobDetail=true;$refs.jobDetail.refresh(job.job_id)">{{job.job_num}}</Button>
                     </ButtonGroup>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">测试设备:</b>
+                    <b slot="label">{{$t('tboardDetail.testDev')}}:</b>
                     <ButtonGroup>
                         <Button v-for="(id,index) in data.device_id" :key="index" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(id)">
                             {{data.device_name[index]}}
@@ -25,28 +25,28 @@
                     </ButtonGroup>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">运行轮次:</b>
+                    <b slot="label">{{$t('functionalTest.tboardRepeatTime')}}:</b>
                     <Input disabled class="disabled-input" :value="data.repeat_time"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">操作人员:</b>
+                    <b slot="label">{{$t('tboardDetail.username')}}:</b>
                     <Input disabled class="disabled-input" :value="data.author_name"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">结束时间:</b>
+                    <b slot="label">{{$t('tboardDetail.end_time')}}:</b>
                     <Input disabled class="disabled-input" :value="data.end_time"></Input>
                 </FormItem>
             </Form>
         </Card>
 
         <Row style="margin-top: 40px">
-            测试设备：
+            {{$t('tboardDetail.testDev')}}：
             <Select v-model="deviceSelected" style="width:200px"  title="device">
                 <Option v-for="(id,index) in data.device_id" :value="id" :key="index">{{ data.device_name[index] }}</Option>
             </Select>
         </Row>
         <Card v-for="(job,index) in data.job_data" :key="job.job_id" style="margin-top: 20px;">
-            <Divider orientation="left">测试用例{{ index+1 }}：{{ job.job_num }}</Divider>
+            <Divider orientation="left">{{$t('tboardDetail.testJob')}}{{ index+1 }}：{{ job.job_num }}</Divider>
             <comp-perf-group-view-list ref="perfViewList" :index="index" :job="job" :tboard-id="data.id" :device-id="deviceSelected"></comp-perf-group-view-list>
         </Card>
 
@@ -55,8 +55,8 @@
         <Modal v-model="showExport" transfer :closable="false" fullscreen>
             <comp-perf-tboard-export-list ref="exportList"></comp-perf-tboard-export-list>
             <div slot="footer">
-                <Button type="text" @click="showExport=false">取消</Button>
-                <Button type="primary" @click="exportPerfExcel">导出</Button>
+                <Button type="text" @click="showExport=false">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" @click="exportPerfExcel">{{$t('perfDataView.export')}}</Button>
             </div>
         </Modal>
         <Modal v-model="showDeviceDetail" transfer :closable="false" footer-hide :styles="{top: '16px'}">
@@ -88,28 +88,28 @@
                 showDeviceDetail:false,
                 jobColumn:[
                     {
-                        title: '平均值[s]',
+                        title: this.$t('perfDataView.jobColumn_1') + '[s]',
                         key: 'avg',
                         align: 'center',
                         className: 'avgColumn'
                     },
                     {
-                        title: '最大值[s]',
+                        title: this.$t('perfDataView.jobColumn_2') + '[s]',
                         key: 'max',
                         align: 'center'
                     },
                     {
-                        title: '中位数[s]',
+                        title: this.$t('perfDataView.jobColumn_3') + '[s]',
                         key: 'median',
                         align: 'center'
                     },
                     {
-                        title: '启动成功/次',
+                        title: this.$t('perfDataView.jobColumn_4'),
                         key: 'success_num',
                         align: 'center'
                     },
                     {
-                        title: '启动失败/次',
+                        title: this.$t('perfDataView.jobColumn_5'),
                         key: 'failed_num',
                         align: 'center'
                     },
@@ -148,7 +148,7 @@
                         this.showLoading = false;
                     }).catch(reason => {
                         if (config.DEBUG) console.log(reason)
-                        this.$Message.error("载入失败")
+                        this.$Message.error(this.$t('public.loadFail'))
                         this.showLoading = false;
                 })
             },
@@ -160,7 +160,7 @@
                 //  要导出的数据
                 let dataList = this.$refs.exportList.getData()
                 if(dataList.length===0){
-                    this.$Message.warning("暂无可导出的数据")
+                    this.$Message.warning(this.$t('perfDataView.warning_1'))
                     return
                 }
                 let exportData = {}
@@ -175,10 +175,10 @@
                     .then(response=>{
                         this.showExport = false
                         window.open("http://"+config.REEF_HOST+":"+config.REEF_PORT +'/media/'+ response.data)
-                        this.$Message.success("正在导出...")
+                        this.$Message.success(this.$t('tboardDetail.exportErr_2'))
                     }).catch(error=>{
                         if(error.response.status>=500)
-                            this.$Message.error({content:'服务器错误'})
+                            this.$Message.error({content:this.$t('public.error_500')})
                         else
                             this.$Message.error({content:error.response.data.description,duration:3})
                 })

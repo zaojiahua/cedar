@@ -3,69 +3,69 @@
         <!--   用例 统计 部分   -->
         <Card :bordered="false">
             <div v-show="jobId!== null ">
-                <p style="text-align: center;font-size: 16px;font-weight: bold;padding-top: 20px;">用例统计情况</p>
+                <p style="text-align: center;font-size: 16px;font-weight: bold;padding-top: 20px;">{{$t('rdsDeviceStatistic.jobTitle')}}</p>
                 <comp-dynamic-loading-chart :device-id="10" :prop-url="propJobUrl" :prop-type="propType"
                                             @after-load-data="afterJobDataLoading"
                                             @on-chart-click="onJobChartClick" >
                 </comp-dynamic-loading-chart>
             </div>
             <div v-show="jobId===null" style="font-size: 12px;text-align: center">
-                暂无数据信息！
+                {{$t('rdsDeviceStatistic.nodata')}}
             </div>
         </Card>
         <!--   用例下的设备统计    -->
         <div style="margin: 16px 0;background: #fff" v-if="jobUrl.length>0">
-            <p style="margin-left: 20px;font-size: 14px;font-weight: bold;padding: 10px 0">设备统计</p>
-            <p style="margin-left: 20px;font-size: 12px">用例：{{ jobName }}<a href="javascript:" style="margin-left: 10px" @click="showJobDetail=true;$refs.jobDetail.refresh(jobId)">用例详情</a></p>
+            <p style="margin-left: 20px;font-size: 14px;font-weight: bold;padding: 10px 0">{{$t('rdsTboardView.tabs_1')}}</p>
+            <p style="margin-left: 20px;font-size: 12px">{{$t('rdsDeviceStatistic.job')}}：{{ jobName }}<a href="javascript:" style="margin-left: 10px" @click="showJobDetail=true;$refs.jobDetail.refresh(jobId)">{{$t('rdsDeviceStatistic.jobInfo')}}</a></p>
             <div style="width: 280px;float: left;padding: 10px;margin-top: 50px">
                 <comp-statistic-pie :prop-data="pieData" :prop-failure="totalCount.failureRate" :prop-id="10" :prop-invalid-rate="totalCount.invalidRate" :prop-type="propType"></comp-statistic-pie>
                 <div style="font-size: 12px">
                     <Row>
                         <Col span="12">
-                            <span class="iconTip" style="background: #2D8cF0"></span> 总共： {{ totalCount.total }}
+                            <span class="iconTip" style="background: #2D8cF0"></span> {{$t('tboardDetail.total')}}： {{ totalCount.total }}
                         </Col>
                         <Col span="12">
-                            <span class="iconTip" style="background: #f5a623"></span> 失败： {{ totalCount.fail }}
+                            <span class="iconTip" style="background: #f5a623"></span> {{$t('tboardDetail.fail')}}： {{ totalCount.fail }}
                         </Col>
                     </Row>
                     <Row style="margin-top: 5px;">
                         <Col span="12">
-                            <span class="iconTip" style="background: #999"></span> 无效： {{ totalCount.invalid }}
+                            <span class="iconTip" style="background: #999"></span> {{$t('tboardDetail.invalid')}}： {{ totalCount.invalid }}
                         </Col>
                         <Col span="12">
-                            <span class="iconTip" style="background: #1bbc9c"></span> 成功： {{ totalCount.pass }}
+                            <span class="iconTip" style="background: #1bbc9c"></span> {{$t('tboardDetail.pass')}}： {{ totalCount.pass }}
                         </Col>
                     </Row>
                 </div>
             </div>
             <div style="margin-left: 280px">
-                <p style="text-align: center;font-size: 16px;font-weight: bold">{{ jobName }} 设备统计情况</p>
+                <p style="text-align: center;font-size: 16px;font-weight: bold">{{ jobName }} {{$t('rdsDeviceStatistic.deviceTitle')}}</p>
                 <comp-dynamic-loading-chart ref="jobChart" :prop-width="400" :prop-url="jobUrl" :device-id="20" :prop-type="propType"
                                             @after-load-data="afterDeviceDataLoading"
                                             @on-chart-click="onDeviceChartClick" ></comp-dynamic-loading-chart>
             </div>
-            <Divider orientation="left" style="margin-bottom: 0">测试结果</Divider>
+            <Divider orientation="left" style="margin-bottom: 0">{{$t('rdsDetail.result')}}</Divider>
             <!--  RDS部分 -->
             <Card :bordered="false" :dis-hover="true" style="overflow:hidden;" v-if="jobId!==null&&jobUrl.length>0">
-                <p style="font-size: 12px">用例：【{{ jobName }}】    设备：【{{ deviceLabel }}】<a href="javascript:" style="margin-left: 10px" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(deviceId)">设备详情</a></p>
+                <p style="font-size: 12px">{{$t('rdsDeviceStatistic.job')}}：【{{ jobName }}】    {{$t('rdsDeviceStatistic.dev')}}：【{{ deviceLabel }}】<a href="javascript:" style="margin-left: 10px" @click="showDeviceDetail=true;$refs.deviceDetail.refresh(deviceId)">{{$t('rdsDeviceStatistic.devInfo')}}</a></p>
                 <div>
                     <div style="margin: 20px 0;">
-                        <Select v-model="resultRange" multiple style="width:230px" @on-change="invalidType='';filterType=''" :transfer="true" placeholder="请选择测试结果类型">
-                            <Option value="0"> 成功 </Option>
-                            <Option value="1"> 失败 </Option>
-                            <Option value="-1"> 无效 </Option>
+                        <Select v-model="resultRange" multiple style="width:230px" @on-change="invalidType='';filterType=''" :transfer="true" :placeholder="$t('rdsDeviceStatistic.selTip_1')">
+                            <Option value="0"> {{$t('tboardDetail.pass')}} </Option>
+                            <Option value="1"> {{$t('tboardDetail.fail')}} </Option>
+                            <Option value="-1"> {{$t('tboardDetail.invalid')}} </Option>
                         </Select>
-                        <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'&&invalidList.length>0" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择无效类型">
+                        <Select v-model="invalidType" v-show="resultRange.length===1&&resultRange[0]==='-1'&&invalidList.length>0" clearable style="width:230px;margin-left: 16px;" :transfer="true" :placeholder="$t('rdsDeviceStatistic.selTip_2')">
                             <Option v-for="item in invalidList" :value="item.job_assessment_value"> {{ item.job_assessment_value }} ({{ item.count }}) </Option>
                         </Select>
-                        <Select v-model="filterType" v-show="resultRange.length===1&&resultRange[0]==='1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" placeholder="请选择失败类型">
-                            <Option value="serious">严重失败</Option>
+                        <Select v-model="filterType" v-show="resultRange.length===1&&resultRange[0]==='1'" clearable style="width:230px;margin-left: 16px;" :transfer="true" :placeholder="$t('rdsTboardDeviceStatistic.tips_1')">
+                            <Option value="serious">{{$t('rdsDeviceStatistic.seriousFail')}}</Option>
                         </Select>
                         <p style="float: right">
-                            <Tag type="dot" color="#1bbc9c">成功</Tag>
-                            <Tag type="dot" color="#FFAE25">失败</Tag>
-                            <Tag type="dot" color="#F75F0D">严重失败</Tag>
-                            <Tag type="dot" color="#BDC3C7">无效</Tag>
+                            <Tag type="dot" color="#1bbc9c">{{$t('tboardDetail.pass')}}</Tag>
+                            <Tag type="dot" color="#FFAE25">{{$t('tboardDetail.fail')}}</Tag>
+                            <Tag type="dot" color="#F75F0D">{{$t('rdsDeviceStatistic.seriousFail')}}</Tag>
+                            <Tag type="dot" color="#BDC3C7">{{$t('tboardDetail.invalid')}}</Tag>
                         </p>
                     </div>
                     <comp-rds-card ref="rdsCard" v-if="deviceId!==null"
@@ -86,8 +86,8 @@
                             <div>Loading</div>
                         </Spin>
                     </div>
-                    <p v-show="!noMoreData" style="text-align: center" @click="onClickLoadMore"><Button>点击加载更多</Button></p>
-                    <p v-show="noMoreData" style="text-align: center">暂无更多数据</p>
+                    <p v-show="!noMoreData" style="text-align: center" @click="onClickLoadMore"><Button>{{$t('rdsTboardDeviceStatistic.btn')}}</Button></p>
+                    <p v-show="noMoreData" style="text-align: center">{{$t('rdsDeviceStatistic.noMore')}}</p>
                 </div>
             </Card>
         </div>
@@ -237,7 +237,7 @@
                 }).then(response=>{
                     this.invalidList = response.data
                 }).catch(error=>{
-                    this.$Message.error("获取无效类型出错")
+                    this.$Message.error(this.$t('rdsTboardDeviceStatistic.error'))
                 })
             },
 

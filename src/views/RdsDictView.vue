@@ -6,11 +6,11 @@
                     <Card dis-hover>
                         <Form :label-width="90">
                             <FormItem style="margin-bottom: 5px;">
-                                <b slot="label">用例名称：</b>
+                                <b slot="label">{{$t('tboardDetail.jobName')}}：</b>
                                 <Input v-model="rdsInfo.job.job_name" class="disabled-input" disabled></input>
                             </FormItem>
                             <FormItem>
-                                <b slot="label">设备信息：</b>
+                                <b slot="label">{{$t('rdsDetail.devInfo')}}：</b>
                                 <Input v-model="rdsInfo.device.device_name+'('+rdsInfo.device.device_label+')'" class="disabled-input" disabled></input>
                             </FormItem>
                         </Form>
@@ -21,7 +21,7 @@
                 <div slot="right" class="demo-split-pane rds-box" style="padding: 0 0 0 10px">
                     <gallery v-show="fileList.length>0" :pic-name="highLightFileName" :img-file="imgFile" @on-pic-click="afterGalleryClick"></gallery>
                     <div v-show="fileList.length===0" style="text-align: center;margin-top: 200px">
-                        <span style="font-size: 18px;">暂无图片!</span>
+                        <span style="font-size: 18px;">{{$t('rdsInfoPage.noPic')}}</span>
                     </div>
                 </div>
             </Split>
@@ -75,9 +75,9 @@
                         if (config.DEBUG) console.log(error)
                         let errorMsg = "";
                         if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
+                            errorMsg = this.$t('public.error_500')
                         } else {
-                            errorMsg = "rdsDict读取失败！"
+                            errorMsg = this.$t('rdsInfoPage.error_1')
                         }
                         this.$Message.error(errorMsg)
                     })
@@ -97,9 +97,9 @@
                         if (config.DEBUG) console.log(error)
                         let errorMsg = "";
                         if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
+                            errorMsg = this.$t('public.error_500')
                         } else {
-                            errorMsg = "截图获取失败！"
+                            errorMsg = this.$t('rdsInfoPage.error_2')
                         }
                         this.$Message.error(errorMsg)
                     })
@@ -114,9 +114,9 @@
                         this.imgFile = ""
                         let errorMsg = "";
                         if (error.response.status >= 500) {
-                            errorMsg = "服务器错误！"
+                            errorMsg = this.$t('public.error_500')
                         } else {
-                            errorMsg = "图片获取失败！"
+                            errorMsg = this.$t('rdsInfoPage.error_2')
                         }
                         this.$Message.error(errorMsg)
                     })

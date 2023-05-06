@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-show="showChart" :id="'histogram'+propCanvasId+'-'+jobId" style="height: 250px;"></div>
-        <div v-show="!showChart" style="font-size: 12px;text-align: center">暂无性能图表信息！</div>
+        <div v-show="!showChart" style="font-size: 12px;text-align: center">{{$t('perfDataView.noChart')}}</div>
     </div>
 
 </template>
@@ -68,7 +68,7 @@
                         }
                         this.series = [
                             {
-                                name:'次数',
+                                name:this.$t('perfDataView.times'),
                                 type:'bar',
                                 label: {
                                     show: true,
@@ -93,7 +93,7 @@
                         this.onStyleRender();
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error("图表加载失败")
+                        this.$Message.error(this.$t('perfDataView.error_3'))
                         this.histogram.hideLoading()
                     })
                 })
@@ -112,13 +112,13 @@
                     },
                     xAxis: {
                         type: "category",
-                        name:"应用启动时间/s",
+                        name:this.$t('perfDataView.option_1')+"/s",
                         nameLocation:"center",
                         nameGap:30,
                     },
                     yAxis: {
                         type: "value",
-                        name:"启动时间出现频数",
+                        name:this.$t('perfDataView.option_2'),
                         nameLocation:"middle",
                         nameGap:29,
                         show: true,
