@@ -2,7 +2,7 @@
     <div>
         <div>
             <div class="pane-box" @mouseenter="showRemove=true" @mouseleave="showRemove=false">
-                <span v-show="showRemove" class="remove" @click="removePane(propIndex)">移除支架</span>
+                <span v-show="showRemove" class="remove" @click="removePane(propIndex)">{{$t('paneCard.btn_2')}}</span>
 
                 <div v-if="propPane.slotList['1,1'].status==='empty'" style="margin:auto;width: 100px;height: 150px;text-align: center;cursor: pointer" :style="{background:showColor(propPane.slotList,1,1)}" @click="addDevice(propPane,propIndex)">
                     <Icon type="md-add" size="60" color="#fff" style="margin-top: 45px;"/>
@@ -61,20 +61,20 @@
             removePane(index){
                 let root = this
                 this.$Modal.confirm({
-                    title:"提示：",
-                    content:"您确定要移除该支架吗？",
+                    title:this.$t('public.modal_info'),
+                    content:this.$t('paneCard.tips_1'),
                     onOk(){
                         root.$ajax.delete("api/v1/cedar/remove_paneview/",{
                             data:{id: root.propPane.id}
                         }).then(response=>{
-                            root.$Message.success("支架移除成功!")
+                            root.$Message.success(root.$t('paneCard.tips_2'))
                             root.$emit('remove-pane',index)
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
                             if(error.response.status===403)
-                                root.$Message.error("当前支架还有设备存在，请先移除设备之后再进行支架移除！")
+                                root.$Message.error(root.$t('paneCard.tips_3'))
                             else
-                                root.$Message.error("未知错误：支架移除失败，请检查后重试！")
+                                root.$Message.error(root.$t('paneCard.tips_4'))
                         })
                     }
                 })

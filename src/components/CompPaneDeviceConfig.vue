@@ -3,33 +3,33 @@
         <div class="container">
             <div class="panel">
                 <Row>
-                    <h5 style="font-weight: bold; font-size: 1.4rem;">机型信息
+                    <h5 style="font-weight: bold; font-size: 1.4rem;">{{$t('deviceDetail.model')}}
                         <!--    5D    -->
                         <Dropdown v-show="showTestBtn" trigger="click" style="float: right;font-weight: normal;">
                             <Button>
-                                更多操作
+                                {{$t('public.moreAction')}}
                                 <Icon type="ios-arrow-down"></Icon>
                             </Button>
                             <DropdownMenu slot="list">
                                 <!--<DropdownItem @click.native="distanceBtn('调试距离')">调试距离</DropdownItem>-->
-                                <DropdownItem @click.native="imageMosaic('拼接图像')">拼接图像</DropdownItem>
-                                <DropdownItem @click.native="onOpenExposureModal">相机设置</DropdownItem>
-                                <DropdownItem @click.native="onOpenCoordinateModal('坐标换算')">坐标换算</DropdownItem>
-                                <DropdownItem @click.native="onOpenStandbyModel">待命位置</DropdownItem>
-                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
+                                <DropdownItem @click.native="imageMosaic($t('paneDeviceConfig.action_1'))">{{$t('paneDeviceConfig.action_1')}}</DropdownItem>
+                                <DropdownItem @click.native="onOpenExposureModal">{{$t('paneDeviceConfig.action_2')}}</DropdownItem>
+                                <DropdownItem @click.native="onOpenCoordinateModal($t('paneDeviceConfig.action_3'))">{{$t('paneDeviceConfig.action_3')}}</DropdownItem>
+                                <DropdownItem @click.native="onOpenStandbyModel">{{$t('paneDeviceConfig.action_4')}}</DropdownItem>
+                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">{{$t('paneDeviceConfig.action_5')}}</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                         <!--  5L，5se -->
                         <Dropdown v-show="showLocationBtn" trigger="click" style="float: right;font-weight: normal;">
                             <Button>
-                                更多操作
+                                {{$t('public.moreAction')}}
                                 <Icon type="ios-arrow-down"></Icon>
                             </Button>
                             <DropdownMenu slot="list">
-                                <DropdownItem @click.native="onOpenExposureModal">相机设置</DropdownItem>
-                                <DropdownItem @click.native="onOpenCoordinateModal">坐标换算</DropdownItem>
-                                <DropdownItem @click.native="onOpenStandbyModel">待命位置</DropdownItem>
-                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
+                                <DropdownItem @click.native="onOpenExposureModal">{{$t('paneDeviceConfig.action_2')}}</DropdownItem>
+                                <DropdownItem @click.native="onOpenCoordinateModal">{{$t('paneDeviceConfig.action_3')}}</DropdownItem>
+                                <DropdownItem @click.native="onOpenStandbyModel">{{$t('paneDeviceConfig.action_4')}}</DropdownItem>
+                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">{{$t('paneDeviceConfig.action_5')}}</DropdownItem>
                             </DropdownMenu>
                             <!--<DropdownMenu slot="list" v-show="user==='admin'">-->
                                 <!--<DropdownItem @click.native="getMlocation">mlocation调试</DropdownItem>-->
@@ -43,30 +43,30 @@
                         <!--  5， 5pro   -->
                         <Dropdown v-show="showProBtn" trigger="click" style="float: right;font-weight: normal;">
                             <Button>
-                                更多操作
+                                {{$t('public.moreAction')}}
                                 <Icon type="ios-arrow-down"></Icon>
                             </Button>
                             <DropdownMenu slot="list">
-                                <DropdownItem @click.native="imageMosaic">拼接图像</DropdownItem>
-                                <DropdownItem @click.native="onOpenExposureModal">相机设置</DropdownItem>
-                                <DropdownItem @click.native="onOpenCoordinateModal">坐标换算</DropdownItem>
-                                <DropdownItem @click.native="onOpenStandbyModel">待命位置</DropdownItem>
-                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">调节z值</DropdownItem>
+                                <DropdownItem @click.native="imageMosaic">{{$t('paneDeviceConfig.action_1')}}</DropdownItem>
+                                <DropdownItem @click.native="onOpenExposureModal">{{$t('paneDeviceConfig.action_2')}}</DropdownItem>
+                                <DropdownItem @click.native="onOpenCoordinateModal">{{$t('paneDeviceConfig.action_3')}}</DropdownItem>
+                                <DropdownItem @click.native="onOpenStandbyModel">{{$t('paneDeviceConfig.action_4')}}</DropdownItem>
+                                <DropdownItem v-show="user==='admin'" @click.native="onOpenAdjustZModel">{{$t('paneDeviceConfig.action_5')}}</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                     </h5>
                 </Row>
                 <Form :label-width="90">
                     <FormItem style="margin-top: 20px;">
-                        <b slot="label">手机型号:</b>
+                        <b slot="label">{{$t('deviceDetail.phone_model_name')}}:</b>
                         <Input disabled v-model="phone_model.phone_model_name" class="disabled-input"></Input>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">机型厚度:</b>
+                        <b slot="label">{{$t('deviceManagement.info_5')}}:</b>
                         <InputNumber style="width: 100%" v-model="phone_model.ply" class="disabled-input" :min="0"></InputNumber>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">边框信息:</b>
+                        <b slot="label">{{$t('paneDeviceConfig.border')}}:</b>
                         <!--<div class="input-box">-->
                             <!--<Input disabled v-model="pointTopLeft" class="disabled-input"></Input>&mdash;-->
                             <!--<Input disabled v-model="pointBottomRight" class="disabled-input"></Input>-->
@@ -95,13 +95,13 @@
 
                 <div class="flex-table">
                     <p></p>
-                    <p style="margin-bottom: 5px;font-size: 12px"> x,y 是基于边框左上角点的相对坐标；屏幕水平面 z=0，屏幕朝向方向 z 为正(单位：mm)</p>
+                    <p style="margin-bottom: 5px;font-size: 12px">{{$t('paneDeviceConfig.title_1')}}</p>
 
                     <Table :columns="tableColumns" :data="tableData" border highlight-row
                            @on-row-click="onRowClick" max-height="345" size="small">
                     </Table>
                     <Row style="text-align: right;margin-top: 20px">
-                        <Button style="float: left;width: 100px" icon='md-add' @click="onOpenAddModal">新建</Button>
+                        <Button style="float: left;width: 100px" icon='md-add' @click="onOpenAddModal">{{$t('paneDeviceConfig.new')}}</Button>
                         <Button style="border: none;font-size: 2em;margin: -7px 10px 0 0;box-shadow:none;"
                                 :icon="showTablePoint ? 'ios-eye-outline':'ios-eye-off-outline'"
                                 @click="showTablePoint=!showTablePoint"></Button>
@@ -111,35 +111,35 @@
                     </Row>
                 </div>
                 <div class="panel__footer">
-                    <Button size="large" class="panel_btn" @click="onClose(false)">取消</Button>
-                    <Button size="large" type="success" class="panel_btn" @click="saveAreaInfo">完成</Button>
+                    <Button size="large" class="panel_btn" @click="onClose(false)">{{$t('public.btn_cancel')}}</Button>
+                    <Button size="large" type="success" class="panel_btn" @click="saveAreaInfo">{{$t('paneDeviceConfig.btn_1')}}</Button>
                 </div>
             </div>
             <div class="area-selector">
                 <div class="area-selector__header">
                     <Row>
-                        <h5 style="font-weight: bold; font-size: 1.4rem;">请在图中框选边框或选取坐标点</h5>
+                        <h5 style="font-weight: bold; font-size: 1.4rem;">{{$t('paneDeviceConfig.title_2')}}</h5>
                         <div style="float: right;margin-top: -33px;">
                             <!--<span>高曝光：</span>-->
                             <i-switch v-model="highExposureSwitch" false-color="#999">
-                                <span slot="open">亮</span>
-                                <span slot="close">暗</span>
+                                <span slot="open">{{$t('paneDeviceConfig.high_1')}}</span>
+                                <span slot="close">{{$t('paneDeviceConfig.high_2')}}</span>
                             </i-switch>
-                            <Button type="success" @click="getImg" style="margin-left: 20px;">重新获取图片</Button>
+                            <Button type="success" @click="getImg" style="margin-left: 20px;">{{$t('paneDeviceConfig.btn_2')}}</Button>
                         </div>
                     </Row>
-                    <p class="area-selector_desc">按下鼠标按键并拖动来框选区域，按下Ctrl可遮罩图片外的内容</p>
-                    <p class="area-selector_desc">请点击空白处隐藏边框后，再按下鼠标左键选点</p>
+                    <p class="area-selector_desc">{{$t('paneDeviceConfig.title_3')}}</p>
+                    <p class="area-selector_desc">{{$t('paneDeviceConfig.title_4')}}</p>
                 </div>
                 <div class="area-selector__main">
                     <div class="area-selector__loading" v-if="!imgSrc">
-                        <h5 class="title">请将手机屏幕调至较亮画面，并摆正手机</h5>
-                        <p style="margin-bottom: 10px">若长时间获取不到图片，请尝试重新获取</p>
+                        <h5 class="title">{{$t('paneDeviceConfig.title_5')}}</h5>
+                        <p style="margin-bottom: 10px">{{$t('paneDeviceConfig.title_6')}}</p>
                         <div class="loading">
                             <div class="loading__item"></div>
                             <div class="loading__item"></div>
                             <div class="loading__item"></div>
-                            <div class="loading__desc">正在努力获取图像...</div>
+                            <div class="loading__desc">{{$t('paneDeviceConfig.title_7')}}</div>
                         </div>
                     </div>
                     <AreaSelector ref="imgTool"
@@ -157,8 +157,8 @@
             <Card>
                 <Form :label-width="100">
                     <FormItem>
-                        <b slot="label">名称：</b>
-                        <Input v-model="addInfo.name" placeholder="名称不能为空"></Input>
+                        <b slot="label">{{$t('paneDeviceConfig.name')}}：</b>
+                        <Input v-model="addInfo.name" :placeholder="$t('paneDeviceConfig.title_8')"></Input>
                     </FormItem>
                     <FormItem>
                         <b slot="label">Z：</b>
@@ -166,8 +166,8 @@
                     </FormItem>
                 </Form>
                 <p style="text-align: center">
-                    <Button @click="showModal=false" style="margin-right: 50px;">取消</Button>
-                    <Button type="primary" @click="addTableData">添加</Button>
+                    <Button @click="showModal=false" style="margin-right: 50px;">{{$t('public.btn_cancel')}}</Button>
+                    <Button type="primary" @click="addTableData">{{$t('public.btn_add')}}</Button>
                 </p>
             </Card>
         </Modal>
@@ -175,7 +175,7 @@
         <Modal v-model="showMlocationModal" :closable="false" :footer-hide="true" :mask-closable="false" width="550">
             <Card>
                 <Row>
-                    <h3>mlocation 坐标 <span style="font-size:12px;">(精确到0.1mm)</span></h3>
+                    <h3>mlocation {{$t('paneDeviceConfig.tips_1')}} <span style="font-size:12px;">{{$t('paneDeviceConfig.tips_2')}}</span></h3>
                 </Row>
                 <Row class="location-box" style="display: flex;margin: 10px 0 30px 0">
                     <InputNumber v-model="mlocation.x" :min="0" style="margin-right: 16px;" placeholder="x"></InputNumber>
@@ -183,10 +183,10 @@
                     <InputNumber v-model="mlocation.z" placeholder="z"></InputNumber>
                 </Row>
                 <Row>
-                    <Button type="info" @click="testMlocation" style="margin-right: 50px;">测试</Button>
+                    <Button type="info" @click="testMlocation" style="margin-right: 50px;">{{$t('paneDeviceConfig.btn_3')}}</Button>
                     <div style="float: right;">
-                        <Button @click="showMlocationModal=false" style="margin-right: 24px;">取消</Button>
-                        <Button type="primary" @click="setMlocation">完成</Button>
+                        <Button @click="showMlocationModal=false" style="margin-right: 24px;">{{$t('public.btn_cancel')}}</Button>
+                        <Button type="primary" @click="setMlocation">{{$t('paneDeviceConfig.btn_1')}}</Button>
                     </div>
 
                 </Row>
@@ -197,39 +197,39 @@
         <Modal v-model="showAdjustZModel" :closable="false" :footer-hide="true" :mask-closable="false" width="520">
             <Card>
                 <Row style="margin-bottom: 20px;">
-                    <p>按压过轻时，请调大机械臂z值，范围：{{ adjustTitle }}</p>
-                    <p v-show="this.deviceCabinetType==='Tcab_5D plus'">x向右为正，左机械臂x范围：[{{adjustTitleX[0]}},{{adjustTitleX[1]}}]，右机械臂x范围：[{{adjustTitleX2[0]}},{{adjustTitleX2[1]}}]</p>
-                    <p v-show="this.deviceCabinetType!=='Tcab_5D plus'">x向右为正，范围：[{{adjustTitleX[0]}},{{adjustTitleX[1]}}]</p>
-                    <p>y向下为负，范围：[{{adjustTitleY[0]}},{{adjustTitleY[1]}}]</p>
+                    <p>{{$t('paneDeviceConfig.adjustTitle_1')}}：{{ adjustTitle }}</p>
+                    <p v-show="this.deviceCabinetType==='Tcab_5D plus'">{{$t('paneDeviceConfig.adjustTitle_2')}}：[{{adjustTitleX[0]}},{{adjustTitleX[1]}}]，{{$t('paneDeviceConfig.adjustTitle_3')}}：[{{adjustTitleX2[0]}},{{adjustTitleX2[1]}}]</p>
+                    <p v-show="this.deviceCabinetType!=='Tcab_5D plus'">{{$t('paneDeviceConfig.adjustTitle_4')}}：[{{adjustTitleX[0]}},{{adjustTitleX[1]}}]</p>
+                    <p>{{$t('paneDeviceConfig.adjustTitle_5')}}：[{{adjustTitleY[0]}},{{adjustTitleY[1]}}]</p>
                 </Row>
                 <!--   5D  双机械臂  -->
                 <div v-show="showTestBtn">
                     <Row>
-                        <span>左：</span>
+                        <span>{{$t('paneDeviceConfig.left')}}：</span>
                         <InputNumber v-model="robotArm.click_xy1[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                         <InputNumber v-model="robotArm.click_xy1[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
-                        <InputNumber v-model="robotArm.x1" :min="0" style="width:100px;margin-right: 16px;" placeholder="左机械臂z值"></InputNumber>
-                        <Button type="info" @click="onTestRobotArm(true,false)">测试</Button>
+                        <InputNumber v-model="robotArm.x1" :min="0" style="width:100px;margin-right: 16px;" :placeholder="$t('paneDeviceConfig.zLeft')"></InputNumber>
+                        <Button type="info" @click="onTestRobotArm(true,false)">{{$t('paneDeviceConfig.btn_3')}}</Button>
                     </Row>
                     <Row style="margin-top: 16px;">
-                        <span>右：</span>
+                        <span>{{$t('paneDeviceConfig.right')}}：</span>
                         <InputNumber v-model="robotArm.click_xy2[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                         <InputNumber v-model="robotArm.click_xy2[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
-                        <InputNumber v-model="robotArm.x2" :min="0" style="width:100px;margin-right: 16px;" placeholder="右机械臂z值"></InputNumber>
-                        <Button type="info" @click="onTestRobotArm(false,true)">测试</Button>
+                        <InputNumber v-model="robotArm.x2" :min="0" style="width:100px;margin-right: 16px;" :placeholder="$t('paneDeviceConfig.zRight')"></InputNumber>
+                        <Button type="info" @click="onTestRobotArm(false,true)">{{$t('paneDeviceConfig.btn_3')}}</Button>
                     </Row>
                 </div>
                 <!--   非5D  单个机械臂  -->
                 <Row v-show="!showTestBtn">
                     <InputNumber v-model="robotArm.click_xy[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                     <InputNumber v-model="robotArm.click_xy[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
-                    <InputNumber v-model="robotArm.x" :min="0" style="width:100px;margin-right: 16px;" placeholder="机械臂z值"></InputNumber>
-                    <Button type="info" @click="onTestRobotArm(false,false)">测试</Button>
+                    <InputNumber v-model="robotArm.x" :min="0" style="width:100px;margin-right: 16px;" :placeholder="$t('paneDeviceConfig.zValue')"></InputNumber>
+                    <Button type="info" @click="onTestRobotArm(false,false)">{{$t('paneDeviceConfig.btn_3')}}</Button>
                 </Row>
                 <Row>
                     <div style="text-align:left;margin-top: 30px">
-                        <Button @click="showAdjustZModel=false" style="margin-right: 24px;width: 80px">取消</Button>
-                        <Button type="primary" @click="onSaveRobotArm" style="width: 80px;">完成</Button>
+                        <Button @click="showAdjustZModel=false" style="margin-right: 24px;width: 80px">{{$t('public.btn_cancel')}}</Button>
+                        <Button type="primary" @click="onSaveRobotArm" style="width: 80px;">{{$t('paneDeviceConfig.btn_1')}}</Button>
                     </div>
                 </Row>
             </Card>
@@ -238,42 +238,42 @@
         <Modal v-model="showStandbyModel" :closable="false" :footer-hide="true" :mask-closable="false" width="520">
             <Card>
                 <Row style="margin-bottom: 20px;">
-                    <p>机械臂的待命位置</p>
-                    <p v-show="this.deviceCabinetType==='Tcab_5D plus'">x向右为正，左机械臂x范围：[{{standbyRangeX[0]}},{{standbyRangeX[1]}}]，右机械臂x范围：[{{standbyRangeX2[0]}},{{standbyRangeX2[1]}}]；</p>
-                    <p v-show="this.deviceCabinetType!=='Tcab_5D plus'">x向右为正，范围：[{{standbyRangeX[0]}},{{standbyRangeX[1]}}]；</p>
-                    <p>y向下为负，范围：[{{standbyRangeY[0]}},{{standbyRangeY[1]}}]，z向上为正，范围：[{{standbyRangeZ[0]}},{{standbyRangeZ[1]}}]；<br>
-                        默认值：[{{ defaultWaitPoint.join(",") }}]</p>
+                    <p>{{$t('paneDeviceConfig.standbyTips_1')}}</p>
+                    <p v-show="this.deviceCabinetType==='Tcab_5D plus'">{{$t('paneDeviceConfig.adjustTitle_2')}}：[{{standbyRangeX[0]}},{{standbyRangeX[1]}}]，{{$t('paneDeviceConfig.adjustTitle_3')}}：[{{standbyRangeX2[0]}},{{standbyRangeX2[1]}}]；</p>
+                    <p v-show="this.deviceCabinetType!=='Tcab_5D plus'">{{$t('paneDeviceConfig.adjustTitle_4')}}：[{{standbyRangeX[0]}},{{standbyRangeX[1]}}]；</p>
+                    <p>{{$t('paneDeviceConfig.adjustTitle_5')}}：[{{standbyRangeY[0]}},{{standbyRangeY[1]}}]，{{$t('paneDeviceConfig.standbyTips_2')}}：[{{standbyRangeZ[0]}},{{standbyRangeZ[1]}}]；<br>
+                        {{$t('paneDeviceConfig.standbyTips_3')}}：[{{ defaultWaitPoint.join(",") }}]</p>
                 </Row>
                 <!--   5D  双机械臂  -->
                 <div v-show="showTestBtn">
                     <Row>
-                        <span>左：</span>
+                        <span>{{$t('paneDeviceConfig.left')}}：</span>
                         <InputNumber v-model="robotArmStandby.xyz[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                         <InputNumber v-model="robotArmStandby.xyz[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
-                        <InputNumber v-model="robotArmStandby.xyz[2]" style="width:100px;margin-right: 16px;" placeholder="左机械臂z值"></InputNumber>
-                        <Button type="info" @click="onTestWaitPosition(true,false)">测试</Button>
+                        <InputNumber v-model="robotArmStandby.xyz[2]" style="width:100px;margin-right: 16px;" :placeholder="$t('paneDeviceConfig.zLeft')"></InputNumber>
+                        <Button type="info" @click="onTestWaitPosition(true,false)">{{$t('paneDeviceConfig.btn_3')}}</Button>
                     </Row>
                     <Row style="margin-top: 16px;">
-                        <span>右：</span>
+                        <span>{{$t('paneDeviceConfig.right')}}：</span>
                         <InputNumber v-model="robotArmStandby.xyz_1[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                         <InputNumber v-model="robotArmStandby.xyz_1[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
-                        <InputNumber v-model="robotArmStandby.xyz_1[2]" style="width:100px;margin-right: 16px;" placeholder="右机械臂z值"></InputNumber>
-                        <Button type="info" @click="onTestWaitPosition(false,true)">测试</Button>
+                        <InputNumber v-model="robotArmStandby.xyz_1[2]" style="width:100px;margin-right: 16px;" :placeholder="$t('paneDeviceConfig.zRight')"></InputNumber>
+                        <Button type="info" @click="onTestWaitPosition(false,true)">{{$t('paneDeviceConfig.btn_3')}}</Button>
                     </Row>
                 </div>
                 <!--   非5D  单个机械臂  -->
                 <Row v-show="!showTestBtn">
                     <InputNumber v-model="robotArmStandby.xyz[0]" style="width:100px;margin-right: 16px;" placeholder="x"></InputNumber>
                     <InputNumber v-model="robotArmStandby.xyz[1]" style="width:100px;margin-right: 16px" placeholder="y"></InputNumber>
-                    <InputNumber v-model="robotArmStandby.xyz[2]" style="width:100px;margin-right: 16px;" placeholder="机械臂z值"></InputNumber>
-                    <Button type="info" @click="onTestWaitPosition(false,false)">测试</Button>
+                    <InputNumber v-model="robotArmStandby.xyz[2]" style="width:100px;margin-right: 16px;" :placeholder="$t('paneDeviceConfig.zValue')"></InputNumber>
+                    <Button type="info" @click="onTestWaitPosition(false,false)">{{$t('paneDeviceConfig.btn_3')}}</Button>
                 </Row>
                 <Row>
                     <div style="text-align:left;margin-top: 30px">
-                        <Button @click="showStandbyModel=false" style="margin-right: 24px;width: 80px">取消</Button>
+                        <Button @click="showStandbyModel=false" style="margin-right: 24px;width: 80px">{{$t('public.btn_cancel')}}</Button>
                         <Button type="primary" @click="onSaveStandby" :loading="isLoading" style="width: 100px;">
-                            <span v-if="!isLoading">完成</span>
-                            <span v-else>正在发送...</span>
+                            <span v-if="!isLoading">{{$t('paneDeviceConfig.btn_1')}}</span>
+                            <span v-else>{{$t('paneDeviceConfig.isSend')}}</span>
                         </Button>
                     </div>
                 </Row>
@@ -282,49 +282,49 @@
 
         <Modal v-model="showValidationModal" :closable="false" :footer-hide="true" :mask-closable="false" width="450">
             <Card>
-                <h3>测试点击次数</h3>
+                <h3>{{$t('paneDeviceConfig.testCount')}}</h3>
                 <InputNumber v-model="testCount" style="width: 380px;margin-top: 16px" :min="1" :max="100" :precision="0"></InputNumber>
                 <Row style="text-align: right;margin-top: 30px;">
-                    <Button @click="showValidationModal=false;testCount=50" style="margin-right: 30px;">取消</Button>
-                    <Button type="primary" @click="onValidationTest">测试</Button>
+                    <Button @click="showValidationModal=false;testCount=50" style="margin-right: 30px;">{{$t('public.btn_cancel')}}</Button>
+                    <Button type="primary" @click="onValidationTest">{{$t('paneDeviceConfig.btn_3')}}</Button>
                 </Row>
             </Card>
         </Modal>
         <!--   坐 标 换 算  -->
         <Modal v-model="showCoordinateModal" :closable="false" :footer-hide="true" :mask-closable="false" width="520">
             <Card>
-                <p style="margin-top: 16px;">两个换算点的物理x坐标和y坐标，单位mm</p>
-                <p>x向右为正，范围[{{coordinateRangeX[0]}}，{{coordinateRangeX[1]}}]，y向下为负，范围[{{coordinateRangeY[0]}}，{{coordinateRangeY[1]}}]</p>
+                <p style="margin-top: 16px;">{{$t('paneDeviceConfig.coordinateTips_1')}}</p>
+                <p>{{$t('paneDeviceConfig.adjustTitle_4')}}[{{coordinateRangeX[0]}}，{{coordinateRangeX[1]}}]，{{$t('paneDeviceConfig.adjustTitle_5')}}[{{coordinateRangeY[0]}}，{{coordinateRangeY[1]}}]</p>
                 <Row style="margin-top: 24px">
                     <InputNumber v-model="coordinateChange.x1" style="width:180px;margin-right: 16px;"></InputNumber>
                     <InputNumber v-model="coordinateChange.y" style="width:180px;margin-right: 16px;"></InputNumber>
-                    <Button type="info" @click="onTestCoordinateChange(coordinateChange.x1,coordinateChange.y)">测试</Button>
+                    <Button type="info" @click="onTestCoordinateChange(coordinateChange.x1,coordinateChange.y)">{{$t('paneDeviceConfig.btn_3')}}</Button>
                 </Row>
                 <Row style="margin-top: 16px">
                     <InputNumber v-model="coordinateChange.x2" style="width:180px;margin-right: 16px;"></InputNumber>
                     <InputNumber v-model="coordinateChange.y" style="width:180px;margin-right: 16px;"></InputNumber>
-                    <Button type="info" @click="onTestCoordinateChange(coordinateChange.x2,coordinateChange.y)">测试</Button>
+                    <Button type="info" @click="onTestCoordinateChange(coordinateChange.x2,coordinateChange.y)">{{$t('paneDeviceConfig.btn_3')}}</Button>
                 </Row>
                 <Row style="margin-top: 30px;">
-                    <Button @click="showCoordinateModal=false" style="margin-right: 30px;">取消</Button>
-                    <Button type="primary" @click="coordinateConverting">坐标换算</Button>
+                    <Button @click="showCoordinateModal=false" style="margin-right: 30px;">{{$t('public.btn_cancel')}}</Button>
+                    <Button type="primary" @click="coordinateConverting">{{$t('paneDeviceConfig.action_3')}}</Button>
                 </Row>
             </Card>
         </Modal>
         <!--   相 机 设 置  -->
         <Modal v-model="showExposureModal" :closable="false" :footer-hide="true" :mask-closable="false" width="350">
             <Card>
-                <h3 style="margin-bottom:12px;">相机设置</h3>
+                <h3 style="margin-bottom:12px;">{{$t('paneDeviceConfig.cameraSet')}}</h3>
                 <Form :label-width="85">
                     <FormItem>
-                        <b slot="label">曝光模式：</b>
+                        <b slot="label">{{$t('paneDeviceConfig.cameraSet_1')}}：</b>
                         <RadioGroup v-model="exposure">
-                            <Radio :label="1">标准曝光</Radio>
-                            <Radio style="margin-left: 24px" :label="2">高曝光</Radio>
+                            <Radio :label="1">{{$t('paneDeviceConfig.cameraSet_2')}}</Radio>
+                            <Radio style="margin-left: 24px" :label="2">{{$t('paneDeviceConfig.cameraSet_3')}}</Radio>
                         </RadioGroup>
                     </FormItem>
                     <FormItem>
-                        <b slot="label">旋转角度：</b>
+                        <b slot="label">{{$t('paneDeviceConfig.cameraSet_4')}}：</b>
                         <Select v-model="rotate" style="width:80px">
                             <Option :value="0">0</Option>
                             <Option :value="90">90</Option>
@@ -335,8 +335,8 @@
                 </Form>
 
                 <Row style="margin-top: 30px;text-align: right">
-                    <Button @click="showExposureModal=false" style="margin-right: 30px;">取消</Button>
-                    <Button type="primary" @click="setExposure">确认</Button>
+                    <Button @click="showExposureModal=false" style="margin-right: 30px;">{{$t('public.btn_cancel')}}</Button>
+                    <Button type="primary" @click="setExposure">{{$t('public.btn_ok')}}</Button>
                 </Row>
             </Card>
         </Modal>
@@ -349,25 +349,25 @@
     import AreaSelector from "../components/common/AreaSelector"
     import Utils from "../lib/utils"
 
-
+    const lang = localStorage.getItem("lang")
     const defaultTableDate = [
         {
             is_fixed: true,
-            name: "菜单",
+            name: lang ==='zh' ? "菜单" : "menu",
             x_coordinate: null,
             y_coordinate: null,
             z_coordinate: 0
         },
         {
             is_fixed: true,
-            name: "桌面",
+            name: lang ==='zh' ? "桌面" : "desktop",
             x_coordinate: null,
             y_coordinate: null,
             z_coordinate: 0
         },
         {
             is_fixed: true,
-            name: "返回",
+            name: lang ==='zh' ? "返回" : "back",
             x_coordinate: null,
             y_coordinate: null,
             z_coordinate: 0
@@ -448,7 +448,7 @@
                 deviceId: null,
                 tableColumns:[
                     {
-                        title: '名称',
+                        title: this.$t('paneDeviceConfig.name'),
                         key: 'name'
                     },
                     {
@@ -464,7 +464,7 @@
                                     on:{
                                         "on-blur":event=>{
                                             if(event.target.value===""){
-                                                this.$Message.warning({content:"该项不能为空",duration:3})
+                                                this.$Message.warning({content:this.$t('appInfo.editTips_8'),duration:3})
                                                 event.target.value = this.tableData[params.index].x_coordinate
                                                 return
                                             }
@@ -517,7 +517,7 @@
                                     on:{
                                         "on-blur":event=>{
                                             if(event.target.value===""){
-                                                this.$Message.warning({content:"该项不能为空",duration:3})
+                                                this.$Message.warning({content:this.$t('appInfo.editTips_8'),duration:3})
                                                 event.target.value = this.tableData[params.index].y_coordinate
                                                 return
                                             }
@@ -571,12 +571,12 @@
                                     on:{
                                         "on-blur":event=>{
                                             if(event.target.value===""){
-                                                this.$Message.warning({content:"该项不能为空",duration:3})
+                                                this.$Message.warning({content:this.$t('appInfo.editTips_8'),duration:3})
                                                 event.target.value = this.tableData[params.index].z_coordinate
                                                 return
                                             }
                                             if(parseFloat(event.target.value)<-10||parseFloat(event.target.value)>10){
-                                                this.$Message.warning({content:"z 坐标范围为[-10,10]",duration:3})
+                                                this.$Message.warning({content:this.$t('paneDeviceConfig.zRange')+"[-10,10]",duration:3})
                                                 event.target.value = this.tableData[params.index].z_coordinate
                                                 return
                                             }
@@ -605,7 +605,7 @@
                         }
                     },
                     {
-                        title: "操作",
+                        title: this.$t('testSetList.action'),
                         key: "action",
                         align: 'center',
                         width:120,
@@ -625,7 +625,7 @@
                                             this.setBorder('point')
                                         }
                                     }
-                                }, '确认'),
+                                }, this.$t('public.btn_ok')),
                                 h('span', {
                                     class: 'mouse-hover',
                                     style: {
@@ -645,7 +645,7 @@
                                             this.onOpenTestCountModal()
                                         }
                                     }
-                                }, '测试')
+                                }, this.$t('paneDeviceConfig.btn_3'))
                             ]);
                         }
                     }
@@ -738,7 +738,7 @@
                         this.deviceCutCoordinate.inside_under_right_x = val.inside_under_right_x
                         this.deviceCutCoordinate.inside_under_right_y = val.inside_under_right_y
                     }else {
-                        this.$Message.warning({content:"请框选正确的边框信息！",duration:3})
+                        this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_1'),duration:3})
                     }
                 },
                 deep: true,
@@ -804,9 +804,9 @@
                         }
                     }).catch(error=>{
                         if(error.response.status>=500)
-                            this.$Message.error({content:'服务器错误',duration: 5})
+                            this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                         else
-                            this.$Message.error({content:'相机信息获取失败',duration: 5})
+                            this.$Message.error({content:this.$t('paneDeviceConfig.warnTips_2'),duration: 5})
                     })
             },
             // 保存设置曝光等信息
@@ -816,16 +816,16 @@
                     exposure: this.exposure
                 }).then(response=>{
                     if(response.data.error_code===0){
-                        this.$Message.success({content:"相机设置保存成功",duration: 3})
+                        this.$Message.success({content:this.$t('paneDeviceConfig.warnTips_3'),duration: 3})
                         this.showExposureModal = false
                     }else{
                         this.$Message.error({content:response.data.description,duration: 10})
                     }
                 }).catch(error=>{
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'相机信息获取失败',duration: 5})
+                        this.$Message.error({content:this.$t('paneDeviceConfig.warnTips_2'),duration: 5})
                 })
             },
             // 打开坐标换算模态框，并获取坐标信息
@@ -855,26 +855,26 @@
                         }
                     }).catch(error=>{
                         if(error.response.status>=500)
-                            this.$Message.error({content:'服务器错误',duration: 5})
+                            this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                         else
-                            this.$Message.error({content:'坐标获取失败',duration: 5})
+                            this.$Message.error({content:this.$t('paneDeviceConfig.warnTips_4'),duration: 5})
                     })
             },
             // 测试坐标点
             onTestCoordinateChange(x,y){
                 if(this.isDisabled||this.isSentTestReq){
-                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_5'),duration:3})
                     return
                 }
                 if(x===null||x===''||y===null||y===''){
-                    this.$Message.info("坐标点x，y值不能为空！")
+                    this.$Message.info(this.$t('paneDeviceConfig.warnTips_6'))
                     return
                 }
                 if( x>this.coordinateRangeX[1] || x<this.coordinateRangeX[0] ||  y>this.coordinateRangeY[1] || y<this.coordinateRangeY[0]){
-                    this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_7'),duration:3})
                     return
                 }
-                this.$Message.info({content:"正在发送请求..."})
+                this.$Message.info({content:this.$t('paneDeviceConfig.isSend_2')})
                 this.isDisabled = true
                 this.isSentTestReq = true
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/click_coordinate/",{
@@ -884,7 +884,7 @@
                     this.isDisabled = false
                     this.isSentTestReq = false
                     if(response.data.error_code===0){
-                        this.$Message.success({content:"请求成功",duration:3})
+                        this.$Message.success({content:this.$t('public.requestSuccess'),duration:3})
                     }else{
                         this.$Message.error({content:response.data.description,duration: 10})
                     }
@@ -892,9 +892,9 @@
                     this.isDisabled = false
                     this.isSentTestReq = false
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'请求失败',duration: 5})
+                        this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                 })
             },
             //坐 标 换 算
@@ -902,24 +902,24 @@
                 if(this.coordinateChange.x1===null||this.coordinateChange.x1===''
                     ||this.coordinateChange.x2===null||this.coordinateChange.x2===''
                     ||this.coordinateChange.y===null||this.coordinateChange.y===''){
-                    this.$Message.info("坐标点x，y值不能为空！")
+                    this.$Message.info(this.$t('paneDeviceConfig.warnTips_6'))
                     return
                 }
                 if(this.coordinateChange.x1===this.coordinateChange.x2){
-                    this.$Message.info("两个物理坐标点x坐标不能相同！")
+                    this.$Message.info(this.$t('paneDeviceConfig.warnTips_8'))
                     return
                 }
                 if( this.coordinateChange.x1>this.coordinateRangeX[1] || this.coordinateChange.x1<this.coordinateRangeX[0]
                     || this.coordinateChange.x2>this.coordinateRangeX[1] || this.coordinateChange.x2<this.coordinateRangeX[0]
                     || this.coordinateChange.y>this.coordinateRangeY[1] || this.coordinateChange.y<this.coordinateRangeY[0]){
-                    this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_7'),duration:3})
                     return
                 }
                 if(this.isDisabled||this.isSentTestReq){
-                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_5'),duration:3})
                     return
                 }
-                this.$Message.info({content:"正在发送请求..."})
+                this.$Message.info({content:this.$t('paneDeviceConfig.isSend_2')})
                 this.isDisabled = true
                 this.isSentTestReq = true
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/coordinate/",{
@@ -939,15 +939,15 @@
                     this.isDisabled = false
                     this.isSentTestReq = false
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'坐标换算失败',duration: 5})
+                        this.$Message.error({content:this.$t('paneDeviceConfig.error_1'),duration: 5})
                 })
             },
             //拼 接 图 像
             imageMosaic(){
                 if(this.isDisabled){
-                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_5'),duration:3})
                     return
                 }
                 this.isDisabled = true
@@ -955,7 +955,7 @@
                     .then(response=>{
                         this.isDisabled = false
                         if(response.data.error_code===0){
-                            this.$Message.success({content:"拼接图像成功",duration:3})
+                            this.$Message.success({content:this.$t('paneDeviceConfig.error_2'),duration:3})
                             this.getImg()
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
@@ -963,15 +963,15 @@
                     }).catch(error=>{
                     this.isDisabled = false
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'拼接图像失败',duration: 5})
+                        this.$Message.error({content:this.$t('paneDeviceConfig.error_3'),duration: 5})
                 })
             },
             //调 试 距 离
             distanceBtn(){
                 if(this.isDisabled){
-                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_5'),duration:3})
                     return
                 }
                 this.isDisabled = true
@@ -979,16 +979,16 @@
                     .then(response=>{
                         this.isDisabled = false
                         if(response.data.error_code===0){
-                            this.$Message.success({content:"调试距离成功",duration:3})
+                            this.$Message.success({content:this.$t('paneDeviceConfig.error_4'),duration:3})
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
                     this.isDisabled = false
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'调试距离失败',duration: 5})
+                        this.$Message.error({content:this.$t('paneDeviceConfig.error_5'),duration: 5})
                 })
             },
             //  mlocation 坐标点在x,y,z的值的校验
@@ -1009,15 +1009,15 @@
                     rangeZ = [-35,5]
                 }
                 if(this.mlocation.x===null || this.mlocation.x==='' || this.mlocation.x>rangeX[1] || this.mlocation.x<rangeX[0]){
-                    this.$Message.warning({content:"x 的取值范围为("+rangeX[0]+","+rangeX[1]+")",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.rangeTit_1')+"("+rangeX[0]+","+rangeX[1]+")",duration:3})
                     return true
                 }
                 if(this.mlocation.y===null || this.mlocation.y==='' || this.mlocation.y>rangeY[1]||this.mlocation.y<rangeY[0]){
-                    this.$Message.warning({content:"y 的取值范围为("+rangeY[0]+","+rangeY[1]+")",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.rangeTit_2')+"("+rangeY[0]+","+rangeY[1]+")",duration:3})
                     return true
                 }
                 if(this.mlocation.z===null || this.mlocation.z==='' || this.mlocation.z>rangeZ[1]||this.mlocation.z<rangeZ[0]){
-                    this.$Message.warning({content:"z 的取值范围为("+rangeZ[0]+","+rangeZ[1]+")",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.rangeTit_3')+"("+rangeZ[0]+","+rangeZ[1]+")",duration:3})
                     return true
                 }
                 return false
@@ -1033,11 +1033,11 @@
                     m_location_y: this.mlocation.y,
                     m_location_z: this.mlocation.z
                 }).then(response=>{
-                    this.$Message.success("mlocation保存成功")
+                    this.$Message.success(this.$t('paneDeviceConfig.error_6'))
                     this.showMlocationModal = false
                 }).catch(error=>{
                     if(error.response.status>=500)
-                        this.$Message.error("服务器错误")
+                        this.$Message.error(this.$t('public.error_500'))
                     else
                         this.$Message.error({content:error.response.data.description,duration:6})
                 })
@@ -1056,22 +1056,22 @@
                 }).then(response=>{
                     this.isDisabledBtn = false
                     if(response.data.error_code===0){
-                        this.$Message.success({content:"请求成功",duration:3})
+                        this.$Message.success({content:this.$t('public.requestSuccess'),duration:3})
                     }else{
                         this.$Message.error({content:response.data.description,duration: 10})
                     }
                 }).catch(error=>{
                     this.isDisabledBtn = false
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'请求失败',duration: 5})
+                        this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                 })
             },
             //  获取 mlocation 的坐标信息
             getMlocation(){
                 if(this.isDisabledBtn){
-                    this.$Message.warning({content:"请等待当前操作完成",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_5'),duration:3})
                     return
                 }
                 this.mlocation = {
@@ -1089,7 +1089,7 @@
                         this.showMlocationModal = true
                     }).catch(error=>{
                         if(error.response.status>=500)
-                            this.$Message.error("服务器错误")
+                            this.$Message.error(this.$t('public.error_500'))
                         else
                             this.$Message.error({content:error.response.data.description,duration:6})
                     })
@@ -1115,34 +1115,34 @@
                     if(check_x1){
                         if(this.robotArm.x1===null || this.robotArm.x1==='' || this.robotArm.click_xy1[0]===null || this.robotArm.click_xy1[0]===''
                             || this.robotArm.click_xy1[1]===null || this.robotArm.click_xy1[1]===''){
-                            this.$Message.warning({content:"左机械臂值不能为空",duration:3})
+                            this.$Message.warning({content:this.$t('paneDeviceConfig.validate_1'),duration:3})
                             return true
                         }
                         if(this.robotArm.x1>rangeZ[1] || this.robotArm.x1<rangeZ[0]
                             || this.robotArm.click_xy1[0]>this.adjustTitleX[1] || this.robotArm.click_xy1[0]<this.adjustTitleX[0]
                             || this.robotArm.click_xy1[1]>this.adjustTitleY[1] || this.robotArm.click_xy1[1]<this.adjustTitleY[0]){
-                            this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                            this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_7'),duration:3})
                             return true
                         }
                     }
                     if(check_x2){
                         if(this.robotArm.x2===null || this.robotArm.x2==='' || this.robotArm.click_xy2[0]===null || this.robotArm.click_xy2[0]===''
                             || this.robotArm.click_xy2[1]===null || this.robotArm.click_xy2[1]===''){
-                            this.$Message.warning({content:"右机械臂值不能为空",duration:3})
+                            this.$Message.warning({content:this.$t('paneDeviceConfig.validate_2'),duration:3})
                             return true
                         }
                         if(this.deviceCabinetType==="Tcab_5D plus"){
                             if(this.robotArm.x2>rangeZ[1] || this.robotArm.x2<rangeZ[0]
                                 || this.robotArm.click_xy2[0]>this.adjustTitleX2[1] || this.robotArm.click_xy2[0]<this.adjustTitleX2[0]
                                 || this.robotArm.click_xy2[1]>this.adjustTitleY[1] || this.robotArm.click_xy2[1]<this.adjustTitleY[0]){
-                                this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                                this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_7'),duration:3})
                                 return true
                             }
                         }else {
                             if(this.robotArm.x2>rangeZ[1] || this.robotArm.x2<rangeZ[0]
                                 || this.robotArm.click_xy2[0]>this.adjustTitleX[1] || this.robotArm.click_xy2[0]<this.adjustTitleX[0]
                                 || this.robotArm.click_xy2[1]>this.adjustTitleY[1] || this.robotArm.click_xy2[1]<this.adjustTitleY[0]){
-                                this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                                this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_7'),duration:3})
                                 return true
                             }
                         }
@@ -1151,13 +1151,13 @@
                 }else {
                     if(this.robotArm.x===null || this.robotArm.x==='' || this.robotArm.click_xy[0]===null || this.robotArm.click_xy[0]===''
                         || this.robotArm.click_xy[1]===null || this.robotArm.click_xy[1]===''){
-                        this.$Message.warning({content:"机械臂值不能为空",duration:3})
+                        this.$Message.warning({content:this.$t('paneDeviceConfig.validate_3'),duration:3})
                         return true
                     }
                     if(this.robotArm.x>rangeZ[1] || this.robotArm.x<rangeZ[0]
                         || this.robotArm.click_xy[0]>this.adjustTitleX[1] || this.robotArm.click_xy[0]<this.adjustTitleX[0]
                         || this.robotArm.click_xy[1]>this.adjustTitleY[1] || this.robotArm.click_xy[1]<this.adjustTitleY[0]){
-                        this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                        this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_7'),duration:3})
                         return true
                     }
                 }
@@ -1209,16 +1209,16 @@
                     }
                 }).catch(error=>{
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'请求失败',duration: 5})
+                        this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                 })
             },
             // 测试机械臂z值
             onTestRobotArm(check_x1,check_x2){
                 if(this.robotArmValidate(check_x1,check_x2)) return
                 if(this.isSentTestReq){
-                    this.$Message.info({content:"请等待当前指令执行完成..."})
+                    this.$Message.info({content:this.$t('paneDeviceConfig.wait')})
                     return
                 }
                 let param = {}
@@ -1244,22 +1244,22 @@
                         arm_num: 0
                     }
                 }
-                this.$Message.info({content:"正在发送请求..."})
+                this.$Message.info({content:this.$t('paneDeviceConfig.isSend_2')})
                 this.isSentTestReq = true
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/click_z_down/",param)
                 .then(response=>{
                     this.isSentTestReq = false
                     if(response.data.error_code===0){
-                        this.$Message.success({content:"请求成功",duration:3})
+                        this.$Message.success({content:this.$t('public.requestSuccess'),duration:3})
                     }else{
                         this.$Message.error({content:response.data.description,duration: 10})
                     }
                 }).catch(error=>{
                     this.isSentTestReq = false
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'请求失败',duration: 5})
+                        this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                 })
             },
             //保存z值
@@ -1285,15 +1285,15 @@
                     .then(response=>{
                         if(response.data.error_code===0){
                             this.showAdjustZModel = false
-                            this.$Message.success({content:"机械臂的值保存成功",duration:3})
+                            this.$Message.success({content:this.$t('paneDeviceConfig.save_1'),duration:3})
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'请求失败',duration: 5})
+                        this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                 })
             },
             //打开【待命位置】模态框并且获取现有的 x，y，z的信息
@@ -1339,9 +1339,9 @@
                     }
                 }).catch(error=>{
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'请求失败',duration: 5})
+                        this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                 })
             },
             //  对 待命位置 范围的校验  测试时x1和x2只需一个校验
@@ -1350,34 +1350,34 @@
                     if(check_x1){
                         if(this.robotArmStandby.xyz[0]===null || this.robotArmStandby.xyz[0]==='' || this.robotArmStandby.xyz[1]===null || this.robotArmStandby.xyz[1]===''
                             || this.robotArmStandby.xyz[2]===null || this.robotArmStandby.xyz[2]===''){
-                            this.$Message.warning({content:"左机械臂值不能为空",duration:3})
+                            this.$Message.warning({content:this.$t('paneDeviceConfig.validate_1'),duration:3})
                             return true
                         }
                         if(this.robotArmStandby.xyz[0]>this.standbyRangeX[1] || this.robotArmStandby.xyz[0]<this.standbyRangeX[0]
                             || this.robotArmStandby.xyz[1]>this.standbyRangeY[1] || this.robotArmStandby.xyz[1]<this.standbyRangeY[0]
                             || this.robotArmStandby.xyz[2]>this.standbyRangeZ[1] || this.robotArmStandby.xyz[2]<this.standbyRangeZ[0]){
-                            this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                            this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_7'),duration:3})
                             return true
                         }
                     }
                     if(check_x2){
                         if(this.robotArmStandby.xyz_1[0]===null || this.robotArmStandby.xyz_1[0]==='' || this.robotArmStandby.xyz_1[1]===null || this.robotArmStandby.xyz_1[1]===''
                             || this.robotArmStandby.xyz_1[2]===null || this.robotArmStandby.xyz_1[2]===''){
-                            this.$Message.warning({content:"右机械臂值不能为空",duration:3})
+                            this.$Message.warning({content:this.$t('paneDeviceConfig.validate_2'),duration:3})
                             return true
                         }
                         if(this.deviceCabinetType==="Tcab_5D plus"){
                             if(this.robotArmStandby.xyz_1[0]>this.standbyRangeX2[1] || this.robotArmStandby.xyz_1[0]<this.standbyRangeX2[0]
                                 || this.robotArmStandby.xyz_1[1]>this.standbyRangeY[1] || this.robotArmStandby.xyz_1[1]<this.standbyRangeY[0]
                                 || this.robotArmStandby.xyz_1[2]>this.standbyRangeZ[1] || this.robotArmStandby.xyz_1[2]<this.standbyRangeZ[0]){
-                                this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                                this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_7'),duration:3})
                                 return true
                             }
                         }else {
                             if(this.robotArmStandby.xyz_1[0]>this.standbyRangeX[1] || this.robotArmStandby.xyz_1[0]<this.standbyRangeX[0]
                                 || this.robotArmStandby.xyz_1[1]>this.standbyRangeY[1] || this.robotArmStandby.xyz_1[1]<this.standbyRangeY[0]
                                 || this.robotArmStandby.xyz_1[2]>this.standbyRangeZ[1] || this.robotArmStandby.xyz_1[2]<this.standbyRangeZ[0]){
-                                this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                                this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_7'),duration:3})
                                 return true
                             }
                         }
@@ -1385,13 +1385,13 @@
                 }else {
                     if(this.robotArmStandby.xyz[0]===null || this.robotArmStandby.xyz[0]==='' || this.robotArmStandby.xyz[1]===null || this.robotArmStandby.xyz[1]===''
                         || this.robotArmStandby.xyz[2]===null || this.robotArmStandby.xyz[2]===''){
-                        this.$Message.warning({content:"机械臂值不能为空",duration:3})
+                        this.$Message.warning({content:this.$t('paneDeviceConfig.validate_3'),duration:3})
                         return true
                     }
                     if(this.robotArmStandby.xyz[0]>this.standbyRangeX[1] || this.robotArmStandby.xyz[0]<this.standbyRangeX[0]
                         || this.robotArmStandby.xyz[1]>this.standbyRangeY[1] || this.robotArmStandby.xyz[1]<this.standbyRangeY[0]
                         || this.robotArmStandby.xyz[2]>this.standbyRangeZ[1] || this.robotArmStandby.xyz[2]<this.standbyRangeZ[0]){
-                        this.$Message.warning({content:"请输入正确范围内的坐标值",duration:3})
+                        this.$Message.warning({content:this.$t('paneDeviceConfig.warnTips_7'),duration:3})
                         return true
                     }
                 }
@@ -1401,7 +1401,7 @@
             onTestWaitPosition(check_x1,check_x2){
                 if(this.standbyValidate(check_x1,check_x2)) return
                 if(this.isSentTestReq){
-                    this.$Message.info({content:"请等待当前指令执行完成..."})
+                    this.$Message.info({content:this.$t('paneDeviceConfig.wait')})
                     return
                 }
                 let param = {}
@@ -1424,22 +1424,22 @@
                         arm_num: 0
                     }
                 }
-                this.$Message.info({content:"正在发送请求..."})
+                this.$Message.info({content:this.$t('paneDeviceConfig.isSend_2')})
                 this.isSentTestReq = true
                 this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/wait_position/",param)
                     .then(response=>{
                         this.isSentTestReq = false
                         if(response.data.error_code===0){
-                            this.$Message.success({content:"请求成功",duration:3})
+                            this.$Message.success({content:this.$t('public.requestSuccess'),duration:3})
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
                     this.isSentTestReq = false
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'请求失败',duration: 5})
+                        this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                 })
             },
             //保存 待命位置
@@ -1462,29 +1462,29 @@
                         this.isLoading = false
                         if(response.data.error_code===0){
                             this.showStandbyModel = false
-                            this.$Message.success({content:"机械臂的值保存成功",duration:3})
+                            this.$Message.success({content:this.$t('paneDeviceConfig.save_1'),duration:3})
                         }else{
                             this.$Message.error({content:response.data.description,duration: 10})
                         }
                     }).catch(error=>{
                         this.isLoading = false
                         if(error.response.status>=500)
-                            this.$Message.error({content:'服务器错误',duration: 5})
+                            this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                         else
-                            this.$Message.error({content:'请求失败',duration: 5})
+                            this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                     })
             },
             //点击有效性测试
             onValidationTest(){
                 if(!this.testCount){
-                    this.$Message.warning("请输入点击次数")
+                    this.$Message.warning(this.$t('paneDeviceConfig.testCountTit'))
                     return
                 }
                 if(this.isSentTestReq){
-                    this.$Message.info({content:"请等待当前指令执行完成..."})
+                    this.$Message.info({content:this.$t('paneDeviceConfig.wait')})
                     return
                 }
-                this.$Message.info({content:"正在发送请求..."})
+                this.$Message.info({content:this.$t('paneDeviceConfig.isSend_2')})
                 this.isSentTestReq = true
                 this.showValidationModal = false
                 let data = new FormData()
@@ -1503,26 +1503,26 @@
                     .then(response=>{
                         this.isSentTestReq = false
                         if(response.data.error_code===0){
-                            this.$Message.success({content:"请求成功",duration:3})
+                            this.$Message.success({content:this.$t('public.requestSuccess'),duration:3})
                         }else if(response.data.error_code===3013){
                             let _this = this
                             this.$Modal.confirm({
-                                title:"提示",
-                                content:"机械臂正在使用无法点击，确定要停止当前的动作吗？",
+                                title:this.$t('public.modal_info'),
+                                content:this.$t('paneDeviceConfig.armTips_1'),
                                 onOk(){
                                     data.append('stop_loop_flag', "1")
                                     _this.$ajax.post(`http://${_this.cabinetIP}:5000/pane/coordinate_click_test/`,data)
                                         .then(response=>{
                                             if(response.data.error_code===0){
-                                                this.$Message.success({content:"停止成功",duration:3})
+                                                this.$Message.success({content:_this.$t('paneDeviceConfig.armTips_2'),duration:3})
                                             } else {
                                                 this.$Message.error({content:response.data.description,duration: 10})
                                             }
                                         }).catch(error=>{
                                             if(error.response.status>=500)
-                                                this.$Message.error({content:'服务器错误',duration: 5})
+                                                this.$Message.error({content:_this.$t('public.error_500'),duration: 5})
                                             else
-                                                this.$Message.error({content:'请求失败',duration: 5})
+                                                this.$Message.error({content:_this.$t('public.requestFail'),duration: 5})
                                         })
                                 }
                             })
@@ -1532,28 +1532,28 @@
                     }).catch(error=>{
                     this.isSentTestReq = false
                     if(error.response.status>=500)
-                        this.$Message.error({content:'服务器错误',duration: 5})
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:'请求失败',duration: 5})
+                        this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                 })
             },
             // 打开有效性测试模态框
             onOpenTestCountModal(){
                 if (this.imgSrc === ''){
-                    this.$Message.warning("请先获取图片")
+                    this.$Message.warning(this.$t('paneDeviceConfig.testTips_1'))
                     return
                 }
                 if(this.currentIndex===null){
-                    this.$Message.warning({content: "请先选择一条数据！", duration: 3})
+                    this.$Message.warning({content: this.$t('paneDeviceConfig.testTips_1'), duration: 3})
                     return
                 }
                 if(this.currentData.x_coordinate===null||this.currentData.y_coordinate===null||this.currentData.z_coordinate===null){
-                    this.$Message.warning({content: "请将坐标信息填写完整！", duration: 3})
+                    this.$Message.warning({content: this.$t('paneDeviceConfig.testTips_2'), duration: 3})
                     return
                 }
                 if (this.deviceCutCoordinate.inside_under_right_x===null || this.deviceCutCoordinate.inside_under_right_y===null
                     || this.deviceCutCoordinate.inside_upper_left_x===null || this.deviceCutCoordinate.inside_upper_left_y===null) {
-                    this.$Message.warning({content: "边框信息不能为空!", duration: 3})
+                    this.$Message.warning({content: this.$t('paneDeviceConfig.testTips_3'), duration: 3})
                     return
                 }
                 this.showValidationModal = true
@@ -1599,7 +1599,7 @@
                     }
                 ).catch(error => {
                     if(error.response.status>=500)
-                        this.$Message.error("服务器错误")
+                        this.$Message.error(this.$t('public.error_500'))
                     else
                         this.$Message.error({content:error.response.data.description,duration:6})
                 })
@@ -1616,7 +1616,7 @@
                 }).catch(error => {
                     if (config.DEBUG) console.log(error)
                     if(error.response.status>=500)
-                        this.$Message.error("服务器错误")
+                        this.$Message.error(this.$t('public.error_500'))
                     else
                         this.$Message.error({content:error.response.data.description,duration:6})
                 })
@@ -1633,7 +1633,7 @@
                 }).catch(error => {
                     if (config.DEBUG) console.log(error)
                     if(error.response.status>=500)
-                        this.$Message.error("服务器错误")
+                        this.$Message.error(this.$t('public.error_500'))
                     else
                         this.$Message.error({content:error.response.data.description,duration:6})
                 })
@@ -1682,7 +1682,7 @@
                         reader.readAsText(data,'utf-8')
                         reader.addEventListener("loadend", function (){
                             data = JSON.parse(reader.result )
-                            _this.$Message.error({content:"图片获取失败!"+data.description,duration:8})
+                            _this.$Message.error({content:_this.$t('rdsInfoPage.error_2')+data.description,duration:8})
                         })
                         return
                     }
@@ -1707,15 +1707,15 @@
                     })
                 }
                 xhr.onerror = (err) => {
-                    this.$Message.error("图片获取失败")
+                    this.$Message.error(this.$t('rdsInfoPage.error_2'))
                 }
             },
             async getScreenArea() {
                 if (this.imgSrc === ''){
-                    this.$Message.warning("请等待获取图片")
+                    this.$Message.warning(this.$t('paneDeviceConfig.testTips_4'))
                     return
                 }
-                this.$Message.info({content:"正在自动获取，可能需要一些时间",duration:3})
+                this.$Message.info({content:this.$t('paneDeviceConfig.testTips_5'),duration:3})
                 let data = new FormData()
                 data.append('rawImage', Utils.dataURLtoFile(this.imgSrc,"rawImage.jpg"))
                 let url = `http://${this.cabinetIP}:5000/pane/get_roi/`
@@ -1727,7 +1727,7 @@
                         this.areaInfo.inside_under_right_y = response.data.under_right_y
                         this.showScreenArea = false
                         // this.isScreenUpdate = true
-                        this.$Message.success("边框获取成功")
+                        this.$Message.success(this.$t('paneDeviceConfig.testTips_6'))
                     }).catch(error=>{
                         this.$Message.error({content:error.response.data.description,duration:8})
                     })
@@ -1735,11 +1735,11 @@
             //手动微调屏幕边框，并在调整后显示新的屏幕边框
             onCoordinateChange(){
                 if(this.deviceCutCoordinate.inside_upper_left_x>=this.deviceCutCoordinate.inside_under_right_x){
-                    this.$Message.warning({content:"x1的值必须小于x2的值",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.testTips_7'),duration:3})
                     return false
                 }
                 if(this.deviceCutCoordinate.inside_upper_left_y>this.deviceCutCoordinate.inside_under_right_y){
-                    this.$Message.warning({content:"y1的值必须小于y2的值",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.testTips_8'),duration:3})
                     return false
                 }
                 if(!this.showScreenArea)
@@ -1786,12 +1786,12 @@
                 }
                 if (type === "screen") {
                     if (topLeft.x === bottomRight.x || topLeft.y === bottomRight.y) {
-                        this.$Message.warning("屏幕边框必须是一个区域")
+                        this.$Message.warning(this.$t('paneDeviceConfig.borderTips_1'))
                         return
                     }
                 } else {
                     if (topLeft.x !== bottomRight.x || topLeft.y !== bottomRight.y) {
-                        this.$Message.warning("该项只能选取一个点，不能选取区域")
+                        this.$Message.warning(this.$t('paneDeviceConfig.borderTips_2'))
                         return
                     }
                 }
@@ -1828,11 +1828,11 @@
                         break
                     case "point":
                         if(this.currentIndex===null){
-                            this.$Message.warning({content:"请先选择一条数据！",duration:3})
+                            this.$Message.warning({content:this.$t('paneDeviceConfig.testTips_1'),duration:3})
                             return
                         }
                         if(this.deviceCutCoordinate.inside_upper_left_x===null || this.deviceCutCoordinate.inside_under_right_y===null){
-                            this.$Message.warning({content:"请先框选边框信息！",duration:3})
+                            this.$Message.warning({content:this.$t('paneDeviceConfig.borderTips_3'),duration:3})
                             return
                         }
                         let screenWidth = this.deviceCutCoordinate.inside_under_right_x - this.deviceCutCoordinate.inside_upper_left_x
@@ -1940,7 +1940,7 @@
             async saveAreaInfo() {
                 for(let i=0;i<this.tableData.length;i++){
                     if(this.tableData[i].x_coordinate===null||this.tableData[i].y_coordinate===null||this.tableData[i].z_coordinate===null){
-                        this.$Message.warning({content: "表格内信息不能为空！", duration: 3})
+                        this.$Message.warning({content: this.$t('paneDeviceConfig.saveTips_1'), duration: 3})
                         return
                     }
                 }
@@ -1953,11 +1953,11 @@
                 let phone_model_id = this.phone_model.id
                 if (paramsObj.inside_under_right_x===null || paramsObj.inside_under_right_y===null
                     || paramsObj.inside_upper_left_x===null || paramsObj.inside_upper_left_y===null) {
-                    this.$Message.warning({content: "边框信息不能为空", duration: 3})
+                    this.$Message.warning({content: this.$t('paneDeviceConfig.testTips_3'), duration: 3})
                     return
                 }
                 if(this.phone_model.ply===null){
-                    this.$Message.warning({content: "机型厚度不能为空！", duration: 3})
+                    this.$Message.warning({content: this.$t('paneDeviceConfig.saveTips_2'), duration: 3})
                     return
                 }
                 let updateList = []
@@ -1982,7 +1982,7 @@
                     isContinue = false
                     if (config.DEBUG) console.log(error)
                     if(error.response.status>=500)
-                        this.$Message.error("服务器错误")
+                        this.$Message.error(this.$t('public.error_500'))
                     else
                         this.$Message.error({content:error.response.data.description,duration:6})
                 })
@@ -1994,13 +1994,13 @@
                     }, paramsObj))
                         .then(res => {
                             isContinue = true
-                            this.$Message.success("边框信息保存成功")
+                            this.$Message.success(this.$t('paneDeviceConfig.saveTips_3'))
                         }).catch(error => {
                             if (config.DEBUG) console.log(error)
                             this.showLoading = false
                             isContinue = false
                             if(error.response.status>=500)
-                                this.$Message.error("服务器错误")
+                                this.$Message.error(this.$t('public.error_500'))
                             else
                                 this.$Message.error({content:error.response.data.description,duration:6})
                         })
@@ -2015,12 +2015,12 @@
                         this.tableData.forEach(item=>{
                             this.$delete(item,'update')
                         })
-                        this.$Message.success("按键坐标保存成功")
+                        this.$Message.success(this.$t('paneDeviceConfig.saveTips_4'))
                     }).catch(error => {
                         if (config.DEBUG) console.log(error)
                         this.showLoading = false
                         if(error.response.status>=500)
-                            this.$Message.error("服务器错误")
+                            this.$Message.error(this.$t('public.error_500'))
                         else
                             this.$Message.error({content:error.response.data.description,duration:6})
                     })
@@ -2059,7 +2059,7 @@
             //添加自定义按键信息到表格
             addTableData(){
                 if(this.addInfo.name.trim().length===0){
-                    this.$Message.warning({content:"名称不能为空！",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.title_8'),duration:3})
                     return
                 }
                 let nameList = []
@@ -2067,11 +2067,11 @@
                     nameList.push(item.name)
                 })
                 if(nameList.includes(this.addInfo.name.trim())){
-                    this.$Message.warning({content:"名称已存在！",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.saveTips_5'),duration:3})
                     return
                 }
                 if(this.addInfo.z_coordinate==='' || this.addInfo.z_coordinate>10||this.addInfo.z_coordinate<-10){
-                    this.$Message.warning({content:"z 的取值范围为[-10,10]！",duration:3})
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.rangeTit_3')+"[-10,10]！",duration:3})
                     return
                 }
                 this.tableData.push({
@@ -2087,17 +2087,17 @@
             //删除某一行的信息
             onDeleteRow(){
                 if(this.currentIndex===null){
-                    this.$Message.warning("请选择要删除的数据！")
+                    this.$Message.warning(this.$t('jobManagement.delSelect'))
                     return
                 }
                 if(this.currentData.is_fixed){
-                    this.$Message.warning("当前项不允许删除！")
+                    this.$Message.warning(this.$t('paneDeviceConfig.delError'))
                     return
                 }
                 let _this = this
                 this.$Modal.confirm({
-                    title:"提示",
-                    content:"确定要删除这条数据吗？",
+                    title:this.$t('public.modal_info'),
+                    content:this.$t('paneDeviceConfig.delError_1'),
                     onOk(){
                         let selector = document.querySelector('.selector')
                         let point = document.querySelectorAll('.point')
@@ -2118,27 +2118,27 @@
             // 测 试 点 击 坐 标
             onCoordinateTestClick(){
                 if(this.isSentTestReq){
-                    this.$Message.info({content:"请等待当前指令执行完成..."})
+                    this.$Message.info({content:this.$t('paneDeviceConfig.wait')})
                     return
                 }
                 if (this.imgSrc === ''){
-                    this.$Message.warning("请先获取图片")
+                    this.$Message.warning(this.$t('paneDeviceConfig.testTips_1'))
                     return
                 }
                 if(this.currentIndex===null){
-                    this.$Message.warning({content: "请先选择一条数据！", duration: 3})
+                    this.$Message.warning({content: this.$t('paneDeviceConfig.testTips_1'), duration: 3})
                     return
                 }
                 if(this.currentData.x_coordinate===null||this.currentData.y_coordinate===null||this.currentData.z_coordinate===null){
-                    this.$Message.warning({content: "请将坐标信息填写完整！", duration: 3})
+                    this.$Message.warning({content: this.$t('paneDeviceConfig.testTips_2'), duration: 3})
                     return
                 }
                 if (this.deviceCutCoordinate.inside_under_right_x===null || this.deviceCutCoordinate.inside_under_right_y===null
                     || this.deviceCutCoordinate.inside_upper_left_x===null || this.deviceCutCoordinate.inside_upper_left_y===null) {
-                    this.$Message.warning({content: "边框信息不能为空!", duration: 3})
+                    this.$Message.warning({content: this.$t('paneDeviceConfig.testTips_3'), duration: 3})
                     return
                 }
-                this.$Message.info({content:"正在发送请求..."})
+                this.$Message.info({content:this.$t('paneDeviceConfig.isSend_2')})
                 this.isSentTestReq = true
                 let data = new FormData()
                 data.append('img', Utils.dataURLtoFile(this.imgSrc,"rawImage.jpg"))
@@ -2155,26 +2155,26 @@
                     .then(response=>{
                         this.isSentTestReq = false
                         if(response.data.error_code===0){
-                            this.$Message.success({content:"请求成功",duration:3})
+                            this.$Message.success({content:this.$t('public.requestSuccess'),duration:3})
                         }else if(response.data.error_code===3013){
                             let _this = this
                             this.$Modal.confirm({
-                                title:"提示",
-                                content:"机械臂正在使用无法点击，确定要停止当前的动作吗？",
+                                title:this.$t('public.modal_info'),
+                                content:this.$t('paneDeviceConfig.armTips_1'),
                                 onOk(){
                                     data.append('stop_loop_flag', "1")
                                     _this.$ajax.post(`http://${_this.cabinetIP}:5000/pane/coordinate_click_test/`,data)
                                         .then(response=>{
                                             if(response.data.error_code===0){
-                                                this.$Message.success({content:"停止成功",duration:5})
+                                                this.$Message.success({content:_this.$t('paneDeviceConfig.armTips_2'),duration:5})
                                             } else {
                                                 this.$Message.error({content:response.data.description,duration: 10})
                                             }
                                         }).catch(error=>{
                                             if(error.response.status>=500)
-                                                this.$Message.error({content:'服务器错误',duration: 5})
+                                                this.$Message.error({content:_this.$t('public.error_500'),duration: 5})
                                             else
-                                                this.$Message.error({content:'请求失败',duration: 5})
+                                                this.$Message.error({content:_this.$t('public.requestFail'),duration: 5})
                                         })
                                 }
                             })
@@ -2184,9 +2184,9 @@
                     }).catch(error=>{
                         this.isSentTestReq = false
                         if(error.response.status>=500)
-                            this.$Message.error({content:'服务器错误',duration: 5})
+                            this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                         else
-                            this.$Message.error({content:'请求失败',duration: 5})
+                            this.$Message.error({content:this.$t('public.requestFail'),duration: 5})
                     })
             }
         }

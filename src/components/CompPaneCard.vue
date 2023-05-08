@@ -89,20 +89,20 @@
             removePane(index){
                 let root = this
                 this.$Modal.confirm({
-                    title:"提示：",
-                    content:"您确定要移除该支架吗？",
+                    title:this.$t('public.modal_info'),
+                    content:this.$t('paneCard.tips_1'),
                     onOk(){
                         root.$ajax.delete("api/v1/cedar/remove_paneview/",{
                             data:{id: root.propPane.id}
                         }).then(response=>{
-                            root.$Message.success("支架移除成功!")
+                            root.$Message.success(root.$t('paneCard.tips_2'))
                             root.$emit('remove-pane',index)
                         }).catch(error=>{
                             if(config.DEBUG) console.log(error)
                             if(error.response.status===403)
-                                root.$Message.error("当前支架还有设备存在，请先移除设备之后再进行支架移除！")
+                                root.$Message.error(root.$t('paneCard.tips_3'))
                             else
-                                root.$Message.error("未知错误：支架移除失败，请检查后重试！")
+                                root.$Message.error(root.$t('paneCard.tips_4'))
                         })
                     }
                 })
@@ -115,7 +115,7 @@
                 let id = this.propPane.slotList[key].id
                 if(this.propShowRemoveBtn){
                     if(this.propPane.slotList[key].device===null)
-                        this.$Message.warning("当前位置暂无设备，请先添加设备后再进行查看设备详情！")
+                        this.$Message.warning(this.$t('paneCard.tips_5'))
                     else {
                         this.showDeviceDetail = true
                         this.$refs.deviceDetail.refresh(this.propPane.slotList[key].device)

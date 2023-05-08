@@ -11,7 +11,7 @@
         <div class="selector__curarea__b"></div>
         <div class="selector__curarea__bl"></div>
         <div class="selector__curarea__l"></div>
-        <button class="selector__curarea__close" @click="closeArea" v-show="showClose">关闭</button>
+        <button class="selector__curarea__close" @click="closeArea" v-show="showClose">{{$t('public.btn_close')}}</button>
       </div>
     </div>
     <div class="selector_mask" v-show="showMask"></div>
