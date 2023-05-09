@@ -20,7 +20,7 @@
       </Row>
     </Card>
     <Card dis-hover :title="$t('deviceManagement.info_3')" v-if="addDeviceStep === 2">
-      <Form :label-width="130">
+      <Form :label-width="132">
         <FormItem>
           <b slot="label"><span class="need">*</span>{{$t('deviceList.device_name')}}</b>
           <Input v-model="addedDeviceName"></Input>
@@ -75,7 +75,7 @@
         <FormItem>
           <b slot="label"><span class="need">*</span>{{$t('deviceManagement.info_5')}}</b>
           <InputNumber style="width: 200px;margin-right:5px" :min="0" v-model="deviceInfo.ply"></InputNumber>
-          <span>$t('deviceManagement.info_6')</span>
+          <span>{{$t('deviceManagement.info_6')}}</span>
         </FormItem>
       </Form>
       <Row type="flex" justify="center">

@@ -1,22 +1,22 @@
 <template>
     <Card :shadow="true">
         <Tabs v-model="tabList" style="background: #fff;" @on-click="onFailTabClick">
-            <TabPane label="删除列表" name="deleteList" :strip="true">
+            <TabPane :label="$t('cleanCenter.list_1')" name="deleteList" :strip="true">
                 <Table ref="table" :columns="columns" :data="data" border >
                 </Table>
             </TabPane>
-            <TabPane :label="failData.length===0 ? '失败列表' : '失败列表('+failData.length+ ')'" name="failedList" >
+            <TabPane :label="failData.length===0 ? $t('cleanCenter.list_2') : $t('cleanCenter.list_2')+'('+failData.length+ ')'" name="failedList" >
                 <Table ref="table" :columns="columns" :data="failData" border >
                 </Table>
                 <Row style="float: right;margin-top: 16px">
-                    <Button type="primary" style="margin-right: 15px;width: 80px" @click="onRetry">重试</Button>
-                    <Button type="primary"  @click="showModal = true">联系客服</Button>
+                    <Button type="primary" style="margin-right: 15px;width: 80px" @click="onRetry">{{$t('cleanCenter.btn_1')}}</Button>
+                    <Button type="primary"  @click="showModal = true">{{$t('cleanCenter.btn_2')}}</Button>
                 </Row>
             </TabPane>
         </Tabs>
         <Modal v-model="showModal" :closable="false" :mask-closable="false" footer-hide width="350" style="text-align: center">
-            <p slot="header" style="font-size: 16px">联系方式</p>
-            <p slot="title" style="font-size: 16px">联系方式</p>
+            <p slot="header" style="font-size: 16px">{{$t('cleanCenter.btn_3')}}</p>
+            <p slot="title" style="font-size: 16px">{{$t('cleanCenter.btn_3')}}</p>
             <div>
                 <!--<Row>-->
                     <!--<Col span="10" class="icon-left">-->
@@ -32,16 +32,16 @@
                         <Icon size="18" class="icon-border" type="ios-call-outline" />
                     </Col>
                     <Col span="14" class="icon-right">
-                        <p>联系电话</p>
+                        <p>{{$t('cleanCenter.btn_4')}}</p>
                         <p><a href="#">010 6868 1606</a></p>
                     </Col>
                 </Row>
                 <Row>
-                    <img src="../static/angelreef.jpg" alt="微信公众号" style="max-width: 150px">
-                    <p>微信公众号</p>
+                    <img src="../static/angelreef.jpg" :alt="$t('cleanCenter.btn_5')" style="max-width: 150px">
+                    <p>{{$t('cleanCenter.btn_5')}}</p>
                 </Row>
                 <Row style="margin-top: 20px">
-                    <Button type="primary" @click="showModal = false">关闭</Button>
+                    <Button type="primary" @click="showModal = false">{{$t('public.btn_close')}}</Button>
                 </Row>
             </div>
         </Modal>
@@ -60,28 +60,28 @@
                 failSocket:null,
                 columns: [
                     {
-                        title: "任务名称",
+                        title: this.$t('tboardList.board_name'),
                         key: "board_name",
                         sortable: true
                     },
                     {
                         width: 150,
-                        title: "创建日期",
+                        title: this.$t('tboardList.board_stamp'),
                         key: "board_stamp",
                         sortable: true
                     },
                     {
-                        title: "任务成功率",
+                        title: this.$t('tboardList.success_ratio'),
                         key: "success_ratio",
                         sortable: true
                     },
                     {
-                        title: "操作人员",
+                        title: this.$t('tboardList.people'),
                         key: "author",
                         sortable: true
                     },
                     {
-                        title: "状态",
+                        title: this.$t('deviceDetail.status'),
                         key: "state",
                         sortable: true
                     }
@@ -95,7 +95,7 @@
         methods:{
             socketInit() {
                 if(typeof(WebSocket) === "undefined"){
-                    alert("您的浏览器不支持socket")
+                    alert(this.$t('cleanCenter.socket_1'))
                 }else{
                     // 实例化socket
                     this.socket = new WebSocket(this.path)
@@ -113,11 +113,11 @@
                 let tboards = JSON.parse(msg.data).message
                 tboards.forEach(item=>{
                     if(item.state === "deleting")
-                        item.state = "正在删除"
+                        item.state = this.$t('cleanCenter.socket_2')
                     else if(item.state === "deleted")
-                        item.state = "已删除"
+                        item.state = this.$t('cleanCenter.socket_3')
                     else
-                        item.state = "待删除"
+                        item.state = this.$t('cleanCenter.socket_4')
 
                 })
                 this.data = tboards
@@ -127,7 +127,7 @@
             },
             onRetry(){
                 if(this.failData.length===0){
-                    this.$Message.info("暂无需要删除的数据！")
+                    this.$Message.info(this.$t('cleanCenter.socket_5'))
                     return
                 }
                 let idList = []
@@ -144,10 +144,10 @@
                         key: "state",
                         sortable: true
                     })
-                    this.$Message.info("正在重新执行删除操作，请稍后！")
+                    this.$Message.info(this.$t('cleanCenter.socket_6'))
                 }).catch(error=>{
                     if(config.DEBUG) console.log(error)
-                    this.$Message.error("重新删除操作失败，请检查后重试!")
+                    this.$Message.error(this.$t('cleanCenter.socket_7'))
                 })
             },
             onFailTabClick(name){
@@ -156,7 +156,7 @@
                 }else {
                     if(!this.columns[4])
                     this.columns.splice(4,0, {
-                        title: "状态",
+                        title: this.$t('deviceDetail.status'),
                         key: "state",
                         sortable: true
                     })

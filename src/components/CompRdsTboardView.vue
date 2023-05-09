@@ -13,8 +13,8 @@
         <div v-if="showView">
             <div v-if="propTabName===$t('rdsManagement.view_4')">
                 <RadioGroup v-model="groupType" type="button">
-                    <Radio style="width: 100px;text-align: center;" :label="1">{{$t('rdsDeviceView.failData')}}</Radio>
-                    <Radio style="width: 100px;text-align: center;" :label="2">{{$t('rdsDeviceView.invalidData')}}</Radio>
+                    <Radio style="minWidth: 100px;text-align: center;" :label="1">{{$t('rdsDeviceView.failData')}}</Radio>
+                    <Radio style="minWidth: 100px;text-align: center;" :label="2">{{$t('rdsDeviceView.invalidData')}}</Radio>
                 </RadioGroup>
                 <Button type="primary" style="float: right;" @click="openTboardList">{{$t('rdsTboardView.selBtn_2')}}</Button>
 
@@ -114,8 +114,8 @@
             </div>
             <div v-if="propTabName===$t('rdsManagement.view_3')">
                 <RadioGroup v-model="groupTypeSwitch" type="button" style="margin-bottom: 16px">
-                    <Radio style="width: 100px;text-align: center;" :label="1">{{$t('rdsTboardView.tabs_2')}}</Radio>
-                    <Radio style="width: 100px;text-align: center;" :label="2">{{$t('rdsTboardView.tabs_1')}}</Radio>
+                    <Radio style="minWidth: 100px;text-align: center;" :label="1">{{$t('rdsTboardView.tabs_2')}}</Radio>
+                    <Radio style="minWidth: 100px;text-align: center;" :label="2">{{$t('rdsTboardView.tabs_1')}}</Radio>
                 </RadioGroup>
                 <div style="float: right;">
                     <span>{{$t('tboardList.board_name')}}：{{ data.board_name }}</span>

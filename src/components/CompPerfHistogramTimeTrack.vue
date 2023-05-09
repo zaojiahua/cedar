@@ -2,7 +2,7 @@
     <div>
         <div v-if="showChart" :id="'histogram'+propCanvasId+'-'+jobId" style="height: 250px;"></div>
         <div v-else>
-            <div style="font-size: 12px;text-align: center">{{$('perfDataView.noChart')}}</div>
+            <div style="font-size: 12px;text-align: center">{{$t('perfDataView.noChart')}}</div>
         </div>
     </div>
 </template>
@@ -58,7 +58,7 @@
                         }
                         this.series = [
                             {
-                                name:this.$('perfDataView.startTime'),
+                                name:this.$t('perfDataView.startTime'),
                                 type:'bar',
                                 label: {
                                     show: true,
@@ -76,7 +76,7 @@
                         this.$emit("after-load-data",response.data.length>0)
                     }).catch(error=>{
                         if (config.DEBUG) console.log(error)
-                        this.$Message.error(this.$('perfDataView.error_3'))
+                        this.$Message.error(this.$t('perfDataView.error_3'))
                         this.histogram.hideLoading()
                     })
                 })
@@ -89,7 +89,7 @@
                         trigger: "axis",
                         formatter: function (obj) {
                             return obj[0].value[0]+ '<br>'
-                                + _this.$('perfDataView.startTime') +'：' + obj[0].value[1] + ' s<br>'
+                                + _this.$t('perfDataView.startTime') +'：' + obj[0].value[1] + ' s<br>'
                         }
                     },
                     grid:{
@@ -107,7 +107,7 @@
                     },
                     yAxis: {
                         type: "value",
-                        name:_this.$('perfDataView.startTime')+" /s",
+                        name:_this.$t('perfDataView.startTime')+" /s",
                         nameLocation:"middle",
                         nameGap:27,
                         show: true,

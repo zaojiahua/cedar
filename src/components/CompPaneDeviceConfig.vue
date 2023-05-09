@@ -121,7 +121,7 @@
                         <h5 style="font-weight: bold; font-size: 1.4rem;">{{$t('paneDeviceConfig.title_2')}}</h5>
                         <div style="float: right;margin-top: -33px;">
                             <!--<span>高曝光：</span>-->
-                            <i-switch v-model="highExposureSwitch" false-color="#999">
+                            <i-switch v-model="highExposureSwitch" false-color="#999" size="large">
                                 <span slot="open">{{$t('paneDeviceConfig.high_1')}}</span>
                                 <span slot="close">{{$t('paneDeviceConfig.high_2')}}</span>
                             </i-switch>

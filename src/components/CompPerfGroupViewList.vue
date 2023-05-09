@@ -2,8 +2,8 @@
     <div>
         <Row style="margin-bottom: 16px;">
             <RadioGroup v-model="groupView" type="button">
-                <Radio style="width: 100px;text-align: center;" :label="1">{{$t('rdsTboardDeviceStatistic.tip_2')}}</Radio>
-                <Radio style="width: 100px;text-align: center;" :label="2">{{$t('perfDataView.label_5')}}</Radio>
+                <Radio style="minWidth: 100px;text-align: center;" :label="1">{{$t('rdsTboardDeviceStatistic.tip_2')}}</Radio>
+                <Radio style="minWidth: 100px;text-align: center;" :label="2">{{$t('perfDataView.label_5')}}</Radio>
             </RadioGroup>
             <Button style="float: right;" @click="refreshData">{{$t('perfDataView.btn_3')}}</Button>
             <div style="float: right;margin-right:16px;width:230px;">

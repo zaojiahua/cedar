@@ -291,7 +291,7 @@
                     title: this.$t('testSetList.action'),
                     key: "action",
                     align: 'center',
-                    width:120,
+                    width:125,
                     render: (h, params) => {
                         return h('div', [
                             h('span', {

@@ -2,8 +2,8 @@
     <div>
         <Row style="margin-bottom: 10px;">
             <RadioGroup v-model="groupTypeSwitch" style="float: right;">
-                <Radio style="width: 100px;text-align: center;" :label="1">{{$t('rdsTboardStatisticTable.group_1')}}</Radio>
-                <Radio style="width: 100px;text-align: center;" :label="2">{{$t('rdsTboardStatisticTable.group_2')}}</Radio>
+                <Radio style="minWidth: 100px;text-align: center;" :label="1">{{$t('rdsTboardStatisticTable.group_1')}}</Radio>
+                <Radio style="minWidth: 100px;text-align: center;" :label="2">{{$t('rdsTboardStatisticTable.group_2')}}</Radio>
             </RadioGroup>
         </Row>
         <!-- 第一层级表格数据 -->

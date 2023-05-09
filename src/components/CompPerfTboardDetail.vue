@@ -5,7 +5,7 @@
                 <!--<Button type="primary">导出数据</Button>-->
             <!--</a>-->
             <Button slot="extra" style="float:right;margin-top: -5px;" type="primary" @click="onOpenExportData">{{$t('perfDataView.btn_view')}}</Button>
-            <Form :label-width="80">
+            <Form :label-width="105">
                 <FormItem>
                     <b slot="label">{{$t('tboardList.board_name')}}:</b>
                     <Input disabled class="disabled-input" :value="data.board_name"></Input>

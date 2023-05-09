@@ -194,10 +194,10 @@
         <Modal v-model="openOrderModal" :closable="false" :mask-closable="false" footer-hide width="450">
             <Card>
                 <p slot="title">{{$t('deviceDetail.selTip')}}</p>
-                <div style="margin-bottom: 50px">
+                <div style="margin-bottom: 40px">
                     <span>{{$t('deviceDetail.slot')}}：</span>
                     <RadioGroup v-model="subsidiaryNumber" >
-                        <Radio v-for="index in 3" :disabled="subsidiaryOrderList.includes(index)" border :label="index">{{$t('deviceDetail.subsidiary_device')}}{{ index }}</Radio>
+                        <Radio v-for="index in 3" style="margin-bottom: 10px" :disabled="subsidiaryOrderList.includes(index)" border :label="index">{{$t('deviceDetail.subsidiary_device')}}{{ index }}</Radio>
                     </RadioGroup>
                 </div>
                 <Row style="text-align: right">
@@ -259,7 +259,7 @@
                 <p style="margin: 15px 0 30px 38px">{{ removeAgainMsg }}</p>
                 <Row style="text-align: right">
                     <Button type="text" @click="showRemoveAgainModal=false">{{$t('public.btn_cancel')}}</Button>
-                    <Button type="primary" @click="deleteAjax(device.device_label,false,true)">{{$t('deviceDetail.removw_4')}}</Button>
+                    <Button type="primary" @click="deleteAjax(device.device_label,false,true)">{{$t('deviceDetail.remove_4')}}</Button>
                 </Row>
             </div>
         </Modal>

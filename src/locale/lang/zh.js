@@ -1069,8 +1069,21 @@ export default {
         saveTips_5:"名称已存在！",
         delError:"当前项不允许删除！",
         delError_1:"确定要删除这条数据吗？",
-        armTitle_1:""
+    },
+    cleanCenter:{
+        list_1:"删除列表",
+        list_2:"失败列表",
+        btn_1:"重试",
+        btn_2:"联系客服",
+        btn_3:"联系方式",
+        btn_4:"联系电话",
+        btn_5:"微信公众号",
+        socket_1:"您的浏览器不支持socket",
+        socket_2:"正在删除",
+        socket_3:"已删除",
+        socket_4:"待删除",
+        socket_5:"暂无需要删除的数据!",
+        socket_6:"正在重新执行删除操作，请稍后！",
+        socket_7:"重新删除操作失败，请检查后重试!",
     }
-
-
 }
