@@ -4,13 +4,13 @@
             <Split v-model="split1">
                 <div slot="left" class="demo-split-pane rds-box scroll-bar">
                     <Card dis-hover>
-                        <Form :label-width="90">
+                        <Form :label-width="100">
                             <FormItem style="margin-bottom: 5px;">
-                                <b slot="label">{{$t('tboardDetail.jobName')}}：</b>
+                                <b slot="label">{{$t('tboardDetail.jobName')}}:</b>
                                 <Input v-model="rdsInfo.job.job_name" class="disabled-input" disabled></input>
                             </FormItem>
                             <FormItem>
-                                <b slot="label">{{$t('rdsDetail.devInfo')}}：</b>
+                                <b slot="label">{{$t('rdsDetail.devInfo')}}:</b>
                                 <Input v-model="rdsInfo.device.device_name+'('+rdsInfo.device.device_label+')'" class="disabled-input" disabled></input>
                             </FormItem>
                         </Form>

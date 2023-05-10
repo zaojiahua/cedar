@@ -1,9 +1,12 @@
 <template>
     <div class="content" style="position: relative">
-        <Modal v-model="showSelectTboardModal" :fullscreen="true" :closable="false"
-               @on-ok="getTboardSelection">
+        <Modal v-model="showSelectTboardModal" :fullscreen="true" :closable="false">
             <comp-tboard-list ref="selectTboard" :prop-show-header="false"
                               @on-row-click="onSelectTboardModalRowClick"></comp-tboard-list>
+            <div slot="footer">
+                <Button type="text" @click="showSelectTboardModal=false">{{$t('public.btn_cancel')}}</Button>
+                <Button type="primary" @click="getTboardSelection">{{$t('public.btn_ok')}}</Button>
+            </div>
         </Modal>
         <Row v-show="!showView" style="margin-top: 100px;text-align: center">
             <Button type="primary" @click="openTboardList">{{$t('rdsTboardView.selBtn')}}</Button>
@@ -272,6 +275,11 @@
                 this.tboardId = row.id
             },
             getTboardSelection(){
+                if(!this.tboardId){
+                    this.$Message.info({content:this.$t('perfDataView.tips_1'),duration:3})
+                    return
+                }
+                this.showSelectTboardModal=false
                 this.showView = true
                 this.showStatistic = false
                 let requests = [

@@ -16,7 +16,7 @@
 
             <div style="overflow: auto;max-height: calc(100% - 91px)">
                 <div class="project-list" v-for="item in allProjectList" :key="item.id" :class="{ active: projectIndex===item.id }"
-                     @click="projectIndex=item.id;projectMsg=item" @click.right="onContextClick(item)">
+                     @click="projectIndex=item.id;projectMsg=item;projectName=item.name" @click.right="onContextClick(item)">
                     <Icon type="ios-folder-open-outline" size="18" style="margin-right: 5px"/>
                     <span class="text-hidden">{{ item.name }}</span>
                     <span>（{{ item.test_gather_count }}）</span>
@@ -70,7 +70,7 @@
         <Modal v-model="showAddTestModal" width="90" :mask-closable="false" :footer-hide="true">
             <div>
                 <Row style="margin-bottom: 15px;">
-                    <h2>{{$t('testSetManagement.addTo')}}【{{ projectMsg.name }}】</h2>
+                    <h2>{{$t('testSetManagement.addTo')}}【{{ projectName }}】</h2>
                 </Row>
                 <Row style="margin-bottom: 16px">
                     <Col span="8">
