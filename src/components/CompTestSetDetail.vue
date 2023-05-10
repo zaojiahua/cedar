@@ -2,30 +2,30 @@
     <Card :title="isShowOther ? $t('testSetDetail.info') : $t('testSetDetail.info_1') ">
         <Form :label-width="147" :rules="validateRules" ref="form" :model="testInfo">
             <FormItem prop="name">
-                <b slot="label">{{$t('testSetList.name')}}：</b>
+                <b slot="label">{{$t('testSetList.name')}}:</b>
                 <Input v-model="testInfo.name" maxlength="50"></Input>
             </FormItem>
             <FormItem v-show="!isShowOther">
-                <b slot="label">{{$t('testSetDetail.pro')}}：</b>
+                <b slot="label">{{$t('testSetDetail.pro')}}:</b>
                 <Select v-model="selectProject" clearable style="width:200px" :filterable="true">
                     <Option v-for="item in allProject" :value="item.id" :key="item.id">{{ item.name }}</Option>
                 </Select>
             </FormItem>
             <div v-show="isShowOther">
                 <FormItem>
-                    <b slot="label">{{$t('testSetList.job_count')}}：</b>
+                    <b slot="label">{{$t('testSetList.job_count')}}:</b>
                     <Input v-model="testInfo.job_count" disabled class="disabled-input"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">{{$t('testSetList.duration_time')}}（h）：</b>
+                    <b slot="label">{{$t('testSetList.duration_time')}}（h）:</b>
                     <Input v-model="testInfo.duration_time" disabled class="disabled-input"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">{{$t('testSetList.update_time')}}：</b>
+                    <b slot="label">{{$t('testSetList.update_time')}}:</b>
                     <Input v-model="testInfo.update_time" disabled class="disabled-input"></Input>
                 </FormItem>
                 <FormItem>
-                    <b slot="label">{{$t('testSetDetail.pro_1')}}：</b>
+                    <b slot="label">{{$t('testSetDetail.pro_1')}}:</b>
                     <p v-if="projectList.length===0" style="color: #FF9900">{{$t('public.noData')}}</p>
                     <div v-else>
                         <Button v-for="project in projectList" style="margin:0 10px 8px 0;" :key="project.id">{{ project.name }}</Button>

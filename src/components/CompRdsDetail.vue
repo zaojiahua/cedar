@@ -12,74 +12,74 @@
         <Form :label-width="120">
             <Divider>{{$t('rdsDetail.rdsInfo')}}</Divider>
             <FormItem>
-                <b slot="label">ID：</b>
+                <b slot="label">ID:</b>
                 <Input v-model="rdsInfo.id" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('rdsDetail.start_time')}}：</b>
+                <b slot="label">{{$t('rdsDetail.start_time')}}:</b>
                 <Input v-model="rdsInfo.start_time" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('rdsDetail.end_time')}}：</b>
+                <b slot="label">{{$t('rdsDetail.end_time')}}:</b>
                 <Input v-model="rdsInfo.end_time" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('rdsDetail.runTime')}}：</b>
+                <b slot="label">{{$t('rdsDetail.runTime')}}:</b>
                 <Input v-model="rdsInfo.runTime" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('rdsDetail.result')}}：</b>
+                <b slot="label">{{$t('rdsDetail.result')}}:</b>
                 <Input v-model="rdsInfo.result" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem v-if="propPerfRds&&rdsInfo.job_duration!==null">
-                <b slot="label">{{$t('rdsDetail.job_duration')}}：</b>
+                <b slot="label">{{$t('rdsDetail.job_duration')}}:</b>
                 <Input v-model="rdsInfo.job_duration+'s'" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem v-if="rdsInfo.job.job_second_type==='SmoothJob'">
-                <b slot="label">{{$t('rdsDetail.lose_frame_point')}}：</b>
+                <b slot="label">{{$t('rdsDetail.lose_frame_point')}}:</b>
                 <Input v-model="rdsInfo.lose_frame_point" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">rdsDict：</b>
+                <b slot="label">rdsDict:</b>
                 <Input v-model="rdsInfo.rds_dict" class="disabled-input" disabled></input>
                 <Button size="small" style="float: right;margin-top: 10px;" type="primary" @click="openRdsDict">{{$t('rdsDetail.view')}}</Button>
             </FormItem>
             <Divider>{{$t('rdsDetail.jobInfo')}}</Divider>
             <FormItem>
-                <b slot="label">{{$t('rdsDetail.label')}}ID：</b>
+                <b slot="label">{{$t('rdsDetail.label')}}ID:</b>
                 <Input v-model="rdsInfo.job.job_label" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('jobList.job_name')}}：</b>
+                <b slot="label">{{$t('jobList.job_name')}}:</b>
                 <Input v-model="rdsInfo.job.job_name" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('jobList.username')}}：</b>
+                <b slot="label">{{$t('jobList.username')}}:</b>
                 <Input v-model="rdsInfo.job.author.username" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('rdsDetail.from')}}：</b>
+                <b slot="label">{{$t('rdsDetail.from')}}:</b>
                 <Input v-model="rdsInfo.tboard.board_name" class="disabled-input" disabled></input>
             </FormItem>
             <Divider>{{$t('rdsDetail.devInfo')}}</Divider>
             <FormItem>
-                <b slot="label">{{$t('deviceList.device_name')}}：</b>
+                <b slot="label">{{$t('deviceList.device_name')}}:</b>
                 <Input v-model="rdsInfo.device.device_name" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('deviceList.device_label')}}：</b>
+                <b slot="label">{{$t('deviceList.device_label')}}:</b>
                 <Input v-model="rdsInfo.device.device_label" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('rdsDetail.customName')}}：</b>
+                <b slot="label">{{$t('rdsDetail.customName')}}:</b>
                 <Input v-model="rdsInfo.device.custom_number" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('deviceList.android_version')}}：</b>
+                <b slot="label">{{$t('deviceList.android_version')}}:</b>
                 <Input v-model="rdsInfo.device.android_version.version" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('deviceList.rom_version')}}：</b>
+                <b slot="label">{{$t('deviceList.rom_version')}}:</b>
                 <Input v-model="rdsInfo.device.rom_version.version" class="disabled-input" disabled></input>
             </FormItem>
             <div>
@@ -87,7 +87,7 @@
             </div>
             <Divider>{{$t('rdsDetail.otherInfo')}}</Divider>
             <FormItem>
-                <b slot="label">{{$t('rdsDetail.log')}}：</b>
+                <b slot="label">{{$t('rdsDetail.log')}}:</b>
                 <p v-if="showLogTip" style="color: #FF9900">{{$t('rdsDetail.noLog')}}</p>
                 <ButtonGroup v-show="rdsInfo.logList.length>0" style="margin-bottom: 8px">
                     <Button v-for="files in rdsInfo.logList" :key="files.id" @click="viewLogFile(files.log_file,files.file_name)">{{ files.file_name }}</Button>
@@ -103,12 +103,12 @@
                 </Row>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('rdsDetail.rom')}}：</b>
+                <b slot="label">{{$t('rdsDetail.rom')}}:</b>
                 <p v-if="!rdsInfo.rom_version_const" style="color: #FF9900">{{$t('public.noData')}}</p>
                 <Input v-show="rdsInfo.rom_version_const" v-model="rdsInfo.rom_version_const" class="disabled-input" disabled></input>
             </FormItem>
             <FormItem>
-                <b slot="label">{{$t('rdsDetail.app')}}：</b>
+                <b slot="label">{{$t('rdsDetail.app')}}:</b>
                 <p v-if="rdsInfo.app_info.length===0" style="color: #FF9900">{{$t('public.noData')}}</p>
                 <div v-show="rdsInfo.app_info.length>0">
                     <Input v-for="item in rdsInfo.app_info" v-model="item.app_version+'('+item.package_name+')'" class="disabled-input" style="margin-bottom: 10px" disabled></input>
@@ -116,13 +116,13 @@
             </FormItem>
         </Form>
         <div style="color: #515a6e;padding-left: 48px;font-size: 12px">
-            <b style="cursor: default">{{$t('rdsDetail.pic')}}：</b><b style="cursor: default" v-if="!showScreenTip">{{$t('rdsDetail.pic_1')}}{{rdsscreenshot.length}} {{$t('rdsDetail.pic_2')}}</b>
+            <b style="cursor: default">{{$t('rdsDetail.pic')}}:</b><b style="cursor: default" v-if="!showScreenTip">{{$t('rdsDetail.pic_1')}}{{rdsscreenshot.length}} {{$t('rdsDetail.pic_2')}}</b>
             <label v-if="showScreenTip" style="color: #FF9900">{{$t('rdsDetail.noPic')}}</label>
             <br>
             <img style="margin: 5px; cursor: pointer;" v-for="(img,index) in rdsscreenshot" :key="img.id" :src=baseUrl+img.thumbs_file :alt=img.file_name :title=img.file_name @click="viewOriginalImg(img,index)">
         </div>
         <!--<div style="color: #515a6e;padding-left: 48px;font-size: 12px;margin-top: 16px" v-show="isReferenceShow">-->
-            <!--<b style="cursor: default">查看查参考图片：</b><b style="cursor: default">共 {{jobResFile.length}} 张</b>-->
+            <!--<b style="cursor: default">查看查参考图片:</b><b style="cursor: default">共 {{jobResFile.length}} 张</b>-->
             <!--<br>-->
             <!--<img style="margin: 5px; cursor: pointer;max-width: 200px;border: 1px solid #ccc" v-for="(img,index) in jobResFile" :key="index" :src=baseUrl+img.file :alt=img.name>-->
         <!--</div>-->
