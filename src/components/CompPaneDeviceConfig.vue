@@ -558,7 +558,7 @@
                         }
                     },
                     {
-                        title: 'Z [-10,10]',
+                        title: 'Z [-25,10]',
                         key: 'z',
                         maxWidth:90,
                         render: (h, params) => {
@@ -575,8 +575,8 @@
                                                 event.target.value = this.tableData[params.index].z_coordinate
                                                 return
                                             }
-                                            if(parseFloat(event.target.value)<-10||parseFloat(event.target.value)>10){
-                                                this.$Message.warning({content:"z 坐标范围为[-10,10]",duration:3})
+                                            if(parseFloat(event.target.value)<-25||parseFloat(event.target.value)>10){
+                                                this.$Message.warning({content:"z 坐标范围为[-25,10]",duration:3})
                                                 event.target.value = this.tableData[params.index].z_coordinate
                                                 return
                                             }
@@ -2070,8 +2070,8 @@
                     this.$Message.warning({content:"名称已存在！",duration:3})
                     return
                 }
-                if(this.addInfo.z_coordinate==='' || this.addInfo.z_coordinate>10||this.addInfo.z_coordinate<-10){
-                    this.$Message.warning({content:"z 的取值范围为[-10,10]！",duration:3})
+                if(this.addInfo.z_coordinate==='' || this.addInfo.z_coordinate>10||this.addInfo.z_coordinate<-325){
+                    this.$Message.warning({content:"z 的取值范围为[-25,10]！",duration:3})
                     return
                 }
                 this.tableData.push({
