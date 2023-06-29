@@ -1004,10 +1004,10 @@ export default {
         tips_2:"(accurate to 0.1mm)",
         btn_3:"test",
         cameraSet:"Camera settings",
-        cameraSet_1:"Exposure mode",
+        cameraSet_1:"Exposure",
         cameraSet_2:"Standard exposure",
         cameraSet_3:"High exposure",
-        cameraSet_4:"angle of rotation",
+        cameraSet_4:"Rotation",
         adjustTitle_1:"When pressing lightly, please increase the Z value and range of the manipulator",
         adjustTitle_2:"X is positive to the right, and the X range of the left manipulator",
         adjustTitle_3:"X range of right manipulator",
@@ -1085,5 +1085,14 @@ export default {
         socket_5:"There is no data to delete at present!",
         socket_6:"Deleting operation is being re-executed, please wait!",
         socket_7:"Re-deletion failed. Please check and try again!",
+    },
+    cameraSelect:{
+        tips_1:"Camera",
+        option_1:"Camera 1",
+        option_2:"Camera 2",
+        tips_2:"Select at least one camera！",
+        tips_3:"Camera selection Settings failed",
+        tips_4:"Get camera failed",
+        tips_5:"You must reselect the border after reselecting the camera!",
     }
 }

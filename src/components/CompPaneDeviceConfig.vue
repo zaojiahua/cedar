@@ -312,10 +312,22 @@
             </Card>
         </Modal>
         <!--   相 机 设 置  -->
-        <Modal v-model="showExposureModal" :closable="false" :footer-hide="true" :mask-closable="false" width="350">
+        <Modal v-model="showExposureModal" :closable="false" :footer-hide="true" :mask-closable="false" width="450">
             <Card>
-                <h3 style="margin-bottom:12px;">{{$t('paneDeviceConfig.cameraSet')}}</h3>
+                <h3 style="margin-bottom:16px;">{{$t('paneDeviceConfig.cameraSet')}}</h3>
                 <Form :label-width="85">
+                    <FormItem v-show="showCameraSet">
+                        <b slot="label">{{$t('cameraSelect.tips_1')}}：</b>
+                        <CheckboxGroup v-model="camera">
+                            <Checkbox label="1">
+                                <span>{{$t('cameraSelect.option_1')}}</span>
+                            </Checkbox>
+                            <Checkbox label="2" style="margin-left: 26px">
+                                <span>{{$t('cameraSelect.option_2')}}</span>
+                            </Checkbox>
+                        </CheckboxGroup>
+                        <div style="color: #c0c0c0">{{$t('cameraSelect.tips_5')}}</div>
+                    </FormItem>
                     <FormItem>
                         <b slot="label">{{$t('paneDeviceConfig.cameraSet_1')}}：</b>
                         <RadioGroup v-model="exposure">
@@ -671,6 +683,7 @@
                 //测试有效性/mlocation按钮是否显示
                 showLocationBtn:false,
                 showProBtn:false,
+                showCameraSet:false,
                 isDisabledBtn:false,  //mlocation按钮是否可点击
                 mlocation:{
                     x:null,
@@ -717,6 +730,7 @@
                 showExposureModal:false,
                 exposure:1,  //曝光模式 1：标准 2：高曝光
                 rotate:0,    // 旋转角度
+                camera:[],  //双摄选择
             }
         },
         computed: {
@@ -794,6 +808,19 @@
             // 打开【相机设置】模态框
             onOpenExposureModal(){
                 this.showExposureModal = true
+                this.$ajax.get("http://"+ this.cabinetIP +":5000/pane/camera_select/?device_label="+this.deviceLabel)
+                    .then(response=>{
+                        if(response.data.error_code===0){
+                            this.camera = response.data.data.camera_list
+                        }else{
+                            this.$Message.error({content:this.$t('cameraSelect.tips_4'),duration: 3})
+                        }
+                    }).catch(error=>{
+                    if(error.response.status>=500)
+                        this.$Message.error({content:this.$t('public.error_500'),duration: 5})
+                    else
+                        this.$Message.error({content:this.$t('cameraSelect.tips_4'),duration: 5})
+                })
                 this.$ajax.get("http://"+ this.cabinetIP +":5000/eblock/camera_config/")
                     .then(response=>{
                         if(response.data.error_code===0){
@@ -810,23 +837,48 @@
                     })
             },
             // 保存设置曝光等信息
-            setExposure(){
-                this.$ajax.post("http://"+ this.cabinetIP +":5000/eblock/camera_config/",{
-                    camera_rotate: this.rotate,
-                    exposure: this.exposure
+            async setExposure(){
+                if(this.camera.length===0){
+                    this.$Message.warning({content:this.$t('cameraSelect.tips_2'),duration: 3})
+                    return
+                }
+
+                let sendReq = false
+                await this.$ajax.post("http://"+ this.cabinetIP +":5000/pane/camera_select/",{
+                    device_label: this.deviceLabel,
+                    camera_list: this.camera
                 }).then(response=>{
                     if(response.data.error_code===0){
-                        this.$Message.success({content:this.$t('paneDeviceConfig.warnTips_3'),duration: 3})
-                        this.showExposureModal = false
+                        sendReq = true
                     }else{
-                        this.$Message.error({content:response.data.description,duration: 10})
+                        sendReq = false
+                        this.$Message.error({content:this.$t('cameraSelect.tips_3'),duration: 3})
                     }
                 }).catch(error=>{
+                    sendReq = false
                     if(error.response.status>=500)
                         this.$Message.error({content:this.$t('public.error_500'),duration: 5})
                     else
-                        this.$Message.error({content:this.$t('paneDeviceConfig.warnTips_2'),duration: 5})
+                        this.$Message.error({content:this.$t('cameraSelect.tips_3'),duration: 5})
                 })
+                if(sendReq){
+                    await this.$ajax.post("http://"+ this.cabinetIP +":5000/eblock/camera_config/",{
+                        camera_rotate: this.rotate,
+                        exposure: this.exposure
+                    }).then(response=>{
+                        if(response.data.error_code===0){
+                            this.$Message.success({content:this.$t('paneDeviceConfig.warnTips_3'),duration: 3})
+                            this.showExposureModal = false
+                        }else{
+                            this.$Message.error({content:response.data.description,duration: 10})
+                        }
+                    }).catch(error=>{
+                        if(error.response.status>=500)
+                            this.$Message.error({content:this.$t('public.error_500'),duration: 5})
+                        else
+                            this.$Message.error({content:this.$t('paneDeviceConfig.warnTips_2'),duration: 5})
+                    })
+                }
             },
             // 打开坐标换算模态框，并获取坐标信息
             onOpenCoordinateModal(){
@@ -1573,6 +1625,7 @@
                 let cabinetList = ['Tcab_5L','Tcab_5se']
                 this.showLocationBtn = cabinetList.includes(device.cabinet.type)
                 this.showProBtn = ['Tcab_5','Tcab_5pro'].includes(device.cabinet.type)
+                this.showCameraSet = ['Tcab_5','Tcab_5pro','Tcab_5D'].includes(device.cabinet.type)
             },
             setMsg(row){
                 this.deviceId = row.id
@@ -1584,6 +1637,7 @@
                 let cabinetList = ['Tcab_5L','Tcab_5se']
                 this.showLocationBtn = cabinetList.includes(row.cabinet.type)
                 this.showProBtn = ['Tcab_5','Tcab_5pro'].includes(row.cabinet.type)
+                this.showCameraSet = ['Tcab_5','Tcab_5pro','Tcab_5D'].includes(device.cabinet.type)
             },
             setPaneId(id){
                 this.paneId = id
