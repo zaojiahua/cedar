@@ -1094,5 +1094,14 @@ export default {
         tips_3:"Camera selection Settings failed",
         tips_4:"Get camera failed",
         tips_5:"You must reselect the border after reselecting the camera!",
+    },
+    rdsPhotosAdsTime:{
+        tips_1:"The starting point of the advertisement must be before the end point of the advertisement",
+        originalTime:"Original time",
+        setPoint_1:"Set advertising start point",
+        setPoint_2:"Set advertising endpoint",
+        tips_2:"Advertising time needs to be between the starting and ending points",
+        tips_3:"The advertisement start and end point should exist at the same time",
+        cancel_btn:"Cancel advertisement",
     }
 }

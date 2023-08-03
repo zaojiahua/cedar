@@ -8,6 +8,7 @@
             <span style="margin-left: 16px">{{$t('rdsInfoPage.fps')}}：<b>{{ rdsInfo.fps }} fps</b></span>
             <span style="margin-left: 16px">{{$t('rdsInfoPage.set_fps')}}：<b>{{ rdsInfo.set_fps }} fps</b></span>
             <span style="margin-left: 16px">{{$t('rdsInfoPage.set_shot_time')}}：<b>{{ rdsInfo.set_shot_time }} s</b></span>
+            <span style="margin-left: 16px">{{$t('rdsPhotosAdsTime.originalTime')}}：<b>{{ original_job_duration }} <span v-show="typeof original_job_duration==='number'">s</span></b></span>
         </div>
         <div class="photo-box">
             <div class="photo-left">
@@ -20,6 +21,9 @@
                             <span @click="quickJump(parseInt(endPoint))"><DropdownItem>{{$t('rdsInfoPage.endPoint')}}</DropdownItem></span>
                             <span @click="quickJump(1)"><DropdownItem>{{$t('rdsInfoPage.top')}}</DropdownItem></span>
                             <span @click="quickJump(tableData.length)"><DropdownItem>{{$t('rdsInfoPage.bottom')}}</DropdownItem></span>
+                            <span @click="setAdvertisingPoint(true)"><DropdownItem>{{$t('rdsPhotosAdsTime.setPoint_1')}}</DropdownItem></span>
+                            <span @click="setAdvertisingPoint(false)"><DropdownItem>{{$t('rdsPhotosAdsTime.setPoint_2')}}</DropdownItem></span>
+                            <span @click="cancelAdvertisingPoint"><DropdownItem>{{$t('rdsPhotosAdsTime.cancel_btn')}}</DropdownItem></span>
                         </DropdownMenu>
                     </Dropdown>
                     <div v-show="tableData.length!==0" style="float: right;">
@@ -43,7 +47,7 @@
                     <div class="table-body-box">
                         <table style="width: 100%;text-align: center;border-spacing:0 2px;" border="0">
                             <tr :id="'p'+index" v-for="(item,index) in tableData" @click="onTableClick(item,index)" :class="{'highlight':index===selectedIndex}">
-                                <td style="width: 50px" :class="{'startPoint':index===startPoint-1,'endPoint':index===endPoint-1}">{{ item.frame_num }}</td>
+                                <td style="width: 50px" :class="{'startPoint':index===startPoint-1,'endPoint':index===endPoint-1,'adsStartPoint':index===advertisingStart-1,'adsEndPoint':index===advertisingEnd-1}">{{ item.frame_num }}</td>
                                 <td style="width: 150px">{{ item.time_stamp }}</td>
                                 <td style="width: 75px">{{ item.frame_duration }}</td>
                                 <td>{{ item.parameter }}</td>
@@ -96,9 +100,12 @@
                 selectedUrl: "",     //大图url
                 startPoint: null,
                 endPoint: null,
-                job_duration: this.$t('public.noData'),
+                original_job_duration: this.$t('public.noData'),  // 原始时间
                 rdsId:null,
                 baseUrl:"http://"+config.REEF_HOST+":"+config.REEF_PORT,
+                advertisingStart:null,  //广告起点、终点
+                advertisingEnd:null,
+                job_duration:this.$t('public.noData')  // 去除广告时间
             }
         },
         computed:{
@@ -127,8 +134,11 @@
                     "id," +
                     "job,job.job_name," +
                     "job_duration," +
+                    "original_job_duration," +
                     "start_point," +
                     "end_point," +
+                    "ads_start_point," +
+                    "ads_end_point," +
                     "set_fps," +
                     "fps," +
                     "set_shot_time," +
@@ -145,6 +155,16 @@
 
                         this.startPoint = this.rdsInfo.start_point
                         this.endPoint = this.rdsInfo.end_point
+                        this.advertisingStart = this.rdsInfo.ads_start_point
+                        this.advertisingEnd = this.rdsInfo.ads_end_point
+                        if(this.rdsInfo.original_job_duration===0){
+                            this.original_job_duration = this.$t('public.noData')
+                        }else if(this.rdsInfo.original_job_duration===null){
+                            this.original_job_duration = this.rdsInfo.job_duration ? this.rdsInfo.job_duration : this.$t('public.noData')
+                        }else {
+                            this.original_job_duration = this.rdsInfo.original_job_duration
+                        }
+                        // this.original_job_duration = this.rdsInfo.original_job_duration ? this.rdsInfo.original_job_duration : this.rdsInfo.job_duration ? this.rdsInfo.job_duration : this.$t('public.noData')
                         this.job_duration = this.rdsInfo.job_duration ? this.rdsInfo.job_duration : this.$t('public.noData')
 
                         if(this.startPoint){
@@ -212,10 +232,44 @@
                 } else{
                     this.endPoint = this.selectRowData.frame_num
                 }
-                if(this.startPoint&&this.endPoint)
-                    this.job_duration = (this.tableData[this.endPoint-1].timestamp - this.tableData[this.startPoint-1].timestamp)/1000   //   单位：s
-                else
+                if(this.startPoint&&this.endPoint){
+                    if(this.advertisingStart&&this.advertisingEnd)
+                        this.job_duration = parseFloat(((this.tableData[this.endPoint-1].timestamp - this.tableData[this.startPoint-1].timestamp)/1000 - (this.tableData[this.advertisingEnd-1].timestamp - this.tableData[this.advertisingStart-1].timestamp)/1000).toFixed(3))   //   单位：s
+                    else
+                        this.job_duration = parseFloat(((this.tableData[this.endPoint-1].timestamp - this.tableData[this.startPoint-1].timestamp)/1000).toFixed(3))  //   单位：s
+                } else
                     this.job_duration = this.$t('public.noData')
+            },
+            //广告时间设置：点击按钮作为广告起点或者广告终点
+            setAdvertisingPoint(flag) {
+                if (flag){  //true:设为起点    false:设为终点
+                    if((this.selectedIndex > this.startPoint-1) && ((this.selectedIndex < this.endPoint-1)||this.endPoint===null)) {
+                        this.advertisingStart = this.selectRowData.frame_num
+                    } else{
+                        this.$Message.warning({content:this.$t('rdsPhotosAdsTime.tips_2'),duration:5})
+                        return
+                    }
+                } else{
+                    if((this.selectedIndex > this.startPoint-1) && ((this.selectedIndex < this.endPoint-1)||this.endPoint===null)) {
+                        this.advertisingEnd = this.selectRowData.frame_num
+                    }else{
+                        this.$Message.warning({content:this.$t('rdsPhotosAdsTime.tips_2'),duration:5})
+                        return
+                    }
+                }
+                if(this.startPoint&&this.endPoint){
+                    if(this.advertisingStart&&this.advertisingEnd){
+                        this.job_duration = parseFloat(((this.tableData[this.endPoint-1].timestamp - this.tableData[this.startPoint-1].timestamp)/1000 - ((this.tableData[this.advertisingEnd-1].timestamp - this.tableData[this.advertisingStart-1].timestamp)/1000)).toFixed(3))   //   单位：s
+                    }else
+                        this.job_duration = parseFloat((this.tableData[this.endPoint-1].timestamp - this.tableData[this.startPoint-1].timestamp)/1000)
+                }else
+                    this.job_duration = this.$t('public.noData')
+            },
+            //同时取消广告起点和终点
+            cancelAdvertisingPoint(){
+                this.advertisingStart = null
+                this.advertisingEnd = null
+                this.job_duration = parseFloat(((this.tableData[this.endPoint-1].timestamp - this.tableData[this.startPoint-1].timestamp)/1000).toFixed(3))   //   单位：s
             },
             //点击快捷跳转到起点终点，顶部底部
             quickJump(point) {
@@ -233,6 +287,9 @@
                 return {
                     startPoint: this.startPoint,
                     endPoint: this.endPoint,
+                    original_job_duration: this.original_job_duration===this.$t('public.noData')? 0:this.original_job_duration,
+                    ads_start_point: this.advertisingStart,
+                    ads_end_point: this.advertisingEnd,
                     job_duration: this.job_duration
                 }
             },
@@ -298,6 +355,9 @@
     }
     .endPoint {
         background: rgba(255,160,122,1);
+    }
+    .adsStartPoint,.adsEndPoint {
+        background: #d7dbe5;
     }
 
     .table-body-box{

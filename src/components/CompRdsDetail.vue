@@ -214,6 +214,7 @@
             file_name:"string"
         }],
         job_duration:"string",
+        original_job_duration:"string",
         lose_frame_point:"string",
         start_time: "string",
         rom_version_const:"string",
@@ -292,12 +293,13 @@
                         "end_time,"+
                         "rom_version_const," +
                         "app_info,"+
-                        "job_duration,lose_frame_point," +
+                        "job_duration,lose_frame_point,original_job_duration," +
                         "job_assessment_value," +
                         "rds_dict")
                     .then(response=>{
                         this.showSpin=false;
                         this.rdsInfo = utils.validate(rdsSerializer,response.data);
+                        this.rdsInfo.job_duration = this.rdsInfo.job_duration ? this.rdsInfo.job_duration : null
                         this.rdsInfo.rds_dict = JSON.stringify(this.rdsInfo.rds_dict);
                         this.rdsInfo.lose_frame_point = this.rdsInfo.lose_frame_point ? this.rdsInfo.lose_frame_point + ".jpg" : this.$t('rdsDetail.no');
                         let logList=[], zipList=[]
@@ -486,12 +488,30 @@
                     this.$Message.warning({content:this.$t('rdsDetail.tips_1'),duration:5})
                     return
                 }
+                if(Obj.ads_start_point&&Obj.ads_end_point){
+                    if(Obj.ads_start_point>=Obj.ads_end_point){
+                        this.$Message.warning({content:this.$t('rdsPhotosAdsTime.tips_1'),duration:5})
+                        return
+                    }
+                    if( (Obj.ads_start_point<=Obj.startPoint) || (Obj.ads_start_point>=Obj.endPoint) || (Obj.ads_end_point<=Obj.startPoint) || (Obj.ads_end_point>=Obj.endPoint)){
+                        this.$Message.warning({content:this.$t('rdsPhotosAdsTime.tips_2'),duration:5})
+                        return
+                    }
+                }else if(!Obj.ads_start_point&&!Obj.ads_end_point){
+                    //不需要校验
+                }else {
+                    this.$Message.warning({content:this.$t('rdsPhotosAdsTime.tips_3'),duration:5})
+                    return
+                }
                 this.$refs.rdsPhotos.showLoading = true
                 console.log(Obj)
                 this.$ajax.patch("api/v1/cedar/rds/" + this.rdsInfo.id + "/",{
-                    job_duration: Obj.job_duration,
+                    job_duration: Obj.job_duration,  //减去广告时间
                     start_point: Obj.startPoint,
                     end_point: Obj.endPoint,
+                    ads_start_point:Obj.ads_start_point,
+                    ads_end_point:Obj.ads_end_point,
+                    original_job_duration:Obj.original_job_duration,  // 原始时间
                 }).then(response=>{
                     this.rdsInfo.job_duration = Obj.job_duration
                     this.$Message.success(this.$t('rdsDetail.success'))

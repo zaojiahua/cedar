@@ -1094,5 +1094,14 @@ export default {
         tips_3:"相机选择设置失败",
         tips_4:"相机选择获取失败",
         tips_5:"重新选择相机后必须重新框选边框！！！",
+    },
+    rdsPhotosAdsTime:{
+        tips_1:"广告起点需在广告终点之前",
+        originalTime:"原始时间",
+        setPoint_1:"设为广告起点",
+        setPoint_2:"设为广告终点",
+        tips_2:"广告时间需要在起点和终点之间",
+        tips_3:"广告起点和终点需要同时存在",
+        cancel_btn:"取消广告点",
     }
 }
