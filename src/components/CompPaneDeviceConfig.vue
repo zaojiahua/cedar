@@ -587,8 +587,8 @@
                                                 event.target.value = this.tableData[params.index].z_coordinate
                                                 return
                                             }
-                                            if(parseFloat(event.target.value)<-10||parseFloat(event.target.value)>10){
-                                                this.$Message.warning({content:this.$t('paneDeviceConfig.zRange')+"[-10,10]",duration:3})
+                                            if(parseFloat(event.target.value)<-40||parseFloat(event.target.value)>10){
+                                                this.$Message.warning({content:this.$t('paneDeviceConfig.zRange')+"[-40,10]",duration:3})
                                                 event.target.value = this.tableData[params.index].z_coordinate
                                                 return
                                             }
@@ -2124,8 +2124,8 @@
                     this.$Message.warning({content:this.$t('paneDeviceConfig.saveTips_5'),duration:3})
                     return
                 }
-                if(this.addInfo.z_coordinate==='' || this.addInfo.z_coordinate>10||this.addInfo.z_coordinate<-10){
-                    this.$Message.warning({content:this.$t('paneDeviceConfig.rangeTit_3')+"[-10,10]！",duration:3})
+                if(this.addInfo.z_coordinate==='' || this.addInfo.z_coordinate>10||this.addInfo.z_coordinate<-40){
+                    this.$Message.warning({content:this.$t('paneDeviceConfig.rangeTit_3')+"[-40,10]！",duration:3})
                     return
                 }
                 this.tableData.push({
